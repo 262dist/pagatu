@@ -265,21 +265,6 @@ classDiagram
 
 ```mermaid
 classDiagram
-    class OrdenPageComponent {
-        +crearOrden() void
-        +cargarOrdenesCliente() void
-    }
-
-    class OrdenApiService {
-        +crearOrden(CrearOrdenRequest) Observable~OrdenResponse~
-        +buscarPorId(Long) Observable~OrdenResponse~
-        +listarPorCliente(Long) Observable~OrdenResponse[]~
-    }
-
-    class GatewayRoute {
-        +/api/ordenes/**
-    }
-
     class OrdenController {
         +crearOrden(CrearOrdenRequest) OrdenResponse
         +buscarPorId(Long) OrdenResponse
@@ -324,9 +309,6 @@ classDiagram
         -EstadoOrden estado
     }
 
-    OrdenPageComponent --> OrdenApiService
-    OrdenApiService --> GatewayRoute
-    GatewayRoute --> OrdenController
     OrdenController --> OrdenService
     OrdenService <|.. OrdenServiceImpl
     OrdenServiceImpl ..> ClienteClient
@@ -337,6 +319,73 @@ classDiagram
 ```
 
 Este nivel se usa solo como ejemplo didactico. En C4, el nivel de codigo no deberia convertirse en un diagrama de todas las clases del proyecto; sirve para explicar una parte puntual cuando aporta claridad.
+
+### C4 Nivel 4: Codigo - Ejemplo Angular para Ordenes
+
+```mermaid
+classDiagram
+    class OrdenPageComponent {
+        +ngOnInit() void
+        +crearOrden() void
+        +cargarOrdenesCliente() void
+        +verDetalle(Long) void
+    }
+
+    class OrdenFormComponent {
+        +form: FormGroup
+        +agregarItem() void
+        +quitarItem(index) void
+        +emitirOrden() void
+    }
+
+    class OrdenDetalleComponent {
+        +orden: OrdenResponse
+        +mostrarEstadoPago() void
+    }
+
+    class OrdenApiService {
+        +crearOrden(CrearOrdenRequest) Observable~OrdenResponse~
+        +buscarPorId(Long) Observable~OrdenResponse~
+        +listarPorCliente(Long) Observable~OrdenResponse[]~
+    }
+
+    class CatalogoApiService {
+        +listarItemsActivos() Observable~CatalogoItemResponse[]~
+        +buscarItem(Long) Observable~CatalogoItemResponse~
+    }
+
+    class ClienteSessionService {
+        +obtenerClienteActual() ClienteResponse
+        +tieneSesionActiva() boolean
+    }
+
+    class AuthInterceptor {
+        +intercept(req, next) Observable~HttpEvent~
+    }
+
+    class TraceInterceptor {
+        +intercept(req, next) Observable~HttpEvent~
+    }
+
+    class GatewayApi {
+        +/api/ordenes/**
+        +/api/catalogo/**
+    }
+
+    OrdenPageComponent --> OrdenFormComponent
+    OrdenPageComponent --> OrdenDetalleComponent
+    OrdenPageComponent --> OrdenApiService
+    OrdenFormComponent --> CatalogoApiService
+    OrdenFormComponent --> ClienteSessionService
+    OrdenApiService --> AuthInterceptor
+    OrdenApiService --> TraceInterceptor
+    CatalogoApiService --> AuthInterceptor
+    CatalogoApiService --> TraceInterceptor
+    AuthInterceptor --> GatewayApi
+    TraceInterceptor --> GatewayApi
+```
+
+Angular se muestra aparte porque vive en otro proyecto/contenedor. Este diagrama explica la pantalla de ordenes, sus componentes, servicios HTTP e interceptores, mientras el diagrama de `orden-ms` queda enfocado en el backend.
 
 ### C4 Nivel 4: Codigo - Ejemplo en pago-ms
 
