@@ -547,7 +547,7 @@ flowchart TB
     subgraph dev[DEV local]
         devmessaging[1. Mensajeria compartida: Kafka local]
         devshared[2. Infra compartida: Config + Eureka + Gateway]
-        devmscompose[3. docker-compose-dev.yml del MS]
+        devmscompose[docker-compose-dev.yml del MS]
         devjava[4. MS con Java 17 local]
         devmysql[(3. MySQL por MS en Docker)]
         devobs[5. Observabilidad compartida: Prometheus + Loki + Grafana]
