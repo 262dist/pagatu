@@ -41,47 +41,42 @@ La comunicacion queda dividida por responsabilidad:
 flowchart LR
     usuario["Person: Usuario institucional"]
     admin["Person: Administrador"]
-    angular["Software System: Angular App"]
     pagatu["Software System: Pagatu Platform"]
-    auth["Container: auth-ms (luego Keycloak)"]
     kafkaCorp["External System: Kafka empresarial compartido"]
     pasarela["External System: Pasarela de pago (Niubiz/Culqi)"]
 
-    usuario -->|usa| angular
-    admin -->|administra| angular
-    angular -->|consume API| pagatu
-    angular -->|autenticacion| auth
-    auth -->|autoriza acceso| pagatu
+    usuario -->|usa| pagatu
+    admin -->|administra| pagatu
     pagatu -->|publica/consume eventos| kafkaCorp
-    pagatu -. procesa pago .-> pasarela
+    pagatu -->|procesa pago| pasarela
 ```
 
-Este nivel muestra el sistema como una caja principal: Angular es la interfaz de usuario y Pagatu Platform agrupa Gateway, microservicios, configuracion, registro y observabilidad. Kafka se trata como plataforma empresarial compartida, no como componente exclusivo del proyecto.
+Este nivel muestra Pagatu como una caja principal frente a sus actores y sistemas externos. Los detalles internos, como Angular, Gateway, `auth-ms`, microservicios, Config Server y Eureka, aparecen recien en el nivel de contenedores. Kafka se trata como plataforma empresarial compartida, no como componente exclusivo del proyecto.
 
 ### C4 Nivel 2: Contenedores de Release 1
 
 ```mermaid
 flowchart LR
-    usuario[Usuario] --> angular[Angular App]
-    angular --> gateway[Gateway]
+    usuario["Person: Usuario institucional"] --> angular["Container: Angular App"]
+    angular --> gateway["Container: Gateway"]
 
-    gateway --> cliente[cliente-ms]
-    gateway --> ubigeo[ubigeo-ms]
-    gateway --> catalogo[catalogo-ms]
-    gateway --> orden[orden-ms]
-    gateway --> pago[pago-ms]
-    gateway --> auth[auth-ms]
+    gateway --> cliente["Container: cliente-ms"]
+    gateway --> ubigeo["Container: ubigeo-ms"]
+    gateway --> catalogo["Container: catalogo-ms"]
+    gateway --> orden["Container: orden-ms"]
+    gateway --> pago["Container: pago-ms"]
+    gateway --> auth["Container: auth-ms"]
 
     cliente -- Feign + Circuit Breaker --> ubigeo
     orden -- Feign + Circuit Breaker --> cliente
     orden -- Feign + Circuit Breaker --> catalogo
 
-    orden -- publica orden.creada --> kafka[(Kafka)]
+    orden -- publica orden.creada --> kafka["External System: Kafka empresarial compartido"]
     kafka -- consume orden.creada --> pago
     pago -- publica pago.validado --> kafka
-    pago -- autoriza/captura pago --> pasarela[Pasarela externa Niubiz/Culqi]
+    pago -- autoriza/captura pago --> pasarela["External System: Pasarela de pago (Niubiz/Culqi)"]
 
-    config[Config Server] --> configrepo[(config-repo)]
+    config["Container: Config Server"] --> configrepo[(Data Store: config-repo)]
     auth -. config .-> config
     cliente -. config .-> config
     ubigeo -. config .-> config
@@ -90,7 +85,7 @@ flowchart LR
     pago -. config .-> config
     gateway -. config .-> config
 
-    eureka[Eureka] -. registro .- auth
+    eureka["Container: Eureka"] -. registro .- auth
     eureka -. registro .- cliente
     eureka -. registro .- ubigeo
     eureka -. registro .- catalogo
@@ -98,7 +93,7 @@ flowchart LR
     eureka -. registro .- pago
     eureka -. registro .- gateway
 
-    prometheus[Prometheus] -. metrics .-> auth
+    prometheus["External System: Prometheus compartido"] -. metrics .-> auth
     prometheus -. metrics .-> gateway
     prometheus -. metrics .-> cliente
     prometheus -. metrics .-> ubigeo
@@ -106,7 +101,7 @@ flowchart LR
     prometheus -. metrics .-> orden
     prometheus -. metrics .-> pago
 
-    loki[Loki] -. logs .-> auth
+    loki["External System: Loki compartido"] -. logs .-> auth
     loki -. logs .-> gateway
     loki -. logs .-> cliente
     loki -. logs .-> ubigeo
@@ -114,50 +109,52 @@ flowchart LR
     loki -. logs .-> orden
     loki -. logs .-> pago
 
-    grafana[Grafana] --> prometheus
+    grafana["External System: Grafana compartido"] --> prometheus
     grafana --> loki
 ```
 
-### C4 Nivel 3: Componentes - Cliente y Ubigeo
+Este nivel ya puede mostrar tecnologia y responsabilidades internas: Angular, Gateway, microservicios, bases de configuracion, servicios de soporte y sistemas externos consumidos por los contenedores.
+
+### Vista Dinamica: Cliente y Ubigeo
 
 ```mermaid
 flowchart LR
-    usuario[Usuario] --> angular[Angular App]
-    angular --> gateway[Gateway]
+    usuario["Person: Usuario institucional"] --> angular["Container: Angular App"]
+    angular --> gateway["Container: Gateway"]
 
-    gateway --> cliente[cliente-ms]
-    gateway --> ubigeo[ubigeo-ms]
+    gateway --> cliente["Container: cliente-ms"]
+    gateway --> ubigeo["Container: ubigeo-ms"]
 
     cliente -- Feign + Circuit Breaker --> ubigeo
 
-    config[Config Server] --> configrepo[(config-repo)]
+    config["Container: Config Server"] --> configrepo[(Data Store: config-repo)]
     cliente -. config .-> config
     ubigeo -. config .-> config
     gateway -. config .-> config
 
-    eureka[Eureka] -. registro .- cliente
+    eureka["Container: Eureka"] -. registro .- cliente
     eureka -. registro .- ubigeo
     eureka -. registro .- gateway
 ```
 
-### C4 Nivel 3: Componentes - Orden y Pago
+### Vista Dinamica: Orden y Pago
 
 ```mermaid
 flowchart LR
-    gateway[Gateway] --> orden[orden-ms]
-    gateway --> pago[pago-ms]
+    gateway["Container: Gateway"] --> orden["Container: orden-ms"]
+    gateway --> pago["Container: pago-ms"]
 
-    orden[orden-ms] -- publica orden.creada --> kafka[(Kafka)]
-    kafka -- consume orden.creada --> pago[pago-ms]
-    pago -- autoriza/captura pago --> pasarela[Pasarela externa Niubiz/Culqi]
+    orden -- publica orden.creada --> kafka["External System: Kafka empresarial compartido"]
+    kafka -- consume orden.creada --> pago
+    pago -- autoriza/captura pago --> pasarela["External System: Pasarela de pago (Niubiz/Culqi)"]
     pago -- publica pago.validado --> kafka
 
-    config[Config Server] --> configrepo[(config-repo)]
+    config["Container: Config Server"] --> configrepo[(Data Store: config-repo)]
     orden -. config .-> config
     pago -. config .-> config
     gateway -. config .-> config
 
-    eureka[Eureka] -. registro .- orden
+    eureka["Container: Eureka"] -. registro .- orden
     eureka -. registro .- pago
     eureka -. registro .- gateway
 ```
