@@ -210,6 +210,20 @@ Este nivel baja el zoom dentro de dos contenedores concretos. `orden-ms` conserv
 
 ```mermaid
 classDiagram
+    class SecurityConfig {
+        +securityFilterChain(HttpSecurity) SecurityFilterChain
+        +jwtAuthenticationConverter() Converter
+    }
+
+    class SecurityFilterChain {
+        +valida JWT
+        +valida roles por endpoint
+    }
+
+    class JwtRoleConverter {
+        +convert(Jwt) Collection~GrantedAuthority~
+    }
+
     class ClienteController {
         +crearCliente(CrearClienteRequest) ClienteResponse
         +buscarPorDocumento(String) ClienteResponse
@@ -253,6 +267,9 @@ classDiagram
         -Boolean activo
     }
 
+    SecurityConfig --> SecurityFilterChain
+    SecurityConfig --> JwtRoleConverter
+    SecurityFilterChain ..> ClienteController : protege
     ClienteController --> ClienteService
     ClienteService <|.. ClienteServiceImpl
     ClienteServiceImpl ..> ClienteRepository
@@ -265,6 +282,20 @@ classDiagram
 
 ```mermaid
 classDiagram
+    class SecurityConfig {
+        +securityFilterChain(HttpSecurity) SecurityFilterChain
+        +jwtAuthenticationConverter() Converter
+    }
+
+    class SecurityFilterChain {
+        +valida JWT
+        +valida roles por endpoint
+    }
+
+    class JwtRoleConverter {
+        +convert(Jwt) Collection~GrantedAuthority~
+    }
+
     class OrdenController {
         +crearOrden(CrearOrdenRequest) OrdenResponse
         +buscarPorId(Long) OrdenResponse
@@ -309,6 +340,9 @@ classDiagram
         -EstadoOrden estado
     }
 
+    SecurityConfig --> SecurityFilterChain
+    SecurityConfig --> JwtRoleConverter
+    SecurityFilterChain ..> OrdenController : protege
     OrdenController --> OrdenService
     OrdenService <|.. OrdenServiceImpl
     OrdenServiceImpl ..> ClienteClient
@@ -359,6 +393,22 @@ classDiagram
         +tieneSesionActiva() boolean
     }
 
+    class AuthGuard {
+        +canActivate() boolean
+    }
+
+    class AuthApiService {
+        +login(LoginRequest) Observable~AuthResponse~
+        +refreshToken() Observable~AuthResponse~
+        +logout() void
+    }
+
+    class TokenStorageService {
+        +guardarToken(String) void
+        +obtenerToken() String
+        +limpiarSesion() void
+    }
+
     class AuthInterceptor {
         +intercept(req, next) Observable~HttpEvent~
     }
@@ -368,10 +418,16 @@ classDiagram
     }
 
     class GatewayApi {
+        +/api/auth/**
         +/api/ordenes/**
         +/api/catalogo/**
     }
 
+    AuthGuard --> ClienteSessionService
+    AuthGuard --> TokenStorageService
+    AuthApiService --> GatewayApi
+    AuthApiService --> TokenStorageService
+    AuthInterceptor --> TokenStorageService
     OrdenPageComponent --> OrdenFormComponent
     OrdenPageComponent --> OrdenDetalleComponent
     OrdenPageComponent --> OrdenApiService
@@ -391,6 +447,26 @@ Angular se muestra aparte porque vive en otro proyecto/contenedor. Este diagrama
 
 ```mermaid
 classDiagram
+    class SecurityConfig {
+        +securityFilterChain(HttpSecurity) SecurityFilterChain
+        +jwtAuthenticationConverter() Converter
+    }
+
+    class SecurityFilterChain {
+        +valida JWT
+        +valida roles por endpoint
+    }
+
+    class JwtRoleConverter {
+        +convert(Jwt) Collection~GrantedAuthority~
+    }
+
+    class PagoController {
+        +buscarPorOrden(Long) PagoResponse
+        +validarPago(Long) PagoResponse
+        +rechazarPago(Long, String) PagoResponse
+    }
+
     class OrdenCreadaConsumer {
         +consumir(OrdenCreadaEvent) void
     }
@@ -437,6 +513,10 @@ classDiagram
         -String codigoOperacion
     }
 
+    SecurityConfig --> SecurityFilterChain
+    SecurityConfig --> JwtRoleConverter
+    SecurityFilterChain ..> PagoController : protege
+    PagoController --> PagoService
     OrdenCreadaConsumer --> PagoService
     PagoService <|.. PagoServiceImpl
     PagoServiceImpl ..> PagoRepository
@@ -446,7 +526,7 @@ classDiagram
     PagoRepository --> Pago
 ```
 
-Estos ejemplos de codigo muestran el estilo esperado dentro de cada microservicio: el controller depende del contrato `Service`, la clase `Impl` encapsula la orquestacion interna y desde alli se usan repositories, mappers, clients Feign y producers/consumers Kafka cuando correspondan.
+Estos ejemplos de codigo muestran el estilo esperado dentro de cada microservicio: el acceso HTTP se valida antes del controller con `SecurityConfig`, `SecurityFilterChain` y conversion de roles JWT; el controller depende del contrato `Service`; la clase `Impl` encapsula la orquestacion interna y desde alli se usan repositories, mappers, clients Feign y producers/consumers Kafka cuando correspondan. En consumidores Kafka, la autorizacion no entra por endpoint HTTP, pero el servicio igual conserva trazabilidad y validaciones de negocio.
 
 ### C4: Despliegue por Ambientes
 
