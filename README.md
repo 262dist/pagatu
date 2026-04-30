@@ -255,9 +255,9 @@ classDiagram
 
     ClienteController --> ClienteService
     ClienteService <|.. ClienteServiceImpl
-    ClienteServiceImpl --> ClienteRepository
-    ClienteServiceImpl --> UbigeoClient
-    ClienteServiceImpl --> ClienteMapper
+    ClienteServiceImpl ..> ClienteRepository
+    ClienteServiceImpl ..> UbigeoClient
+    ClienteServiceImpl ..> ClienteMapper
     ClienteRepository --> Cliente
 ```
 
@@ -311,10 +311,10 @@ classDiagram
 
     OrdenController --> OrdenService
     OrdenService <|.. OrdenServiceImpl
-    OrdenServiceImpl --> ClienteClient
-    OrdenServiceImpl --> CatalogoClient
-    OrdenServiceImpl --> OrdenRepository
-    OrdenServiceImpl --> OrdenEventProducer
+    OrdenServiceImpl ..> ClienteClient
+    OrdenServiceImpl ..> CatalogoClient
+    OrdenServiceImpl ..> OrdenRepository
+    OrdenServiceImpl ..> OrdenEventProducer
     OrdenRepository --> Orden
 ```
 
@@ -372,14 +372,14 @@ classDiagram
 
     OrdenCreadaConsumer --> PagoService
     PagoService <|.. PagoServiceImpl
-    PagoServiceImpl --> PagoRepository
-    PagoServiceImpl --> PasarelaPagoClient
-    PagoServiceImpl --> PagoEventProducer
-    PagoServiceImpl --> PagoMapper
+    PagoServiceImpl ..> PagoRepository
+    PagoServiceImpl ..> PasarelaPagoClient
+    PagoServiceImpl ..> PagoEventProducer
+    PagoServiceImpl ..> PagoMapper
     PagoRepository --> Pago
 ```
 
-Estos ejemplos de codigo muestran el estilo esperado dentro de cada microservicio: controller, service, impl, repository, mapper, clients Feign cuando correspondan y producers/consumers Kafka cuando correspondan.
+Estos ejemplos de codigo muestran el estilo esperado dentro de cada microservicio: el controller depende del contrato `Service`, la clase `Impl` encapsula la orquestacion interna y desde alli se usan repositories, mappers, clients Feign y producers/consumers Kafka cuando correspondan.
 
 ### C4: Despliegue por Ambientes
 
