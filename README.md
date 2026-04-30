@@ -59,9 +59,21 @@ flowchart LR
 
 ```mermaid
 flowchart LR
+    gateway[Gateway] --> orden[orden-ms]
+    gateway --> pago[pago-ms]
+
     orden[orden-ms] -- publica orden.creada --> kafka[(Kafka)]
     kafka -- consume orden.creada --> pago[pago-ms]
     pago -- publica pago.validado --> kafka
+
+    config[Config Server] --> configrepo[(config-repo)]
+    orden -. config .-> config
+    pago -. config .-> config
+    gateway -. config .-> config
+
+    eureka[Eureka] -. registro .- orden
+    eureka -. registro .- pago
+    eureka -. registro .- gateway
 ```
 
 ### Diagrama 3: Release 1 Completo
