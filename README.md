@@ -546,15 +546,11 @@ Estos ejemplos de codigo muestran el estilo esperado dentro de cada microservici
 flowchart TB
     subgraph dev[DEV local]
         devjava[MS con Java 17 local]
-        devinfra[Infra compartida con Java 17 local]
         devmscompose[docker-compose-dev.yml del MS]
         devshared[Infra compartida: Config + Eureka + Gateway]
         devmessaging[Mensajeria compartida: Kafka local]
         devobs[Observabilidad compartida: Prometheus + Loki + Grafana]
         devmysql[(MySQL por MS en Docker)]
-        devinfra --> devshared
-        devinfra --> devmessaging
-        devinfra --> devobs
         devmscompose --> devmysql
         devjava --> devshared
         devjava --> devmessaging
