@@ -33,6 +33,30 @@ La comunicacion queda dividida por responsabilidad:
 - Prometheus recolecta metricas y Grafana las visualiza.
 - Angular consume el sistema siempre por Gateway.
 
+### Diagrama 1: Cliente y Ubigeo
+
+```mermaid
+flowchart LR
+    usuario[Usuario] --> angular[Angular App]
+    angular --> gateway[Gateway]
+
+    gateway --> cliente[cliente-ms]
+    gateway --> ubigeo[ubigeo-ms]
+
+    cliente -- Feign + Circuit Breaker --> ubigeo
+
+    config[Config Server] --> configrepo[(config-repo)]
+    cliente -. config .-> config
+    ubigeo -. config .-> config
+    gateway -. config .-> config
+
+    eureka[Eureka] -. registro .- cliente
+    eureka -. registro .- ubigeo
+    eureka -. registro .- gateway
+```
+
+### Diagrama 2: Release 1 Completo
+
 ```mermaid
 flowchart LR
     usuario[Usuario] --> angular[Angular App]
