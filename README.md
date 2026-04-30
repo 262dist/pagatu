@@ -67,13 +67,6 @@ flowchart LR
     eureka -. registro .- pago
     eureka -. registro .- gateway
 
-    prometheus[Prometheus] -. metrics .-> gateway
-    prometheus -. metrics .-> cliente
-    prometheus -. metrics .-> ubigeo
-    prometheus -. metrics .-> catalogo
-    prometheus -. metrics .-> orden
-    prometheus -. metrics .-> pago
-    grafana[Grafana] --> prometheus
 ```
 
 ## Ruta de Trabajo por Sesiones
