@@ -115,6 +115,10 @@ pagatu/
 |   |-- docker-compose.yml
 |   |-- k8s-local/
 |   `-- k8s/
+|-- platform/
+|   |-- kafka-compose.yml
+|   |-- observability-compose.yml
+|   `-- k8s-local/
 |-- auth-ms/
 |   |-- src/
 |   |-- pom.xml
@@ -255,13 +259,16 @@ Release 1 usa `auth-ms` para autenticacion y control de acceso inicial. Los endp
 El proyecto contempla:
 
 - `Dockerfile` por microservicio y componente de infraestructura.
-- `docker-compose.yml` en `infra/` para infraestructura compartida o escenarios integrados.
+- `docker-compose.yml` en `infra/` para Config Server, Eureka y Gateway.
+- `platform/kafka-compose.yml` y `platform/observability-compose.yml` para dependencias compartidas de laboratorio.
 - `docker-compose-dev.yml` por microservicio para levantar dependencias locales del MS, por ejemplo MySQL, mientras la aplicacion corre con Java local.
 - `docker-compose.yml` por microservicio para validar su imagen Docker de forma aislada con dependencias minimas.
 - `k8s-local/` para Minikube o Kubernetes local.
 - `k8s/` para nube o produccion real.
 
 El Gateway es la entrada externa; los microservicios no deben consumirse directamente por puertos publicos.
+
+En Minikube se permite levantar MySQL por microservicio y plataformas compartidas de laboratorio, como Kafka u observabilidad, para practicar despliegue completo. En nube real, MySQL debe ser una base administrada o externa, Kafka debe ser corporativo/administrado y observabilidad debe venir de una plataforma compartida o proveedor cloud.
 
 ## Alcance de Release 1
 

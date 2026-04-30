@@ -17,6 +17,10 @@ Este documento define un patron de organizacion para proyectos de microservicios
 |   |-- docker-compose.yml
 |   |-- k8s-local/
 |   `-- k8s/
+|-- platform/
+|   |-- kafka-compose.yml
+|   |-- observability-compose.yml
+|   `-- k8s-local/
 |-- <microservicio-a>/
 |   |-- src/
 |   |-- pom.xml
@@ -46,9 +50,11 @@ Este documento define un patron de organizacion para proyectos de microservicios
 ## Fundamento
 
 - `infra/` contiene infraestructura propia del sistema: Config Server, Eureka, Gateway, Docker Compose y manifiestos Kubernetes de infraestructura.
-- Kafka se trata como mensajeria compartida de plataforma; en local puede levantarse para el curso, pero no debe modelarse como un Kafka exclusivo por proyecto.
+- `platform/` contiene dependencias compartidas de laboratorio, como Kafka u observabilidad. No representa componentes exclusivos del proyecto.
+- Kafka se trata como mensajeria compartida de plataforma; en local puede levantarse para el curso, pero en nube debe ser administrado o provisto por una plataforma corporativa.
 - Observabilidad tambien se trata como plataforma compartida: Prometheus, Loki, Grafana u otros proveedores no deben modelarse como componentes exclusivos de cada microservicio.
-- `infra/docker-compose.yml` valida escenarios integrados de infraestructura y plataforma compartida.
+- `infra/docker-compose.yml` valida Config Server, Eureka y Gateway.
+- `platform/*.yml` levanta dependencias compartidas de laboratorio cuando el curso las necesite.
 - Cada microservicio tiene su propio `docker-compose-dev.yml` para levantar solo sus dependencias locales y su propio `docker-compose.yml` para validar la imagen del MS de forma aislada.
 - Los microservicios core viven directamente en la raiz para reducir anidamiento y facilitar el trabajo diario.
 - `config-repo/` vive dentro de `infra/<config>/` porque es la fuente local de configuracion que usa directamente el Config Server.
@@ -99,7 +105,7 @@ environment:
 
 ## Kubernetes de Infraestructura
 
-Para infraestructura se recomienda un bloque Kubernetes compartido, porque estos componentes forman la plataforma base del sistema.
+Para infraestructura se recomienda un bloque Kubernetes compartido, porque estos componentes forman la base propia del sistema: Config Server, Eureka y Gateway. Kafka y observabilidad no van aqui, porque son plataforma compartida.
 
 ```text
 infra/
@@ -113,28 +119,37 @@ infra/
 |   |   |-- 01-configmap.yml
 |   |   |-- 02-deployment.yml
 |   |   `-- 03-service.yml
-|   |-- gateway/
-|   |   |-- 01-configmap.yml
-|   |   |-- 02-deployment.yml
-|   |   `-- 03-service.yml
-|   |-- messaging/
-|       |-- 01-zookeeper.yml
-|       |-- 02-kafka.yml
-|       `-- 03-kafka-ui.yml
-|   `-- observability/
-|       |-- 01-prometheus.yml
-|       |-- 02-loki.yml
-|       `-- 03-grafana.yml
+|   `-- gateway/
+|       |-- 01-configmap.yml
+|       |-- 02-deployment.yml
+|       `-- 03-service.yml
 `-- k8s/
     |-- 00-namespace.yml
     |-- config/
     |-- eureka/
-    |-- gateway/
-    |-- messaging/
-    `-- observability/
+    `-- gateway/
 ```
 
-En `infra/k8s-local/` se puede incluir mensajeria y observabilidad para el entorno local del curso. En `infra/k8s/`, para nube real, Kafka y observabilidad deben tratarse como servicios administrados, proveedores externos o plataformas compartidas operadas por separado, por ejemplo Strimzi, Grafana Cloud, CloudWatch, Azure Monitor o equivalentes.
+En `infra/k8s-local/` se levantan solo los componentes propios del sistema. En `infra/k8s/`, para nube real, se mantienen los manifiestos de Config Server, Eureka y Gateway si la empresa decide operarlos en Kubernetes; Kafka, bases de datos y observabilidad deben tratarse como servicios administrados, proveedores externos o plataformas compartidas operadas por separado.
+
+## Kubernetes de Plataforma Local
+
+Para el curso o laboratorio se puede tener un bloque separado para dependencias compartidas. Esto evita dar a entender que cada proyecto de la empresa trae su propio Kafka o su propio stack de observabilidad.
+
+```text
+platform/
+`-- k8s-local/
+    |-- messaging/
+    |   |-- 01-zookeeper.yml
+    |   |-- 02-kafka.yml
+    |   `-- 03-kafka-ui.yml
+    `-- observability/
+        |-- 01-prometheus.yml
+        |-- 02-loki.yml
+        `-- 03-grafana.yml
+```
+
+No se recomienda crear `platform/k8s/` para produccion real dentro de este repositorio, salvo que el curso quiera simular una plataforma completa. En una empresa, Kafka y observabilidad suelen administrarse con otro ciclo de vida, otro repositorio o servicios cloud.
 
 ## Microservicio Core
 
@@ -196,12 +211,13 @@ Para Kubernetes local:
 `-- k8s-local/
     |-- 01-configmap.yml
     |-- 02-secret.yml
-    |-- 03-mysql.yml
-    |-- 04-deployment.yml
-    `-- 05-service.yml
+    |-- 03-mysql-statefulset.yml
+    |-- 04-mysql-service.yml
+    |-- 05-deployment.yml
+    `-- 06-service.yml
 ```
 
-`k8s-local` incluye MySQL porque busca levantar el microservicio completo en Minikube o un cluster local.
+`k8s-local` incluye MySQL porque busca levantar el microservicio completo en Minikube o un cluster local. Para laboratorio se puede compactar MySQL en un solo `03-mysql.yml`, pero el nombre `statefulset` deja claro que la base de datos es estado, no una aplicacion stateless.
 
 Para Kubernetes en nube o produccion real:
 
@@ -211,16 +227,18 @@ Para Kubernetes en nube o produccion real:
     |-- 01-configmap.yml
     |-- 02-secret.yml
     |-- 03-deployment.yml
-    `-- 04-service.yml
+    |-- 04-service.yml
+    `-- 05-hpa.yml
 ```
 
-`k8s` no incluye MySQL del microservicio como pod propio. En produccion, la base de datos debe ser administrada o externa al ciclo de vida del microservicio.
+`k8s` no incluye MySQL del microservicio como pod propio. En produccion, la base de datos debe ser administrada o externa al ciclo de vida del microservicio. El `Secret` debe guardar referencias o credenciales hacia esa base administrada, no crear la base dentro del cluster.
 
 ## Regla Practica
 
 ```text
-infra/k8s-local/       -> plataforma completa para Minikube
-infra/k8s/             -> plataforma para nube o produccion
+infra/k8s-local/       -> infraestructura propia para Minikube
+infra/k8s/             -> infraestructura propia para nube o produccion
+platform/k8s-local/    -> Kafka/observabilidad solo para laboratorio
 <ms>/k8s-local/        -> despliegue local del MS con dependencias
 <ms>/k8s/              -> despliegue productivo del MS
 ```
