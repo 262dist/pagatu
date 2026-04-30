@@ -206,6 +206,61 @@ flowchart LR
 
 Este nivel baja el zoom dentro de dos contenedores concretos. `orden-ms` conserva la decision sincrona por Feign para validar cliente y catalogo antes de crear la orden. `pago-ms` reacciona por Kafka a `orden.creada`, encapsula la pasarela externa y publica el resultado `pago.validado`.
 
+### C4 Nivel 4: Codigo - Ejemplo en cliente-ms
+
+```mermaid
+classDiagram
+    class ClienteController {
+        +crearCliente(CrearClienteRequest) ClienteResponse
+        +buscarPorDocumento(String) ClienteResponse
+        +validarCliente(Long) ClienteValidadoResponse
+    }
+
+    class ClienteService {
+        +crearCliente(CrearClienteRequest) ClienteResponse
+        +buscarPorDocumento(String) ClienteResponse
+        +validarCliente(Long) ClienteValidadoResponse
+    }
+
+    class ClienteServiceImpl {
+        -ClienteRepository clienteRepository
+        -UbigeoClient ubigeoClient
+        -ClienteMapper clienteMapper
+        +crearCliente(CrearClienteRequest) ClienteResponse
+    }
+
+    class UbigeoClient {
+        +buscarDistrito(String) UbigeoResponse
+    }
+
+    class ClienteRepository {
+        +save(Cliente) Cliente
+        +findByDocumento(String) Optional~Cliente~
+        +existsById(Long) boolean
+    }
+
+    class ClienteMapper {
+        +toEntity(CrearClienteRequest) Cliente
+        +toResponse(Cliente) ClienteResponse
+    }
+
+    class Cliente {
+        -Long id
+        -String documento
+        -String nombres
+        -String apellidos
+        -String ubigeoNacimiento
+        -Boolean activo
+    }
+
+    ClienteController --> ClienteService
+    ClienteService <|.. ClienteServiceImpl
+    ClienteServiceImpl --> ClienteRepository
+    ClienteServiceImpl --> UbigeoClient
+    ClienteServiceImpl --> ClienteMapper
+    ClienteRepository --> Cliente
+```
+
 ### C4 Nivel 4: Codigo - Ejemplo en orden-ms
 
 ```mermaid
@@ -264,6 +319,67 @@ classDiagram
 ```
 
 Este nivel se usa solo como ejemplo didactico. En C4, el nivel de codigo no deberia convertirse en un diagrama de todas las clases del proyecto; sirve para explicar una parte puntual cuando aporta claridad.
+
+### C4 Nivel 4: Codigo - Ejemplo en pago-ms
+
+```mermaid
+classDiagram
+    class OrdenCreadaConsumer {
+        +consumir(OrdenCreadaEvent) void
+    }
+
+    class PagoService {
+        +registrarDesdeOrden(OrdenCreadaEvent) PagoResponse
+        +validarPago(Long) PagoResponse
+        +rechazarPago(Long, String) PagoResponse
+    }
+
+    class PagoServiceImpl {
+        -PagoRepository pagoRepository
+        -PasarelaPagoClient pasarelaPagoClient
+        -PagoEventProducer pagoEventProducer
+        -PagoMapper pagoMapper
+        +registrarDesdeOrden(OrdenCreadaEvent) PagoResponse
+    }
+
+    class PasarelaPagoClient {
+        +autorizar(Pago) RespuestaPasarela
+        +capturar(String) RespuestaPasarela
+    }
+
+    class PagoEventProducer {
+        +publicarPagoValidado(PagoValidadoEvent) void
+        +publicarPagoRechazado(PagoRechazadoEvent) void
+    }
+
+    class PagoRepository {
+        +save(Pago) Pago
+        +findByOrdenId(Long) Optional~Pago~
+        +findById(Long) Optional~Pago~
+    }
+
+    class PagoMapper {
+        +toResponse(Pago) PagoResponse
+    }
+
+    class Pago {
+        -Long id
+        -Long ordenId
+        -BigDecimal monto
+        -EstadoPago estado
+        -String codigoOperacion
+    }
+
+    OrdenCreadaConsumer --> PagoService
+    PagoService <|.. PagoServiceImpl
+    PagoServiceImpl --> PagoRepository
+    PagoServiceImpl --> PasarelaPagoClient
+    PagoServiceImpl --> PagoEventProducer
+    PagoServiceImpl --> PagoMapper
+    PagoRepository --> Pago
+```
+
+Estos ejemplos de codigo muestran el estilo esperado dentro de cada microservicio: controller, service, impl, repository, mapper, clients Feign cuando correspondan y producers/consumers Kafka cuando correspondan.
 
 ### C4: Despliegue por Ambientes
 
