@@ -548,28 +548,28 @@ flowchart TB
         devmessaging[Mensajeria compartida: Kafka local]
         devshared[Infra compartida: Config + Eureka + Gateway]
         devmscompose[docker-compose-dev.yml del MS]
-        devmysql[(MySQL por MS en Docker)]
         devjava[MS con Java 17 local]
+        devmysql[(MySQL por MS en Docker)]
         devobs[Observabilidad compartida: Prometheus + Loki + Grafana]
 
         devmessaging -. eventos segun MS .- devjava
-        devshared --> devjava
         devmscompose --> devmysql
+        devshared --> devjava
         devjava --> devmysql
         devjava -. metrics/logs .-> devobs
     end
 
     subgraph compose[PROD local - Docker Compose]
-        subgraph composeinfraBox[Infra compartida]
-            infracompose[infra/docker-compose.yml]
-            composeinfra[Config + Eureka + Gateway]
-            infracompose --> composeinfra
-        end
-
         subgraph messagingBox[Mensajeria compartida]
             kafkacompose[platform/kafka-compose.yml]
             composekafka[(Kafka)]
             kafkacompose --> composekafka
+        end
+
+        subgraph composeinfraBox[Infra compartida]
+            infracompose[infra/docker-compose.yml]
+            composeinfra[Config + Eureka + Gateway]
+            infracompose --> composeinfra
         end
 
         subgraph observabilityBox[Observabilidad compartida]
