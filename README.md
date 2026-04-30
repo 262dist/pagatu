@@ -545,17 +545,18 @@ Estos ejemplos de codigo muestran el estilo esperado dentro de cada microservici
 ```mermaid
 flowchart TB
     subgraph dev[DEV local]
-        devjava[MS con Java 17 local]
-        devmscompose[docker-compose-dev.yml del MS]
-        devshared[Infra compartida: Config + Eureka + Gateway]
         devmessaging[Mensajeria compartida: Kafka local]
-        devobs[Observabilidad compartida: Prometheus + Loki + Grafana]
+        devshared[Infra compartida: Config + Eureka + Gateway]
+        devmscompose[docker-compose-dev.yml del MS]
         devmysql[(MySQL por MS en Docker)]
+        devjava[MS con Java 17 local]
+        devobs[Observabilidad compartida: Prometheus + Loki + Grafana]
+
+        devmessaging -. eventos segun MS .- devjava
+        devshared --> devjava
         devmscompose --> devmysql
-        devjava --> devshared
-        devjava --> devmessaging
-        devjava --> devobs
         devjava --> devmysql
+        devjava -. metrics/logs .-> devobs
     end
 
     subgraph compose[PROD local - Docker Compose]
