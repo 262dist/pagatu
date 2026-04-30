@@ -33,6 +33,27 @@ La comunicacion queda dividida por responsabilidad:
 - Prometheus recolecta metricas, Loki centraliza logs y Grafana visualiza ambos.
 - Angular consume el sistema siempre por Gateway.
 
+### Diagrama 0: C4 Nivel 1 - Contexto
+
+```mermaid
+flowchart LR
+    usuario[Usuario institucional]
+    admin[Administrador]
+    angular[Angular App]
+    pagatu[Pagatu Platform]
+    keycloak[Keycloak opcional]
+    correo[Servicios externos opcionales]
+
+    usuario --> angular
+    admin --> angular
+    angular --> pagatu
+    angular -. login opcional .-> keycloak
+    pagatu -. valida token opcional .-> keycloak
+    pagatu -. notificaciones futuras .-> correo
+```
+
+Este nivel muestra el sistema como una caja principal: Angular es la interfaz de usuario y Pagatu Platform agrupa Gateway, microservicios, Kafka, configuracion, registro y observabilidad.
+
 ### Diagrama 1: Cliente y Ubigeo
 
 ```mermaid
@@ -129,6 +150,51 @@ flowchart LR
     grafana[Grafana] --> prometheus
     grafana --> loki
 ```
+
+### Diagrama 4: Ambientes de Ejecucion
+
+```mermaid
+flowchart TB
+    subgraph dev[DEV local]
+        devjava[Java 17 local]
+        devmysql[(MySQL en Docker)]
+        devjava --> devmysql
+    end
+
+    subgraph compose[PROD local - Docker Compose]
+        composems[MS como contenedores Java 17]
+        composeinfra[Config + Eureka + Gateway + Kafka]
+        composedb[(MySQL por MS)]
+        composems --> composeinfra
+        composems --> composedb
+    end
+
+    subgraph k8slocal[Kubernetes local - Minikube]
+        k8sdeploy[Deployments de MS]
+        k8ssvc[Services ClusterIP]
+        k8sdb[(MySQL en cluster local)]
+        k8sing[Gateway o Ingress local]
+        k8sing --> k8ssvc
+        k8ssvc --> k8sdeploy
+        k8sdeploy --> k8sdb
+    end
+
+    subgraph cloud[Nube / Produccion real]
+        cloudk8s[Kubernetes administrado]
+        registry[Container Registry]
+        manageddb[(Base de datos administrada)]
+        managedkafka[(Kafka administrado o Strimzi)]
+        ingress[Ingress / Load Balancer]
+        registry --> cloudk8s
+        ingress --> cloudk8s
+        cloudk8s --> manageddb
+        cloudk8s --> managedkafka
+    end
+
+    dev --> compose --> k8slocal --> cloud
+```
+
+En DEV local, los microservicios corren con Java 17 en la maquina del desarrollador y sus dependencias se levantan con Docker. En PROD local, tanto los MS como la infraestructura corren con Docker Compose. En Kubernetes local se usan manifiestos `k8s-local/`; en nube se usan imagenes desde registry, servicios administrados y manifiestos `k8s/`.
 
 ## Ruta de Trabajo por Sesiones
 
