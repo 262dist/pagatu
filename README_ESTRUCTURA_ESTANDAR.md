@@ -45,7 +45,9 @@ Este documento define un patron de organizacion para proyectos de microservicios
 
 ## Fundamento
 
-- `infra/` contiene la plataforma compartida: Config Server, Eureka, Gateway, Kafka, Docker Compose y manifiestos Kubernetes de infraestructura.
+- `infra/` contiene infraestructura propia del sistema: Config Server, Eureka, Gateway, Docker Compose y manifiestos Kubernetes de infraestructura.
+- Kafka se trata como mensajeria compartida de plataforma; en local puede levantarse para el curso, pero no debe modelarse como un Kafka exclusivo por proyecto.
+- Observabilidad tambien se trata como plataforma compartida: Prometheus, Loki, Grafana u otros proveedores no deben modelarse como componentes exclusivos de cada microservicio.
 - `infra/docker-compose.yml` valida escenarios integrados de infraestructura y plataforma compartida.
 - Cada microservicio tiene su propio `docker-compose-dev.yml` para levantar solo sus dependencias locales y su propio `docker-compose.yml` para validar la imagen del MS de forma aislada.
 - Los microservicios core viven directamente en la raiz para reducir anidamiento y facilitar el trabajo diario.
@@ -115,19 +117,24 @@ infra/
 |   |   |-- 01-configmap.yml
 |   |   |-- 02-deployment.yml
 |   |   `-- 03-service.yml
-|   `-- kafka/
+|   |-- messaging/
 |       |-- 01-zookeeper.yml
 |       |-- 02-kafka.yml
 |       `-- 03-kafka-ui.yml
+|   `-- observability/
+|       |-- 01-prometheus.yml
+|       |-- 02-loki.yml
+|       `-- 03-grafana.yml
 `-- k8s/
     |-- 00-namespace.yml
     |-- config/
     |-- eureka/
     |-- gateway/
-    `-- kafka/
+    |-- messaging/
+    `-- observability/
 ```
 
-En `infra/k8s-local/` se pueden incluir Kafka, Zookeeper y Kafka UI dentro del cluster local. En `infra/k8s/`, para nube real, Kafka puede reemplazarse por un servicio administrado o por una instalacion especializada como Strimzi.
+En `infra/k8s-local/` se puede incluir mensajeria y observabilidad para el entorno local del curso. En `infra/k8s/`, para nube real, Kafka y observabilidad deben tratarse como servicios administrados, proveedores externos o plataformas compartidas operadas por separado, por ejemplo Strimzi, Grafana Cloud, CloudWatch, Azure Monitor o equivalentes.
 
 ## Microservicio Core
 

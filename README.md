@@ -42,8 +42,7 @@ flowchart LR
     admin["Person: Administrador"]
     angular["Software System: Angular App"]
     pagatu["Software System: Pagatu Platform"]
-    auth["Container: auth-ms"]
-    keycloak["External System: Keycloak opcional futuro"]
+    auth["Container: auth-ms (luego Keycloak)"]
     correo["External System: Servicios externos opcionales"]
 
     usuario -->|usa| angular
@@ -51,11 +50,10 @@ flowchart LR
     angular -->|consume API| pagatu
     angular -->|autenticacion| auth
     auth -->|autoriza acceso| pagatu
-    auth -. integracion futura .-> keycloak
     pagatu -. notificaciones futuras .-> correo
 ```
 
-Este nivel muestra el sistema como una caja principal: Angular es la interfaz de usuario y Pagatu Platform agrupa Gateway, microservicios, Kafka, configuracion, registro y observabilidad.
+Este nivel muestra el sistema como una caja principal: Angular es la interfaz de usuario y Pagatu Platform agrupa Gateway, microservicios, configuracion, registro y observabilidad. Kafka se trata como plataforma compartida de mensajeria, no como componente exclusivo del proyecto.
 
 ### Diagrama 1: Cliente y Ubigeo
 
@@ -166,7 +164,7 @@ flowchart TB
     subgraph dev[DEV local]
         devjava[MS con Java 17 local]
         devinfra[Infra con Java 17 local]
-        devmscompose[<ms>/docker-compose-dev.yml]
+        devmscompose[docker-compose-dev.yml del MS]
         devshared[Config + Eureka + Gateway]
         devmysql[(MySQL por MS en Docker)]
         devinfra --> devshared
@@ -176,15 +174,35 @@ flowchart TB
     end
 
     subgraph compose[PROD local - Docker Compose]
-        infracompose[infra/docker-compose.yml]
-        mscompose[<ms>/docker-compose.yml]
-        composeinfra[Config + Eureka + Gateway + Kafka]
-        composems[MS como contenedores Java 17]
-        composedb[(MySQL por MS)]
-        infracompose --> composeinfra
-        mscompose --> composems
-        mscompose --> composedb
+        subgraph composeinfraBox[Infra compartida]
+            infracompose[infra/docker-compose.yml]
+            composeinfra[Config + Eureka + Gateway]
+            infracompose --> composeinfra
+        end
+
+        subgraph messagingBox[Mensajeria compartida]
+            kafkacompose[platform/kafka-compose.yml]
+            composekafka[(Kafka)]
+            kafkacompose --> composekafka
+        end
+
+        subgraph observabilityBox[Observabilidad compartida]
+            obscompose[platform/observability-compose.yml]
+            obsstack[Prometheus + Loki + Grafana]
+            obscompose --> obsstack
+        end
+
+        subgraph composemsBox[Microservicio]
+            mscompose[docker-compose.yml del MS]
+            composems[MS como contenedor Java 17]
+            composedb[(MySQL del MS)]
+            mscompose --> composems
+            mscompose --> composedb
+        end
+
         composems --> composeinfra
+        composems --> composekafka
+        composems --> obsstack
     end
 
     subgraph k8slocal[Kubernetes local - Minikube]
@@ -212,7 +230,7 @@ flowchart TB
     dev --> compose --> k8slocal --> cloud
 ```
 
-En DEV local, los microservicios y la infraestructura (`config`, `eureka`, `gateway`) corren con Java 17 en la maquina del desarrollador. Docker se usa para dependencias propias de cada MS, como MySQL, mediante `<ms>/docker-compose-dev.yml`. En PROD local, la infraestructura compartida se levanta con `infra/docker-compose.yml`, mientras cada microservicio valida su imagen con su propio `<ms>/docker-compose.yml`. En Kubernetes local se usan manifiestos `k8s-local/`; en nube se usan imagenes desde registry, servicios administrados y manifiestos `k8s/`.
+En DEV local, los microservicios y la infraestructura (`config`, `eureka`, `gateway`) corren con Java 17 en la maquina del desarrollador. Docker se usa para dependencias propias de cada MS, como MySQL, mediante `<ms>/docker-compose-dev.yml`. En PROD local, la infraestructura compartida se levanta con `infra/docker-compose.yml`; Kafka y el stack de observabilidad se tratan como plataformas compartidas; cada microservicio valida su imagen con su propio `<ms>/docker-compose.yml`. En Kubernetes local se usan manifiestos `k8s-local/`; en nube se usan imagenes desde registry, servicios administrados y manifiestos `k8s/`.
 
 ## Ruta de Trabajo por Sesiones
 
