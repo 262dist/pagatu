@@ -39,23 +39,20 @@ La comunicacion queda dividida por responsabilidad:
 
 ```mermaid
 flowchart LR
-    usuario["Person: Usuario institucional"]
-    admin["Person: Administrador"]
     auth["Software System: Auth institucional (auth-ms, luego Keycloak)"]
+    usuario["Person: Usuario institucional"]
     pagatu["Software System: Pagatu Platform"]
     kafkaCorp["External System: Kafka empresarial compartido"]
     pasarela["External System: Pasarela de pago (Niubiz/Culqi)"]
 
     usuario -->|se identifica| auth
-    admin -->|se identifica| auth
     usuario -->|usa| pagatu
-    admin -->|administra| pagatu
-    pagatu -->|valida identidad y roles| auth
+    auth -->|entrega identidad y roles| pagatu
     pagatu -->|publica/consume eventos| kafkaCorp
     pagatu -->|procesa pago| pasarela
 ```
 
-Este nivel muestra Pagatu como una caja principal frente a sus actores y sistemas institucionales compartidos. `auth-ms` aparece aqui porque representa la identidad institucional transversal: el mismo punto de autenticacion puede servir a Pagatu y tambien a otros modulos de la empresa, como planes de estudios, carga academica, matricula, contabilidad o LMS. En Release 1 se implementa como `auth-ms`; luego puede evolucionar a Keycloak sin cambiar la idea arquitectonica. Los detalles internos de Pagatu, como Angular, Gateway, microservicios, Config Server y Eureka, aparecen recien en el nivel de contenedores. Kafka se trata como plataforma empresarial compartida, no como componente exclusivo del proyecto.
+Este nivel muestra Pagatu como una caja principal frente a su actor institucional y sistemas compartidos. `auth-ms` aparece aqui porque representa la identidad institucional transversal: el mismo punto de autenticacion puede servir a Pagatu y tambien a otros modulos de la empresa, como planes de estudios, carga academica, matricula, contabilidad o LMS. En Release 1 se implementa como `auth-ms`; luego puede evolucionar a Keycloak sin cambiar la idea arquitectonica. Los detalles internos de Pagatu, como Angular, Gateway, microservicios, Config Server y Eureka, aparecen recien en el nivel de contenedores. Kafka se trata como plataforma empresarial compartida, no como componente exclusivo del proyecto.
 
 ### C4 Nivel 2: Contenedores de Release 1
 
