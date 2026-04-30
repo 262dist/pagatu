@@ -20,7 +20,7 @@ En Release 1, el flujo principal se apoya en estos servicios:
 - `ubigeo-ms`: provee datos geograficos por pais para completar informacion del cliente.
 - `catalogo-ms`: gestiona productos, conceptos de pago, familias, categorias, tipos y precios.
 - `orden-ms`: orquesta la creacion de ordenes; valida cliente y catalogo por Feign.
-- `pago-ms`: procesa eventos de orden creada y publica resultados de pago.
+- `pago-ms`: procesa eventos de orden creada, integra una pasarela externa como Niubiz o Culqi y publica resultados de pago.
 - `auth-ms`: gestiona autenticacion y control de acceso inicial sin depender aun de Keycloak.
 
 La comunicacion queda dividida por responsabilidad:
@@ -31,10 +31,11 @@ La comunicacion queda dividida por responsabilidad:
 - Feign se usa cuando un MS necesita respuesta inmediata.
 - Circuit Breaker protege llamadas Feign ante fallos o latencia.
 - Kafka se usa cuando algo ya ocurrio y otros servicios deben reaccionar.
+- `pago-ms` encapsula la integracion con proveedores externos de pago para no acoplar el resto del sistema a Niubiz, Culqi u otro proveedor.
 - Prometheus recolecta metricas, Loki centraliza logs y Grafana visualiza ambos.
 - Angular consume el sistema siempre por Gateway.
 
-### Diagrama 0: C4 Nivel 1 - Contexto
+### C4 Nivel 1: Contexto del Sistema
 
 ```mermaid
 flowchart LR
@@ -44,61 +45,20 @@ flowchart LR
     pagatu["Software System: Pagatu Platform"]
     auth["Container: auth-ms (luego Keycloak)"]
     correo["External System: Servicios externos opcionales"]
+    pasarela["External System: Pasarela de pago (Niubiz/Culqi)"]
 
     usuario -->|usa| angular
     admin -->|administra| angular
     angular -->|consume API| pagatu
     angular -->|autenticacion| auth
     auth -->|autoriza acceso| pagatu
+    pagatu -. procesa pago .-> pasarela
     pagatu -. notificaciones futuras .-> correo
 ```
 
 Este nivel muestra el sistema como una caja principal: Angular es la interfaz de usuario y Pagatu Platform agrupa Gateway, microservicios, configuracion, registro y observabilidad. Kafka se trata como plataforma compartida de mensajeria, no como componente exclusivo del proyecto.
 
-### Diagrama 1: Cliente y Ubigeo
-
-```mermaid
-flowchart LR
-    usuario[Usuario] --> angular[Angular App]
-    angular --> gateway[Gateway]
-
-    gateway --> cliente[cliente-ms]
-    gateway --> ubigeo[ubigeo-ms]
-
-    cliente -- Feign + Circuit Breaker --> ubigeo
-
-    config[Config Server] --> configrepo[(config-repo)]
-    cliente -. config .-> config
-    ubigeo -. config .-> config
-    gateway -. config .-> config
-
-    eureka[Eureka] -. registro .- cliente
-    eureka -. registro .- ubigeo
-    eureka -. registro .- gateway
-```
-
-### Diagrama 2: Orden y Pago
-
-```mermaid
-flowchart LR
-    gateway[Gateway] --> orden[orden-ms]
-    gateway --> pago[pago-ms]
-
-    orden[orden-ms] -- publica orden.creada --> kafka[(Kafka)]
-    kafka -- consume orden.creada --> pago[pago-ms]
-    pago -- publica pago.validado --> kafka
-
-    config[Config Server] --> configrepo[(config-repo)]
-    orden -. config .-> config
-    pago -. config .-> config
-    gateway -. config .-> config
-
-    eureka[Eureka] -. registro .- orden
-    eureka -. registro .- pago
-    eureka -. registro .- gateway
-```
-
-### Diagrama 3: Release 1 Completo
+### C4 Nivel 2: Contenedores de Release 1
 
 ```mermaid
 flowchart LR
@@ -119,6 +79,7 @@ flowchart LR
     orden -- publica orden.creada --> kafka[(Kafka)]
     kafka -- consume orden.creada --> pago
     pago -- publica pago.validado --> kafka
+    pago -- autoriza/captura pago --> pasarela[Pasarela externa Niubiz/Culqi]
 
     config[Config Server] --> configrepo[(config-repo)]
     auth -. config .-> config
@@ -157,7 +118,51 @@ flowchart LR
     grafana --> loki
 ```
 
-### Diagrama 4: Ambientes de Ejecucion
+### C4 Nivel 3: Componentes - Cliente y Ubigeo
+
+```mermaid
+flowchart LR
+    usuario[Usuario] --> angular[Angular App]
+    angular --> gateway[Gateway]
+
+    gateway --> cliente[cliente-ms]
+    gateway --> ubigeo[ubigeo-ms]
+
+    cliente -- Feign + Circuit Breaker --> ubigeo
+
+    config[Config Server] --> configrepo[(config-repo)]
+    cliente -. config .-> config
+    ubigeo -. config .-> config
+    gateway -. config .-> config
+
+    eureka[Eureka] -. registro .- cliente
+    eureka -. registro .- ubigeo
+    eureka -. registro .- gateway
+```
+
+### C4 Nivel 3: Componentes - Orden y Pago
+
+```mermaid
+flowchart LR
+    gateway[Gateway] --> orden[orden-ms]
+    gateway --> pago[pago-ms]
+
+    orden[orden-ms] -- publica orden.creada --> kafka[(Kafka)]
+    kafka -- consume orden.creada --> pago[pago-ms]
+    pago -- autoriza/captura pago --> pasarela[Pasarela externa Niubiz/Culqi]
+    pago -- publica pago.validado --> kafka
+
+    config[Config Server] --> configrepo[(config-repo)]
+    orden -. config .-> config
+    pago -. config .-> config
+    gateway -. config .-> config
+
+    eureka[Eureka] -. registro .- orden
+    eureka -. registro .- pago
+    eureka -. registro .- gateway
+```
+
+### C4: Despliegue por Ambientes
 
 ```mermaid
 flowchart TB

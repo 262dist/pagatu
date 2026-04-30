@@ -38,7 +38,7 @@ El proyecto se plantea en releases para mantener una evolucion ordenada. No todo
 | `pagatu-cliente-ms` | 1 | Gestiona clientes: alumno universitario, alumno colegio, apoderado y cliente externo. Permite CRUD, busqueda por documento y validacion de cliente. |
 | `pagatu-catalogo-ms` | 1 | Gestiona lo que se puede comprar o pagar: productos, conceptos de pago, familias, categorias, tipos, precios y activacion. |
 | `pagatu-orden-ms` | 1 | Es el nucleo del negocio. Crea ordenes, agrega items, calcula totales, consulta estados y lista ordenes por cliente. |
-| `pagatu-pago-ms` | 1 | Gestiona el proceso financiero: registra, valida o rechaza pagos. |
+| `pagatu-pago-ms` | 1 | Gestiona el proceso financiero: registra, valida o rechaza pagos e integra una pasarela externa como Niubiz o Culqi. |
 | `pagatu-notificacion-ms` | 2 | Envia notificaciones por eventos relevantes, como orden creada, pago validado o pago rechazado. |
 | `pagatu-contabilidad-ms` | 2 | Integra pagos validados con procesos contables, conciliacion y registros financieros internos. |
 | `pagatu-reportes-ms` | 2 | Expone reportes operativos, financieros y analiticos sobre clientes, ordenes, pagos y catalogo. |
@@ -52,7 +52,7 @@ El proyecto se plantea en releases para mantener una evolucion ordenada. No todo
 | `pagatu-cliente-ms` | Gestiona clientes: alumno universitario, alumno colegio, apoderado y cliente externo. Permite CRUD, busqueda por documento y validacion de cliente. | REST y Feign |
 | `pagatu-catalogo-ms` | Gestiona productos, conceptos de pago, familias, categorias, tipos, precios y activacion. | REST |
 | `pagatu-orden-ms` | Es el nucleo del negocio. Crea ordenes, agrega items, calcula totales, consulta estados y lista ordenes por cliente. | REST, Feign y Kafka |
-| `pagatu-pago-ms` | Gestiona el proceso financiero: registra, valida o rechaza pagos. | Kafka y REST |
+| `pagatu-pago-ms` | Gestiona el proceso financiero, consume eventos de orden, integra una pasarela externa como Niubiz o Culqi y publica resultados de pago. | Kafka, REST externo |
 
 ## Infraestructura
 
@@ -85,10 +85,11 @@ Usuario
   -> Feign: pagatu-catalogo-ms
   -> Kafka: orden.creada
   -> pagatu-pago-ms
+  -> Pasarela externa: Niubiz / Culqi
   -> Kafka: pago.validado
 ```
 
-`pagatu-orden-ms` consulta de forma sincrona a cliente y catalogo porque necesita respuestas inmediatas antes de crear una orden. `pagatu-cliente-ms` puede consultar a `pagatu-ubigeo-ms` para completar detalles de nacimiento, residencia o direccion. Si el cliente no es valido o el producto/concepto no existe, esta inactivo o no tiene precio valido, la orden no se crea. Una vez creada, publica el evento `orden.creada` para que `pagatu-pago-ms` continue el proceso de pago de forma asincrona.
+`pagatu-orden-ms` consulta de forma sincrona a cliente y catalogo porque necesita respuestas inmediatas antes de crear una orden. `pagatu-cliente-ms` puede consultar a `pagatu-ubigeo-ms` para completar detalles de nacimiento, residencia o direccion. Si el cliente no es valido o el producto/concepto no existe, esta inactivo o no tiene precio valido, la orden no se crea. Una vez creada, publica el evento `orden.creada` para que `pagatu-pago-ms` continue el proceso de pago de forma asincrona e integre una pasarela externa como Niubiz, Culqi u otro proveedor.
 
 ## Regla de Comunicacion
 
@@ -274,6 +275,7 @@ Release 1 incluye los 6 microservicios core necesarios para explicar y validar e
 - Validacion sincrona con Feign desde cliente hacia ubigeo, y desde orden hacia cliente y catalogo.
 - Publicacion de `orden.creada`.
 - Consumo de `orden.creada` desde pago.
+- Integracion de `pago-ms` con una pasarela externa de pagos como Niubiz o Culqi.
 - Publicacion de `pago.validado`.
 - Configuracion centralizada, Eureka, Gateway, seguridad con `auth-ms`, trazabilidad, Docker y Kubernetes.
 
