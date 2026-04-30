@@ -21,6 +21,7 @@ En Release 1, el flujo principal se apoya en estos servicios:
 - `catalogo-ms`: gestiona productos, conceptos de pago, familias, categorias, tipos y precios.
 - `orden-ms`: orquesta la creacion de ordenes; valida cliente y catalogo por Feign.
 - `pago-ms`: procesa eventos de orden creada y publica resultados de pago.
+- `auth-ms`: gestiona autenticacion y control de acceso inicial sin depender aun de Keycloak.
 
 La comunicacion queda dividida por responsabilidad:
 
@@ -41,14 +42,16 @@ flowchart LR
     admin[Administrador]
     angular[Angular App]
     pagatu[Pagatu Platform]
-    keycloak[Keycloak opcional]
+    auth[auth-ms]
+    keycloak[Keycloak opcional futuro]
     correo[Servicios externos opcionales]
 
     usuario --> angular
     admin --> angular
     angular --> pagatu
-    angular -. login opcional .-> keycloak
-    pagatu -. valida token opcional .-> keycloak
+    angular --> auth
+    auth --> pagatu
+    auth -. integracion futura .-> keycloak
     pagatu -. notificaciones futuras .-> correo
 ```
 
@@ -109,6 +112,7 @@ flowchart LR
     gateway --> catalogo[catalogo-ms]
     gateway --> orden[orden-ms]
     gateway --> pago[pago-ms]
+    gateway --> auth[auth-ms]
 
     cliente -- Feign + Circuit Breaker --> ubigeo
     orden -- Feign + Circuit Breaker --> cliente
@@ -119,6 +123,7 @@ flowchart LR
     pago -- publica pago.validado --> kafka
 
     config[Config Server] --> configrepo[(config-repo)]
+    auth -. config .-> config
     cliente -. config .-> config
     ubigeo -. config .-> config
     catalogo -. config .-> config
@@ -126,21 +131,24 @@ flowchart LR
     pago -. config .-> config
     gateway -. config .-> config
 
-    eureka[Eureka] -. registro .- cliente
+    eureka[Eureka] -. registro .- auth
+    eureka -. registro .- cliente
     eureka -. registro .- ubigeo
     eureka -. registro .- catalogo
     eureka -. registro .- orden
     eureka -. registro .- pago
     eureka -. registro .- gateway
 
-    prometheus[Prometheus] -. metrics .-> gateway
+    prometheus[Prometheus] -. metrics .-> auth
+    prometheus -. metrics .-> gateway
     prometheus -. metrics .-> cliente
     prometheus -. metrics .-> ubigeo
     prometheus -. metrics .-> catalogo
     prometheus -. metrics .-> orden
     prometheus -. metrics .-> pago
 
-    loki[Loki] -. logs .-> gateway
+    loki[Loki] -. logs .-> auth
+    loki -. logs .-> gateway
     loki -. logs .-> cliente
     loki -. logs .-> ubigeo
     loki -. logs .-> catalogo
@@ -206,7 +214,7 @@ En DEV local, los microservicios corren con Java 17 en la maquina del desarrolla
 | 4 | Implementar Feign + Circuit Breaker: `cliente-ms` consulta `ubigeo-ms`. Agregar timeouts, fallback, manejo de errores y propagacion de `X-Trace-ID`. | Crear `catalogo-ms` como servicio REST estable de productos, conceptos, familias, categorias, tipos y precios, con `docker-compose-dev.yml`, `Dockerfile`, Feign + Circuit Breaker listo para `orden-ms`. |
 | 5 | Incorporar observabilidad con Actuator, Prometheus, Loki y Grafana. Exponer health, metrics, logs y dashboards basicos para `gateway`, `cliente-ms`, `ubigeo-ms` y `catalogo-ms`. | Preparar contratos de orden, evento `orden.creada` y archivos Docker iniciales para `orden-ms` y `pago-ms`. |
 | 6 | Crear `orden-ms` y `pago-ms`. Implementar Event-Driven con Kafka: `orden-ms` valida cliente y catalogo por Feign, crea la orden, publica `orden.creada`; `pago-ms` consume `orden.creada` y publica `pago.validado`. Validar Kafka en Docker local. | Revisar idempotencia basica, manejo de eventos duplicados, trazabilidad en consumidores e imagenes Docker de ambos MS. |
-| 7 | Implementar control de acceso inicial sin Keycloak obligatorio: definir roles logicos, permisos por endpoint y reglas de autorizacion en Gateway y MS. Preparar `SecurityConfig` para evolucionar a JWT. | Dejar Keycloak como modulo opcional y documentar roles/claims esperados. |
+| 7 | Crear `auth-ms` e implementar control de acceso inicial sin Keycloak obligatorio: autenticacion basica/JWT propio, roles logicos, permisos por endpoint y reglas de autorizacion en Gateway y MS. Preparar `SecurityConfig` para evolucionar a Keycloak. | Dejar Keycloak como modulo opcional y documentar roles/claims esperados. |
 | 8 | Preparar `k8s-local/` y `k8s/` para infraestructura y microservicios, diferenciando Minikube de nube/produccion real. | Verificar nombres operativos `pagatu-*`, perfiles, variables, secrets/configmaps y tags de GitHub por sesion/release. |
 | 9 | Crear aplicacion Angular base para consumir Gateway: layout, rutas, servicios HTTP, interceptores, pantallas de clientes, catalogo y consulta de ordenes. | Preparar formularios para crear orden y visualizar estado de pago. |
 | 10 | Completar Angular: flujo de creacion de orden, visualizacion de pago, manejo de errores, trazabilidad con `X-Trace-ID` y build Docker del frontend. | Dejar preparado un modulo opcional de login con Keycloak. |
@@ -242,6 +250,7 @@ Release 1 construye el core inicial:
 Carpetas del repositorio:
 
 - `cliente-ms`
+- `auth-ms`
 - `catalogo-ms`
 - `ubigeo-ms`
 - `orden-ms`
@@ -253,6 +262,7 @@ Carpetas del repositorio:
 Artefactos operativos:
 
 - `pagatu-cliente-ms`
+- `pagatu-auth-ms`
 - `pagatu-catalogo-ms`
 - `pagatu-ubigeo-ms`
 - `pagatu-orden-ms`

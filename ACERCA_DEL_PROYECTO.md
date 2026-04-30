@@ -22,7 +22,8 @@ La propuesta usa una arquitectura por capas simple, no hexagonal, pensada para m
 - Flyway
 - Lombok
 - MapStruct
-- Keycloak como JWT Resource Server
+- Seguridad JWT inicial con `auth-ms`
+- Keycloak como modulo opcional futuro
 - Docker y Docker Compose
 - Kubernetes con manifiestos YAML
 
@@ -32,6 +33,7 @@ El proyecto se plantea en releases para mantener una evolucion ordenada. No todo
 
 | Microservicio | Release | Responsabilidad |
 |---|---:|---|
+| `pagatu-auth-ms` | 1 | Gestiona autenticacion y control de acceso inicial: usuarios, credenciales, roles logicos y emision/validacion de tokens propios. |
 | `pagatu-ubigeo-ms` | 1 | Gestiona ubicaciones geograficas por pais: pais, departamento/region, provincia, distrito y codigos territoriales. |
 | `pagatu-cliente-ms` | 1 | Gestiona clientes: alumno universitario, alumno colegio, apoderado y cliente externo. Permite CRUD, busqueda por documento y validacion de cliente. |
 | `pagatu-catalogo-ms` | 1 | Gestiona lo que se puede comprar o pagar: productos, conceptos de pago, familias, categorias, tipos, precios y activacion. |
@@ -45,6 +47,7 @@ El proyecto se plantea en releases para mantener una evolucion ordenada. No todo
 
 | Microservicio | Responsabilidad | Comunicacion |
 |---|---|---|
+| `pagatu-auth-ms` | Gestiona autenticacion inicial, roles y tokens propios sin depender aun de Keycloak. | REST |
 | `pagatu-ubigeo-ms` | Gestiona datos geograficos por pais para completar nacimiento, direccion o residencia del cliente. | REST |
 | `pagatu-cliente-ms` | Gestiona clientes: alumno universitario, alumno colegio, apoderado y cliente externo. Permite CRUD, busqueda por documento y validacion de cliente. | REST y Feign |
 | `pagatu-catalogo-ms` | Gestiona productos, conceptos de pago, familias, categorias, tipos, precios y activacion. | REST |
@@ -62,6 +65,7 @@ El proyecto se plantea en releases para mantener una evolucion ordenada. No todo
 Rutas principales del Gateway:
 
 ```text
+/api/auth/**
 /api/clientes/**
 /api/catalogo/**
 /api/ubigeo/**
@@ -74,6 +78,7 @@ Rutas principales del Gateway:
 ```text
 Usuario
   -> Gateway
+  -> pagatu-auth-ms
   -> pagatu-orden-ms
   -> Feign: pagatu-cliente-ms
   -> Feign interno: pagatu-cliente-ms -> pagatu-ubigeo-ms
@@ -106,6 +111,14 @@ pagatu/
 |   |   `-- Dockerfile
 |   |-- eureka/
 |   |-- gateway/
+|   |-- docker-compose.yml
+|   |-- k8s-local/
+|   `-- k8s/
+|-- auth-ms/
+|   |-- src/
+|   |-- pom.xml
+|   |-- Dockerfile
+|   |-- docker-compose-dev.yml
 |   |-- docker-compose.yml
 |   |-- k8s-local/
 |   `-- k8s/
@@ -196,6 +209,7 @@ Las carpetas `client` y `event` solo se crean cuando el microservicio las necesi
 
 | Microservicio | `client` | `event` |
 |---|---:|---:|
+| `pagatu-auth-ms` | No | No |
 | `pagatu-ubigeo-ms` | No | No |
 | `pagatu-cliente-ms` | Si | No |
 | `pagatu-catalogo-ms` | No | No |
@@ -222,6 +236,7 @@ Cada microservicio core tiene su propia base de datos:
 
 | Microservicio | Base de datos |
 |---|---|
+| `pagatu-auth-ms` | `pagatu_auth_db` |
 | `pagatu-ubigeo-ms` | `pagatu_ubigeo_db` |
 | `pagatu-cliente-ms` | `pagatu_cliente_db` |
 | `pagatu-catalogo-ms` | `pagatu_catalogo_db` |
@@ -232,7 +247,7 @@ Las migraciones se gestionan con Flyway mediante `V1__init.sql`.
 
 ## Seguridad
 
-Los servicios se configuran como Resource Server usando JWT emitidos por Keycloak. Los endpoints deben validar autenticacion y roles segun la responsabilidad de cada microservicio.
+Release 1 usa `auth-ms` para autenticacion y control de acceso inicial. Los endpoints deben validar autenticacion y roles segun la responsabilidad de cada microservicio. Keycloak queda como modulo opcional futuro para reemplazar o complementar la emision de tokens.
 
 ## Docker y Kubernetes
 
@@ -249,8 +264,9 @@ El Gateway es la entrada externa; los microservicios no deben consumirse directa
 
 ## Alcance de Release 1
 
-Release 1 incluye los 5 microservicios core necesarios para explicar y validar el flujo principal:
+Release 1 incluye los 6 microservicios core necesarios para explicar y validar el flujo principal:
 
+- Autenticacion inicial, usuarios, roles y tokens con `auth-ms`.
 - CRUD de clientes.
 - CRUD/consulta de ubigeo por pais para completar nacimiento, residencia o direccion del cliente.
 - CRUD de catalogo: productos, conceptos, familias, categorias, tipos y precios.
@@ -259,7 +275,7 @@ Release 1 incluye los 5 microservicios core necesarios para explicar y validar e
 - Publicacion de `orden.creada`.
 - Consumo de `orden.creada` desde pago.
 - Publicacion de `pago.validado`.
-- Configuracion centralizada, Eureka, Gateway, seguridad, trazabilidad, Docker y Kubernetes.
+- Configuracion centralizada, Eureka, Gateway, seguridad con `auth-ms`, trazabilidad, Docker y Kubernetes.
 
 ## Pendiente para Release 2
 
