@@ -1,0 +1,84 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+
+# Java / Maven
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+*.log
+hs_err_pid*
+replay_pid*
+.mvn/timing.properties
+
+# Gradle, por si algun modulo lo usa despues
+.gradle/
+build/
+
+# Spring Boot
+spring.log
+application-local.yml
+application-local.yaml
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Docker local volumes / generated data
+docker-data/
+data/
+volumes/
+mysql-data/
+prometheus-data/
+grafana-data/
+kafka-data/
+zookeeper-data/
+
+# Kubernetes local generated files
+*.kubeconfig
+.kube/
+
+# Node / Angular
+node_modules/
+dist/
+.angular/
+.npm/
+coverage/
+*.tsbuildinfo
+
+# Logs and temporary files
+logs/
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# Test and report outputs
+surefire-reports/
+failsafe-reports/
+test-output/
+
+# Secrets and certificates
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+secrets/
