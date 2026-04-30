@@ -12,7 +12,7 @@
 
 ## Arquitectura
 
-Pagatu se organiza como una arquitectura de microservicios con entrada unica por Gateway, configuracion centralizada, descubrimiento de servicios, comunicacion sincrona con Feign, comunicacion asincrona con Kafka y observabilidad con Prometheus/Grafana.
+Pagatu se organiza como una arquitectura de microservicios con entrada unica por Gateway, configuracion centralizada, descubrimiento de servicios, comunicacion sincrona con Feign, comunicacion asincrona con Kafka y observabilidad con Prometheus, Loki y Grafana.
 
 En Release 1, el flujo principal se apoya en estos servicios:
 
@@ -30,7 +30,7 @@ La comunicacion queda dividida por responsabilidad:
 - Feign se usa cuando un MS necesita respuesta inmediata.
 - Circuit Breaker protege llamadas Feign ante fallos o latencia.
 - Kafka se usa cuando algo ya ocurrio y otros servicios deben reaccionar.
-- Prometheus recolecta metricas y Grafana las visualiza.
+- Prometheus recolecta metricas, Loki centraliza logs y Grafana visualiza ambos.
 - Angular consume el sistema siempre por Gateway.
 
 ### Diagrama 1: Cliente y Ubigeo
@@ -55,7 +55,16 @@ flowchart LR
     eureka -. registro .- gateway
 ```
 
-### Diagrama 2: Release 1 Completo
+### Diagrama 2: Orden y Pago
+
+```mermaid
+flowchart LR
+    orden[orden-ms] -- publica orden.creada --> kafka[(Kafka)]
+    kafka -- consume orden.creada --> pago[pago-ms]
+    pago -- publica pago.validado --> kafka
+```
+
+### Diagrama 3: Release 1 Completo
 
 ```mermaid
 flowchart LR
@@ -91,6 +100,22 @@ flowchart LR
     eureka -. registro .- pago
     eureka -. registro .- gateway
 
+    prometheus[Prometheus] -. metrics .-> gateway
+    prometheus -. metrics .-> cliente
+    prometheus -. metrics .-> ubigeo
+    prometheus -. metrics .-> catalogo
+    prometheus -. metrics .-> orden
+    prometheus -. metrics .-> pago
+
+    loki[Loki] -. logs .-> gateway
+    loki -. logs .-> cliente
+    loki -. logs .-> ubigeo
+    loki -. logs .-> catalogo
+    loki -. logs .-> orden
+    loki -. logs .-> pago
+
+    grafana[Grafana] --> prometheus
+    grafana --> loki
 ```
 
 ## Ruta de Trabajo por Sesiones
@@ -101,7 +126,7 @@ flowchart LR
 | 2 | Crear `config` y `config-repo`. Mover configuracion de `cliente-ms` al Config Server y preparar archivos por servicio. Validar imagen Docker de `config`. | Configurar `ubigeo-ms` para leer desde Config Server y validar su imagen Docker. |
 | 3 | Crear `eureka` y `gateway`. Registrar `cliente-ms` en Eureka y exponer `/api/clientes/**` por Gateway. Validar imagenes Docker de `eureka` y `gateway`. | Integrar `ubigeo-ms` con Config Server, Eureka y Gateway. Exponer `/api/ubigeo/**`. |
 | 4 | Implementar Feign + Circuit Breaker: `cliente-ms` consulta `ubigeo-ms`. Agregar timeouts, fallback, manejo de errores y propagacion de `X-Trace-ID`. | Crear `catalogo-ms` como servicio REST estable de productos, conceptos, familias, categorias, tipos y precios, con `docker-compose-dev.yml`, `Dockerfile`, Feign + Circuit Breaker listo para `orden-ms`. |
-| 5 | Incorporar observabilidad con Actuator, Prometheus y Grafana. Exponer health, metrics y dashboards basicos para `gateway`, `cliente-ms`, `ubigeo-ms` y `catalogo-ms`. | Preparar contratos de orden, evento `orden.creada` y archivos Docker iniciales para `orden-ms` y `pago-ms`. |
+| 5 | Incorporar observabilidad con Actuator, Prometheus, Loki y Grafana. Exponer health, metrics, logs y dashboards basicos para `gateway`, `cliente-ms`, `ubigeo-ms` y `catalogo-ms`. | Preparar contratos de orden, evento `orden.creada` y archivos Docker iniciales para `orden-ms` y `pago-ms`. |
 | 6 | Crear `orden-ms` y `pago-ms`. Implementar Event-Driven con Kafka: `orden-ms` valida cliente y catalogo por Feign, crea la orden, publica `orden.creada`; `pago-ms` consume `orden.creada` y publica `pago.validado`. Validar Kafka en Docker local. | Revisar idempotencia basica, manejo de eventos duplicados, trazabilidad en consumidores e imagenes Docker de ambos MS. |
 | 7 | Implementar control de acceso inicial sin Keycloak obligatorio: definir roles logicos, permisos por endpoint y reglas de autorizacion en Gateway y MS. Preparar `SecurityConfig` para evolucionar a JWT. | Dejar Keycloak como modulo opcional y documentar roles/claims esperados. |
 | 8 | Preparar `k8s-local/` y `k8s/` para infraestructura y microservicios, diferenciando Minikube de nube/produccion real. | Verificar nombres operativos `pagatu-*`, perfiles, variables, secrets/configmaps y tags de GitHub por sesion/release. |
@@ -113,7 +138,7 @@ flowchart LR
 Ademas de las sesiones principales, el proyecto debe considerar:
 
 - Resiliencia: Resilience4j, timeouts, circuit breakers, retries limitados y fallbacks.
-- Observabilidad: logs con `X-Trace-ID`, Actuator, health checks, Prometheus y Grafana.
+- Observabilidad: logs con `X-Trace-ID`, Actuator, health checks, Prometheus, Loki y Grafana.
 - Documentacion API: OpenAPI/Swagger por MS, consumido preferentemente por Gateway.
 - Manejo de errores: excepciones controladas, codigos HTTP consistentes y respuestas estandar.
 - Testing: unit tests, integration tests y pruebas de contrato para Feign/eventos cuando el flujo madure.

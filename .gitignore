@@ -46,6 +46,7 @@ volumes/
 mysql-data/
 prometheus-data/
 grafana-data/
+loki-data/
 kafka-data/
 zookeeper-data/
 
