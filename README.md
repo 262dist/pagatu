@@ -209,51 +209,113 @@ Este nivel baja el zoom dentro de dos contenedores concretos. `orden-ms` conserv
 ### C4 Nivel 4: Codigo - Ejemplo en cliente-ms
 
 ```mermaid
-flowchart TB
-    controller["ClienteController<br/>+crearCliente()<br/>+buscarPorDocumento()<br/>+validarCliente()"]
-    service["ClienteService<br/>&lt;&lt;interface&gt;&gt;<br/>+crearCliente()<br/>+buscarPorDocumento()<br/>+validarCliente()"]
+classDiagram
+    class ClienteController {
+        +crearCliente(CrearClienteRequest) ClienteResponse
+        +buscarPorDocumento(String) ClienteResponse
+        +validarCliente(Long) ClienteValidadoResponse
+    }
 
-    subgraph implBox["Implementacion encapsulada"]
-        impl["ClienteServiceImpl<br/>-clienteRepository<br/>-ubigeoClient<br/>-clienteMapper<br/>+crearCliente()"]
-        repo["ClienteRepository<br/>+save()<br/>+findByDocumento()<br/>+existsById()"]
-        ubigeo["UbigeoClient<br/>+buscarDistrito()"]
-        mapper["ClienteMapper<br/>+toEntity()<br/>+toResponse()"]
-        entity["Cliente<br/>id, documento, nombres,<br/>apellidos, ubigeoNacimiento, activo"]
+    class ClienteService {
+        +crearCliente(CrearClienteRequest) ClienteResponse
+        +buscarPorDocumento(String) ClienteResponse
+        +validarCliente(Long) ClienteValidadoResponse
+    }
 
-        impl -. usa .-> repo
-        impl -. usa .-> ubigeo
-        impl -. usa .-> mapper
-        repo --> entity
-    end
+    class ClienteServiceImpl {
+        -ClienteRepository clienteRepository
+        -UbigeoClient ubigeoClient
+        -ClienteMapper clienteMapper
+        +crearCliente(CrearClienteRequest) ClienteResponse
+    }
 
-    controller --> service
-    service -. implementado por .-> impl
+    class UbigeoClient {
+        +buscarDistrito(String) UbigeoResponse
+    }
+
+    class ClienteRepository {
+        +save(Cliente) Cliente
+        +findByDocumento(String) Optional~Cliente~
+        +existsById(Long) boolean
+    }
+
+    class ClienteMapper {
+        +toEntity(CrearClienteRequest) Cliente
+        +toResponse(Cliente) ClienteResponse
+    }
+
+    class Cliente {
+        -Long id
+        -String documento
+        -String nombres
+        -String apellidos
+        -String ubigeoNacimiento
+        -Boolean activo
+    }
+
+    ClienteController --> ClienteService
+    ClienteService <|.. ClienteServiceImpl
+    ClienteServiceImpl ..> ClienteRepository
+    ClienteServiceImpl ..> UbigeoClient
+    ClienteServiceImpl ..> ClienteMapper
+    ClienteRepository --> Cliente
 ```
 
 ### C4 Nivel 4: Codigo - Ejemplo en orden-ms
 
 ```mermaid
-flowchart TB
-    controller["OrdenController<br/>+crearOrden()<br/>+buscarPorId()<br/>+listarPorCliente()"]
-    service["OrdenService<br/>&lt;&lt;interface&gt;&gt;<br/>+crearOrden()<br/>+buscarPorId()<br/>+listarPorCliente()"]
+classDiagram
+    class OrdenController {
+        +crearOrden(CrearOrdenRequest) OrdenResponse
+        +buscarPorId(Long) OrdenResponse
+        +listarPorCliente(Long) List~OrdenResponse~
+    }
 
-    subgraph implBox["Implementacion encapsulada"]
-        impl["OrdenServiceImpl<br/>-clienteClient<br/>-catalogoClient<br/>-ordenRepository<br/>-ordenEventProducer<br/>+crearOrden()"]
-        cliente["ClienteClient<br/>+validarCliente()"]
-        catalogo["CatalogoClient<br/>+validarItem()"]
-        repo["OrdenRepository<br/>+save()<br/>+findByClienteId()"]
-        producer["OrdenEventProducer<br/>+publicarOrdenCreada()"]
-        entity["Orden<br/>id, clienteId, total, estado"]
+    class OrdenService {
+        +crearOrden(CrearOrdenRequest) OrdenResponse
+        +buscarPorId(Long) OrdenResponse
+        +listarPorCliente(Long) List~OrdenResponse~
+    }
 
-        impl -. usa .-> cliente
-        impl -. usa .-> catalogo
-        impl -. usa .-> repo
-        impl -. usa .-> producer
-        repo --> entity
-    end
+    class OrdenServiceImpl {
+        -ClienteClient clienteClient
+        -CatalogoClient catalogoClient
+        -OrdenRepository ordenRepository
+        -OrdenEventProducer ordenEventProducer
+        +crearOrden(CrearOrdenRequest) OrdenResponse
+    }
 
-    controller --> service
-    service -. implementado por .-> impl
+    class ClienteClient {
+        +validarCliente(Long) ClienteValidadoResponse
+    }
+
+    class CatalogoClient {
+        +validarItem(Long) CatalogoItemResponse
+    }
+
+    class OrdenRepository {
+        +save(Orden) Orden
+        +findByClienteId(Long) List~Orden~
+    }
+
+    class OrdenEventProducer {
+        +publicarOrdenCreada(OrdenCreadaEvent) void
+    }
+
+    class Orden {
+        -Long id
+        -Long clienteId
+        -BigDecimal total
+        -EstadoOrden estado
+    }
+
+    OrdenController --> OrdenService
+    OrdenService <|.. OrdenServiceImpl
+    OrdenServiceImpl ..> ClienteClient
+    OrdenServiceImpl ..> CatalogoClient
+    OrdenServiceImpl ..> OrdenRepository
+    OrdenServiceImpl ..> OrdenEventProducer
+    OrdenRepository --> Orden
 ```
 
 Este nivel se usa solo como ejemplo didactico. En C4, el nivel de codigo no deberia convertirse en un diagrama de todas las clases del proyecto; sirve para explicar una parte puntual cuando aporta claridad.
@@ -261,27 +323,60 @@ Este nivel se usa solo como ejemplo didactico. En C4, el nivel de codigo no debe
 ### C4 Nivel 4: Codigo - Ejemplo en pago-ms
 
 ```mermaid
-flowchart TB
-    consumer["OrdenCreadaConsumer<br/>+consumir()"]
-    service["PagoService<br/>&lt;&lt;interface&gt;&gt;<br/>+registrarDesdeOrden()<br/>+validarPago()<br/>+rechazarPago()"]
+classDiagram
+    class OrdenCreadaConsumer {
+        +consumir(OrdenCreadaEvent) void
+    }
 
-    subgraph implBox["Implementacion encapsulada"]
-        impl["PagoServiceImpl<br/>-pagoRepository<br/>-pasarelaPagoClient<br/>-pagoEventProducer<br/>-pagoMapper<br/>+registrarDesdeOrden()"]
-        repo["PagoRepository<br/>+save()<br/>+findByOrdenId()<br/>+findById()"]
-        pasarela["PasarelaPagoClient<br/>+autorizar()<br/>+capturar()"]
-        producer["PagoEventProducer<br/>+publicarPagoValidado()<br/>+publicarPagoRechazado()"]
-        mapper["PagoMapper<br/>+toResponse()"]
-        entity["Pago<br/>id, ordenId, monto,<br/>estado, codigoOperacion"]
+    class PagoService {
+        +registrarDesdeOrden(OrdenCreadaEvent) PagoResponse
+        +validarPago(Long) PagoResponse
+        +rechazarPago(Long, String) PagoResponse
+    }
 
-        impl -. usa .-> repo
-        impl -. usa .-> pasarela
-        impl -. usa .-> producer
-        impl -. usa .-> mapper
-        repo --> entity
-    end
+    class PagoServiceImpl {
+        -PagoRepository pagoRepository
+        -PasarelaPagoClient pasarelaPagoClient
+        -PagoEventProducer pagoEventProducer
+        -PagoMapper pagoMapper
+        +registrarDesdeOrden(OrdenCreadaEvent) PagoResponse
+    }
 
-    consumer --> service
-    service -. implementado por .-> impl
+    class PasarelaPagoClient {
+        +autorizar(Pago) RespuestaPasarela
+        +capturar(String) RespuestaPasarela
+    }
+
+    class PagoEventProducer {
+        +publicarPagoValidado(PagoValidadoEvent) void
+        +publicarPagoRechazado(PagoRechazadoEvent) void
+    }
+
+    class PagoRepository {
+        +save(Pago) Pago
+        +findByOrdenId(Long) Optional~Pago~
+        +findById(Long) Optional~Pago~
+    }
+
+    class PagoMapper {
+        +toResponse(Pago) PagoResponse
+    }
+
+    class Pago {
+        -Long id
+        -Long ordenId
+        -BigDecimal monto
+        -EstadoPago estado
+        -String codigoOperacion
+    }
+
+    OrdenCreadaConsumer --> PagoService
+    PagoService <|.. PagoServiceImpl
+    PagoServiceImpl ..> PagoRepository
+    PagoServiceImpl ..> PasarelaPagoClient
+    PagoServiceImpl ..> PagoEventProducer
+    PagoServiceImpl ..> PagoMapper
+    PagoRepository --> Pago
 ```
 
 Estos ejemplos de codigo muestran el estilo esperado dentro de cada microservicio: el controller depende del contrato `Service`, la clase `Impl` encapsula la orquestacion interna y desde alli se usan repositories, mappers, clients Feign y producers/consumers Kafka cuando correspondan.
