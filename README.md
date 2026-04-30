@@ -163,6 +163,111 @@ flowchart LR
     eureka -. registro .- gateway
 ```
 
+### C4 Nivel 3: Componentes - Orden y Pago
+
+```mermaid
+flowchart LR
+    subgraph orden["Container: orden-ms"]
+        ordenController["Component: OrdenController"]
+        ordenService["Component: OrdenService"]
+        clienteClient["Component: ClienteClient Feign"]
+        catalogoClient["Component: CatalogoClient Feign"]
+        ordenProducer["Component: OrdenEventProducer"]
+        ordenRepo["Component: OrdenRepository"]
+        ordenDb[(Data Store: pagatu_orden_db)]
+
+        ordenController --> ordenService
+        ordenService --> clienteClient
+        ordenService --> catalogoClient
+        ordenService --> ordenRepo
+        ordenService --> ordenProducer
+        ordenRepo --> ordenDb
+    end
+
+    subgraph pago["Container: pago-ms"]
+        pagoConsumer["Component: OrdenCreadaConsumer"]
+        pagoService["Component: PagoService"]
+        pasarelaClient["Component: PasarelaPagoClient"]
+        pagoProducer["Component: PagoEventProducer"]
+        pagoRepo["Component: PagoRepository"]
+        pagoDb[(Data Store: pagatu_pago_db)]
+
+        pagoConsumer --> pagoService
+        pagoService --> pasarelaClient
+        pagoService --> pagoRepo
+        pagoService --> pagoProducer
+        pagoRepo --> pagoDb
+    end
+
+    clienteClient --> cliente["Container: cliente-ms"]
+    catalogoClient --> catalogo["Container: catalogo-ms"]
+    ordenProducer --> kafka["External System: Kafka empresarial compartido"]
+    kafka --> pagoConsumer
+    pagoProducer --> kafka
+    pasarelaClient --> pasarela["External System: Pasarela de pago (Niubiz/Culqi)"]
+```
+
+Este nivel baja el zoom dentro de dos contenedores concretos. `orden-ms` conserva la decision sincrona por Feign para validar cliente y catalogo antes de crear la orden. `pago-ms` reacciona por Kafka a `orden.creada`, encapsula la pasarela externa y publica el resultado `pago.validado`.
+
+### C4 Nivel 4: Codigo - Ejemplo en orden-ms
+
+```mermaid
+classDiagram
+    class OrdenController {
+        +crearOrden(CrearOrdenRequest) OrdenResponse
+        +buscarPorId(Long) OrdenResponse
+        +listarPorCliente(Long) List~OrdenResponse~
+    }
+
+    class OrdenService {
+        +crearOrden(CrearOrdenRequest) OrdenResponse
+        +buscarPorId(Long) OrdenResponse
+        +listarPorCliente(Long) List~OrdenResponse~
+    }
+
+    class OrdenServiceImpl {
+        -ClienteClient clienteClient
+        -CatalogoClient catalogoClient
+        -OrdenRepository ordenRepository
+        -OrdenEventProducer ordenEventProducer
+        +crearOrden(CrearOrdenRequest) OrdenResponse
+    }
+
+    class ClienteClient {
+        +validarCliente(Long) ClienteValidadoResponse
+    }
+
+    class CatalogoClient {
+        +validarItem(Long) CatalogoItemResponse
+    }
+
+    class OrdenRepository {
+        +save(Orden) Orden
+        +findByClienteId(Long) List~Orden~
+    }
+
+    class OrdenEventProducer {
+        +publicarOrdenCreada(OrdenCreadaEvent) void
+    }
+
+    class Orden {
+        -Long id
+        -Long clienteId
+        -BigDecimal total
+        -EstadoOrden estado
+    }
+
+    OrdenController --> OrdenService
+    OrdenService <|.. OrdenServiceImpl
+    OrdenServiceImpl --> ClienteClient
+    OrdenServiceImpl --> CatalogoClient
+    OrdenServiceImpl --> OrdenRepository
+    OrdenServiceImpl --> OrdenEventProducer
+    OrdenRepository --> Orden
+```
+
+Este nivel se usa solo como ejemplo didactico. En C4, el nivel de codigo no deberia convertirse en un diagrama de todas las clases del proyecto; sirve para explicar una parte puntual cuando aporta claridad.
+
 ### C4: Despliegue por Ambientes
 
 ```mermaid
