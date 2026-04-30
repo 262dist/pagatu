@@ -54,7 +54,9 @@ flowchart LR
 
 Este nivel muestra Pagatu como una caja principal frente a su actor institucional y sistemas compartidos. `auth-ms` aparece aqui porque representa la identidad institucional transversal: el mismo punto de autenticacion puede servir a Pagatu y tambien a otros modulos de la empresa, como planes de estudios, carga academica, matricula, contabilidad o LMS. En Release 1 se implementa como `auth-ms`; luego puede evolucionar a Keycloak sin cambiar la idea arquitectonica. Los detalles internos de Pagatu, como Angular, Gateway, microservicios, Config Server y Eureka, aparecen recien en el nivel de contenedores. Kafka se trata como plataforma empresarial compartida, no como componente exclusivo del proyecto.
 
-### C4 Nivel 2: Contenedores de Release 1
+### C4 Nivel 2: Software System - Pagatu Platform
+
+Contenedores de Release 1.
 
 ```mermaid
 flowchart LR
@@ -160,7 +162,9 @@ flowchart LR
     eureka -. registro .- gateway
 ```
 
-### C4 Nivel 3: Componentes - Orden y Pago
+### C4 Nivel 3: Container - orden-ms y pago-ms
+
+Componentes principales del flujo de orden y pago.
 
 ```mermaid
 flowchart LR
@@ -204,9 +208,11 @@ flowchart LR
     pasarelaClient --> pasarela["External System: Pasarela de pago (Niubiz/Culqi)"]
 ```
 
-Este nivel baja el zoom dentro de dos contenedores concretos. `orden-ms` conserva la decision sincrona por Feign para validar cliente y catalogo antes de crear la orden. `pago-ms` reacciona por Kafka a `orden.creada`, encapsula la pasarela externa y publica el resultado `pago.validado`.
+Este nivel baja el zoom dentro de dos contenedores concretos del Release 1. `orden-ms` conserva la decision sincrona por Feign para validar cliente y catalogo antes de crear la orden. `pago-ms` reacciona por Kafka a `orden.creada`, encapsula la pasarela externa y publica el resultado `pago.validado`.
 
-### C4 Nivel 4: Codigo - Ejemplo en cliente-ms
+### C4 Nivel 4: Component - ClienteService
+
+Codigo de ejemplo en `cliente-ms`.
 
 ```mermaid
 classDiagram
@@ -278,7 +284,9 @@ classDiagram
     ClienteRepository --> Cliente
 ```
 
-### C4 Nivel 4: Codigo - Ejemplo en orden-ms
+### C4 Nivel 4: Component - OrdenService
+
+Codigo de ejemplo en `orden-ms`.
 
 ```mermaid
 classDiagram
@@ -354,7 +362,9 @@ classDiagram
 
 Este nivel se usa solo como ejemplo didactico. En C4, el nivel de codigo no deberia convertirse en un diagrama de todas las clases del proyecto; sirve para explicar una parte puntual cuando aporta claridad.
 
-### C4 Nivel 4: Codigo - Ejemplo Angular para Ordenes
+### C4 Nivel 4: Component - Angular Ordenes
+
+Codigo de ejemplo del frontend para el flujo de ordenes.
 
 ```mermaid
 classDiagram
@@ -443,7 +453,9 @@ classDiagram
 
 Angular se muestra aparte porque vive en otro proyecto/contenedor. Este diagrama explica la pantalla de ordenes, sus componentes, servicios HTTP e interceptores, mientras el diagrama de `orden-ms` queda enfocado en el backend.
 
-### C4 Nivel 4: Codigo - Ejemplo en pago-ms
+### C4 Nivel 4: Component - PagoService
+
+Codigo de ejemplo en `pago-ms`.
 
 ```mermaid
 classDiagram
