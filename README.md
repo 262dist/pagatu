@@ -44,7 +44,7 @@ flowchart LR
     angular["Software System: Angular App"]
     pagatu["Software System: Pagatu Platform"]
     auth["Container: auth-ms (luego Keycloak)"]
-    correo["External System: Servicios externos opcionales"]
+    kafkaCorp["External System: Kafka empresarial compartido"]
     pasarela["External System: Pasarela de pago (Niubiz/Culqi)"]
 
     usuario -->|usa| angular
@@ -52,11 +52,11 @@ flowchart LR
     angular -->|consume API| pagatu
     angular -->|autenticacion| auth
     auth -->|autoriza acceso| pagatu
+    pagatu -->|publica/consume eventos| kafkaCorp
     pagatu -. procesa pago .-> pasarela
-    pagatu -. notificaciones futuras .-> correo
 ```
 
-Este nivel muestra el sistema como una caja principal: Angular es la interfaz de usuario y Pagatu Platform agrupa Gateway, microservicios, configuracion, registro y observabilidad. Kafka se trata como plataforma compartida de mensajeria, no como componente exclusivo del proyecto.
+Este nivel muestra el sistema como una caja principal: Angular es la interfaz de usuario y Pagatu Platform agrupa Gateway, microservicios, configuracion, registro y observabilidad. Kafka se trata como plataforma empresarial compartida, no como componente exclusivo del proyecto.
 
 ### C4 Nivel 2: Contenedores de Release 1
 
