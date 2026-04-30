@@ -38,19 +38,19 @@ La comunicacion queda dividida por responsabilidad:
 
 ```mermaid
 flowchart LR
-    usuario[Usuario institucional]
-    admin[Administrador]
-    angular[Angular App]
-    pagatu[Pagatu Platform]
-    auth[auth-ms]
-    keycloak[Keycloak opcional futuro]
-    correo[Servicios externos opcionales]
+    usuario["Person: Usuario institucional"]
+    admin["Person: Administrador"]
+    angular["Software System: Angular App"]
+    pagatu["Software System: Pagatu Platform"]
+    auth["Container: auth-ms"]
+    keycloak["External System: Keycloak opcional futuro"]
+    correo["External System: Servicios externos opcionales"]
 
-    usuario --> angular
-    admin --> angular
-    angular --> pagatu
-    angular --> auth
-    auth --> pagatu
+    usuario -->|usa| angular
+    admin -->|administra| angular
+    angular -->|consume API| pagatu
+    angular -->|autenticacion| auth
+    auth -->|autoriza acceso| pagatu
     auth -. integracion futura .-> keycloak
     pagatu -. notificaciones futuras .-> correo
 ```
@@ -164,17 +164,27 @@ flowchart LR
 ```mermaid
 flowchart TB
     subgraph dev[DEV local]
-        devjava[Java 17 local]
-        devmysql[(MySQL en Docker)]
+        devjava[MS con Java 17 local]
+        devinfra[Infra con Java 17 local]
+        devmscompose[<ms>/docker-compose-dev.yml]
+        devshared[Config + Eureka + Gateway]
+        devmysql[(MySQL por MS en Docker)]
+        devinfra --> devshared
+        devmscompose --> devmysql
+        devjava --> devshared
         devjava --> devmysql
     end
 
     subgraph compose[PROD local - Docker Compose]
-        composems[MS como contenedores Java 17]
+        infracompose[infra/docker-compose.yml]
+        mscompose[<ms>/docker-compose.yml]
         composeinfra[Config + Eureka + Gateway + Kafka]
+        composems[MS como contenedores Java 17]
         composedb[(MySQL por MS)]
+        infracompose --> composeinfra
+        mscompose --> composems
+        mscompose --> composedb
         composems --> composeinfra
-        composems --> composedb
     end
 
     subgraph k8slocal[Kubernetes local - Minikube]
@@ -202,7 +212,7 @@ flowchart TB
     dev --> compose --> k8slocal --> cloud
 ```
 
-En DEV local, los microservicios corren con Java 17 en la maquina del desarrollador y sus dependencias se levantan con Docker. En PROD local, tanto los MS como la infraestructura corren con Docker Compose. En Kubernetes local se usan manifiestos `k8s-local/`; en nube se usan imagenes desde registry, servicios administrados y manifiestos `k8s/`.
+En DEV local, los microservicios y la infraestructura (`config`, `eureka`, `gateway`) corren con Java 17 en la maquina del desarrollador. Docker se usa para dependencias propias de cada MS, como MySQL, mediante `<ms>/docker-compose-dev.yml`. En PROD local, la infraestructura compartida se levanta con `infra/docker-compose.yml`, mientras cada microservicio valida su imagen con su propio `<ms>/docker-compose.yml`. En Kubernetes local se usan manifiestos `k8s-local/`; en nube se usan imagenes desde registry, servicios administrados y manifiestos `k8s/`.
 
 ## Ruta de Trabajo por Sesiones
 
