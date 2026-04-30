@@ -265,6 +265,21 @@ classDiagram
 
 ```mermaid
 classDiagram
+    class OrdenPageComponent {
+        +crearOrden() void
+        +cargarOrdenesCliente() void
+    }
+
+    class OrdenApiService {
+        +crearOrden(CrearOrdenRequest) Observable~OrdenResponse~
+        +buscarPorId(Long) Observable~OrdenResponse~
+        +listarPorCliente(Long) Observable~OrdenResponse[]~
+    }
+
+    class GatewayRoute {
+        +/api/ordenes/**
+    }
+
     class OrdenController {
         +crearOrden(CrearOrdenRequest) OrdenResponse
         +buscarPorId(Long) OrdenResponse
@@ -309,6 +324,9 @@ classDiagram
         -EstadoOrden estado
     }
 
+    OrdenPageComponent --> OrdenApiService
+    OrdenApiService --> GatewayRoute
+    GatewayRoute --> OrdenController
     OrdenController --> OrdenService
     OrdenService <|.. OrdenServiceImpl
     OrdenServiceImpl ..> ClienteClient
