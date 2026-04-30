@@ -546,13 +546,19 @@ Estos ejemplos de codigo muestran el estilo esperado dentro de cada microservici
 flowchart TB
     subgraph dev[DEV local]
         devjava[MS con Java 17 local]
-        devinfra[Infra con Java 17 local]
+        devinfra[Infra compartida con Java 17 local]
         devmscompose[docker-compose-dev.yml del MS]
-        devshared[Config + Eureka + Gateway]
+        devshared[Infra compartida: Config + Eureka + Gateway]
+        devmessaging[Mensajeria compartida: Kafka local]
+        devobs[Observabilidad compartida: Prometheus + Loki + Grafana]
         devmysql[(MySQL por MS en Docker)]
         devinfra --> devshared
+        devinfra --> devmessaging
+        devinfra --> devobs
         devmscompose --> devmysql
         devjava --> devshared
+        devjava --> devmessaging
+        devjava --> devobs
         devjava --> devmysql
     end
 
@@ -621,7 +627,7 @@ flowchart TB
     dev --> compose --> k8slocal --> cloud
 ```
 
-En DEV local, los microservicios y la infraestructura (`config`, `eureka`, `gateway`) corren con Java 17 en la maquina del desarrollador. Docker se usa para dependencias propias de cada MS, como MySQL, mediante `<ms>/docker-compose-dev.yml`. En PROD local, la infraestructura propia se levanta con `infra/docker-compose.yml`; Kafka y observabilidad se levantan desde `platform/` solo como dependencias compartidas de laboratorio; cada microservicio valida su imagen con su propio `<ms>/docker-compose.yml`. En Kubernetes local se usan manifiestos `k8s-local/`: los MS van como `Deployment`, los servicios internos como `ClusterIP`, MySQL puede ir como `StatefulSet` con PVC y el acceso externo pasa por Gateway o Ingress. En nube se usan imagenes desde registry, manifiestos `k8s/` para los MS, bases de datos administradas, Kafka corporativo/administrado y observabilidad de plataforma.
+DEV local y PROD local representan el mismo sistema corriendo en paralelo, pero con distinto modo de ejecucion. En DEV local, los microservicios y la infraestructura (`config`, `eureka`, `gateway`) corren con Java 17 en la maquina del desarrollador para facilitar cambios rapidos; Docker se usa para dependencias como MySQL por MS, Kafka y observabilidad compartida. En PROD local, los mismos componentes se validan como imagenes y contenedores: la infraestructura propia se levanta con `infra/docker-compose.yml`, Kafka y observabilidad con `platform/`, y cada microservicio con su propio `<ms>/docker-compose.yml`. En Kubernetes local se usan manifiestos `k8s-local/`: los MS van como `Deployment`, los servicios internos como `ClusterIP`, MySQL puede ir como `StatefulSet` con PVC y el acceso externo pasa por Gateway o Ingress. En nube se usan imagenes desde registry, manifiestos `k8s/` para los MS, bases de datos administradas, Kafka corporativo/administrado y observabilidad de plataforma.
 
 ## Ruta de Trabajo por Sesiones
 
