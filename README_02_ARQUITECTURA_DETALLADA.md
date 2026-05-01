@@ -17,6 +17,7 @@ flowchart LR
     angular -- request con JWT --> gateway
     gateway -- valida token en borde --> ms["Container: Microservicios"]
     ms -- valida JWT y roles --> recurso["Reglas de negocio protegidas"]
+    ms -- usa subject/usuarioId del JWT --> perfil["Perfil de cliente cuando aplica"]
 
     config["Container: Config Server"] --> configrepo[(Data Store: config-repo)]
     auth -. config .-> config
@@ -28,7 +29,7 @@ flowchart LR
     eureka -. registro .- ms
 ```
 
-Este flujo muestra la separacion de responsabilidades: `auth-ms` emite el token inicial; Gateway valida en borde; cada microservicio vuelve a validar JWT y roles antes de ejecutar reglas de negocio.
+Este flujo muestra la separacion de responsabilidades: `auth-ms` emite el token inicial con identificador de usuario y roles; Gateway valida en borde; cada microservicio vuelve a validar JWT y roles antes de ejecutar reglas de negocio. Cuando el flujo requiere datos de cliente, `cliente-ms` usa el `subject` o `usuarioId` del JWT como referencia, sin consultar directamente a `auth-ms`.
 
 ### Cliente y Ubigeo
 
@@ -189,10 +190,10 @@ flowchart LR
     end
 
     gateway["Container: gateway"] --> authController
-    tokenService -. emite JWT .-> gateway
+    tokenService -. emite JWT con usuarioId y roles .-> gateway
 ```
 
-`auth-ms` se mantiene como autenticacion inicial de Release 1. Mas adelante puede reemplazarse o integrarse con Keycloak, pero los demas servicios seguiran consumiendo tokens y roles bajo la misma idea arquitectonica.
+`auth-ms` se mantiene como autenticacion inicial de Release 1. Es duenio de usuarios, credenciales y roles. Mas adelante puede reemplazarse o integrarse con Keycloak, pero los demas servicios seguiran consumiendo tokens y roles bajo la misma idea arquitectonica.
 
 ### Container - cliente-ms y ubigeo-ms
 
@@ -203,12 +204,15 @@ flowchart LR
     subgraph cliente["Container: cliente-ms"]
         clienteController["Component: ClienteController"]
         clienteService["Component: ClienteService"]
+        usuarioContext["Component: UsuarioAutenticadoProvider"]
         ubigeoClient["Component: UbigeoClient Feign"]
         clienteRepo["Component: ClienteRepository"]
         clienteMapper["Component: ClienteMapper"]
         clienteDb[(Data Store: pagatu_cliente_db)]
 
+        clienteController --> usuarioContext
         clienteController --> clienteService
+        usuarioContext --> clienteService
         clienteService --> ubigeoClient
         clienteService --> clienteRepo
         clienteService --> clienteMapper
@@ -231,7 +235,7 @@ flowchart LR
     ubigeoClient --> ubigeoController
 ```
 
-Este nivel baja el zoom dentro de dos contenedores concretos del Release 1. `cliente-ms` gestiona los datos del cliente y consulta a `ubigeo-ms` por Feign cuando necesita completar o validar datos geograficos como nacimiento, residencia o direccion.
+Este nivel baja el zoom dentro de dos contenedores concretos del Release 1. `cliente-ms` gestiona los datos del cliente y consulta a `ubigeo-ms` por Feign cuando necesita completar o validar datos geograficos como nacimiento, residencia o direccion. La relacion con el usuario autenticado se toma desde el JWT mediante `UsuarioAutenticadoProvider`; no se consulta a `auth-ms` por Feign.
 
 ### Container - orden-ms y catalogo-ms
 
@@ -365,6 +369,7 @@ classDiagram
     class TokenService {
         +generarToken(Usuario) String
         +validarToken(String) boolean
+        +obtenerUsuarioId(String) Long
         +obtenerRoles(String) List~String~
     }
 
@@ -424,21 +429,32 @@ classDiagram
 
     class ClienteController {
         +crearCliente(CrearClienteRequest) ClienteResponse
+        +obtenerMiPerfil() ClienteResponse
+        +vincularUsuarioActual(Long) ClienteResponse
         +buscarPorDocumento(String) ClienteResponse
         +validarCliente(Long) ClienteValidadoResponse
     }
 
     class ClienteService {
         +crearCliente(CrearClienteRequest) ClienteResponse
+        +obtenerMiPerfil(Long usuarioId) ClienteResponse
+        +vincularUsuario(Long usuarioId, Long clienteId) ClienteResponse
         +buscarPorDocumento(String) ClienteResponse
         +validarCliente(Long) ClienteValidadoResponse
     }
 
     class ClienteServiceImpl {
         -ClienteRepository clienteRepository
+        -UsuarioAutenticadoProvider usuarioAutenticadoProvider
         -UbigeoClient ubigeoClient
         -ClienteMapper clienteMapper
         +crearCliente(CrearClienteRequest) ClienteResponse
+        +obtenerMiPerfil(Long usuarioId) ClienteResponse
+    }
+
+    class UsuarioAutenticadoProvider {
+        +obtenerUsuarioId() Long
+        +obtenerRoles() List~String~
     }
 
     class UbigeoClient {
@@ -448,6 +464,7 @@ classDiagram
     class ClienteRepository {
         +save(Cliente) Cliente
         +findByDocumento(String) Optional~Cliente~
+        +findByUsuarioIdAuth(Long) Optional~Cliente~
         +existsById(Long) boolean
     }
 
@@ -461,6 +478,7 @@ classDiagram
         -String documento
         -String nombres
         -String apellidos
+        -Long usuarioIdAuth
         -String ubigeoNacimiento
         -Boolean activo
     }
@@ -468,13 +486,18 @@ classDiagram
     SecurityConfig --> SecurityFilterChain
     SecurityConfig --> JwtRoleConverter
     SecurityFilterChain ..> ClienteController : protege
+    SecurityFilterChain ..> UsuarioAutenticadoProvider : expone usuario actual
     ClienteController --> ClienteService
+    ClienteController --> UsuarioAutenticadoProvider
     ClienteService <|.. ClienteServiceImpl
     ClienteServiceImpl ..> ClienteRepository
+    ClienteServiceImpl ..> UsuarioAutenticadoProvider
     ClienteServiceImpl ..> UbigeoClient
     ClienteServiceImpl ..> ClienteMapper
     ClienteRepository --> Cliente
 ```
+
+La relacion entre usuario y cliente se muestra en `cliente-ms`, no como llamada directa a `auth-ms`. `auth-ms` es duenio de la identidad; `cliente-ms` solo guarda `usuarioIdAuth` como referencia al usuario autenticado y lo obtiene desde el JWT mediante `UsuarioAutenticadoProvider`. Asi se puede resolver el perfil del cliente actual sin acoplar ambos microservicios.
 
 ### Component - UbigeoService
 
@@ -544,25 +567,70 @@ classDiagram
         +valida roles por endpoint
     }
 
-    class CatalogoConsultaController {
-        +listarActivos() List~CatalogoItemResponse~
-        +buscarItem(Long) CatalogoItemResponse
-        +validarItem(Long) CatalogoItemResponse
-    }
-
-    class CatalogoAdminController {
+    class ProductoController {
+        +listarActivos() List~ProductoResponse~
+        +buscarProducto(Long) ProductoResponse
         +crearProducto(CrearProductoRequest) CatalogoItemResponse
         +actualizarProducto(Long, ActualizarProductoRequest) CatalogoItemResponse
         +desactivar(Long) void
     }
 
-    class CatalogoService {
-        +crearProducto(CrearProductoRequest) CatalogoItemResponse
+    class CategoriaController {
+        +listarCategorias() List~CategoriaResponse~
+        +crearCategoria(CrearCategoriaRequest) CategoriaResponse
+        +actualizarCategoria(Long, ActualizarCategoriaRequest) CategoriaResponse
+    }
+
+    class FamiliaController {
+        +listarFamilias() List~FamiliaResponse~
+        +crearFamilia(CrearFamiliaRequest) FamiliaResponse
+    }
+
+    class ConceptoController {
+        +listarConceptos() List~ConceptoResponse~
+        +buscarConcepto(Long) ConceptoResponse
+    }
+
+    class PrecioController {
+        +buscarPrecioVigente(Long) PrecioResponse
+        +registrarPrecio(CrearPrecioRequest) PrecioResponse
+    }
+
+    class CatalogoConsultaController {
         +validarItem(Long) CatalogoItemResponse
+        +listarItemsActivos() List~CatalogoItemResponse~
+    }
+
+    class ProductoService {
+        +crearProducto(CrearProductoRequest) CatalogoItemResponse
+        +listarActivos() List~ProductoResponse~
         +desactivar(Long) void
     }
 
-    class CatalogoServiceImpl {
+    class CategoriaService {
+        +listarCategorias() List~CategoriaResponse~
+        +crearCategoria(CrearCategoriaRequest) CategoriaResponse
+    }
+
+    class FamiliaService {
+        +listarFamilias() List~FamiliaResponse~
+        +crearFamilia(CrearFamiliaRequest) FamiliaResponse
+    }
+
+    class ConceptoService {
+        +buscarConcepto(Long) ConceptoResponse
+    }
+
+    class PrecioService {
+        +buscarPrecioVigente(Long) PrecioResponse
+        +registrarPrecio(CrearPrecioRequest) PrecioResponse
+    }
+
+    class CatalogoConsultaService {
+        +validarItem(Long) CatalogoItemResponse
+    }
+
+    class CatalogoConsultaServiceImpl {
         -ProductoRepository productoRepository
         -ConceptoRepository conceptoRepository
         -PrecioRepository precioRepository
@@ -580,6 +648,16 @@ classDiagram
         +findById(Long) Optional~Concepto~
     }
 
+    class CategoriaRepository {
+        +findById(Long) Optional~Categoria~
+        +findByActivoTrue() List~Categoria~
+    }
+
+    class FamiliaRepository {
+        +findById(Long) Optional~Familia~
+        +findByActivoTrue() List~Familia~
+    }
+
     class PrecioRepository {
         +findVigenteByItemId(Long) Optional~Precio~
     }
@@ -595,6 +673,25 @@ classDiagram
         -Boolean activo
     }
 
+    class Categoria {
+        -Long id
+        -String nombre
+        -Boolean activo
+    }
+
+    class Familia {
+        -Long id
+        -String nombre
+        -Boolean activo
+    }
+
+    class Concepto {
+        -Long id
+        -String nombre
+        -String tipo
+        -Boolean activo
+    }
+
     class Precio {
         -Long id
         -BigDecimal monto
@@ -603,19 +700,34 @@ classDiagram
     }
 
     SecurityConfig --> SecurityFilterChain
-    SecurityFilterChain ..> CatalogoAdminController : protege edicion
-    CatalogoConsultaController --> CatalogoService
-    CatalogoAdminController --> CatalogoService
-    CatalogoService <|.. CatalogoServiceImpl
-    CatalogoServiceImpl ..> ProductoRepository
-    CatalogoServiceImpl ..> ConceptoRepository
-    CatalogoServiceImpl ..> PrecioRepository
-    CatalogoServiceImpl ..> CatalogoMapper
+    SecurityFilterChain ..> ProductoController : protege escritura
+    SecurityFilterChain ..> CategoriaController : protege escritura
+    SecurityFilterChain ..> FamiliaController : protege escritura
+    SecurityFilterChain ..> PrecioController : protege escritura
+    ProductoController --> ProductoService
+    CategoriaController --> CategoriaService
+    FamiliaController --> FamiliaService
+    ConceptoController --> ConceptoService
+    PrecioController --> PrecioService
+    CatalogoConsultaController --> CatalogoConsultaService
+    ProductoService ..> ProductoRepository
+    CategoriaService ..> CategoriaRepository
+    FamiliaService ..> FamiliaRepository
+    ConceptoService ..> ConceptoRepository
+    PrecioService ..> PrecioRepository
+    CatalogoConsultaService <|.. CatalogoConsultaServiceImpl
+    CatalogoConsultaServiceImpl ..> ProductoRepository
+    CatalogoConsultaServiceImpl ..> ConceptoRepository
+    CatalogoConsultaServiceImpl ..> PrecioRepository
+    CatalogoConsultaServiceImpl ..> CatalogoMapper
     ProductoRepository --> Producto
+    ConceptoRepository --> Concepto
+    CategoriaRepository --> Categoria
+    FamiliaRepository --> Familia
     PrecioRepository --> Precio
 ```
 
-`catalogo-ms` expone productos, conceptos, familias, categorias, tipos y precios como un servicio REST estable. Las consultas de catalogo pueden ser publicas porque muestran informacion comercial disponible para el usuario. La edicion del catalogo si queda protegida por JWT y roles. Cuando se crea una orden, la autenticacion ocurre en `orden-ms`; luego `orden-ms` consulta `catalogo-ms` por Feign para decidir si un item puede entrar en la orden.
+`catalogo-ms` es un solo microservicio, pero no significa un solo controller. Puede exponer controladores por recurso: productos, categorias, familias, conceptos y precios. Las consultas de catalogo pueden ser publicas porque muestran informacion comercial disponible para el usuario. La edicion del catalogo si queda protegida por JWT y roles. Cuando se crea una orden, la autenticacion ocurre en `orden-ms`; luego `orden-ms` consulta `catalogo-ms` por Feign para decidir si un item puede entrar en la orden.
 
 ### Component - OrdenService
 
