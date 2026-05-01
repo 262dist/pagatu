@@ -552,9 +552,7 @@ flowchart TB
         end
 
         subgraph devInfraBox[Infra compartida]
-            devinfrarun[Java local: config + eureka + gateway]
-            devshared[Config + Eureka + Gateway]
-            devinfrarun --> devshared
+            devshared[Java local: Config + Eureka + Gateway]
         end
 
         subgraph devObsBox[Observabilidad compartida]
