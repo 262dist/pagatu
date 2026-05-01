@@ -60,11 +60,11 @@ flowchart LR
     gateway["Container: Gateway"] --> orden["Container: orden-ms"]
     gateway --> pago["Container: pago-ms"]
 
-    orden -- publica orden.creada --> kafka["External System: Kafka empresarial compartido"]
+    orden -- publica orden.creada / orden.cancelada por falta de pago --> kafka["External System: Kafka empresarial compartido"]
     kafka -- consume orden.creada --> pago
     pago -- autoriza/captura pago --> pasarela["External System: Pasarela de pago (Niubiz/Culqi)"]
     pago -- publica pago.validado / pago.rechazado --> kafka
-    kafka -. consume eventos de pago .-> notificacion["Container futuro: notificacion-ms"]
+    kafka -. consume eventos de orden y pago .-> notificacion["Container futuro: notificacion-ms"]
 
     config["Container: Config Server"] --> configrepo[(Data Store: config-repo)]
     orden -. config .-> config
@@ -85,20 +85,19 @@ flowchart LR
 stateDiagram-v2
     [*] --> BORRADOR
 
+    BORRADOR --> [*]: cliente no continua / sin evento
     BORRADOR --> VALIDANDO: crear orden
     VALIDANDO --> RECHAZADA: cliente/catalogo invalido
     VALIDANDO --> CREADA: validaciones correctas
 
     CREADA --> PENDIENTE_PAGO: publica orden.creada
-    PENDIENTE_PAGO --> CANCELADA: cancelacion solicitada
-    PENDIENTE_PAGO --> EXPIRADA: vencimiento de orden
+    PENDIENTE_PAGO --> CANCELADA: falta de pago / publica orden.cancelada
 
     CANCELADA --> [*]
-    EXPIRADA --> [*]
     RECHAZADA --> [*]
 ```
 
-`orden-ms` cambia de estado por decisiones propias del flujo de orden. Las validaciones con `cliente-ms` y `catalogo-ms` ocurren antes de crear la orden. Luego publica `orden.creada` y no consume `pago.validado` ni `pago.rechazado` en Release 1. El resultado del pago vive en `pago-ms`; otros servicios como notificaciones pueden reaccionar a los eventos de pago.
+`orden-ms` cambia de estado por decisiones propias del flujo de orden. Si el cliente no continua antes de confirmar, el flujo termina sin publicar eventos. Las validaciones con `cliente-ms` y `catalogo-ms` ocurren antes de crear la orden. Luego publica `orden.creada`. Si una orden ya creada queda sin pago hasta su vencimiento, `orden-ms` la marca como cancelada por falta de pago y publica `orden.cancelada`. No consume `pago.validado` ni `pago.rechazado` en Release 1. El resultado del pago vive en `pago-ms`; otros servicios como notificaciones pueden reaccionar a los eventos de orden y pago.
 
 ### Estados de Pago
 
@@ -122,7 +121,7 @@ stateDiagram-v2
 
 `pago-ms` nace a partir del evento `orden.creada`. Registra el intento de pago, llama a la pasarela externa y publica el resultado. El estado `ERROR_PASARELA` permite diferenciar un rechazo de negocio de un problema tecnico o de comunicacion.
 
-En Release 1, `pago-ms` consume eventos de orden y publica eventos de pago. `orden-ms` no consume eventos de pago. En Release 2, `notificacion-ms` podra consumir `pago.validado` y `pago.rechazado` para avisar al usuario.
+En Release 1, `pago-ms` consume `orden.creada` y publica eventos de pago. `orden-ms` publica eventos de orden y no consume eventos de pago. En Release 2, `notificacion-ms` podra consumir `orden.cancelada`, `pago.validado` y `pago.rechazado` para avisar al usuario.
 
 ## C4 Nivel 3
 
@@ -374,7 +373,7 @@ flowchart LR
     class pasarela external
 ```
 
-Este nivel baja el zoom dentro de dos contenedores concretos del Release 1. `orden-ms` conserva la decision sincrona por Feign para validar cliente y catalogo antes de crear la orden, y solo publica `orden.creada`. `pago-ms` consume `orden.creada`, encapsula la pasarela externa y publica `pago.validado` o `pago.rechazado` para consumidores posteriores, como `notificacion-ms` en Release 2.
+Este nivel baja el zoom dentro de dos contenedores concretos del Release 1. `orden-ms` conserva la decision sincrona por Feign para validar cliente y catalogo antes de crear la orden, y publica eventos propios de orden como `orden.creada` y `orden.cancelada` cuando corresponde por falta de pago. `pago-ms` consume `orden.creada`, encapsula la pasarela externa y publica `pago.validado` o `pago.rechazado` para consumidores posteriores, como `notificacion-ms` en Release 2.
 
 ## C4 Nivel 4
 
@@ -801,8 +800,13 @@ classDiagram
         +listarPorCliente(Long) List~OrdenResponse~
     }
 
+    class OrdenVencidaJob {
+        +cancelarOrdenesVencidas() void
+    }
+
     class OrdenService {
         +crearOrden(CrearOrdenRequest) OrdenResponse
+        +cancelarPorFaltaPago(Long) OrdenResponse
         +buscarPorId(Long) OrdenResponse
         +listarPorCliente(Long) List~OrdenResponse~
     }
@@ -813,6 +817,7 @@ classDiagram
         -OrdenRepository ordenRepository
         -OrdenEventProducer ordenEventProducer
         +crearOrden(CrearOrdenRequest) OrdenResponse
+        +cancelarPorFaltaPago(Long) OrdenResponse
     }
 
     class ClienteClient {
@@ -830,6 +835,7 @@ classDiagram
 
     class OrdenEventProducer {
         +publicarOrdenCreada(OrdenCreadaEvent) void
+        +publicarOrdenCancelada(OrdenCanceladaEvent) void
     }
 
     class Orden {
@@ -843,6 +849,7 @@ classDiagram
     SecurityConfig --> JwtRoleConverter
     SecurityFilterChain ..> OrdenController : protege
     OrdenController --> OrdenService
+    OrdenVencidaJob --> OrdenService
     OrdenService <|.. OrdenServiceImpl
     OrdenServiceImpl ..> ClienteClient
     OrdenServiceImpl ..> CatalogoClient
