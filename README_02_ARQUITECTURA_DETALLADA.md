@@ -482,16 +482,6 @@ Codigo de ejemplo en `ubigeo-ms`.
 
 ```mermaid
 classDiagram
-    class SecurityConfig {
-        +securityFilterChain(HttpSecurity) SecurityFilterChain
-        +jwtAuthenticationConverter() Converter
-    }
-
-    class SecurityFilterChain {
-        +valida JWT
-        +valida roles por endpoint
-    }
-
     class UbigeoController {
         +listarPaises() List~PaisResponse~
         +listarDepartamentos(String) List~DepartamentoResponse~
@@ -529,8 +519,6 @@ classDiagram
         -String nombre
     }
 
-    SecurityConfig --> SecurityFilterChain
-    SecurityFilterChain ..> UbigeoController : protege
     UbigeoController --> UbigeoService
     UbigeoService <|.. UbigeoServiceImpl
     UbigeoServiceImpl ..> DistritoRepository
@@ -538,7 +526,7 @@ classDiagram
     DistritoRepository --> Distrito
 ```
 
-`ubigeo-ms` queda como servicio sincrono estable. Su responsabilidad es consultar datos territoriales, no evolucionar a mensajeria de eventos.
+`ubigeo-ms` queda como servicio sincrono estable y de consulta publica. Su responsabilidad es exponer datos territoriales conocidos, no proteger reglas de negocio ni evolucionar a mensajeria de eventos.
 
 ### Component - CatalogoService
 
@@ -556,11 +544,16 @@ classDiagram
         +valida roles por endpoint
     }
 
-    class CatalogoController {
-        +crearProducto(CrearProductoRequest) CatalogoItemResponse
+    class CatalogoConsultaController {
+        +listarActivos() List~CatalogoItemResponse~
         +buscarItem(Long) CatalogoItemResponse
         +validarItem(Long) CatalogoItemResponse
-        +listarActivos() List~CatalogoItemResponse~
+    }
+
+    class CatalogoAdminController {
+        +crearProducto(CrearProductoRequest) CatalogoItemResponse
+        +actualizarProducto(Long, ActualizarProductoRequest) CatalogoItemResponse
+        +desactivar(Long) void
     }
 
     class CatalogoService {
@@ -610,8 +603,9 @@ classDiagram
     }
 
     SecurityConfig --> SecurityFilterChain
-    SecurityFilterChain ..> CatalogoController : protege
-    CatalogoController --> CatalogoService
+    SecurityFilterChain ..> CatalogoAdminController : protege edicion
+    CatalogoConsultaController --> CatalogoService
+    CatalogoAdminController --> CatalogoService
     CatalogoService <|.. CatalogoServiceImpl
     CatalogoServiceImpl ..> ProductoRepository
     CatalogoServiceImpl ..> ConceptoRepository
@@ -621,7 +615,7 @@ classDiagram
     PrecioRepository --> Precio
 ```
 
-`catalogo-ms` expone productos, conceptos, familias, categorias, tipos y precios como un servicio REST estable. `orden-ms` lo consulta por Feign para decidir si un item puede entrar en una orden.
+`catalogo-ms` expone productos, conceptos, familias, categorias, tipos y precios como un servicio REST estable. Las consultas de catalogo pueden ser publicas porque muestran informacion comercial disponible para el usuario. La edicion del catalogo si queda protegida por JWT y roles. Cuando se crea una orden, la autenticacion ocurre en `orden-ms`; luego `orden-ms` consulta `catalogo-ms` por Feign para decidir si un item puede entrar en la orden.
 
 ### Component - OrdenService
 
