@@ -92,7 +92,49 @@ flowchart LR
 
 Este nivel baja el zoom dentro de dos contenedores concretos del Release 1. `cliente-ms` gestiona los datos del cliente y consulta a `ubigeo-ms` por Feign cuando necesita completar o validar datos geograficos como nacimiento, residencia o direccion.
 
-### Container - orden-ms y pago-ms
+### Container - orden-ms y catalogo-ms
+
+Componentes principales del flujo de orden y catalogo.
+
+```mermaid
+flowchart LR
+    subgraph orden["Container: orden-ms"]
+        ordenController["Component: OrdenController"]
+        ordenService["Component: OrdenService"]
+        catalogoClient["Component: CatalogoClient Feign"]
+        ordenRepo["Component: OrdenRepository"]
+        ordenMapper["Component: OrdenMapper"]
+        ordenDb[(Data Store: pagatu_orden_db)]
+
+        ordenController --> ordenService
+        ordenService --> catalogoClient
+        ordenService --> ordenRepo
+        ordenService --> ordenMapper
+        ordenRepo --> ordenDb
+    end
+
+    subgraph catalogo["Container: catalogo-ms"]
+        catalogoController["Component: CatalogoController"]
+        catalogoService["Component: CatalogoService"]
+        productoRepo["Component: ProductoRepository"]
+        precioRepo["Component: PrecioRepository"]
+        catalogoMapper["Component: CatalogoMapper"]
+        catalogoDb[(Data Store: pagatu_catalogo_db)]
+
+        catalogoController --> catalogoService
+        catalogoService --> productoRepo
+        catalogoService --> precioRepo
+        catalogoService --> catalogoMapper
+        productoRepo --> catalogoDb
+        precioRepo --> catalogoDb
+    end
+
+    catalogoClient --> catalogoController
+```
+
+Este nivel muestra la validacion sincrona de items antes de crear una orden. `orden-ms` consulta a `catalogo-ms` por Feign para validar productos, conceptos, familias, categorias, tipos, precios y estado activo.
+
+### Container - pago-ms y orden-ms
 
 Componentes principales del flujo de orden y pago.
 
