@@ -103,8 +103,7 @@ flowchart LR
     end
 
     routeLocator --> lbClient
-    lbClient -. usa instancias descubiertas .-> gatewayDiscoveryClient
-    gatewayDiscoveryClient -. consulta instancias .-> registry
+    lbClient -. descubre instancias .-> registry
     gatewayDiscoveryClient -. registro .-> registry
     authFilter -. valida token en borde .-> serviceApp
     securityChain -. valida autenticacion y autorizacion .-> serviceApp
@@ -114,7 +113,7 @@ flowchart LR
     eurekaConfigClient -. solicita config .-> configController
 ```
 
-Este nivel muestra la infraestructura propia del proyecto. `config` publica configuracion desde `config-repo`; `gateway`, `eureka` y los microservicios leen su configuracion como Config Client. `eureka` mantiene el registro de servicios; los microservicios se registran con `EurekaClient`; el `EurekaClient` del Gateway consulta instancias disponibles y `LoadBalancerClient` decide a que instancia enrutar. La seguridad se valida en dos capas: Gateway aplica una primera validacion de borde y cada microservicio conserva su propia validacion de autenticacion, autorizacion y roles.
+Este nivel muestra la infraestructura propia del proyecto. `config` publica configuracion desde `config-repo`; `gateway`, `eureka` y los microservicios leen su configuracion como Config Client. `eureka` mantiene el registro de servicios; los microservicios y el Gateway se registran con `EurekaClient`; el `LoadBalancerClient` del Gateway descubre instancias desde el registro de Eureka y decide a que instancia enrutar. La seguridad se valida en dos capas: Gateway aplica una primera validacion de borde y cada microservicio conserva su propia validacion de autenticacion, autorizacion y roles.
 
 ### Container - cliente-ms y ubigeo-ms
 
