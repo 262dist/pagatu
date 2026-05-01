@@ -443,7 +443,7 @@ flowchart LR
 
 Este nivel ya puede mostrar tecnologia y responsabilidades internas: Angular, Gateway, microservicios, bases de configuracion, servicios de soporte y sistemas externos consumidos por los contenedores.
 
-Las vistas dinamicas, C4 nivel 3 y C4 nivel 4 viven en `README_02_ARQUITECTURA_DETALLADA.md` para mantener este documento enfocado en la vision general.
+Las vistas dinamicas, C4 nivel 3 y C4 nivel 4 viven en [README_02_ARQUITECTURA_DETALLADA.md](README_02_ARQUITECTURA_DETALLADA.md) para mantener este documento enfocado en la vision general.
 
 ### C4: Despliegue por Ambientes
 

@@ -6,10 +6,10 @@
 
 | Documento | Rol |
 |---|---|
-| `README.md` | Entrada principal del repositorio. Resume el proposito del proyecto, el orden de trabajo por sesiones y donde leer cada tema. |
-| `README_01_ACERCA_DEL_PROYECTO.md` | Describe la vision concreta de Pagatu: microservicios, releases, flujo principal, C4 nivel 1 y 2, despliegue por ambientes, infraestructura, stack tecnico y estructura real del repositorio. |
-| `README_02_ARQUITECTURA_DETALLADA.md` | Contiene las vistas dinamicas, C4 nivel 3, C4 nivel 4 y ejemplos de componentes internos. |
-| `OFICIAL_ESTRUCTURA_ESTANDAR.md` | Define el patron oficial y generico de estructura para proyectos de microservicios. No forma parte exclusiva de Pagatu. |
+| [README.md](README.md) | Entrada principal del repositorio. Resume el proposito del proyecto, el orden de trabajo por sesiones y donde leer cada tema. |
+| [README_01_ACERCA_DEL_PROYECTO.md](README_01_ACERCA_DEL_PROYECTO.md) | Describe la vision concreta de Pagatu: microservicios, releases, flujo principal, C4 nivel 1 y 2, despliegue por ambientes, infraestructura, stack tecnico y estructura real del repositorio. |
+| [README_02_ARQUITECTURA_DETALLADA.md](README_02_ARQUITECTURA_DETALLADA.md) | Contiene las vistas dinamicas, C4 nivel 3, C4 nivel 4 y ejemplos de componentes internos. |
+| [OFICIAL_ESTRUCTURA_ESTANDAR.md](OFICIAL_ESTRUCTURA_ESTANDAR.md) | Define el patron oficial y generico de estructura para proyectos de microservicios. No forma parte exclusiva de Pagatu. |
 
 
 ## Ruta de Trabajo por Sesiones
@@ -81,7 +81,7 @@ Artefactos operativos:
 
 ## Lectura Recomendada
 
-1. Leer `README_01_ACERCA_DEL_PROYECTO.md` para entender que se va a construir y revisar la arquitectura general.
-2. Leer `README_02_ARQUITECTURA_DETALLADA.md` cuando se necesite bajar a vistas dinamicas, C4 nivel 3 o C4 nivel 4.
-3. Leer `OFICIAL_ESTRUCTURA_ESTANDAR.md` para entender el patron oficial de carpetas.
+1. Leer [README_01_ACERCA_DEL_PROYECTO.md](README_01_ACERCA_DEL_PROYECTO.md) para entender que se va a construir y revisar la arquitectura general.
+2. Leer [README_02_ARQUITECTURA_DETALLADA.md](README_02_ARQUITECTURA_DETALLADA.md) cuando se necesite bajar a vistas dinamicas, C4 nivel 3 o C4 nivel 4.
+3. Leer [OFICIAL_ESTRUCTURA_ESTANDAR.md](OFICIAL_ESTRUCTURA_ESTANDAR.md) para entender el patron oficial de carpetas.
 4. Trabajar las sesiones en orden, empezando por un microservicio independiente antes de agregar infraestructura.

@@ -1,6 +1,6 @@
 # Arquitectura Detallada de Pagatu
 
-Este documento contiene las vistas tecnicas de mayor detalle de Pagatu. Complementa a `README_01_ACERCA_DEL_PROYECTO.md`, que conserva la vision general, C4 nivel 1, C4 nivel 2 y despliegue por ambientes.
+Este documento contiene las vistas tecnicas de mayor detalle de Pagatu. Complementa a [README_01_ACERCA_DEL_PROYECTO.md](README_01_ACERCA_DEL_PROYECTO.md), que conserva la vision general, C4 nivel 1, C4 nivel 2 y despliegue por ambientes.
 
 ## Vistas Dinamicas
 
@@ -52,6 +52,45 @@ flowchart LR
 ```
 
 ## C4 Nivel 3
+
+### Container - cliente-ms y ubigeo-ms
+
+Componentes principales del flujo de cliente y ubigeo.
+
+```mermaid
+flowchart LR
+    subgraph cliente["Container: cliente-ms"]
+        clienteController["Component: ClienteController"]
+        clienteService["Component: ClienteService"]
+        ubigeoClient["Component: UbigeoClient Feign"]
+        clienteRepo["Component: ClienteRepository"]
+        clienteMapper["Component: ClienteMapper"]
+        clienteDb[(Data Store: pagatu_cliente_db)]
+
+        clienteController --> clienteService
+        clienteService --> ubigeoClient
+        clienteService --> clienteRepo
+        clienteService --> clienteMapper
+        clienteRepo --> clienteDb
+    end
+
+    subgraph ubigeo["Container: ubigeo-ms"]
+        ubigeoController["Component: UbigeoController"]
+        ubigeoService["Component: UbigeoService"]
+        ubigeoRepo["Component: UbigeoRepository"]
+        ubigeoMapper["Component: UbigeoMapper"]
+        ubigeoDb[(Data Store: pagatu_ubigeo_db)]
+
+        ubigeoController --> ubigeoService
+        ubigeoService --> ubigeoRepo
+        ubigeoService --> ubigeoMapper
+        ubigeoRepo --> ubigeoDb
+    end
+
+    ubigeoClient --> ubigeoController
+```
+
+Este nivel baja el zoom dentro de dos contenedores concretos del Release 1. `cliente-ms` gestiona los datos del cliente y consulta a `ubigeo-ms` por Feign cuando necesita completar o validar datos geograficos como nacimiento, residencia o direccion.
 
 ### Container - orden-ms y pago-ms
 
