@@ -565,8 +565,10 @@ flowchart TB
 
         subgraph devInfraBox[2. Infra compartida]
             devconfig[Config]
+            devconfigrepo[(config-repo)]
             deveureka[Eureka]
             devgateway[Gateway]
+            devconfig --> devconfigrepo
             deveureka -. solicita config .-> devconfig
             devgateway -. solicita config .-> devconfig
             devgateway -. discovery .-> deveureka
