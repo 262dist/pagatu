@@ -26,7 +26,7 @@ flowchart LR
     eureka -. registro .- gateway
 ```
 
-### Orden y Pago
+### Pago y Orden
 
 ```mermaid
 flowchart LR
@@ -88,12 +88,21 @@ flowchart LR
 
     subgraph ms["Container: Microservicios"]
         serviceApp["Component: Spring Boot App"]
+        securityConfig["Component: SecurityConfig"]
+        securityChain["Component: SecurityFilterChain"]
+        roleConverter["Component: JwtRoleConverter"]
         eurekaClient["Component: EurekaClient"]
         configClient["Component: ConfigClient"]
+
+        serviceApp --> securityConfig
+        securityConfig --> securityChain
+        securityConfig --> roleConverter
     end
 
     routeLocator --> lbClient
     lbClient -. discovery .-> discovery
+    authFilter -. valida token en borde .-> serviceApp
+    securityChain -. valida autenticacion y autorizacion .-> serviceApp
     serviceApp -. registro .-> registry
     configClient -. solicita config .-> configController
     eurekaClient -. registro .-> registry
@@ -101,7 +110,7 @@ flowchart LR
     eureka -. solicita config .-> configController
 ```
 
-Este nivel muestra la infraestructura propia del proyecto. `config` publica configuracion desde `config-repo`, `eureka` mantiene el registro de servicios y `gateway` enruta y balancea hacia los microservicios usando discovery.
+Este nivel muestra la infraestructura propia del proyecto. `config` publica configuracion desde `config-repo`, `eureka` mantiene el registro de servicios y `gateway` enruta y balancea hacia los microservicios usando discovery. La seguridad se valida en dos capas: Gateway aplica una primera validacion de borde y cada microservicio conserva su propia validacion de autenticacion, autorizacion y roles.
 
 ### Container - cliente-ms y ubigeo-ms
 
