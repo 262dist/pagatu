@@ -564,11 +564,14 @@ flowchart TB
         end
 
         subgraph devInfraBox[2. Infra compartida]
-            devconfig[Config]
-            devconfigrepo[(config-repo)]
-            deveureka[Eureka]
             devgateway[Gateway]
-            devconfig --> devconfigrepo
+            deveureka[Eureka]
+            subgraph devConfigBox[" "]
+                direction TB
+                devconfig[Config]
+                devconfigrepo[(config-repo)]
+                devconfig --> devconfigrepo
+            end
             deveureka -. config propia .-> devconfig
             devgateway -. config propia .-> devconfig
             devgateway -. discovery .-> deveureka
@@ -593,6 +596,7 @@ flowchart TB
         devgateway -. enruta y balancea .-> devjava
         devjava --> devmysql
         devobs -. scrape metrics / colecta logs .-> devjava
+        style devConfigBox fill:transparent,stroke:transparent,color:transparent
     end
 
     subgraph compose[PROD local - Docker Compose]
