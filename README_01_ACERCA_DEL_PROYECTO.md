@@ -286,6 +286,274 @@ Release 1 incluye los 6 microservicios core necesarios para explicar y validar e
 - Publicacion de `pago.validado`.
 - Configuracion centralizada, Eureka, Gateway, seguridad con `auth-ms`, trazabilidad, Docker y Kubernetes.
 
+
+
+## Arquitectura
+
+Pagatu se organiza como una arquitectura de microservicios con entrada unica por Gateway, configuracion centralizada, descubrimiento de servicios, comunicacion sincrona con Feign, comunicacion asincrona con Kafka y observabilidad con Prometheus, Loki y Grafana.
+
+En Release 1, el flujo principal se apoya en estos servicios:
+
+- `cliente-ms`: gestiona clientes, documentos, contacto y datos de nacimiento.
+- `ubigeo-ms`: provee datos geograficos por pais para completar informacion del cliente.
+- `catalogo-ms`: gestiona productos, conceptos de pago, familias, categorias, tipos y precios.
+- `orden-ms`: orquesta la creacion de ordenes; valida cliente y catalogo por Feign.
+- `pago-ms`: procesa eventos de orden creada, integra una pasarela externa como Niubiz o Culqi y publica resultados de pago.
+- `auth-ms`: gestiona autenticacion y control de acceso inicial sin depender aun de Keycloak.
+
+La comunicacion queda dividida por responsabilidad:
+
+- Gateway enruta las llamadas externas hacia los MS.
+- Config Server entrega configuracion centralizada desde `config-repo`.
+- Eureka permite descubrimiento de servicios.
+- Feign se usa cuando un MS necesita respuesta inmediata.
+- Circuit Breaker protege llamadas Feign ante fallos o latencia.
+- Kafka se usa cuando algo ya ocurrio y otros servicios deben reaccionar.
+- `pago-ms` encapsula la integracion con proveedores externos de pago para no acoplar el resto del sistema a Niubiz, Culqi u otro proveedor.
+- Prometheus recolecta metricas, Loki centraliza logs y Grafana visualiza ambos.
+- Angular consume el sistema siempre por Gateway.
+
+## Activos de Software de Pagatu
+
+Este mapa no es un nivel C4. Representa solo las aplicaciones y activos de alto nivel relacionados con Pagatu, agrupados por capa de alojamiento o servicio: SaaS, Cloud/IaaS y Local/Laboratorio.
+
+```mermaid
+flowchart TB
+    subgraph pagatuAssets["Activos del proyecto Pagatu"]
+        subgraph saas["SaaS"]
+            pasarela["Pasarela de pago<br/>Niubiz / Culqi"]
+        end
+
+        subgraph cloud["Cloud / IaaS"]
+            pagatuPlatform["Pagatu Platform<br/>pagos y comercio institucional"]
+            kafkaEmp["Kafka empresarial compartido"]
+            authApp["Auth institucional<br/>auth-ms, luego Keycloak"]
+            obsInst["Observabilidad institucional"]
+        end
+
+        subgraph local["Local / Laboratorio"]
+            devLocal["DEV local"]
+            prodLocal["PROD local Docker Compose"]
+            minikube["Minikube"]
+        end
+    end
+
+    pagatuPlatform --> authApp
+    pagatuPlatform --> kafkaEmp
+    pagatuPlatform --> obsInst
+    pagatuPlatform --> pasarela
+    devLocal -. simula .-> pagatuPlatform
+    prodLocal -. valida imagenes .-> pagatuPlatform
+    minikube -. simula k8s .-> pagatuPlatform
+
+    classDef external fill:#fff3cd,stroke:#d97706,stroke-width:2px,color:#111827
+    class pasarela external
+```
+
+Este mapa ayuda a explicar donde vive cada activo. Pagatu se presenta como una sola aplicacion del portafolio institucional y su destino natural es Cloud/IaaS; los entornos locales sirven para desarrollo, validacion y simulacion. Los detalles como Angular, Gateway, Config Server, Eureka y microservicios aparecen despues en los diagramas C4.
+
+## Arquitectura C4 de Pagatu
+
+### C4 Nivel 1: Contexto del Sistema
+
+```mermaid
+flowchart LR
+    auth["Software System: Auth institucional (auth-ms, luego Keycloak)"]
+    usuario["Person: Usuario institucional"]
+    pagatu["Software System: Pagatu Platform"]
+    kafkaCorp["External System: Kafka empresarial compartido"]
+    pasarela["External System: Pasarela de pago (Niubiz/Culqi)"]
+
+    usuario -->|se identifica| auth
+    usuario -->|usa| pagatu
+    auth -->|entrega identidad y roles| pagatu
+    pagatu -->|publica/consume eventos| kafkaCorp
+    pagatu -->|procesa pago| pasarela
+
+    classDef external fill:#fff3cd,stroke:#d97706,stroke-width:2px,color:#111827
+    class pasarela external
+```
+
+Este nivel muestra Pagatu como una caja principal frente a su actor institucional y sistemas compartidos. `auth-ms` aparece aqui porque representa la identidad institucional transversal: el mismo punto de autenticacion puede servir a Pagatu y tambien a otros modulos de la empresa, como planes de estudios, carga academica, matricula, contabilidad o LMS. En Release 1 se implementa como `auth-ms`; luego puede evolucionar a Keycloak sin cambiar la idea arquitectonica. Los detalles internos de Pagatu, como Angular, Gateway, microservicios, Config Server y Eureka, aparecen recien en el nivel de contenedores. Kafka se trata como plataforma empresarial compartida, no como componente exclusivo del proyecto.
+
+### C4 Nivel 2: Software System - Pagatu Platform
+
+Contenedores de Release 1.
+
+```mermaid
+flowchart LR
+    usuario["Person: Usuario institucional"] --> angular["Container: Angular App"]
+    angular --> gateway["Container: Gateway"]
+
+    gateway --> cliente["Container: cliente-ms"]
+    gateway --> ubigeo["Container: ubigeo-ms"]
+    gateway --> catalogo["Container: catalogo-ms"]
+    gateway --> orden["Container: orden-ms"]
+    gateway --> pago["Container: pago-ms"]
+    gateway --> auth["Container: auth-ms"]
+
+    cliente -- Feign + Circuit Breaker --> ubigeo
+    orden -- Feign + Circuit Breaker --> cliente
+    orden -- Feign + Circuit Breaker --> catalogo
+
+    orden -- publica orden.creada --> kafka["External System: Kafka empresarial compartido"]
+    kafka -- consume orden.creada --> pago
+    pago -- publica pago.validado --> kafka
+    pago -- autoriza/captura pago --> pasarela["External System: Pasarela de pago (Niubiz/Culqi)"]
+
+    config["Container: Config Server"] --> configrepo[(Data Store: config-repo)]
+    auth -. config .-> config
+    cliente -. config .-> config
+    ubigeo -. config .-> config
+    catalogo -. config .-> config
+    orden -. config .-> config
+    pago -. config .-> config
+    gateway -. config .-> config
+
+    eureka["Container: Eureka"] -. registro .- auth
+    eureka -. registro .- cliente
+    eureka -. registro .- ubigeo
+    eureka -. registro .- catalogo
+    eureka -. registro .- orden
+    eureka -. registro .- pago
+    eureka -. registro .- gateway
+
+    prometheus["External System: Prometheus compartido"] -. metrics .-> auth
+    prometheus -. metrics .-> gateway
+    prometheus -. metrics .-> cliente
+    prometheus -. metrics .-> ubigeo
+    prometheus -. metrics .-> catalogo
+    prometheus -. metrics .-> orden
+    prometheus -. metrics .-> pago
+
+    loki["External System: Loki compartido"] -. logs .-> auth
+    loki -. logs .-> gateway
+    loki -. logs .-> cliente
+    loki -. logs .-> ubigeo
+    loki -. logs .-> catalogo
+    loki -. logs .-> orden
+    loki -. logs .-> pago
+
+    grafana["External System: Grafana compartido"] --> prometheus
+    grafana --> loki
+
+    classDef external fill:#fff3cd,stroke:#d97706,stroke-width:2px,color:#111827
+    class pasarela external
+```
+
+Este nivel ya puede mostrar tecnologia y responsabilidades internas: Angular, Gateway, microservicios, bases de configuracion, servicios de soporte y sistemas externos consumidos por los contenedores.
+
+Las vistas dinamicas, C4 nivel 3 y C4 nivel 4 viven en `README_02_ARQUITECTURA_DETALLADA.md` para mantener este documento enfocado en la vision general.
+
+### C4: Despliegue por Ambientes
+
+```mermaid
+flowchart TB
+    subgraph dev[DEV local]
+        subgraph devMessagingBox[1. Mensajeria compartida]
+            devkafkacompose[platform/kafka-compose.yml]
+            devmessaging[(Kafka local)]
+            devkafkacompose --> devmessaging
+        end
+
+        subgraph devInfraBox[2. Infra compartida]
+            devgateway[Gateway]
+            deveureka[Eureka]
+            devconfig["Config<br/>(+config-repo)"]
+            deveureka -. solicita config .-> devconfig
+            devgateway -. solicita config .-> devconfig
+            devgateway -. discovery .-> deveureka
+        end
+
+        subgraph devMsBox[3. Microservicio]
+            devmscompose[docker-compose-dev.yml del MS]
+            devjava[MS con Java 17 local]
+            devmysql[(MySQL del MS)]
+            devmscompose --> devmysql
+        end
+
+        subgraph devObsBox[4. Observabilidad compartida]
+            devobscompose[platform/observability-compose.yml]
+            devobs[Prometheus + Loki + Grafana]
+            devobscompose --> devobs
+        end
+
+        devmessaging -. eventos segun MS .- devjava
+        devjava -. solicita config .-> devconfig
+        devjava -. registro .-> deveureka
+        devgateway -. enruta y balancea .-> devjava
+        devjava --> devmysql
+        devobs -. scrape metrics / colecta logs .-> devjava
+    end
+
+    subgraph compose[PROD local - Docker Compose]
+        subgraph messagingBox[Mensajeria compartida]
+            kafkacompose[platform/kafka-compose.yml]
+            composekafka[(Kafka)]
+            kafkacompose --> composekafka
+        end
+
+        subgraph composeinfraBox[Infra compartida]
+            infracompose[infra/docker-compose.yml]
+            composeinfra[Config + Eureka + Gateway]
+            infracompose --> composeinfra
+        end
+
+        subgraph observabilityBox[Observabilidad compartida]
+            obscompose[platform/observability-compose.yml]
+            obsstack[Prometheus + Loki + Grafana]
+            obscompose --> obsstack
+        end
+
+        subgraph composemsBox[Microservicio]
+            mscompose[docker-compose.yml del MS]
+            composems[MS como contenedor Java 17]
+            composedb[(MySQL del MS)]
+            mscompose --> composems
+            mscompose --> composedb
+        end
+
+        composems --> composeinfra
+        composems --> composekafka
+        composems --> obsstack
+    end
+
+    subgraph k8slocal[Kubernetes local - Minikube]
+        k8sinfra[Config + Eureka + Gateway]
+        k8sdeploy[Deployments de MS]
+        k8ssvc[Services ClusterIP por MS]
+        k8sdb[(MySQL por MS con StatefulSet/PVC)]
+        k8splatform[Kafka y observabilidad de laboratorio]
+        k8sing[Gateway o Ingress local]
+        k8sing --> k8ssvc
+        k8ssvc --> k8sdeploy
+        k8sdeploy --> k8sinfra
+        k8sdeploy --> k8sdb
+        k8sdeploy --> k8splatform
+    end
+
+    subgraph cloud[Nube / Produccion real]
+        cloudk8s[Kubernetes administrado para MS]
+        registry[Container Registry]
+        manageddb[(Base de datos administrada)]
+        managedkafka[(Kafka corporativo o administrado)]
+        managedobs[Observabilidad corporativa o cloud]
+        cloudinfra[Config/Eureka/Gateway o equivalentes cloud]
+        ingress[Ingress / Load Balancer]
+        registry --> cloudk8s
+        ingress --> cloudk8s
+        cloudk8s --> cloudinfra
+        cloudk8s --> manageddb
+        cloudk8s --> managedkafka
+        cloudk8s --> managedobs
+    end
+
+    dev --> compose --> k8slocal --> cloud
+```
+
+DEV local y PROD local representan el mismo sistema corriendo en paralelo, pero con distinto modo de ejecucion. En DEV local, los microservicios y la infraestructura (`config`, `eureka`, `gateway`) corren con Java 17 en la maquina del desarrollador para facilitar cambios rapidos; Docker se usa para dependencias como MySQL por MS, Kafka y observabilidad compartida. En PROD local, los mismos componentes se validan como imagenes y contenedores: la infraestructura propia se levanta con `infra/docker-compose.yml`, Kafka y observabilidad con `platform/`, y cada microservicio con su propio `<ms>/docker-compose.yml`. En Kubernetes local se usan manifiestos `k8s-local/`: los MS van como `Deployment`, los servicios internos como `ClusterIP`, MySQL puede ir como `StatefulSet` con PVC y el acceso externo pasa por Gateway o Ingress. En nube se usan imagenes desde registry, manifiestos `k8s/` para los MS, bases de datos administradas, Kafka corporativo/administrado y observabilidad de plataforma.
+
+
 ## Pendiente para Release 2
 
 No se incluyen por ahora:
