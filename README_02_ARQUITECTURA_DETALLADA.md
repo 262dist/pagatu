@@ -78,6 +78,51 @@ flowchart LR
     class pasarela external
 ```
 
+### Estados de Orden
+
+```mermaid
+stateDiagram-v2
+    [*] --> BORRADOR
+
+    BORRADOR --> VALIDANDO: crear orden
+    VALIDANDO --> RECHAZADA: cliente/catalogo invalido
+    VALIDANDO --> CREADA: validaciones correctas
+
+    CREADA --> PENDIENTE_PAGO: publica orden.creada
+    PENDIENTE_PAGO --> PAGADA: consume pago.validado
+    PENDIENTE_PAGO --> PAGO_RECHAZADO: consume pago.rechazado
+    PENDIENTE_PAGO --> CANCELADA: cancelacion solicitada
+
+    PAGO_RECHAZADO --> CANCELADA: cierre por rechazo
+    PAGADA --> [*]
+    CANCELADA --> [*]
+    RECHAZADA --> [*]
+```
+
+`orden-ms` cambia de estado por decisiones sincrónicas y por eventos. Las validaciones con `cliente-ms` y `catalogo-ms` ocurren antes de crear la orden. Luego publica `orden.creada`; desde ese punto, el resultado del pago llega de forma asincrona por Kafka.
+
+### Estados de Pago
+
+```mermaid
+stateDiagram-v2
+    [*] --> RECIBIDO
+
+    RECIBIDO --> REGISTRADO: consume orden.creada
+    REGISTRADO --> AUTORIZANDO: envia a pasarela
+    AUTORIZANDO --> VALIDADO: pasarela aprueba
+    AUTORIZANDO --> RECHAZADO: pasarela rechaza
+    AUTORIZANDO --> ERROR_PASARELA: timeout/error tecnico
+
+    ERROR_PASARELA --> AUTORIZANDO: reintento controlado
+    ERROR_PASARELA --> RECHAZADO: agotamiento de reintentos
+
+    VALIDADO --> NOTIFICADO: publica pago.validado
+    RECHAZADO --> NOTIFICADO: publica pago.rechazado
+    NOTIFICADO --> [*]
+```
+
+`pago-ms` nace a partir del evento `orden.creada`. Registra el intento de pago, llama a la pasarela externa y publica el resultado. El estado `ERROR_PASARELA` permite diferenciar un rechazo de negocio de un problema tecnico o de comunicacion.
+
 ## C4 Nivel 3
 
 ### Container - gateway, eureka y config
