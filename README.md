@@ -557,6 +557,12 @@ flowchart TB
             devinfrarun --> devshared
         end
 
+        subgraph devObsBox[Observabilidad compartida]
+            devobscompose[platform/observability-compose.yml]
+            devobs[Prometheus + Loki + Grafana]
+            devobscompose --> devobs
+        end
+
         subgraph devMsBox[Microservicio]
             devmscompose[docker-compose-dev.yml del MS]
             devjava[MS con Java 17 local]
@@ -564,14 +570,8 @@ flowchart TB
             devmscompose --> devmysql
         end
 
-        subgraph devObsBox[Observabilidad compartida]
-            devobscompose[platform/observability-compose.yml]
-            devobs[Prometheus + Loki + Grafana]
-            devobscompose --> devobs
-        end
-
         devmessaging -. eventos segun MS .- devjava
-        devshared --> devjava
+        devjava --> devshared
         devjava --> devmysql
         devjava -. metrics/logs .-> devobs
     end
