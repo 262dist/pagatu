@@ -567,8 +567,8 @@ flowchart TB
             devgateway[Gateway]
             deveureka[Eureka]
             devconfig["Config<br/>(+config-repo)"]
-            deveureka -. config propia .-> devconfig
-            devgateway -. config propia .-> devconfig
+            deveureka -. solicita config .-> devconfig
+            devgateway -. solicita config .-> devconfig
             devgateway -. discovery .-> deveureka
         end
 
@@ -586,7 +586,7 @@ flowchart TB
         end
 
         devmessaging -. eventos segun MS .- devjava
-        devjava -. config propia .-> devconfig
+        devjava -. solicita config .-> devconfig
         devjava -. registro .-> deveureka
         devgateway -. enruta y balancea .-> devjava
         devjava --> devmysql
