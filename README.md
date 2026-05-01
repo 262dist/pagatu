@@ -37,7 +37,7 @@ La comunicacion queda dividida por responsabilidad:
 
 ## Activos de Software de Pagatu
 
-Este mapa no es un nivel C4. Representa solo las aplicaciones y activos de alto nivel relacionados con Pagatu, agrupados por capa de alojamiento o servicio: On-Premise, IaaS y SaaS.
+Este mapa no es un nivel C4. Representa solo las aplicaciones y activos de alto nivel relacionados con Pagatu, agrupados por capa de alojamiento o servicio: SaaS, Cloud/IaaS y Local/Laboratorio.
 
 ```mermaid
 flowchart TB
@@ -46,25 +46,33 @@ flowchart TB
             pasarela["Pasarela de pago<br/>Niubiz / Culqi"]
         end
 
-        subgraph iaas["IaaS / Plataforma compartida"]
+        subgraph cloud["Cloud / IaaS"]
+            pagatuPlatform["Pagatu Platform<br/>pagos y comercio institucional"]
             kafkaEmp["Kafka empresarial compartido"]
             authApp["Auth institucional<br/>auth-ms, luego Keycloak"]
+            obsInst["Observabilidad institucional"]
         end
 
-        subgraph onprem["On-Premise / Proyecto Pagatu"]
-            pagatuPlatform["Pagatu Platform<br/>pagos y comercio institucional"]
+        subgraph local["Local / Laboratorio"]
+            devLocal["DEV local"]
+            prodLocal["PROD local Docker Compose"]
+            minikube["Minikube"]
         end
     end
 
     pagatuPlatform --> authApp
     pagatuPlatform --> kafkaEmp
+    pagatuPlatform --> obsInst
     pagatuPlatform --> pasarela
+    devLocal -. simula .-> pagatuPlatform
+    prodLocal -. valida imagenes .-> pagatuPlatform
+    minikube -. simula k8s .-> pagatuPlatform
 
     classDef external fill:#fff3cd,stroke:#d97706,stroke-width:2px,color:#111827
     class pasarela external
 ```
 
-Este mapa ayuda a explicar donde vive cada activo. Pagatu se presenta como una sola aplicacion del portafolio institucional; los detalles como Angular, Gateway, Config Server, Eureka y microservicios aparecen despues en los diagramas C4.
+Este mapa ayuda a explicar donde vive cada activo. Pagatu se presenta como una sola aplicacion del portafolio institucional y su destino natural es Cloud/IaaS; los entornos locales sirven para desarrollo, validacion y simulacion. Los detalles como Angular, Gateway, Config Server, Eureka y microservicios aparecen despues en los diagramas C4.
 
 ## Arquitectura C4 de Pagatu
 
