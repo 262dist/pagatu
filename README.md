@@ -566,7 +566,7 @@ flowchart TB
         subgraph devInfraBox[2. Infra compartida]
             devgateway[Gateway]
             deveureka[Eureka]
-            devconfig["Config<br/>config-repo"]
+            devconfig["Config<br/>(+config-repo)"]
             deveureka -. config propia .-> devconfig
             devgateway -. config propia .-> devconfig
             devgateway -. discovery .-> deveureka
