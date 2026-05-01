@@ -37,22 +37,22 @@ La comunicacion queda dividida por responsabilidad:
 
 ## Activos de Software de Pagatu
 
-Este mapa no es un nivel C4. Representa solo las aplicaciones y activos de alto nivel relacionados con Pagatu, agrupados por donde viven: proyecto Pagatu, plataforma empresarial compartida y proveedor externo.
+Este mapa no es un nivel C4. Representa solo las aplicaciones y activos de alto nivel relacionados con Pagatu, agrupados por capa de alojamiento o servicio: On-Premise, IaaS y SaaS.
 
 ```mermaid
 flowchart TB
     subgraph pagatuAssets["Activos del proyecto Pagatu"]
-        subgraph propias["Aplicaciones propias"]
-            pagatuPlatform["Pagatu Platform<br/>pagos y comercio institucional"]
-        end
-
-        subgraph compartidas["Plataforma empresarial compartida"]
-            authApp["Auth institucional<br/>auth-ms, luego Keycloak"]
-            kafkaEmp["Kafka empresarial compartido"]
-        end
-
-        subgraph externos["Proveedor externo"]
+        subgraph saas["SaaS"]
             pasarela["Pasarela de pago<br/>Niubiz / Culqi"]
+        end
+
+        subgraph iaas["IaaS / Plataforma compartida"]
+            kafkaEmp["Kafka empresarial compartido"]
+            authApp["Auth institucional<br/>auth-ms, luego Keycloak"]
+        end
+
+        subgraph onprem["On-Premise / Proyecto Pagatu"]
+            pagatuPlatform["Pagatu Platform<br/>pagos y comercio institucional"]
         end
     end
 
@@ -64,7 +64,7 @@ flowchart TB
     class pasarela external
 ```
 
-Este mapa ayuda a explicar que Pagatu se presenta como una sola aplicacion del portafolio institucional. Los detalles como Angular, Gateway, Config Server, Eureka y microservicios aparecen despues en los diagramas C4.
+Este mapa ayuda a explicar donde vive cada activo. Pagatu se presenta como una sola aplicacion del portafolio institucional; los detalles como Angular, Gateway, Config Server, Eureka y microservicios aparecen despues en los diagramas C4.
 
 ## Arquitectura C4 de Pagatu
 
