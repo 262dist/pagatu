@@ -63,7 +63,8 @@ flowchart LR
     orden -- publica orden.creada --> kafka["External System: Kafka empresarial compartido"]
     kafka -- consume orden.creada --> pago
     pago -- autoriza/captura pago --> pasarela["External System: Pasarela de pago (Niubiz/Culqi)"]
-    pago -- publica pago.validado --> kafka
+    pago -- publica pago.validado / pago.rechazado --> kafka
+    kafka -. consume eventos de pago .-> notificacion["Container futuro: notificacion-ms"]
 
     config["Container: Config Server"] --> configrepo[(Data Store: config-repo)]
     orden -. config .-> config
@@ -89,17 +90,15 @@ stateDiagram-v2
     VALIDANDO --> CREADA: validaciones correctas
 
     CREADA --> PENDIENTE_PAGO: publica orden.creada
-    PENDIENTE_PAGO --> PAGADA: consume pago.validado
-    PENDIENTE_PAGO --> PAGO_RECHAZADO: consume pago.rechazado
     PENDIENTE_PAGO --> CANCELADA: cancelacion solicitada
+    PENDIENTE_PAGO --> EXPIRADA: vencimiento de orden
 
-    PAGO_RECHAZADO --> CANCELADA: cierre por rechazo
-    PAGADA --> [*]
     CANCELADA --> [*]
+    EXPIRADA --> [*]
     RECHAZADA --> [*]
 ```
 
-`orden-ms` cambia de estado por decisiones sincrónicas y por eventos. Las validaciones con `cliente-ms` y `catalogo-ms` ocurren antes de crear la orden. Luego publica `orden.creada`; desde ese punto, el resultado del pago llega de forma asincrona por Kafka.
+`orden-ms` cambia de estado por decisiones propias del flujo de orden. Las validaciones con `cliente-ms` y `catalogo-ms` ocurren antes de crear la orden. Luego publica `orden.creada` y no consume `pago.validado` ni `pago.rechazado` en Release 1. El resultado del pago vive en `pago-ms`; otros servicios como notificaciones pueden reaccionar a los eventos de pago.
 
 ### Estados de Pago
 
@@ -122,6 +121,8 @@ stateDiagram-v2
 ```
 
 `pago-ms` nace a partir del evento `orden.creada`. Registra el intento de pago, llama a la pasarela externa y publica el resultado. El estado `ERROR_PASARELA` permite diferenciar un rechazo de negocio de un problema tecnico o de comunicacion.
+
+En Release 1, `pago-ms` consume eventos de orden y publica eventos de pago. `orden-ms` no consume eventos de pago. En Release 2, `notificacion-ms` podra consumir `pago.validado` y `pago.rechazado` para avisar al usuario.
 
 ## C4 Nivel 3
 
@@ -366,14 +367,14 @@ flowchart LR
     catalogoClient --> catalogo["Container: catalogo-ms"]
     ordenProducer --> kafka["External System: Kafka empresarial compartido"]
     kafka --> pagoConsumer
-    pagoProducer --> kafka
+    pagoProducer -- pago.validado / pago.rechazado --> kafka
     pasarelaClient --> pasarela["External System: Pasarela de pago (Niubiz/Culqi)"]
 
     classDef external fill:#fff3cd,stroke:#d97706,stroke-width:2px,color:#111827
     class pasarela external
 ```
 
-Este nivel baja el zoom dentro de dos contenedores concretos del Release 1. `orden-ms` conserva la decision sincrona por Feign para validar cliente y catalogo antes de crear la orden. `pago-ms` reacciona por Kafka a `orden.creada`, encapsula la pasarela externa y publica el resultado `pago.validado`.
+Este nivel baja el zoom dentro de dos contenedores concretos del Release 1. `orden-ms` conserva la decision sincrona por Feign para validar cliente y catalogo antes de crear la orden, y solo publica `orden.creada`. `pago-ms` consume `orden.creada`, encapsula la pasarela externa y publica `pago.validado` o `pago.rechazado` para consumidores posteriores, como `notificacion-ms` en Release 2.
 
 ## C4 Nivel 4
 
