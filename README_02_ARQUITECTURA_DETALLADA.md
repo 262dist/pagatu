@@ -2,6 +2,22 @@
 
 Este documento contiene las vistas tecnicas de mayor detalle de Pagatu. Complementa a [README_01_ACERCA_DEL_PROYECTO.md](README_01_ACERCA_DEL_PROYECTO.md), que conserva la vision general, C4 nivel 1, C4 nivel 2 y despliegue por ambientes.
 
+## Aspectos Transversales Pendientes
+
+Estos puntos no pertenecen a un solo microservicio. Deben mantenerse visibles durante el curso para que la arquitectura avance de forma consistente.
+
+| Aspecto | Que debe definirse |
+|---|---|
+| Contratos REST | Endpoints, DTO request/response, codigos de error y headers obligatorios como `X-Trace-ID`. |
+| Contratos Kafka | Topicos, eventos, payloads, versionado y comportamiento ante mensajes no procesables. |
+| Errores comunes | Formato estandar para validacion, recurso no encontrado, error de negocio, timeout, fallback y error de integracion. |
+| Versionado | Uso de rutas como `/api/v1/...` y compatibilidad de DTOs y eventos. |
+| Seguridad | Validacion en Gateway, validacion en cada MS, roles base, endpoints publicos/protegidos y propagacion del JWT. |
+| Observabilidad | Health checks, metricas HTTP, logs con `X-Trace-ID`, errores Feign, eventos Kafka y latencia por MS. |
+| Persistencia | Una base de datos por MS, migraciones Flyway, datos iniciales y prohibicion de compartir tablas entre MS. |
+| Ejecucion | Diferenciar DEV local, PROD local con Docker Compose, Kubernetes local y nube. |
+| Alcance Release 1 | Mantener fuera inventario, notificaciones, contabilidad, reportes y sagas complejas. |
+
 ## Vistas Dinamicas
 
 ### Cliente y Ubigeo
@@ -113,6 +129,26 @@ flowchart LR
 ```
 
 Este nivel muestra la infraestructura propia del proyecto. `config` publica configuracion desde `config-repo`; `gateway`, `eureka` y los microservicios leen su configuracion como Config Client. `eureka` mantiene el registro de servicios; los microservicios y el Gateway se registran con `EurekaClient`. Gateway usa `EurekaClient` para obtener instancias registradas y usa Spring Cloud LoadBalancer para elegir una instancia. La seguridad se valida en dos capas: Gateway aplica una primera validacion de borde y cada microservicio conserva su propia validacion de autenticacion, autorizacion y roles.
+
+Resumen de seguridad:
+
+```text
+Gateway:
+- Valida token en borde.
+- Enruta y balancea.
+
+Microservicios:
+- Validan JWT y roles otra vez.
+- Protegen reglas de negocio.
+
+Config Server:
+- Seguridad interna/operativa.
+- Protege configuracion.
+
+Eureka:
+- Seguridad interna/operativa.
+- Protege registro y discovery.
+```
 
 ### Container - cliente-ms y ubigeo-ms
 
