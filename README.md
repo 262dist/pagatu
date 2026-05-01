@@ -52,7 +52,7 @@ flowchart LR
     pagatu -->|procesa pago| pasarela
 
     classDef external fill:#fff3cd,stroke:#d97706,stroke-width:2px,color:#111827
-    class kafkaCorp,pasarela external
+    class pasarela external
 ```
 
 Este nivel muestra Pagatu como una caja principal frente a su actor institucional y sistemas compartidos. `auth-ms` aparece aqui porque representa la identidad institucional transversal: el mismo punto de autenticacion puede servir a Pagatu y tambien a otros modulos de la empresa, como planes de estudios, carga academica, matricula, contabilidad o LMS. En Release 1 se implementa como `auth-ms`; luego puede evolucionar a Keycloak sin cambiar la idea arquitectonica. Los detalles internos de Pagatu, como Angular, Gateway, microservicios, Config Server y Eureka, aparecen recien en el nivel de contenedores. Kafka se trata como plataforma empresarial compartida, no como componente exclusivo del proyecto.
@@ -119,7 +119,7 @@ flowchart LR
     grafana --> loki
 
     classDef external fill:#fff3cd,stroke:#d97706,stroke-width:2px,color:#111827
-    class kafka,pasarela,prometheus,loki,grafana external
+    class pasarela external
 ```
 
 Este nivel ya puede mostrar tecnologia y responsabilidades internas: Angular, Gateway, microservicios, bases de configuracion, servicios de soporte y sistemas externos consumidos por los contenedores.
@@ -168,7 +168,7 @@ flowchart LR
     eureka -. registro .- gateway
 
     classDef external fill:#fff3cd,stroke:#d97706,stroke-width:2px,color:#111827
-    class kafka,pasarela external
+    class pasarela external
 ```
 
 ### C4 Nivel 3: Container - orden-ms y pago-ms
@@ -217,7 +217,7 @@ flowchart LR
     pasarelaClient --> pasarela["External System: Pasarela de pago (Niubiz/Culqi)"]
 
     classDef external fill:#fff3cd,stroke:#d97706,stroke-width:2px,color:#111827
-    class kafka,pasarela external
+    class pasarela external
 ```
 
 Este nivel baja el zoom dentro de dos contenedores concretos del Release 1. `orden-ms` conserva la decision sincrona por Feign para validar cliente y catalogo antes de crear la orden. `pago-ms` reacciona por Kafka a `orden.creada`, encapsula la pasarela externa y publica el resultado `pago.validado`.
