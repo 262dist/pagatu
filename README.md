@@ -578,6 +578,7 @@ flowchart TB
             devmscompose[docker-compose-dev.yml del MS]
             devjava[MS con Java 17 local]
             devmysql[(MySQL del MS)]
+            devRegistroAnchor[" "]
             devmscompose --> devmysql
         end
 
@@ -589,10 +590,12 @@ flowchart TB
 
         devmessaging -. eventos segun MS .- devjava
         devjava -. config propia .-> devconfig
-        devjava -. registro .-> deveureka
+        devjava -. registro .-> devRegistroAnchor
+        devRegistroAnchor -.-> deveureka
         devgateway -. enruta y balancea .-> devjava
         devjava --> devmysql
         devobs -. scrape metrics / colecta logs .-> devjava
+        style devRegistroAnchor fill:transparent,stroke:transparent,color:transparent
     end
 
     subgraph compose[PROD local - Docker Compose]
