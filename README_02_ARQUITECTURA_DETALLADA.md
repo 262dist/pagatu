@@ -1,24 +1,34 @@
 # Arquitectura Detallada de Pagatu
 
-Este documento contiene las vistas tecnicas de mayor detalle de Pagatu. Complementa a [README_01_ACERCA_DEL_PROYECTO.md](README_01_ACERCA_DEL_PROYECTO.md), que conserva la vision general, C4 nivel 1, C4 nivel 2 y despliegue por ambientes.
-
-## Aspectos Transversales Pendientes
-
-Estos puntos no pertenecen a un solo microservicio. Deben mantenerse visibles durante el curso para que la arquitectura avance de forma consistente.
-
-| Aspecto | Que debe definirse |
-|---|---|
-| Contratos REST | Endpoints, DTO request/response, codigos de error y headers obligatorios como `X-Trace-ID`. |
-| Contratos Kafka | Topicos, eventos, payloads, versionado y comportamiento ante mensajes no procesables. |
-| Errores comunes | Formato estandar para validacion, recurso no encontrado, error de negocio, timeout, fallback y error de integracion. |
-| Versionado | Uso de rutas como `/api/v1/...` y compatibilidad de DTOs y eventos. |
-| Seguridad | Validacion en Gateway, validacion en cada MS, roles base, endpoints publicos/protegidos y propagacion del JWT. |
-| Observabilidad | Health checks, metricas HTTP, logs con `X-Trace-ID`, errores Feign, eventos Kafka y latencia por MS. |
-| Persistencia | Una base de datos por MS, migraciones Flyway, datos iniciales y prohibicion de compartir tablas entre MS. |
-| Ejecucion | Diferenciar DEV local, PROD local con Docker Compose, Kubernetes local y nube. |
-| Alcance Release 1 | Mantener fuera inventario, notificaciones, contabilidad, reportes y sagas complejas. |
+Este documento contiene las vistas tecnicas de mayor detalle de Pagatu. Complementa a [README_01_ACERCA_DEL_PROYECTO.md](README_01_ACERCA_DEL_PROYECTO.md), que conserva la vision general, C4 nivel 1, C4 nivel 2, despliegue por ambientes y aspectos transversales del proyecto.
 
 ## Vistas Dinamicas
+
+### Autenticacion y Acceso
+
+```mermaid
+flowchart LR
+    usuario["Person: Usuario institucional"] --> angular["Container: Angular App"]
+    angular --> gateway["Container: Gateway"]
+    gateway --> auth["Container: auth-ms"]
+    auth --> authDb[(Data Store: pagatu_auth_db)]
+    auth -- emite token --> angular
+
+    angular -- request con JWT --> gateway
+    gateway -- valida token en borde --> ms["Container: Microservicios"]
+    ms -- valida JWT y roles --> recurso["Reglas de negocio protegidas"]
+
+    config["Container: Config Server"] --> configrepo[(Data Store: config-repo)]
+    auth -. config .-> config
+    gateway -. config .-> config
+    ms -. config .-> config
+
+    eureka["Container: Eureka"] -. registro .- auth
+    eureka -. registro .- gateway
+    eureka -. registro .- ms
+```
+
+Este flujo muestra la separacion de responsabilidades: `auth-ms` emite el token inicial; Gateway valida en borde; cada microservicio vuelve a validar JWT y roles antes de ejecutar reglas de negocio.
 
 ### Cliente y Ubigeo
 
@@ -149,6 +159,40 @@ Eureka:
 - Seguridad interna/operativa.
 - Protege registro y discovery.
 ```
+
+### Container - auth-ms
+
+Componentes principales del servicio de autenticacion inicial.
+
+```mermaid
+flowchart LR
+    subgraph auth["Container: auth-ms"]
+        authController["Component: AuthController"]
+        usuarioController["Component: UsuarioController"]
+        authService["Component: AuthService"]
+        usuarioService["Component: UsuarioService"]
+        tokenService["Component: TokenService"]
+        passwordEncoder["Component: PasswordEncoder"]
+        usuarioRepo["Component: UsuarioRepository"]
+        rolRepo["Component: RolRepository"]
+        authDb[(Data Store: pagatu_auth_db)]
+
+        authController --> authService
+        usuarioController --> usuarioService
+        authService --> usuarioRepo
+        authService --> tokenService
+        authService --> passwordEncoder
+        usuarioService --> usuarioRepo
+        usuarioService --> rolRepo
+        usuarioRepo --> authDb
+        rolRepo --> authDb
+    end
+
+    gateway["Container: gateway"] --> authController
+    tokenService -. emite JWT .-> gateway
+```
+
+`auth-ms` se mantiene como autenticacion inicial de Release 1. Mas adelante puede reemplazarse o integrarse con Keycloak, pero los demas servicios seguiran consumiendo tokens y roles bajo la misma idea arquitectonica.
 
 ### Container - cliente-ms y ubigeo-ms
 
@@ -284,6 +328,80 @@ Este nivel baja el zoom dentro de dos contenedores concretos del Release 1. `ord
 
 ## C4 Nivel 4
 
+### Component - AuthService
+
+Codigo de ejemplo en `auth-ms`.
+
+```mermaid
+classDiagram
+    class AuthController {
+        +login(LoginRequest) AuthResponse
+        +refresh(RefreshTokenRequest) AuthResponse
+        +logout() void
+    }
+
+    class UsuarioController {
+        +crearUsuario(CrearUsuarioRequest) UsuarioResponse
+        +asignarRol(Long, String) UsuarioResponse
+    }
+
+    class AuthService {
+        +login(LoginRequest) AuthResponse
+        +refresh(RefreshTokenRequest) AuthResponse
+    }
+
+    class AuthServiceImpl {
+        -UsuarioRepository usuarioRepository
+        -TokenService tokenService
+        -PasswordEncoder passwordEncoder
+        +login(LoginRequest) AuthResponse
+    }
+
+    class UsuarioService {
+        +crearUsuario(CrearUsuarioRequest) UsuarioResponse
+        +asignarRol(Long, String) UsuarioResponse
+    }
+
+    class TokenService {
+        +generarToken(Usuario) String
+        +validarToken(String) boolean
+        +obtenerRoles(String) List~String~
+    }
+
+    class UsuarioRepository {
+        +findByUsername(String) Optional~Usuario~
+        +save(Usuario) Usuario
+    }
+
+    class RolRepository {
+        +findByNombre(String) Optional~Rol~
+    }
+
+    class Usuario {
+        -Long id
+        -String username
+        -String passwordHash
+        -Boolean activo
+    }
+
+    class Rol {
+        -Long id
+        -String nombre
+    }
+
+    AuthController --> AuthService
+    UsuarioController --> UsuarioService
+    AuthService <|.. AuthServiceImpl
+    AuthServiceImpl ..> UsuarioRepository
+    AuthServiceImpl ..> TokenService
+    UsuarioService ..> UsuarioRepository
+    UsuarioService ..> RolRepository
+    UsuarioRepository --> Usuario
+    RolRepository --> Rol
+```
+
+Este ejemplo representa la autenticacion inicial del curso. No busca reemplazar a Keycloak en escenarios empresariales completos; sirve para entender tokens, roles y control de acceso antes de integrar un proveedor de identidad.
+
 ### Component - ClienteService
 
 Codigo de ejemplo en `cliente-ms`.
@@ -357,6 +475,153 @@ classDiagram
     ClienteServiceImpl ..> ClienteMapper
     ClienteRepository --> Cliente
 ```
+
+### Component - UbigeoService
+
+Codigo de ejemplo en `ubigeo-ms`.
+
+```mermaid
+classDiagram
+    class SecurityConfig {
+        +securityFilterChain(HttpSecurity) SecurityFilterChain
+        +jwtAuthenticationConverter() Converter
+    }
+
+    class SecurityFilterChain {
+        +valida JWT
+        +valida roles por endpoint
+    }
+
+    class UbigeoController {
+        +listarPaises() List~PaisResponse~
+        +listarDepartamentos(String) List~DepartamentoResponse~
+        +listarProvincias(String) List~ProvinciaResponse~
+        +listarDistritos(String) List~DistritoResponse~
+        +buscarDistrito(String) UbigeoResponse
+    }
+
+    class UbigeoService {
+        +listarPaises() List~PaisResponse~
+        +buscarDistrito(String) UbigeoResponse
+    }
+
+    class UbigeoServiceImpl {
+        -PaisRepository paisRepository
+        -DepartamentoRepository departamentoRepository
+        -ProvinciaRepository provinciaRepository
+        -DistritoRepository distritoRepository
+        -UbigeoMapper ubigeoMapper
+        +buscarDistrito(String) UbigeoResponse
+    }
+
+    class DistritoRepository {
+        +findByCodigo(String) Optional~Distrito~
+        +findByProvinciaCodigo(String) List~Distrito~
+    }
+
+    class UbigeoMapper {
+        +toResponse(Distrito) UbigeoResponse
+    }
+
+    class Distrito {
+        -Long id
+        -String codigo
+        -String nombre
+    }
+
+    SecurityConfig --> SecurityFilterChain
+    SecurityFilterChain ..> UbigeoController : protege
+    UbigeoController --> UbigeoService
+    UbigeoService <|.. UbigeoServiceImpl
+    UbigeoServiceImpl ..> DistritoRepository
+    UbigeoServiceImpl ..> UbigeoMapper
+    DistritoRepository --> Distrito
+```
+
+`ubigeo-ms` queda como servicio sincrono estable. Su responsabilidad es consultar datos territoriales, no evolucionar a mensajeria de eventos.
+
+### Component - CatalogoService
+
+Codigo de ejemplo en `catalogo-ms`.
+
+```mermaid
+classDiagram
+    class SecurityConfig {
+        +securityFilterChain(HttpSecurity) SecurityFilterChain
+        +jwtAuthenticationConverter() Converter
+    }
+
+    class SecurityFilterChain {
+        +valida JWT
+        +valida roles por endpoint
+    }
+
+    class CatalogoController {
+        +crearProducto(CrearProductoRequest) CatalogoItemResponse
+        +buscarItem(Long) CatalogoItemResponse
+        +validarItem(Long) CatalogoItemResponse
+        +listarActivos() List~CatalogoItemResponse~
+    }
+
+    class CatalogoService {
+        +crearProducto(CrearProductoRequest) CatalogoItemResponse
+        +validarItem(Long) CatalogoItemResponse
+        +desactivar(Long) void
+    }
+
+    class CatalogoServiceImpl {
+        -ProductoRepository productoRepository
+        -ConceptoRepository conceptoRepository
+        -PrecioRepository precioRepository
+        -CatalogoMapper catalogoMapper
+        +validarItem(Long) CatalogoItemResponse
+    }
+
+    class ProductoRepository {
+        +findById(Long) Optional~Producto~
+        +findByActivoTrue() List~Producto~
+        +save(Producto) Producto
+    }
+
+    class ConceptoRepository {
+        +findById(Long) Optional~Concepto~
+    }
+
+    class PrecioRepository {
+        +findVigenteByItemId(Long) Optional~Precio~
+    }
+
+    class CatalogoMapper {
+        +toResponse(Producto, Precio) CatalogoItemResponse
+    }
+
+    class Producto {
+        -Long id
+        -String nombre
+        -String tipo
+        -Boolean activo
+    }
+
+    class Precio {
+        -Long id
+        -BigDecimal monto
+        -LocalDate fechaInicio
+        -LocalDate fechaFin
+    }
+
+    SecurityConfig --> SecurityFilterChain
+    SecurityFilterChain ..> CatalogoController : protege
+    CatalogoController --> CatalogoService
+    CatalogoService <|.. CatalogoServiceImpl
+    CatalogoServiceImpl ..> ProductoRepository
+    CatalogoServiceImpl ..> ConceptoRepository
+    CatalogoServiceImpl ..> PrecioRepository
+    CatalogoServiceImpl ..> CatalogoMapper
+    ProductoRepository --> Producto
+    PrecioRepository --> Precio
+```
+
+`catalogo-ms` expone productos, conceptos, familias, categorias, tipos y precios como un servicio REST estable. `orden-ms` lo consulta por Feign para decidir si un item puede entrar en una orden.
 
 ### Component - OrdenService
 
