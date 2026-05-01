@@ -572,7 +572,7 @@ flowchart TB
         end
 
         devmessaging -. eventos segun MS .- devjava
-        devshared -. usado por .-> devjava
+        devgateway -. usado por .-> devjava
         devjava --> devmysql
         devjava -. metrics/logs .-> devobs
     end
