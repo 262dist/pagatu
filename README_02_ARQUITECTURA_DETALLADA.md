@@ -107,6 +107,7 @@ flowchart LR
 
     routeLocator --> lbClient
     gatewayDiscoveryClient -. discovery .-> discovery
+    gatewayDiscoveryClient -. registro .-> registry
     authFilter -. valida token en borde .-> serviceApp
     securityChain -. valida autenticacion y autorizacion .-> serviceApp
     configClient -. solicita config .-> configController
