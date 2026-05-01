@@ -555,7 +555,9 @@ flowchart TB
             devconfig[Config]
             deveureka[Eureka]
             devgateway[Gateway]
-            devconfig --> deveureka --> devgateway
+            deveureka -. solicita config .-> devconfig
+            devgateway -. solicita config .-> devconfig
+            devgateway -. discovery .-> deveureka
         end
 
         subgraph devObsBox[Observabilidad compartida]
@@ -572,7 +574,9 @@ flowchart TB
         end
 
         devmessaging -. eventos segun MS .- devjava
-        devgateway -. usado por .-> devjava
+        devjava -. solicita config .-> devconfig
+        devjava -. registro .-> deveureka
+        devgateway -. enruta .-> devjava
         devjava --> devmysql
         devjava -. metrics/logs .-> devobs
     end
