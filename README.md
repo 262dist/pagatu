@@ -35,59 +35,56 @@ La comunicacion queda dividida por responsabilidad:
 - Prometheus recolecta metricas, Loki centraliza logs y Grafana visualiza ambos.
 - Angular consume el sistema siempre por Gateway.
 
-## Activos de Software de la Empresa
+## Activos de Software de Pagatu
 
-Este mapa no es un nivel C4. Representa el portafolio institucional donde Pagatu se ubica como un activo nuevo de pagos y comercio, conviviendo con plataformas compartidas, sistemas academicos, sistemas administrativos, SaaS y proveedores externos.
+Este mapa no es un nivel C4. Representa solo los activos relacionados con este proyecto: la plataforma Pagatu, sus servicios core, la infraestructura propia, la plataforma compartida de laboratorio/empresa y la pasarela externa de pago.
 
 ```mermaid
 flowchart TB
-    subgraph empresa["Empresa / Institucion"]
-        subgraph saas["SaaS y proveedores externos"]
-            lms["LMS / B-Learning"]
-            turnitin["Turnitin"]
-            mensajeria["Mensajeria online"]
-            correo["Email / Mailchimp"]
-            pasarela["Pasarela de pago<br/>Niubiz / Culqi"]
+    subgraph pagatuAssets["Activos del proyecto Pagatu"]
+        subgraph core["Microservicios core"]
+            authAsset["auth-ms<br/>luego Keycloak"]
+            ubigeoAsset["ubigeo-ms"]
+            clienteAsset["cliente-ms"]
+            catalogoAsset["catalogo-ms"]
+            ordenAsset["orden-ms"]
+            pagoAsset["pago-ms"]
         end
 
-        subgraph plataforma["Plataforma compartida empresarial"]
-            authInst["Auth institucional<br/>auth-ms, luego Keycloak"]
+        subgraph infraAsset["Infraestructura propia"]
+            configAsset["config"]
+            eurekaAsset["eureka"]
+            gatewayAsset["gateway"]
+            configRepoAsset["config-repo"]
+        end
+
+        subgraph platformAsset["Plataforma compartida"]
             kafkaEmp["Kafka empresarial compartido"]
-            obsEmp["Observabilidad institucional<br/>Prometheus / Loki / Grafana"]
-            registryEmp["Container Registry"]
+            obsEmp["Observabilidad<br/>Prometheus / Loki / Grafana"]
         end
 
-        subgraph academico["Sistemas academicos"]
-            planes["Planes de estudios"]
-            carga["Carga academica"]
-            matricula["Matricula"]
-            aula["Aula virtual / LMS"]
-        end
-
-        subgraph administrativo["Sistemas administrativos"]
-            contabilidad["Contabilidad"]
-            tesoreria["Tesoreria"]
-            rrhh["RRHH"]
-            reportes["Reportes institucionales"]
-        end
-
-        subgraph nuevos["Nuevos activos digitales"]
-            pagatuAsset["Pagatu Platform<br/>pagos y comercio institucional"]
+        subgraph externalAsset["Proveedor externo"]
+            pasarela["Pasarela de pago<br/>Niubiz / Culqi"]
         end
     end
 
-    pagatuAsset --> authInst
-    pagatuAsset --> kafkaEmp
-    pagatuAsset --> obsEmp
-    pagatuAsset --> pasarela
-    pagatuAsset -. integra futuro .-> contabilidad
-    pagatuAsset -. integra futuro .-> matricula
+    gatewayAsset --> authAsset
+    gatewayAsset --> clienteAsset
+    gatewayAsset --> ubigeoAsset
+    gatewayAsset --> catalogoAsset
+    gatewayAsset --> ordenAsset
+    gatewayAsset --> pagoAsset
+    configAsset --> configRepoAsset
+    ordenAsset --> kafkaEmp
+    kafkaEmp --> pagoAsset
+    pagoAsset --> pasarela
+    core -. metrics/logs .-> obsEmp
 
     classDef external fill:#fff3cd,stroke:#d97706,stroke-width:2px,color:#111827
     class pasarela external
 ```
 
-Este mapa ayuda a explicar que Pagatu no existe aislado: usa capacidades institucionales compartidas y puede integrarse despues con matricula, contabilidad, reportes u otros sistemas.
+Este mapa ayuda a explicar que Pagatu se compone de activos propios y activos compartidos. Kafka y observabilidad no son de un microservicio especifico; la pasarela de pago si es un proveedor externo a la empresa.
 
 ## Arquitectura C4 de Pagatu
 
