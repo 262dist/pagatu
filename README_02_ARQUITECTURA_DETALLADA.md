@@ -64,15 +64,19 @@ flowchart LR
         authFilter["Component: AuthFilter"]
         traceFilter["Component: CorrelationIdFilter"]
         lbClient["Component: LoadBalancerClient"]
+        gatewayDiscoveryClient["Component: EurekaClient"]
+        gatewayConfigClient["Component: ConfigClient"]
 
         routeLocator --> authFilter
         authFilter --> traceFilter
         traceFilter --> lbClient
+        lbClient --> gatewayDiscoveryClient
     end
 
     subgraph eureka["Container: eureka"]
         registry["Component: ServiceRegistry"]
         discovery["Component: DiscoveryClient"]
+        eurekaConfigClient["Component: ConfigClient"]
 
         registry --> discovery
     end
@@ -95,22 +99,23 @@ flowchart LR
         configClient["Component: ConfigClient"]
 
         serviceApp --> securityConfig
+        serviceApp --> eurekaClient
+        serviceApp --> configClient
         securityConfig --> securityChain
         securityConfig --> roleConverter
     end
 
     routeLocator --> lbClient
-    lbClient -. discovery .-> discovery
+    gatewayDiscoveryClient -. discovery .-> discovery
     authFilter -. valida token en borde .-> serviceApp
     securityChain -. valida autenticacion y autorizacion .-> serviceApp
-    serviceApp -. registro .-> registry
     configClient -. solicita config .-> configController
     eurekaClient -. registro .-> registry
-    gateway -. solicita config .-> configController
-    eureka -. solicita config .-> configController
+    gatewayConfigClient -. solicita config .-> configController
+    eurekaConfigClient -. solicita config .-> configController
 ```
 
-Este nivel muestra la infraestructura propia del proyecto. `config` publica configuracion desde `config-repo`, `eureka` mantiene el registro de servicios y `gateway` enruta y balancea hacia los microservicios usando discovery. La seguridad se valida en dos capas: Gateway aplica una primera validacion de borde y cada microservicio conserva su propia validacion de autenticacion, autorizacion y roles.
+Este nivel muestra la infraestructura propia del proyecto. `config` publica configuracion desde `config-repo`; `gateway`, `eureka` y los microservicios leen su configuracion como Config Client. `eureka` mantiene el registro de servicios; los microservicios se registran con `EurekaClient` y `gateway` usa discovery/load balancing para enrutar hacia las instancias disponibles. La seguridad se valida en dos capas: Gateway aplica una primera validacion de borde y cada microservicio conserva su propia validacion de autenticacion, autorizacion y roles.
 
 ### Container - cliente-ms y ubigeo-ms
 
