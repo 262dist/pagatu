@@ -35,6 +35,62 @@ La comunicacion queda dividida por responsabilidad:
 - Prometheus recolecta metricas, Loki centraliza logs y Grafana visualiza ambos.
 - Angular consume el sistema siempre por Gateway.
 
+## Activos de Software de la Empresa
+
+Este mapa no es un nivel C4. Representa el portafolio institucional donde Pagatu se ubica como un activo nuevo de pagos y comercio, conviviendo con plataformas compartidas, sistemas academicos, sistemas administrativos, SaaS y proveedores externos.
+
+```mermaid
+flowchart TB
+    subgraph empresa["Empresa / Institucion"]
+        subgraph saas["SaaS y proveedores externos"]
+            lms["LMS / B-Learning"]
+            turnitin["Turnitin"]
+            mensajeria["Mensajeria online"]
+            correo["Email / Mailchimp"]
+            pasarela["Pasarela de pago<br/>Niubiz / Culqi"]
+        end
+
+        subgraph plataforma["Plataforma compartida empresarial"]
+            authInst["Auth institucional<br/>auth-ms, luego Keycloak"]
+            kafkaEmp["Kafka empresarial compartido"]
+            obsEmp["Observabilidad institucional<br/>Prometheus / Loki / Grafana"]
+            registryEmp["Container Registry"]
+        end
+
+        subgraph academico["Sistemas academicos"]
+            planes["Planes de estudios"]
+            carga["Carga academica"]
+            matricula["Matricula"]
+            aula["Aula virtual / LMS"]
+        end
+
+        subgraph administrativo["Sistemas administrativos"]
+            contabilidad["Contabilidad"]
+            tesoreria["Tesoreria"]
+            rrhh["RRHH"]
+            reportes["Reportes institucionales"]
+        end
+
+        subgraph nuevos["Nuevos activos digitales"]
+            pagatuAsset["Pagatu Platform<br/>pagos y comercio institucional"]
+        end
+    end
+
+    pagatuAsset --> authInst
+    pagatuAsset --> kafkaEmp
+    pagatuAsset --> obsEmp
+    pagatuAsset --> pasarela
+    pagatuAsset -. integra futuro .-> contabilidad
+    pagatuAsset -. integra futuro .-> matricula
+
+    classDef external fill:#fff3cd,stroke:#d97706,stroke-width:2px,color:#111827
+    class pasarela external
+```
+
+Este mapa ayuda a explicar que Pagatu no existe aislado: usa capacidades institucionales compartidas y puede integrarse despues con matricula, contabilidad, reportes u otros sistemas.
+
+## Arquitectura C4 de Pagatu
+
 ### C4 Nivel 1: Contexto del Sistema
 
 ```mermaid
