@@ -569,8 +569,8 @@ flowchart TB
             deveureka[Eureka]
             devgateway[Gateway]
             devconfig --> devconfigrepo
-            deveureka -. solicita config .-> devconfig
-            devgateway -. solicita config .-> devconfig
+            deveureka -. config propia .-> devconfig
+            devgateway -. config propia .-> devconfig
             devgateway -. discovery .-> deveureka
         end
 
@@ -588,11 +588,11 @@ flowchart TB
         end
 
         devmessaging -. eventos segun MS .- devjava
-        devjava -. solicita config .-> devconfig
+        devjava -. config propia .-> devconfig
         devjava -. registro .-> deveureka
         devgateway -. enruta y balancea .-> devjava
         devjava --> devmysql
-        devjava -. metrics/logs .-> devobs
+        devobs -. scrape metrics / colecta logs .-> devjava
     end
 
     subgraph compose[PROD local - Docker Compose]
