@@ -545,13 +545,13 @@ Estos ejemplos de codigo muestran el estilo esperado dentro de cada microservici
 ```mermaid
 flowchart TB
     subgraph dev[DEV local]
-        subgraph devMessagingBox[Mensajeria compartida]
+        subgraph devMessagingBox[1. Mensajeria compartida]
             devkafkacompose[platform/kafka-compose.yml]
             devmessaging[(Kafka local)]
             devkafkacompose --> devmessaging
         end
 
-        subgraph devInfraBox[Infra compartida]
+        subgraph devInfraBox[2. Infra compartida]
             devconfig[Config]
             deveureka[Eureka]
             devgateway[Gateway]
@@ -560,17 +560,17 @@ flowchart TB
             devgateway -. discovery .-> deveureka
         end
 
-        subgraph devObsBox[Observabilidad compartida]
-            devobscompose[platform/observability-compose.yml]
-            devobs[Prometheus + Loki + Grafana]
-            devobscompose --> devobs
-        end
-
-        subgraph devMsBox[Microservicio]
+        subgraph devMsBox[3. Microservicio]
             devmscompose[docker-compose-dev.yml del MS]
             devjava[MS con Java 17 local]
             devmysql[(MySQL del MS)]
             devmscompose --> devmysql
+        end
+
+        subgraph devObsBox[4. Observabilidad compartida]
+            devobscompose[platform/observability-compose.yml]
+            devobs[Prometheus + Loki + Grafana]
+            devobscompose --> devobs
         end
 
         devmessaging -. eventos segun MS .- devjava
