@@ -53,6 +53,56 @@ flowchart LR
 
 ## C4 Nivel 3
 
+### Container - gateway, eureka y config
+
+Componentes principales de la infraestructura propia de Pagatu.
+
+```mermaid
+flowchart LR
+    subgraph gateway["Container: gateway"]
+        routeLocator["Component: RouteLocator"]
+        authFilter["Component: AuthFilter"]
+        traceFilter["Component: CorrelationIdFilter"]
+        lbClient["Component: LoadBalancerClient"]
+
+        routeLocator --> authFilter
+        authFilter --> traceFilter
+        traceFilter --> lbClient
+    end
+
+    subgraph eureka["Container: eureka"]
+        registry["Component: ServiceRegistry"]
+        discovery["Component: DiscoveryClient"]
+
+        registry --> discovery
+    end
+
+    subgraph config["Container: config"]
+        configController["Component: ConfigController"]
+        nativeRepo["Component: NativeEnvironmentRepository"]
+        configRepo[(Data Store: config-repo)]
+
+        configController --> nativeRepo
+        nativeRepo --> configRepo
+    end
+
+    subgraph ms["Container: Microservicios"]
+        serviceApp["Component: Spring Boot App"]
+        eurekaClient["Component: EurekaClient"]
+        configClient["Component: ConfigClient"]
+    end
+
+    routeLocator --> lbClient
+    lbClient -. discovery .-> discovery
+    serviceApp -. registro .-> registry
+    configClient -. solicita config .-> configController
+    eurekaClient -. registro .-> registry
+    gateway -. solicita config .-> configController
+    eureka -. solicita config .-> configController
+```
+
+Este nivel muestra la infraestructura propia del proyecto. `config` publica configuracion desde `config-repo`, `eureka` mantiene el registro de servicios y `gateway` enruta y balancea hacia los microservicios usando discovery.
+
 ### Container - cliente-ms y ubigeo-ms
 
 Componentes principales del flujo de cliente y ubigeo.
