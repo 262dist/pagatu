@@ -37,54 +37,38 @@ La comunicacion queda dividida por responsabilidad:
 
 ## Activos de Software de Pagatu
 
-Este mapa no es un nivel C4. Representa solo los activos relacionados con este proyecto: la plataforma Pagatu, sus servicios core, la infraestructura propia, la plataforma compartida de laboratorio/empresa y la pasarela externa de pago.
+Este mapa no es un nivel C4. Representa solo las aplicaciones y activos de alto nivel relacionados con Pagatu, sin detallar microservicios ni componentes tecnicos internos.
 
 ```mermaid
 flowchart TB
     subgraph pagatuAssets["Activos del proyecto Pagatu"]
-        subgraph core["Microservicios core"]
-            authAsset["auth-ms<br/>luego Keycloak"]
-            ubigeoAsset["ubigeo-ms"]
-            clienteAsset["cliente-ms"]
-            catalogoAsset["catalogo-ms"]
-            ordenAsset["orden-ms"]
-            pagoAsset["pago-ms"]
+        subgraph aplicaciones["Aplicaciones"]
+            pagatuPlatform["Pagatu Platform<br/>pagos y comercio institucional"]
+            angularApp["Pagatu Web<br/>Angular"]
+            authApp["Auth institucional<br/>auth-ms, luego Keycloak"]
         end
 
-        subgraph infraAsset["Infraestructura propia"]
-            configAsset["config"]
-            eurekaAsset["eureka"]
-            gatewayAsset["gateway"]
-            configRepoAsset["config-repo"]
-        end
-
-        subgraph platformAsset["Plataforma compartida"]
+        subgraph plataforma["Plataforma compartida"]
             kafkaEmp["Kafka empresarial compartido"]
-            obsEmp["Observabilidad<br/>Prometheus / Loki / Grafana"]
+            obsEmp["Observabilidad institucional"]
         end
 
-        subgraph externalAsset["Proveedor externo"]
+        subgraph externos["Proveedor externo"]
             pasarela["Pasarela de pago<br/>Niubiz / Culqi"]
         end
     end
 
-    gatewayAsset --> authAsset
-    gatewayAsset --> clienteAsset
-    gatewayAsset --> ubigeoAsset
-    gatewayAsset --> catalogoAsset
-    gatewayAsset --> ordenAsset
-    gatewayAsset --> pagoAsset
-    configAsset --> configRepoAsset
-    ordenAsset --> kafkaEmp
-    kafkaEmp --> pagoAsset
-    pagoAsset --> pasarela
-    core -. metrics/logs .-> obsEmp
+    angularApp --> pagatuPlatform
+    pagatuPlatform --> authApp
+    pagatuPlatform --> kafkaEmp
+    pagatuPlatform --> obsEmp
+    pagatuPlatform --> pasarela
 
     classDef external fill:#fff3cd,stroke:#d97706,stroke-width:2px,color:#111827
     class pasarela external
 ```
 
-Este mapa ayuda a explicar que Pagatu se compone de activos propios y activos compartidos. Kafka y observabilidad no son de un microservicio especifico; la pasarela de pago si es un proveedor externo a la empresa.
+Este mapa ayuda a explicar que Pagatu es una aplicacion del portafolio institucional. Los detalles como Gateway, Config Server, Eureka y microservicios aparecen despues en los diagramas C4.
 
 ## Arquitectura C4 de Pagatu
 
