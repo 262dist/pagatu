@@ -83,3 +83,4 @@ test-output/
 *.p12
 *.jks
 secrets/
+.blackboxcli/
