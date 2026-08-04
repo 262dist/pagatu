@@ -1,0 +1,2134 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://262dist.github.io/pagatu/propuesta-proyecto/README_02_ARQUITECTURA_DETALLADA/">
+      
+      
+        <link rel="prev" href="../README_01_ACERCA_DEL_PROYECTO/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Arquitectura detallada - Pagatu DIST - Desarrollo de Aplicaciones Distribuidas</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#arquitectura-detallada-de-pagatu" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" class="md-header__button md-logo" aria-label="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Pagatu DIST - Desarrollo de Aplicaciones Distribuidas
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Arquitectura detallada
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" class="md-nav__button md-logo" aria-label="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Pagatu DIST - Desarrollo de Aplicaciones Distribuidas
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sílabos
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sílabos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sílabo DIST 2026-1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sílabo DIST 2026-2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Propuesta de proyecto
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Propuesta de proyecto
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contenido/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contenido
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OFICIAL_ESTRUCTURA_ESTANDAR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Estructura estándar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../propuesta_migracion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Propuesta de migración
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    README
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README_01_ACERCA_DEL_PROYECTO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Acerca del proyecto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arquitectura detallada
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arquitectura detallada
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#vistas-dinamicas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vistas Dinamicas
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Vistas Dinamicas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#autenticacion-y-acceso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Autenticacion y Acceso
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cliente-y-ubigeo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cliente y Ubigeo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pago-y-orden" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pago y Orden
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#estados-de-orden" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estados de Orden
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#estados-de-pago" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estados de Pago
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c4-nivel-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C4 Nivel 3
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="C4 Nivel 3">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#container-gateway-eureka-y-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Container - gateway, eureka y config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#container-auth-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Container - auth-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#container-cliente-ms-y-ubigeo-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Container - cliente-ms y ubigeo-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#container-orden-ms-y-catalogo-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Container - orden-ms y catalogo-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#container-pago-ms-y-orden-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Container - pago-ms y orden-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c4-nivel-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C4 Nivel 4
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="C4 Nivel 4">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#component-authservice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component - AuthService
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#component-clienteservice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component - ClienteService
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#component-ubigeoservice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component - UbigeoService
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#component-catalogoservice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component - CatalogoService
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#component-ordenservice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component - OrdenService
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#component-angular-ordenes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component - Angular Ordenes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#component-pagoservice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component - PagoService
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#vistas-dinamicas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vistas Dinamicas
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Vistas Dinamicas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#autenticacion-y-acceso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Autenticacion y Acceso
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cliente-y-ubigeo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cliente y Ubigeo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pago-y-orden" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pago y Orden
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#estados-de-orden" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estados de Orden
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#estados-de-pago" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estados de Pago
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c4-nivel-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C4 Nivel 3
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="C4 Nivel 3">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#container-gateway-eureka-y-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Container - gateway, eureka y config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#container-auth-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Container - auth-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#container-cliente-ms-y-ubigeo-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Container - cliente-ms y ubigeo-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#container-orden-ms-y-catalogo-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Container - orden-ms y catalogo-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#container-pago-ms-y-orden-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Container - pago-ms y orden-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c4-nivel-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C4 Nivel 4
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="C4 Nivel 4">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#component-authservice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component - AuthService
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#component-clienteservice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component - ClienteService
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#component-ubigeoservice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component - UbigeoService
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#component-catalogoservice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component - CatalogoService
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#component-ordenservice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component - OrdenService
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#component-angular-ordenes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component - Angular Ordenes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#component-pagoservice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component - PagoService
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="arquitectura-detallada-de-pagatu">Arquitectura Detallada de Pagatu</h1>
+<p>Este documento contiene las vistas tecnicas de mayor detalle de Pagatu. Complementa a <a href="../README_01_ACERCA_DEL_PROYECTO/">README_01_ACERCA_DEL_PROYECTO.md</a>, que conserva la vision general, C4 nivel 1, C4 nivel 2, despliegue por ambientes y aspectos transversales del proyecto.</p>
+<h2 id="vistas-dinamicas">Vistas Dinamicas</h2>
+<h3 id="autenticacion-y-acceso">Autenticacion y Acceso</h3>
+<pre><code class="language-mermaid">flowchart LR
+    usuario[&quot;Person: Usuario institucional&quot;] --&gt; angular[&quot;Container: Angular App&quot;]
+    angular --&gt; gateway[&quot;Container: Gateway&quot;]
+    gateway --&gt; auth[&quot;Container: auth-ms&quot;]
+    auth --&gt; authDb[(Data Store: pagatu_auth_db)]
+    auth -- emite token --&gt; angular
+
+    angular -- request con JWT --&gt; gateway
+    gateway -- valida token en borde --&gt; ms[&quot;Container: Microservicios&quot;]
+    ms -- valida JWT y roles --&gt; recurso[&quot;Reglas de negocio protegidas&quot;]
+    ms -- usa subject/usuarioId del JWT --&gt; perfil[&quot;Perfil de cliente cuando aplica&quot;]
+
+    config[&quot;Container: Config Server&quot;] --&gt; configrepo[(Data Store: config-repo)]
+    auth -. config .-&gt; config
+    gateway -. config .-&gt; config
+    ms -. config .-&gt; config
+
+    eureka[&quot;Container: Eureka&quot;] -. registro .- auth
+    eureka -. registro .- gateway
+    eureka -. registro .- ms
+</code></pre>
+<p>Este flujo muestra la separacion de responsabilidades: <code>auth-ms</code> emite el token inicial con identificador de usuario y roles; Gateway valida en borde; cada microservicio vuelve a validar JWT y roles antes de ejecutar reglas de negocio. Cuando el flujo requiere datos de cliente, <code>cliente-ms</code> usa el <code>subject</code> o <code>usuarioId</code> del JWT como referencia, sin consultar directamente a <code>auth-ms</code>.</p>
+<h3 id="cliente-y-ubigeo">Cliente y Ubigeo</h3>
+<pre><code class="language-mermaid">flowchart LR
+    usuario[&quot;Person: Usuario institucional&quot;] --&gt; angular[&quot;Container: Angular App&quot;]
+    angular --&gt; gateway[&quot;Container: Gateway&quot;]
+
+    gateway --&gt; cliente[&quot;Container: cliente-ms&quot;]
+    gateway --&gt; ubigeo[&quot;Container: ubigeo-ms&quot;]
+
+    cliente -- Feign + Circuit Breaker --&gt; ubigeo
+
+    config[&quot;Container: Config Server&quot;] --&gt; configrepo[(Data Store: config-repo)]
+    cliente -. config .-&gt; config
+    ubigeo -. config .-&gt; config
+    gateway -. config .-&gt; config
+
+    eureka[&quot;Container: Eureka&quot;] -. registro .- cliente
+    eureka -. registro .- ubigeo
+    eureka -. registro .- gateway
+</code></pre>
+<h3 id="pago-y-orden">Pago y Orden</h3>
+<pre><code class="language-mermaid">flowchart LR
+    gateway[&quot;Container: Gateway&quot;] --&gt; orden[&quot;Container: orden-ms&quot;]
+    gateway --&gt; pago[&quot;Container: pago-ms&quot;]
+
+    orden -- publica orden.creada / orden.cancelada por falta de pago --&gt; kafka[&quot;External System: Kafka empresarial compartido&quot;]
+    kafka -- consume orden.creada --&gt; pago
+    pago -- autoriza/captura pago --&gt; pasarela[&quot;External System: Pasarela de pago (Niubiz/Culqi)&quot;]
+    pago -- publica pago.validado / pago.rechazado --&gt; kafka
+    kafka -. consume eventos de orden y pago .-&gt; notificacion[&quot;Container futuro: notificacion-ms&quot;]
+
+    config[&quot;Container: Config Server&quot;] --&gt; configrepo[(Data Store: config-repo)]
+    orden -. config .-&gt; config
+    pago -. config .-&gt; config
+    gateway -. config .-&gt; config
+
+    eureka[&quot;Container: Eureka&quot;] -. registro .- orden
+    eureka -. registro .- pago
+    eureka -. registro .- gateway
+
+    classDef external fill:#fff3cd,stroke:#d97706,stroke-width:2px,color:#111827
+    class pasarela external
+</code></pre>
+<h3 id="estados-de-orden">Estados de Orden</h3>
+<pre><code class="language-mermaid">stateDiagram-v2
+    [*] --&gt; BORRADOR
+
+    BORRADOR --&gt; [*]: cliente no continua / sin evento
+    BORRADOR --&gt; VALIDANDO: crear orden
+    VALIDANDO --&gt; RECHAZADA: cliente/catalogo invalido
+    VALIDANDO --&gt; CREADA: validaciones correctas
+
+    CREADA --&gt; PENDIENTE_PAGO: publica orden.creada
+    PENDIENTE_PAGO --&gt; CANCELADA: falta de pago / publica orden.cancelada
+
+    CANCELADA --&gt; [*]
+    RECHAZADA --&gt; [*]
+</code></pre>
+<p><code>orden-ms</code> cambia de estado por decisiones propias del flujo de orden. Si el cliente no continua antes de confirmar, el flujo termina sin publicar eventos. Las validaciones con <code>cliente-ms</code> y <code>catalogo-ms</code> ocurren antes de crear la orden. Luego publica <code>orden.creada</code>. Si una orden ya creada queda sin pago hasta su vencimiento, <code>orden-ms</code> la marca como cancelada por falta de pago y publica <code>orden.cancelada</code>. No consume <code>pago.validado</code> ni <code>pago.rechazado</code> en Release 1. El resultado del pago vive en <code>pago-ms</code>; otros servicios como notificaciones pueden reaccionar a los eventos de orden y pago.</p>
+<h3 id="estados-de-pago">Estados de Pago</h3>
+<pre><code class="language-mermaid">stateDiagram-v2
+    [*] --&gt; RECIBIDO
+
+    RECIBIDO --&gt; REGISTRADO: consume orden.creada
+    REGISTRADO --&gt; AUTORIZANDO: envia a pasarela
+    AUTORIZANDO --&gt; VALIDADO: pasarela aprueba
+    AUTORIZANDO --&gt; RECHAZADO: pasarela rechaza
+    AUTORIZANDO --&gt; ERROR_PASARELA: timeout/error tecnico
+
+    ERROR_PASARELA --&gt; AUTORIZANDO: reintento controlado
+    ERROR_PASARELA --&gt; RECHAZADO: agotamiento de reintentos
+
+    VALIDADO --&gt; NOTIFICADO: publica pago.validado
+    RECHAZADO --&gt; NOTIFICADO: publica pago.rechazado
+    NOTIFICADO --&gt; [*]
+</code></pre>
+<p><code>pago-ms</code> nace a partir del evento <code>orden.creada</code>. Registra el intento de pago, llama a la pasarela externa y publica el resultado. El estado <code>ERROR_PASARELA</code> permite diferenciar un rechazo de negocio de un problema tecnico o de comunicacion.</p>
+<p>En Release 1, <code>pago-ms</code> consume <code>orden.creada</code> y publica eventos de pago. <code>orden-ms</code> publica eventos de orden y no consume eventos de pago. En Release 2, <code>notificacion-ms</code> podra consumir <code>orden.cancelada</code>, <code>pago.validado</code> y <code>pago.rechazado</code> para avisar al usuario.</p>
+<h2 id="c4-nivel-3">C4 Nivel 3</h2>
+<h3 id="container-gateway-eureka-y-config">Container - gateway, eureka y config</h3>
+<p>Componentes principales de la infraestructura propia de Pagatu.</p>
+<pre><code class="language-mermaid">flowchart LR
+    subgraph gateway[&quot;Container: gateway&quot;]
+        routeLocator[&quot;Component: RouteLocator&quot;]
+        authFilter[&quot;Component: AuthFilter&quot;]
+        traceFilter[&quot;Component: CorrelationIdFilter&quot;]
+        lbClient[&quot;Component: Spring Cloud LoadBalancer&quot;]
+        gatewayDiscoveryClient[&quot;Component: EurekaClient&quot;]
+        gatewayConfigClient[&quot;Component: ConfigClient&quot;]
+
+        routeLocator --&gt; authFilter
+        authFilter --&gt; traceFilter
+        traceFilter --&gt; lbClient
+        lbClient -. elige instancia .-&gt; gatewayDiscoveryClient
+    end
+
+    subgraph eureka[&quot;Container: eureka&quot;]
+        registry[&quot;Component: ServiceRegistry&quot;]
+        eurekaConfigClient[&quot;Component: ConfigClient&quot;]
+    end
+
+    subgraph config[&quot;Container: config&quot;]
+        configController[&quot;Component: ConfigController&quot;]
+        nativeRepo[&quot;Component: NativeEnvironmentRepository&quot;]
+        configRepo[(Data Store: config-repo)]
+
+        configController --&gt; nativeRepo
+        nativeRepo --&gt; configRepo
+    end
+
+    subgraph ms[&quot;Container: Microservicios&quot;]
+        serviceApp[&quot;Component: Spring Boot App&quot;]
+        securityConfig[&quot;Component: SecurityConfig&quot;]
+        securityChain[&quot;Component: SecurityFilterChain&quot;]
+        roleConverter[&quot;Component: JwtRoleConverter&quot;]
+        eurekaClient[&quot;Component: EurekaClient&quot;]
+        configClient[&quot;Component: ConfigClient&quot;]
+
+        serviceApp --&gt; securityConfig
+        serviceApp --&gt; eurekaClient
+        serviceApp --&gt; configClient
+        securityConfig --&gt; securityChain
+        securityConfig --&gt; roleConverter
+    end
+
+    gatewayDiscoveryClient -. obtiene instancias registradas .-&gt; registry
+    gatewayDiscoveryClient -. registro .-&gt; registry
+    authFilter -. valida token en borde .-&gt; serviceApp
+    securityChain -. valida autenticacion y autorizacion .-&gt; serviceApp
+    configClient -. solicita config .-&gt; configController
+    eurekaClient -. registro .-&gt; registry
+    gatewayConfigClient -. solicita config .-&gt; configController
+    eurekaConfigClient -. solicita config .-&gt; configController
+</code></pre>
+<p>Este nivel muestra la infraestructura propia del proyecto. <code>config</code> publica configuracion desde <code>config-repo</code>; <code>gateway</code>, <code>eureka</code> y los microservicios leen su configuracion como Config Client. <code>eureka</code> mantiene el registro de servicios; los microservicios y el Gateway se registran con <code>EurekaClient</code>. Gateway usa <code>EurekaClient</code> para obtener instancias registradas y usa Spring Cloud LoadBalancer para elegir una instancia. La seguridad se valida en dos capas: Gateway aplica una primera validacion de borde y cada microservicio conserva su propia validacion de autenticacion, autorizacion y roles.</p>
+<p>Resumen de seguridad:</p>
+<pre><code class="language-text">Gateway:
+- Valida token en borde.
+- Enruta y balancea.
+
+Microservicios:
+- Validan JWT y roles otra vez.
+- Protegen reglas de negocio.
+
+Config Server:
+- Seguridad interna/operativa.
+- Protege configuracion.
+
+Eureka:
+- Seguridad interna/operativa.
+- Protege registro y discovery.
+</code></pre>
+<h3 id="container-auth-ms">Container - auth-ms</h3>
+<p>Componentes principales del servicio de autenticacion inicial.</p>
+<pre><code class="language-mermaid">flowchart LR
+    subgraph auth[&quot;Container: auth-ms&quot;]
+        authController[&quot;Component: AuthController&quot;]
+        usuarioController[&quot;Component: UsuarioController&quot;]
+        authService[&quot;Component: AuthService&quot;]
+        usuarioService[&quot;Component: UsuarioService&quot;]
+        tokenService[&quot;Component: TokenService&quot;]
+        passwordEncoder[&quot;Component: PasswordEncoder&quot;]
+        usuarioRepo[&quot;Component: UsuarioRepository&quot;]
+        rolRepo[&quot;Component: RolRepository&quot;]
+        authDb[(Data Store: pagatu_auth_db)]
+
+        authController --&gt; authService
+        usuarioController --&gt; usuarioService
+        authService --&gt; usuarioRepo
+        authService --&gt; tokenService
+        authService --&gt; passwordEncoder
+        usuarioService --&gt; usuarioRepo
+        usuarioService --&gt; rolRepo
+        usuarioRepo --&gt; authDb
+        rolRepo --&gt; authDb
+    end
+
+    gateway[&quot;Container: gateway&quot;] --&gt; authController
+    tokenService -. emite JWT con usuarioId y roles .-&gt; gateway
+</code></pre>
+<p><code>auth-ms</code> se mantiene como autenticacion inicial de Release 1. Es duenio de usuarios, credenciales y roles. Mas adelante puede reemplazarse o integrarse con Keycloak, pero los demas servicios seguiran consumiendo tokens y roles bajo la misma idea arquitectonica.</p>
+<h3 id="container-cliente-ms-y-ubigeo-ms">Container - cliente-ms y ubigeo-ms</h3>
+<p>Componentes principales del flujo de cliente y ubigeo.</p>
+<pre><code class="language-mermaid">flowchart LR
+    subgraph cliente[&quot;Container: cliente-ms&quot;]
+        clienteController[&quot;Component: ClienteController&quot;]
+        clienteService[&quot;Component: ClienteService&quot;]
+        usuarioContext[&quot;Component: UsuarioAutenticadoProvider&quot;]
+        ubigeoClient[&quot;Component: UbigeoClient Feign&quot;]
+        clienteRepo[&quot;Component: ClienteRepository&quot;]
+        clienteMapper[&quot;Component: ClienteMapper&quot;]
+        clienteDb[(Data Store: pagatu_cliente_db)]
+
+        clienteController --&gt; usuarioContext
+        clienteController --&gt; clienteService
+        usuarioContext --&gt; clienteService
+        clienteService --&gt; ubigeoClient
+        clienteService --&gt; clienteRepo
+        clienteService --&gt; clienteMapper
+        clienteRepo --&gt; clienteDb
+    end
+
+    subgraph ubigeo[&quot;Container: ubigeo-ms&quot;]
+        ubigeoController[&quot;Component: UbigeoController&quot;]
+        ubigeoService[&quot;Component: UbigeoService&quot;]
+        ubigeoRepo[&quot;Component: UbigeoRepository&quot;]
+        ubigeoMapper[&quot;Component: UbigeoMapper&quot;]
+        ubigeoDb[(Data Store: pagatu_ubigeo_db)]
+
+        ubigeoController --&gt; ubigeoService
+        ubigeoService --&gt; ubigeoRepo
+        ubigeoService --&gt; ubigeoMapper
+        ubigeoRepo --&gt; ubigeoDb
+    end
+
+    ubigeoClient --&gt; ubigeoController
+</code></pre>
+<p>Este nivel baja el zoom dentro de dos contenedores concretos del Release 1. <code>cliente-ms</code> gestiona los datos del cliente y consulta a <code>ubigeo-ms</code> por Feign cuando necesita completar o validar datos geograficos como nacimiento, residencia o direccion. La relacion con el usuario autenticado se toma desde el JWT mediante <code>UsuarioAutenticadoProvider</code>; no se consulta a <code>auth-ms</code> por Feign.</p>
+<h3 id="container-orden-ms-y-catalogo-ms">Container - orden-ms y catalogo-ms</h3>
+<p>Componentes principales del flujo de orden y catalogo.</p>
+<pre><code class="language-mermaid">flowchart LR
+    subgraph orden[&quot;Container: orden-ms&quot;]
+        ordenController[&quot;Component: OrdenController&quot;]
+        ordenService[&quot;Component: OrdenService&quot;]
+        catalogoClient[&quot;Component: CatalogoClient Feign&quot;]
+        ordenRepo[&quot;Component: OrdenRepository&quot;]
+        ordenMapper[&quot;Component: OrdenMapper&quot;]
+        ordenDb[(Data Store: pagatu_orden_db)]
+
+        ordenController --&gt; ordenService
+        ordenService --&gt; catalogoClient
+        ordenService --&gt; ordenRepo
+        ordenService --&gt; ordenMapper
+        ordenRepo --&gt; ordenDb
+    end
+
+    subgraph catalogo[&quot;Container: catalogo-ms&quot;]
+        catalogoController[&quot;Component: CatalogoController&quot;]
+        catalogoService[&quot;Component: CatalogoService&quot;]
+        productoRepo[&quot;Component: ProductoRepository&quot;]
+        precioRepo[&quot;Component: PrecioRepository&quot;]
+        catalogoMapper[&quot;Component: CatalogoMapper&quot;]
+        catalogoDb[(Data Store: pagatu_catalogo_db)]
+
+        catalogoController --&gt; catalogoService
+        catalogoService --&gt; productoRepo
+        catalogoService --&gt; precioRepo
+        catalogoService --&gt; catalogoMapper
+        productoRepo --&gt; catalogoDb
+        precioRepo --&gt; catalogoDb
+    end
+
+    catalogoClient --&gt; catalogoController
+</code></pre>
+<p>Este nivel muestra la validacion sincrona de items antes de crear una orden. <code>orden-ms</code> consulta a <code>catalogo-ms</code> por Feign para validar productos, conceptos, familias, categorias, tipos, precios y estado activo.</p>
+<h3 id="container-pago-ms-y-orden-ms">Container - pago-ms y orden-ms</h3>
+<p>Componentes principales del flujo de orden y pago.</p>
+<pre><code class="language-mermaid">flowchart LR
+    subgraph orden[&quot;Container: orden-ms&quot;]
+        ordenController[&quot;Component: OrdenController&quot;]
+        ordenService[&quot;Component: OrdenService&quot;]
+        clienteClient[&quot;Component: ClienteClient Feign&quot;]
+        catalogoClient[&quot;Component: CatalogoClient Feign&quot;]
+        ordenProducer[&quot;Component: OrdenEventProducer&quot;]
+        ordenRepo[&quot;Component: OrdenRepository&quot;]
+        ordenDb[(Data Store: pagatu_orden_db)]
+
+        ordenController --&gt; ordenService
+        ordenService --&gt; clienteClient
+        ordenService --&gt; catalogoClient
+        ordenService --&gt; ordenRepo
+        ordenService --&gt; ordenProducer
+        ordenRepo --&gt; ordenDb
+    end
+
+    subgraph pago[&quot;Container: pago-ms&quot;]
+        pagoConsumer[&quot;Component: OrdenCreadaConsumer&quot;]
+        pagoService[&quot;Component: PagoService&quot;]
+        pasarelaClient[&quot;Component: PasarelaPagoClient&quot;]
+        pagoProducer[&quot;Component: PagoEventProducer&quot;]
+        pagoRepo[&quot;Component: PagoRepository&quot;]
+        pagoDb[(Data Store: pagatu_pago_db)]
+
+        pagoConsumer --&gt; pagoService
+        pagoService --&gt; pasarelaClient
+        pagoService --&gt; pagoRepo
+        pagoService --&gt; pagoProducer
+        pagoRepo --&gt; pagoDb
+    end
+
+    clienteClient --&gt; cliente[&quot;Container: cliente-ms&quot;]
+    catalogoClient --&gt; catalogo[&quot;Container: catalogo-ms&quot;]
+    ordenProducer --&gt; kafka[&quot;External System: Kafka empresarial compartido&quot;]
+    kafka --&gt; pagoConsumer
+    pagoProducer -- pago.validado / pago.rechazado --&gt; kafka
+    pasarelaClient --&gt; pasarela[&quot;External System: Pasarela de pago (Niubiz/Culqi)&quot;]
+
+    classDef external fill:#fff3cd,stroke:#d97706,stroke-width:2px,color:#111827
+    class pasarela external
+</code></pre>
+<p>Este nivel baja el zoom dentro de dos contenedores concretos del Release 1. <code>orden-ms</code> conserva la decision sincrona por Feign para validar cliente y catalogo antes de crear la orden, y publica eventos propios de orden como <code>orden.creada</code> y <code>orden.cancelada</code> cuando corresponde por falta de pago. <code>pago-ms</code> consume <code>orden.creada</code>, encapsula la pasarela externa y publica <code>pago.validado</code> o <code>pago.rechazado</code> para consumidores posteriores, como <code>notificacion-ms</code> en Release 2.</p>
+<h2 id="c4-nivel-4">C4 Nivel 4</h2>
+<h3 id="component-authservice">Component - AuthService</h3>
+<p>Codigo de ejemplo en <code>auth-ms</code>.</p>
+<pre><code class="language-mermaid">classDiagram
+    class AuthController {
+        +login(LoginRequest) AuthResponse
+        +refresh(RefreshTokenRequest) AuthResponse
+        +logout() void
+    }
+
+    class UsuarioController {
+        +crearUsuario(CrearUsuarioRequest) UsuarioResponse
+        +asignarRol(Long, String) UsuarioResponse
+    }
+
+    class AuthService {
+        +login(LoginRequest) AuthResponse
+        +refresh(RefreshTokenRequest) AuthResponse
+    }
+
+    class AuthServiceImpl {
+        -UsuarioRepository usuarioRepository
+        -TokenService tokenService
+        -PasswordEncoder passwordEncoder
+        +login(LoginRequest) AuthResponse
+    }
+
+    class UsuarioService {
+        +crearUsuario(CrearUsuarioRequest) UsuarioResponse
+        +asignarRol(Long, String) UsuarioResponse
+    }
+
+    class TokenService {
+        +generarToken(Usuario) String
+        +validarToken(String) boolean
+        +obtenerUsuarioId(String) Long
+        +obtenerRoles(String) List~String~
+    }
+
+    class UsuarioRepository {
+        +findByUsername(String) Optional~Usuario~
+        +save(Usuario) Usuario
+    }
+
+    class RolRepository {
+        +findByNombre(String) Optional~Rol~
+    }
+
+    class Usuario {
+        -Long id
+        -String username
+        -String passwordHash
+        -Boolean activo
+    }
+
+    class Rol {
+        -Long id
+        -String nombre
+    }
+
+    AuthController --&gt; AuthService
+    UsuarioController --&gt; UsuarioService
+    AuthService &lt;|.. AuthServiceImpl
+    AuthServiceImpl ..&gt; UsuarioRepository
+    AuthServiceImpl ..&gt; TokenService
+    UsuarioService ..&gt; UsuarioRepository
+    UsuarioService ..&gt; RolRepository
+    UsuarioRepository --&gt; Usuario
+    RolRepository --&gt; Rol
+</code></pre>
+<p>Este ejemplo representa la autenticacion inicial del curso. No busca reemplazar a Keycloak en escenarios empresariales completos; sirve para entender tokens, roles y control de acceso antes de integrar un proveedor de identidad.</p>
+<h3 id="component-clienteservice">Component - ClienteService</h3>
+<p>Codigo de ejemplo en <code>cliente-ms</code>.</p>
+<pre><code class="language-mermaid">classDiagram
+    class SecurityConfig {
+        +securityFilterChain(HttpSecurity) SecurityFilterChain
+        +jwtAuthenticationConverter() Converter
+    }
+
+    class SecurityFilterChain {
+        +valida JWT
+        +valida roles por endpoint
+    }
+
+    class JwtRoleConverter {
+        +convert(Jwt) Collection~GrantedAuthority~
+    }
+
+    class ClienteController {
+        +crearCliente(CrearClienteRequest) ClienteResponse
+        +obtenerMiPerfil() ClienteResponse
+        +vincularUsuarioActual(Long) ClienteResponse
+        +buscarPorDocumento(String) ClienteResponse
+        +validarCliente(Long) ClienteValidadoResponse
+    }
+
+    class ClienteService {
+        +crearCliente(CrearClienteRequest) ClienteResponse
+        +obtenerMiPerfil(Long usuarioId) ClienteResponse
+        +vincularUsuario(Long usuarioId, Long clienteId) ClienteResponse
+        +buscarPorDocumento(String) ClienteResponse
+        +validarCliente(Long) ClienteValidadoResponse
+    }
+
+    class ClienteServiceImpl {
+        -ClienteRepository clienteRepository
+        -UsuarioAutenticadoProvider usuarioAutenticadoProvider
+        -UbigeoClient ubigeoClient
+        -ClienteMapper clienteMapper
+        +crearCliente(CrearClienteRequest) ClienteResponse
+        +obtenerMiPerfil(Long usuarioId) ClienteResponse
+    }
+
+    class UsuarioAutenticadoProvider {
+        +obtenerUsuarioId() Long
+        +obtenerRoles() List~String~
+    }
+
+    class UbigeoClient {
+        +buscarDistrito(String) UbigeoResponse
+    }
+
+    class ClienteRepository {
+        +save(Cliente) Cliente
+        +findByDocumento(String) Optional~Cliente~
+        +findByUsuarioIdAuth(Long) Optional~Cliente~
+        +existsById(Long) boolean
+    }
+
+    class ClienteMapper {
+        +toEntity(CrearClienteRequest) Cliente
+        +toResponse(Cliente) ClienteResponse
+    }
+
+    class Cliente {
+        -Long id
+        -String documento
+        -String nombres
+        -String apellidos
+        -Long usuarioIdAuth
+        -String ubigeoNacimiento
+        -Boolean activo
+    }
+
+    SecurityConfig --&gt; SecurityFilterChain
+    SecurityConfig --&gt; JwtRoleConverter
+    SecurityFilterChain ..&gt; ClienteController : protege
+    SecurityFilterChain ..&gt; UsuarioAutenticadoProvider : expone usuario actual
+    ClienteController --&gt; ClienteService
+    ClienteController --&gt; UsuarioAutenticadoProvider
+    ClienteService &lt;|.. ClienteServiceImpl
+    ClienteServiceImpl ..&gt; ClienteRepository
+    ClienteServiceImpl ..&gt; UsuarioAutenticadoProvider
+    ClienteServiceImpl ..&gt; UbigeoClient
+    ClienteServiceImpl ..&gt; ClienteMapper
+    ClienteRepository --&gt; Cliente
+</code></pre>
+<p>La relacion entre usuario y cliente se muestra en <code>cliente-ms</code>, no como llamada directa a <code>auth-ms</code>. <code>auth-ms</code> es duenio de la identidad; <code>cliente-ms</code> solo guarda <code>usuarioIdAuth</code> como referencia al usuario autenticado y lo obtiene desde el JWT mediante <code>UsuarioAutenticadoProvider</code>. Asi se puede resolver el perfil del cliente actual sin acoplar ambos microservicios.</p>
+<h3 id="component-ubigeoservice">Component - UbigeoService</h3>
+<p>Codigo de ejemplo en <code>ubigeo-ms</code>.</p>
+<pre><code class="language-mermaid">classDiagram
+    class UbigeoController {
+        +listarPaises() List~PaisResponse~
+        +listarDepartamentos(String) List~DepartamentoResponse~
+        +listarProvincias(String) List~ProvinciaResponse~
+        +listarDistritos(String) List~DistritoResponse~
+        +buscarDistrito(String) UbigeoResponse
+    }
+
+    class UbigeoService {
+        +listarPaises() List~PaisResponse~
+        +buscarDistrito(String) UbigeoResponse
+    }
+
+    class UbigeoServiceImpl {
+        -PaisRepository paisRepository
+        -DepartamentoRepository departamentoRepository
+        -ProvinciaRepository provinciaRepository
+        -DistritoRepository distritoRepository
+        -UbigeoMapper ubigeoMapper
+        +buscarDistrito(String) UbigeoResponse
+    }
+
+    class DistritoRepository {
+        +findByCodigo(String) Optional~Distrito~
+        +findByProvinciaCodigo(String) List~Distrito~
+    }
+
+    class UbigeoMapper {
+        +toResponse(Distrito) UbigeoResponse
+    }
+
+    class Distrito {
+        -Long id
+        -String codigo
+        -String nombre
+    }
+
+    UbigeoController --&gt; UbigeoService
+    UbigeoService &lt;|.. UbigeoServiceImpl
+    UbigeoServiceImpl ..&gt; DistritoRepository
+    UbigeoServiceImpl ..&gt; UbigeoMapper
+    DistritoRepository --&gt; Distrito
+</code></pre>
+<p><code>ubigeo-ms</code> queda como servicio sincrono estable y de consulta publica. Su responsabilidad es exponer datos territoriales conocidos, no proteger reglas de negocio ni evolucionar a mensajeria de eventos.</p>
+<h3 id="component-catalogoservice">Component - CatalogoService</h3>
+<p>Codigo de ejemplo en <code>catalogo-ms</code>.</p>
+<pre><code class="language-mermaid">classDiagram
+    class SecurityConfig {
+        +securityFilterChain(HttpSecurity) SecurityFilterChain
+        +jwtAuthenticationConverter() Converter
+    }
+
+    class SecurityFilterChain {
+        +valida JWT
+        +valida roles por endpoint
+    }
+
+    class ProductoController {
+        +listarActivos() List~ProductoResponse~
+        +buscarProducto(Long) ProductoResponse
+        +crearProducto(CrearProductoRequest) CatalogoItemResponse
+        +actualizarProducto(Long, ActualizarProductoRequest) CatalogoItemResponse
+        +desactivar(Long) void
+    }
+
+    class CategoriaController {
+        +listarCategorias() List~CategoriaResponse~
+        +crearCategoria(CrearCategoriaRequest) CategoriaResponse
+        +actualizarCategoria(Long, ActualizarCategoriaRequest) CategoriaResponse
+    }
+
+    class FamiliaController {
+        +listarFamilias() List~FamiliaResponse~
+        +crearFamilia(CrearFamiliaRequest) FamiliaResponse
+    }
+
+    class ConceptoController {
+        +listarConceptos() List~ConceptoResponse~
+        +buscarConcepto(Long) ConceptoResponse
+    }
+
+    class PrecioController {
+        +buscarPrecioVigente(Long) PrecioResponse
+        +registrarPrecio(CrearPrecioRequest) PrecioResponse
+    }
+
+    class CatalogoConsultaController {
+        +validarItem(Long) CatalogoItemResponse
+        +listarItemsActivos() List~CatalogoItemResponse~
+    }
+
+    class ProductoService {
+        +crearProducto(CrearProductoRequest) CatalogoItemResponse
+        +listarActivos() List~ProductoResponse~
+        +desactivar(Long) void
+    }
+
+    class CategoriaService {
+        +listarCategorias() List~CategoriaResponse~
+        +crearCategoria(CrearCategoriaRequest) CategoriaResponse
+    }
+
+    class FamiliaService {
+        +listarFamilias() List~FamiliaResponse~
+        +crearFamilia(CrearFamiliaRequest) FamiliaResponse
+    }
+
+    class ConceptoService {
+        +buscarConcepto(Long) ConceptoResponse
+    }
+
+    class PrecioService {
+        +buscarPrecioVigente(Long) PrecioResponse
+        +registrarPrecio(CrearPrecioRequest) PrecioResponse
+    }
+
+    class CatalogoConsultaService {
+        +validarItem(Long) CatalogoItemResponse
+    }
+
+    class CatalogoConsultaServiceImpl {
+        -ProductoRepository productoRepository
+        -ConceptoRepository conceptoRepository
+        -PrecioRepository precioRepository
+        -CatalogoMapper catalogoMapper
+        +validarItem(Long) CatalogoItemResponse
+    }
+
+    class ProductoRepository {
+        +findById(Long) Optional~Producto~
+        +findByActivoTrue() List~Producto~
+        +save(Producto) Producto
+    }
+
+    class ConceptoRepository {
+        +findById(Long) Optional~Concepto~
+    }
+
+    class CategoriaRepository {
+        +findById(Long) Optional~Categoria~
+        +findByActivoTrue() List~Categoria~
+    }
+
+    class FamiliaRepository {
+        +findById(Long) Optional~Familia~
+        +findByActivoTrue() List~Familia~
+    }
+
+    class PrecioRepository {
+        +findVigenteByItemId(Long) Optional~Precio~
+    }
+
+    class CatalogoMapper {
+        +toResponse(Producto, Precio) CatalogoItemResponse
+    }
+
+    class Producto {
+        -Long id
+        -String nombre
+        -String tipo
+        -Boolean activo
+    }
+
+    class Categoria {
+        -Long id
+        -String nombre
+        -Boolean activo
+    }
+
+    class Familia {
+        -Long id
+        -String nombre
+        -Boolean activo
+    }
+
+    class Concepto {
+        -Long id
+        -String nombre
+        -String tipo
+        -Boolean activo
+    }
+
+    class Precio {
+        -Long id
+        -BigDecimal monto
+        -LocalDate fechaInicio
+        -LocalDate fechaFin
+    }
+
+    SecurityConfig --&gt; SecurityFilterChain
+    SecurityFilterChain ..&gt; ProductoController : protege escritura
+    SecurityFilterChain ..&gt; CategoriaController : protege escritura
+    SecurityFilterChain ..&gt; FamiliaController : protege escritura
+    SecurityFilterChain ..&gt; PrecioController : protege escritura
+    ProductoController --&gt; ProductoService
+    CategoriaController --&gt; CategoriaService
+    FamiliaController --&gt; FamiliaService
+    ConceptoController --&gt; ConceptoService
+    PrecioController --&gt; PrecioService
+    CatalogoConsultaController --&gt; CatalogoConsultaService
+    ProductoService ..&gt; ProductoRepository
+    CategoriaService ..&gt; CategoriaRepository
+    FamiliaService ..&gt; FamiliaRepository
+    ConceptoService ..&gt; ConceptoRepository
+    PrecioService ..&gt; PrecioRepository
+    CatalogoConsultaService &lt;|.. CatalogoConsultaServiceImpl
+    CatalogoConsultaServiceImpl ..&gt; ProductoRepository
+    CatalogoConsultaServiceImpl ..&gt; ConceptoRepository
+    CatalogoConsultaServiceImpl ..&gt; PrecioRepository
+    CatalogoConsultaServiceImpl ..&gt; CatalogoMapper
+    ProductoRepository --&gt; Producto
+    ConceptoRepository --&gt; Concepto
+    CategoriaRepository --&gt; Categoria
+    FamiliaRepository --&gt; Familia
+    PrecioRepository --&gt; Precio
+</code></pre>
+<p><code>catalogo-ms</code> es un solo microservicio, pero no significa un solo controller. Puede exponer controladores por recurso: productos, categorias, familias, conceptos y precios. Las consultas de catalogo pueden ser publicas porque muestran informacion comercial disponible para el usuario. La edicion del catalogo si queda protegida por JWT y roles. Cuando se crea una orden, la autenticacion ocurre en <code>orden-ms</code>; luego <code>orden-ms</code> consulta <code>catalogo-ms</code> por Feign para decidir si un item puede entrar en la orden.</p>
+<h3 id="component-ordenservice">Component - OrdenService</h3>
+<p>Codigo de ejemplo en <code>orden-ms</code>.</p>
+<pre><code class="language-mermaid">classDiagram
+    class SecurityConfig {
+        +securityFilterChain(HttpSecurity) SecurityFilterChain
+        +jwtAuthenticationConverter() Converter
+    }
+
+    class SecurityFilterChain {
+        +valida JWT
+        +valida roles por endpoint
+    }
+
+    class JwtRoleConverter {
+        +convert(Jwt) Collection~GrantedAuthority~
+    }
+
+    class OrdenController {
+        +crearOrden(CrearOrdenRequest) OrdenResponse
+        +buscarPorId(Long) OrdenResponse
+        +listarPorCliente(Long) List~OrdenResponse~
+    }
+
+    class OrdenVencidaJob {
+        +cancelarOrdenesVencidas() void
+    }
+
+    class OrdenService {
+        +crearOrden(CrearOrdenRequest) OrdenResponse
+        +cancelarPorFaltaPago(Long) OrdenResponse
+        +buscarPorId(Long) OrdenResponse
+        +listarPorCliente(Long) List~OrdenResponse~
+    }
+
+    class OrdenServiceImpl {
+        -ClienteClient clienteClient
+        -CatalogoClient catalogoClient
+        -OrdenRepository ordenRepository
+        -OrdenEventProducer ordenEventProducer
+        +crearOrden(CrearOrdenRequest) OrdenResponse
+        +cancelarPorFaltaPago(Long) OrdenResponse
+    }
+
+    class ClienteClient {
+        +validarCliente(Long) ClienteValidadoResponse
+    }
+
+    class CatalogoClient {
+        +validarItem(Long) CatalogoItemResponse
+    }
+
+    class OrdenRepository {
+        +save(Orden) Orden
+        +findByClienteId(Long) List~Orden~
+    }
+
+    class OrdenEventProducer {
+        +publicarOrdenCreada(OrdenCreadaEvent) void
+        +publicarOrdenCancelada(OrdenCanceladaEvent) void
+    }
+
+    class Orden {
+        -Long id
+        -Long clienteId
+        -BigDecimal total
+        -EstadoOrden estado
+    }
+
+    SecurityConfig --&gt; SecurityFilterChain
+    SecurityConfig --&gt; JwtRoleConverter
+    SecurityFilterChain ..&gt; OrdenController : protege
+    OrdenController --&gt; OrdenService
+    OrdenVencidaJob --&gt; OrdenService
+    OrdenService &lt;|.. OrdenServiceImpl
+    OrdenServiceImpl ..&gt; ClienteClient
+    OrdenServiceImpl ..&gt; CatalogoClient
+    OrdenServiceImpl ..&gt; OrdenRepository
+    OrdenServiceImpl ..&gt; OrdenEventProducer
+    OrdenRepository --&gt; Orden
+</code></pre>
+<p>Este nivel se usa solo como ejemplo didactico. En C4, el nivel de codigo no deberia convertirse en un diagrama de todas las clases del proyecto; sirve para explicar una parte puntual cuando aporta claridad.</p>
+<h3 id="component-angular-ordenes">Component - Angular Ordenes</h3>
+<p>Codigo de ejemplo del frontend para el flujo de ordenes.</p>
+<pre><code class="language-mermaid">classDiagram
+    class OrdenPageComponent {
+        +ngOnInit() void
+        +crearOrden() void
+        +cargarOrdenesCliente() void
+        +verDetalle(Long) void
+    }
+
+    class OrdenFormComponent {
+        +form: FormGroup
+        +agregarItem() void
+        +quitarItem(index) void
+        +emitirOrden() void
+    }
+
+    class OrdenDetalleComponent {
+        +orden: OrdenResponse
+        +mostrarEstadoPago() void
+    }
+
+    class OrdenApiService {
+        +crearOrden(CrearOrdenRequest) Observable~OrdenResponse~
+        +buscarPorId(Long) Observable~OrdenResponse~
+        +listarPorCliente(Long) Observable~OrdenResponse[]~
+    }
+
+    class CatalogoApiService {
+        +listarItemsActivos() Observable~CatalogoItemResponse[]~
+        +buscarItem(Long) Observable~CatalogoItemResponse~
+    }
+
+    class ClienteSessionService {
+        +obtenerClienteActual() ClienteResponse
+        +tieneSesionActiva() boolean
+    }
+
+    class AuthGuard {
+        +canActivate() boolean
+    }
+
+    class AuthApiService {
+        +login(LoginRequest) Observable~AuthResponse~
+        +refreshToken() Observable~AuthResponse~
+        +logout() void
+    }
+
+    class TokenStorageService {
+        +guardarToken(String) void
+        +obtenerToken() String
+        +limpiarSesion() void
+    }
+
+    class AuthInterceptor {
+        +intercept(req, next) Observable~HttpEvent~
+    }
+
+    class TraceInterceptor {
+        +intercept(req, next) Observable~HttpEvent~
+    }
+
+    class GatewayApi {
+        +/api/auth/**
+        +/api/ordenes/**
+        +/api/catalogo/**
+    }
+
+    AuthGuard --&gt; ClienteSessionService
+    AuthGuard --&gt; TokenStorageService
+    AuthApiService --&gt; GatewayApi
+    AuthApiService --&gt; TokenStorageService
+    AuthInterceptor --&gt; TokenStorageService
+    OrdenPageComponent --&gt; OrdenFormComponent
+    OrdenPageComponent --&gt; OrdenDetalleComponent
+    OrdenPageComponent --&gt; OrdenApiService
+    OrdenFormComponent --&gt; CatalogoApiService
+    OrdenFormComponent --&gt; ClienteSessionService
+    OrdenApiService --&gt; AuthInterceptor
+    OrdenApiService --&gt; TraceInterceptor
+    CatalogoApiService --&gt; AuthInterceptor
+    CatalogoApiService --&gt; TraceInterceptor
+    AuthInterceptor --&gt; GatewayApi
+    TraceInterceptor --&gt; GatewayApi
+</code></pre>
+<p>Angular se muestra aparte porque vive en otro proyecto/contenedor. Este diagrama explica la pantalla de ordenes, sus componentes, servicios HTTP e interceptores, mientras el diagrama de <code>orden-ms</code> queda enfocado en el backend.</p>
+<h3 id="component-pagoservice">Component - PagoService</h3>
+<p>Codigo de ejemplo en <code>pago-ms</code>.</p>
+<pre><code class="language-mermaid">classDiagram
+    class SecurityConfig {
+        +securityFilterChain(HttpSecurity) SecurityFilterChain
+        +jwtAuthenticationConverter() Converter
+    }
+
+    class SecurityFilterChain {
+        +valida JWT
+        +valida roles por endpoint
+    }
+
+    class JwtRoleConverter {
+        +convert(Jwt) Collection~GrantedAuthority~
+    }
+
+    class PagoController {
+        +buscarPorOrden(Long) PagoResponse
+        +validarPago(Long) PagoResponse
+        +rechazarPago(Long, String) PagoResponse
+    }
+
+    class OrdenCreadaConsumer {
+        +consumir(OrdenCreadaEvent) void
+    }
+
+    class PagoService {
+        +registrarDesdeOrden(OrdenCreadaEvent) PagoResponse
+        +validarPago(Long) PagoResponse
+        +rechazarPago(Long, String) PagoResponse
+    }
+
+    class PagoServiceImpl {
+        -PagoRepository pagoRepository
+        -PasarelaPagoClient pasarelaPagoClient
+        -PagoEventProducer pagoEventProducer
+        -PagoMapper pagoMapper
+        +registrarDesdeOrden(OrdenCreadaEvent) PagoResponse
+    }
+
+    class PasarelaPagoClient {
+        +autorizar(Pago) RespuestaPasarela
+        +capturar(String) RespuestaPasarela
+    }
+
+    class PagoEventProducer {
+        +publicarPagoValidado(PagoValidadoEvent) void
+        +publicarPagoRechazado(PagoRechazadoEvent) void
+    }
+
+    class PagoRepository {
+        +save(Pago) Pago
+        +findByOrdenId(Long) Optional~Pago~
+        +findById(Long) Optional~Pago~
+    }
+
+    class PagoMapper {
+        +toResponse(Pago) PagoResponse
+    }
+
+    class Pago {
+        -Long id
+        -Long ordenId
+        -BigDecimal monto
+        -EstadoPago estado
+        -String codigoOperacion
+    }
+
+    SecurityConfig --&gt; SecurityFilterChain
+    SecurityConfig --&gt; JwtRoleConverter
+    SecurityFilterChain ..&gt; PagoController : protege
+    PagoController --&gt; PagoService
+    OrdenCreadaConsumer --&gt; PagoService
+    PagoService &lt;|.. PagoServiceImpl
+    PagoServiceImpl ..&gt; PagoRepository
+    PagoServiceImpl ..&gt; PasarelaPagoClient
+    PagoServiceImpl ..&gt; PagoEventProducer
+    PagoServiceImpl ..&gt; PagoMapper
+    PagoRepository --&gt; Pago
+</code></pre>
+<p>Estos ejemplos de codigo muestran el estilo esperado dentro de cada microservicio: el acceso HTTP se valida antes del controller con <code>SecurityConfig</code>, <code>SecurityFilterChain</code> y conversion de roles JWT; el controller depende del contrato <code>Service</code>; la clase <code>Impl</code> encapsula la orquestacion interna y desde alli se usan repositories, mappers, clients Feign y producers/consumers Kafka cuando correspondan. En consumidores Kafka, la autorizacion no entra por endpoint HTTP, pero el servicio igual conserva trazabilidad y validaciones de negocio.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

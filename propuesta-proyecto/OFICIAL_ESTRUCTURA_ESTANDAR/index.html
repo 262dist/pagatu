@@ -1,0 +1,1164 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://262dist.github.io/pagatu/propuesta-proyecto/OFICIAL_ESTRUCTURA_ESTANDAR/">
+      
+      
+        <link rel="prev" href="../contenido/">
+      
+      
+        <link rel="next" href="../propuesta_migracion/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Estructura estándar - Pagatu DIST - Desarrollo de Aplicaciones Distribuidas</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#estructura-estandar-del-proyecto" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" class="md-header__button md-logo" aria-label="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Pagatu DIST - Desarrollo de Aplicaciones Distribuidas
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Estructura estándar
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" class="md-nav__button md-logo" aria-label="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Pagatu DIST - Desarrollo de Aplicaciones Distribuidas
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sílabos
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sílabos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sílabo DIST 2026-1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sílabo DIST 2026-2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Propuesta de proyecto
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Propuesta de proyecto
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contenido/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contenido
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Estructura estándar
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Estructura estándar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#estructura-general-generica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estructura General Generica
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fundamento" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fundamento
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#convencion-de-nombres" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Convencion de Nombres
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#config-server-y-config-repo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config Server y Config Repo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kubernetes-de-infraestructura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kubernetes de Infraestructura
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kubernetes-de-plataforma-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kubernetes de Plataforma Local
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#microservicio-core" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Microservicio Core
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kubernetes-por-microservicio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kubernetes por Microservicio
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#regla-practica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regla Practica
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../propuesta_migracion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Propuesta de migración
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    README
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README_01_ACERCA_DEL_PROYECTO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Acerca del proyecto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README_02_ARQUITECTURA_DETALLADA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arquitectura detallada
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#estructura-general-generica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estructura General Generica
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fundamento" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fundamento
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#convencion-de-nombres" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Convencion de Nombres
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#config-server-y-config-repo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config Server y Config Repo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kubernetes-de-infraestructura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kubernetes de Infraestructura
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kubernetes-de-plataforma-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kubernetes de Plataforma Local
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#microservicio-core" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Microservicio Core
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kubernetes-por-microservicio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kubernetes por Microservicio
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#regla-practica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regla Practica
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="estructura-estandar-del-proyecto">Estructura Estandar del Proyecto</h1>
+<p>Este documento define un patron de organizacion para proyectos de microservicios. La idea es separar con claridad la infraestructura compartida, los microservicios de negocio y los manifiestos de despliegue por ambiente.</p>
+<h2 id="estructura-general-generica">Estructura General Generica</h2>
+<pre><code class="language-text">&lt;proyecto&gt;/
+|-- infra/
+|   |-- &lt;config&gt;/
+|   |   |-- config-repo/
+|   |   |-- src/
+|   |   |-- pom.xml
+|   |   `-- Dockerfile
+|   |-- &lt;registry&gt;/
+|   |-- &lt;gateway&gt;/
+|   |-- docker-compose.yml
+|   |-- k8s-local/
+|   `-- k8s/
+|-- platform/
+|   |-- kafka-compose.yml
+|   |-- observability-compose.yml
+|   `-- k8s-local/
+|-- &lt;microservicio-a&gt;/
+|   |-- src/
+|   |-- pom.xml
+|   |-- Dockerfile
+|   |-- docker-compose-dev.yml
+|   |-- docker-compose.yml
+|   |-- k8s-local/
+|   `-- k8s/
+|-- &lt;microservicio-b&gt;/
+|   |-- src/
+|   |-- pom.xml
+|   |-- Dockerfile
+|   |-- docker-compose-dev.yml
+|   |-- docker-compose.yml
+|   |-- k8s-local/
+|   `-- k8s/
+`-- &lt;microservicio-n&gt;/
+    |-- src/
+    |-- pom.xml
+    |-- Dockerfile
+    |-- docker-compose-dev.yml
+    |-- docker-compose.yml
+    |-- k8s-local/
+    `-- k8s/
+</code></pre>
+<h2 id="fundamento">Fundamento</h2>
+<ul>
+<li><code>infra/</code> contiene infraestructura propia del sistema: Config Server, Eureka, Gateway, Docker Compose y manifiestos Kubernetes de infraestructura.</li>
+<li><code>platform/</code> contiene dependencias compartidas de laboratorio, como Kafka u observabilidad. No representa componentes exclusivos del proyecto.</li>
+<li>Kafka se trata como mensajeria compartida de plataforma; en local puede levantarse para el curso, pero en nube debe ser administrado o provisto por una plataforma corporativa.</li>
+<li>Observabilidad tambien se trata como plataforma compartida: Prometheus, Loki, Grafana u otros proveedores no deben modelarse como componentes exclusivos de cada microservicio.</li>
+<li><code>infra/docker-compose.yml</code> valida Config Server, Eureka y Gateway.</li>
+<li><code>platform/*.yml</code> levanta dependencias compartidas de laboratorio cuando el curso las necesite.</li>
+<li>Cada microservicio tiene su propio <code>docker-compose-dev.yml</code> para levantar solo sus dependencias locales y su propio <code>docker-compose.yml</code> para validar la imagen del MS de forma aislada.</li>
+<li>Los microservicios core viven directamente en la raiz para reducir anidamiento y facilitar el trabajo diario.</li>
+<li><code>config-repo/</code> vive dentro de <code>infra/&lt;config&gt;/</code> porque es la fuente local de configuracion que usa directamente el Config Server.</li>
+<li>Cada microservicio tiene su propio <code>k8s-local/</code> y <code>k8s/</code> para separar despliegue local de despliegue productivo.</li>
+<li><code>k8s-local/</code> representa Minikube o Kubernetes local, donde se pueden incluir dependencias como MySQL.</li>
+<li><code>k8s/</code> representa nube o produccion real, donde las dependencias criticas suelen ser servicios administrados o externos.</li>
+</ul>
+<h2 id="convencion-de-nombres">Convencion de Nombres</h2>
+<p>Se recomienda usar carpetas cortas en el repositorio y nombres con prefijo del proyecto para artefactos desplegables.</p>
+<table>
+<thead>
+<tr>
+<th>Elemento</th>
+<th>Convencion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Carpeta del microservicio</td>
+<td><code>&lt;contexto&gt;-ms</code></td>
+</tr>
+<tr>
+<td>Carpeta de infraestructura</td>
+<td><code>&lt;componente&gt;</code></td>
+</tr>
+<tr>
+<td>Maven <code>artifactId</code></td>
+<td><code>&lt;proyecto&gt;-&lt;contexto&gt;-ms</code></td>
+</tr>
+<tr>
+<td><code>spring.application.name</code></td>
+<td><code>&lt;proyecto&gt;-&lt;contexto&gt;-ms</code></td>
+</tr>
+<tr>
+<td>Imagen Docker</td>
+<td><code>&lt;proyecto&gt;-&lt;contexto&gt;-ms:tag</code></td>
+</tr>
+<tr>
+<td>Service/Deployment Kubernetes</td>
+<td><code>&lt;proyecto&gt;-&lt;contexto&gt;-ms</code></td>
+</tr>
+<tr>
+<td>Archivo Config Server</td>
+<td><code>&lt;proyecto&gt;-&lt;contexto&gt;-ms.yml</code></td>
+</tr>
+<tr>
+<td>Base de datos</td>
+<td><code>&lt;proyecto&gt;_&lt;contexto&gt;_db</code></td>
+</tr>
+<tr>
+<td>Paquete Java</td>
+<td><code>com.&lt;organizacion&gt;.&lt;contexto&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="config-server-y-config-repo">Config Server y Config Repo</h2>
+<p><code>config-repo</code> no se compila con el Config Server; solo contiene archivos <code>.yml</code> que el Config Server publica. Al estar dentro de <code>infra/&lt;config&gt;/</code>, se evita depender de rutas absolutas como <code>C:/...</code> y se facilita el uso de rutas relativas o variables de entorno.</p>
+<p>Ejemplo recomendado para ejecucion local:</p>
+<pre><code class="language-yaml">spring:
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: ${CONFIG_REPO_LOCATION:file:./config-repo}
+</code></pre>
+<p>Ejemplo recomendado para Docker:</p>
+<pre><code class="language-yaml">volumes:
+  - ./&lt;config&gt;/config-repo:/config-repo
+environment:
+  SPRING_PROFILES_ACTIVE: native
+  CONFIG_REPO_LOCATION: file:/config-repo
+</code></pre>
+<h2 id="kubernetes-de-infraestructura">Kubernetes de Infraestructura</h2>
+<p>Para infraestructura se recomienda un bloque Kubernetes compartido, porque estos componentes forman la base propia del sistema: Config Server, Eureka y Gateway. Kafka y observabilidad no van aqui, porque son plataforma compartida.</p>
+<pre><code class="language-text">infra/
+|-- k8s-local/
+|   |-- 00-namespace.yml
+|   |-- config/
+|   |   |-- 01-configmap.yml
+|   |   |-- 02-deployment.yml
+|   |   `-- 03-service.yml
+|   |-- eureka/
+|   |   |-- 01-configmap.yml
+|   |   |-- 02-deployment.yml
+|   |   `-- 03-service.yml
+|   `-- gateway/
+|       |-- 01-configmap.yml
+|       |-- 02-deployment.yml
+|       `-- 03-service.yml
+`-- k8s/
+    |-- 00-namespace.yml
+    |-- config/
+    |-- eureka/
+    `-- gateway/
+</code></pre>
+<p>En <code>infra/k8s-local/</code> se levantan solo los componentes propios del sistema. En <code>infra/k8s/</code>, para nube real, se mantienen los manifiestos de Config Server, Eureka y Gateway si la empresa decide operarlos en Kubernetes; Kafka, bases de datos y observabilidad deben tratarse como servicios administrados, proveedores externos o plataformas compartidas operadas por separado.</p>
+<h2 id="kubernetes-de-plataforma-local">Kubernetes de Plataforma Local</h2>
+<p>Para el curso o laboratorio se puede tener un bloque separado para dependencias compartidas. Esto evita dar a entender que cada proyecto de la empresa trae su propio Kafka o su propio stack de observabilidad.</p>
+<pre><code class="language-text">platform/
+`-- k8s-local/
+    |-- messaging/
+    |   |-- 01-zookeeper.yml
+    |   |-- 02-kafka.yml
+    |   `-- 03-kafka-ui.yml
+    `-- observability/
+        |-- 01-prometheus.yml
+        |-- 02-loki.yml
+        `-- 03-grafana.yml
+</code></pre>
+<p>No se recomienda crear <code>platform/k8s/</code> para produccion real dentro de este repositorio, salvo que el curso quiera simular una plataforma completa. En una empresa, Kafka y observabilidad suelen administrarse con otro ciclo de vida, otro repositorio o servicios cloud.</p>
+<h2 id="microservicio-core">Microservicio Core</h2>
+<p>Cada microservicio de negocio mantiene su codigo, Dockerfile y manifiestos cerca de su propio contexto.</p>
+<pre><code class="language-text">&lt;microservicio&gt;/
+|-- src/
+|-- pom.xml
+|-- Dockerfile
+|-- docker-compose-dev.yml
+|-- docker-compose.yml
+|-- k8s-local/
+`-- k8s/
+</code></pre>
+<p>En cada microservicio:</p>
+<ul>
+<li><code>docker-compose-dev.yml</code> levanta dependencias del MS para desarrollo, por ejemplo su MySQL. La aplicacion corre con Java local.</li>
+<li><code>docker-compose.yml</code> levanta la imagen Docker del MS y sus dependencias minimas para validar ejecucion local tipo produccion.</li>
+<li>El compose de <code>infra/</code> sirve para levantar infraestructura compartida o escenarios integrados.</li>
+</ul>
+<p>La estructura interna Java debe ser simple y por capas:</p>
+<pre><code class="language-text">com.&lt;organizacion&gt;.&lt;contexto&gt;
+|-- config
+|-- controller
+|-- dto
+|   |-- request
+|   `-- response
+|-- entity
+|-- exception
+|-- filter
+|-- mapper
+|-- repository
+|-- service
+|   `-- impl
+|-- client
+|-- event
+`-- &lt;Contexto&gt;Application.java
+</code></pre>
+<p>Las carpetas <code>client</code> y <code>event</code> solo se crean si el microservicio las necesita.</p>
+<table>
+<thead>
+<tr>
+<th>Tipo de microservicio</th>
+<th style="text-align: right;"><code>client</code></th>
+<th style="text-align: right;"><code>event</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>REST simple</td>
+<td style="text-align: right;">No</td>
+<td style="text-align: right;">No</td>
+</tr>
+<tr>
+<td>Servicio sincrono consumido por Feign</td>
+<td style="text-align: right;">No</td>
+<td style="text-align: right;">No</td>
+</tr>
+<tr>
+<td>Orquestador hibrido</td>
+<td style="text-align: right;">Si</td>
+<td style="text-align: right;">Si</td>
+</tr>
+<tr>
+<td>Servicio event-driven</td>
+<td style="text-align: right;">No</td>
+<td style="text-align: right;">Si</td>
+</tr>
+</tbody>
+</table>
+<h2 id="kubernetes-por-microservicio">Kubernetes por Microservicio</h2>
+<p>Para Kubernetes local:</p>
+<pre><code class="language-text">&lt;microservicio&gt;/
+`-- k8s-local/
+    |-- 01-configmap.yml
+    |-- 02-secret.yml
+    |-- 03-mysql-statefulset.yml
+    |-- 04-mysql-service.yml
+    |-- 05-deployment.yml
+    `-- 06-service.yml
+</code></pre>
+<p><code>k8s-local</code> incluye MySQL porque busca levantar el microservicio completo en Minikube o un cluster local. Para laboratorio se puede compactar MySQL en un solo <code>03-mysql.yml</code>, pero el nombre <code>statefulset</code> deja claro que la base de datos es estado, no una aplicacion stateless.</p>
+<p>Para Kubernetes en nube o produccion real:</p>
+<pre><code class="language-text">&lt;microservicio&gt;/
+`-- k8s/
+    |-- 01-configmap.yml
+    |-- 02-secret.yml
+    |-- 03-deployment.yml
+    |-- 04-service.yml
+    `-- 05-hpa.yml
+</code></pre>
+<p><code>k8s</code> no incluye MySQL del microservicio como pod propio. En produccion, la base de datos debe ser administrada o externa al ciclo de vida del microservicio. El <code>Secret</code> debe guardar referencias o credenciales hacia esa base administrada, no crear la base dentro del cluster.</p>
+<h2 id="regla-practica">Regla Practica</h2>
+<pre><code class="language-text">infra/k8s-local/       -&gt; infraestructura propia para Minikube
+infra/k8s/             -&gt; infraestructura propia para nube o produccion
+platform/k8s-local/    -&gt; Kafka/observabilidad solo para laboratorio
+&lt;ms&gt;/k8s-local/        -&gt; despliegue local del MS con dependencias
+&lt;ms&gt;/k8s/              -&gt; despliegue productivo del MS
+</code></pre>
+<p>Esta separacion evita mezclar escenarios locales con produccion real y reduce el riesgo de llevar manifiestos de prueba a un cluster productivo.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,1127 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://262dist.github.io/pagatu/">
+      
+      
+      
+        <link rel="next" href="silabo_dist_2026_1/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Pagatu DIST - Desarrollo de Aplicaciones Distribuidas</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#distribuidas-2026-2" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" class="md-header__button md-logo" aria-label="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Pagatu DIST - Desarrollo de Aplicaciones Distribuidas
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Inicio
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" class="md-nav__button md-logo" aria-label="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Pagatu DIST - Desarrollo de Aplicaciones Distribuidas
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="." class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#producto-del-curso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Producto del curso
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contenido" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contenido
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Contenido">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#u1-sistema-distribuido-base-orientado-a-produccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        U1: Sistema distribuido base orientado a producción
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#u2-sistema-distribuido-robusto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        U2: Sistema distribuido robusto
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#u3-validacion-y-consolidacion-del-producto-del-curso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        U3: Validación y consolidación del producto del curso
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arquitectura-pagatu-v2026" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arquitectura pagatu v2026
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flujo-de-trabajo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flujo de trabajo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enlaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enlaces
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sílabos
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sílabos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="silabo_dist_2026_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sílabo DIST 2026-1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="silabo_dist_2026_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sílabo DIST 2026-2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Propuesta de proyecto
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Propuesta de proyecto
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="propuesta-proyecto/contenido/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contenido
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="propuesta-proyecto/OFICIAL_ESTRUCTURA_ESTANDAR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Estructura estándar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="propuesta-proyecto/propuesta_migracion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Propuesta de migración
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="propuesta-proyecto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    README
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="propuesta-proyecto/README_01_ACERCA_DEL_PROYECTO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Acerca del proyecto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="propuesta-proyecto/README_02_ARQUITECTURA_DETALLADA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arquitectura detallada
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#producto-del-curso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Producto del curso
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contenido" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contenido
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Contenido">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#u1-sistema-distribuido-base-orientado-a-produccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        U1: Sistema distribuido base orientado a producción
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#u2-sistema-distribuido-robusto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        U2: Sistema distribuido robusto
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#u3-validacion-y-consolidacion-del-producto-del-curso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        U3: Validación y consolidación del producto del curso
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arquitectura-pagatu-v2026" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arquitectura pagatu v2026
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flujo-de-trabajo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flujo de trabajo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enlaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enlaces
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="distribuidas-2026-2">DISTribuidas 2026-2</h1>
+<p>Curso práctico de sistemas distribuidos con microservicios, configuración centralizada, descubrimiento de servicios, Gateway, seguridad, resiliencia, mensajería asíncrona, consistencia distribuida, observabilidad e integración frontend.</p>
+<p><a href="https://github.com/262dist/pagatu"><code>pagatu</code></a> es un entorno integrado para construir un sistema distribuido de comercio electrónico mediante laboratorios reproducibles basados en Docker y Spring Cloud. El proyecto unifica infraestructura, microservicios, cliente frontend, mensajería, observabilidad y documentación para que cada equipo pueda adaptar el sistema a su proyecto final.</p>
+<h2 id="producto-del-curso">Producto del curso</h2>
+<p>Producto del curso = Producto U3:</p>
+<pre><code class="language-text">Sistema distribuido de microservicios end-to-end, configurable, escalable,
+seguro, resiliente, consistente, observable, integrado con frontend y defendido
+técnicamente.
+</code></pre>
+<p>Resultado esperado del curso:</p>
+<p>Al finalizar el curso, el estudiante implementa, integra y sustenta un sistema distribuido basado en microservicios. La solución debe ejecutarse de forma reproducible en desarrollo y producción local, exponer evidencias de configuración, registro, enrutamiento, escalado, seguridad, comunicación entre servicios, mensajería asíncrona, consistencia distribuida, observabilidad, persistencia e integración frontend. El producto se presenta en equipo, pero cada estudiante evidencia y defiende su aporte individual.</p>
+<h2 id="contenido">Contenido</h2>
+<h3 id="u1-sistema-distribuido-base-orientado-a-produccion">U1: Sistema distribuido base orientado a producción</h3>
+<p>Producto U1: sistema distribuido base funcional, configurable y preparado para múltiples instancias.</p>
+<p>Resultado esperado U1: el estudiante construye un primer servicio REST funcional, externaliza configuración por ambientes, registra servicios dinámicamente, accede al sistema mediante un punto único de entrada y demuestra distribución de tráfico entre instancias.</p>
+<table>
+<thead>
+<tr>
+<th>Sesión</th>
+<th>Tema</th>
+<th>Producto de sesión</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S1</td>
+<td>Construcción de un servicio base para un sistema distribuido</td>
+<td>Servicio REST funcional, persistente, observable y preparado para ejecución reproducible</td>
+</tr>
+<tr>
+<td>S2</td>
+<td>Gestión centralizada de configuración y ambientes</td>
+<td>Configuración externa por ambiente y evidencia inicial de observabilidad</td>
+</tr>
+<tr>
+<td>S3</td>
+<td>Registro, descubrimiento y ejecución concurrente de servicios</td>
+<td>Servicios descubiertos dinámicamente y múltiples instancias operativas</td>
+</tr>
+<tr>
+<td>S4</td>
+<td>Punto único de acceso y distribución de tráfico</td>
+<td>Acceso centralizado con rutas y balanceo de carga</td>
+</tr>
+<tr>
+<td>S5</td>
+<td>Evaluación U1</td>
+<td>Sistema base integrado funcionando como un todo</td>
+</tr>
+</tbody>
+</table>
+<h3 id="u2-sistema-distribuido-robusto">U2: Sistema distribuido robusto</h3>
+<p>Producto U2: sistema distribuido seguro, resiliente, consistente, observable e integrado con cliente frontend.</p>
+<p>Resultado esperado U2: el estudiante implementa comunicación síncrona resiliente, seguridad distribuida, mensajería asíncrona, consistencia eventual en procesos de negocio, observabilidad operacional e integración frontend mediante el punto único de acceso.</p>
+<table>
+<thead>
+<tr>
+<th>Sesión</th>
+<th>Tema</th>
+<th>Producto de sesión</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S6</td>
+<td>Comunicación síncrona resiliente entre servicios</td>
+<td>Operación distribuida con respuesta controlada ante fallos</td>
+</tr>
+<tr>
+<td>S7</td>
+<td>Seguridad distribuida y control de acceso</td>
+<td>Autenticación, autorización y protección de rutas del sistema</td>
+</tr>
+<tr>
+<td>S8</td>
+<td>Mensajería asíncrona entre servicios</td>
+<td>Comunicación por eventos entre servicios desacoplados</td>
+</tr>
+<tr>
+<td>S9</td>
+<td>Consistencia distribuida en procesos de negocio</td>
+<td>Proceso distribuido con consistencia eventual, compensacion e idempotencia</td>
+</tr>
+<tr>
+<td>S10</td>
+<td>Observabilidad y diagnóstico de sistemas distribuidos</td>
+<td>Logs, health, métricas y paneles de diagnóstico</td>
+</tr>
+<tr>
+<td>S11</td>
+<td>Integración con cliente frontend</td>
+<td>Cliente integrado al sistema distribuido mediante Gateway</td>
+</tr>
+<tr>
+<td>S12</td>
+<td>Evaluación U2</td>
+<td>Sistema robusto validado en condiciones reales</td>
+</tr>
+</tbody>
+</table>
+<h3 id="u3-validacion-y-consolidacion-del-producto-del-curso">U3: Validación y consolidación del producto del curso</h3>
+<p>Producto U3 / producto del curso: sistema distribuido de microservicios end-to-end, validado, documentado, estabilizado y defendido técnicamente.</p>
+<p>Resultado esperado U3: el estudiante integra los componentes desarrollados en las unidades anteriores, valida flujos completos, estabiliza documentación y despliegue local, prepara evidencias técnicas y sustenta el producto final. La defensa es grupal, pero la nota es individual.</p>
+<table>
+<thead>
+<tr>
+<th>Sesión</th>
+<th>Tema</th>
+<th>Producto de sesión</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S13</td>
+<td>Validación end-to-end del producto del curso</td>
+<td>Producto del curso probado integralmente</td>
+</tr>
+<tr>
+<td>S14</td>
+<td>Revisión técnica y estabilización del producto</td>
+<td>Documentación, evidencias y estabilización</td>
+</tr>
+<tr>
+<td>S15</td>
+<td>Defensa técnica</td>
+<td>Sustentación grupal del producto</td>
+</tr>
+<tr>
+<td>S16</td>
+<td>Evaluación final</td>
+<td>Demostración individual de competencias pendientes</td>
+</tr>
+</tbody>
+</table>
+<h2 id="arquitectura-pagatu-v2026">Arquitectura pagatu v2026</h2>
+<pre><code class="language-mermaid">%%{init: {&quot;flowchart&quot;: {&quot;nodeSpacing&quot;: 18, &quot;rankSpacing&quot;: 28, &quot;curve&quot;: &quot;basis&quot;}} }%%
+flowchart LR
+    subgraph Infra[&quot;infra&quot;]
+        Config[&quot;Config&lt;br/&gt;D 18888&lt;br/&gt;P 28888&quot;]
+        Eureka[&quot;Eureka&lt;br/&gt;D 18761&lt;br/&gt;P 28761&quot;]
+        Gateway[&quot;Gateway&lt;br/&gt;D 18080&lt;br/&gt;P 28082&quot;]
+    end
+
+    subgraph Runtime[&quot;microservicios&quot;]
+        subgraph Identity[&quot;identidad&quot;]
+            Auth[&quot;auth-ms&lt;br/&gt;(Keycloak u otro)&lt;br/&gt;dinamico&quot;]
+            AuthDB[&quot;auth_db&lt;br/&gt;D 15431&lt;br/&gt;P 25431&quot;]
+            Auth --&gt; AuthDB
+        end
+
+        subgraph Services[&quot;services&quot;]
+            Catalogo[&quot;catalogo-ms&lt;br/&gt;dinamico&quot;]
+            CatalogoDB[&quot;catálogo_db&lt;br/&gt;D 15432&lt;br/&gt;P 25432&quot;]
+            Producto[&quot;producto-ms&lt;br/&gt;dinamico&quot;]
+            ProductoDB[&quot;producto_db&lt;br/&gt;D 15433&lt;br/&gt;P 25433&quot;]
+            Orden[&quot;orden-ms&lt;br/&gt;dinamico&quot;]
+            OrdenDB[&quot;orden_db&lt;br/&gt;D 15434&lt;br/&gt;P 25434&quot;]
+            Pago[&quot;pago-ms&lt;br/&gt;dinamico&quot;]
+            PagoDB[&quot;pago_db&lt;br/&gt;D 15435&lt;br/&gt;P 25435&quot;]
+
+            Catalogo --&gt; CatalogoDB
+            Producto --&gt; ProductoDB
+            Orden --&gt; OrdenDB
+            Pago --&gt; PagoDB
+            Producto --&gt;|&quot;consulta categoría&quot;| Catalogo
+        end
+    end
+
+    subgraph Messaging[&quot;kafka&quot;]
+        Broker[&quot;Kafka broker&lt;br/&gt;D 41092&lt;br/&gt;P 29092&quot;]
+        KafkaUI[&quot;Kafka UI&lt;br/&gt;D 41085&lt;br/&gt;P 28085&quot;]
+        KafkaUI --&gt; Broker
+    end
+
+    subgraph External[&quot;sistema externo&quot;]
+        PaymentGateway[&quot;Pasarela&lt;br/&gt;pagos externa&quot;]
+    end
+
+    Angular --&gt; Gateway
+    Gateway --&gt; Auth
+    Gateway --&gt; Catalogo
+    Gateway --&gt; Producto
+    Gateway --&gt; Orden
+    Gateway --&gt; Pago
+
+    Config -. &quot;carga configuración&quot; .-&gt; Eureka
+    Config -. &quot;carga configuración&quot; .-&gt; Gateway
+    Config -. &quot;carga configuración&lt;br/&gt;configserver&quot; .-&gt; Runtime
+    Runtime -. &quot;registra instancias&quot; .-&gt; Eureka
+    Gateway -. &quot;descubre servicios&quot; .-&gt; Eureka
+
+    Orden --&gt;|&quot;orden-eventos&quot;| Broker
+    Broker --&gt;|&quot;orden-eventos&quot;| Pago
+    Pago --&gt;|&quot;pago-eventos&quot;| Broker
+    Pago --&gt;|&quot;autoriza / confirma pago&quot;| PaymentGateway
+
+    classDef external fill:#fff3cd,stroke:#b7791f,stroke-width:2px,color:#5f370e;
+    class PaymentGateway external;
+
+    subgraph Client[&quot;clients&quot;]
+        Angular[&quot;pagatu-ng&lt;br/&gt;D 4200&quot;]
+    end
+
+    subgraph Obs[&quot;observabilidad&quot;]
+        Prometheus[&quot;Prometheus&lt;br/&gt;D 19090&lt;br/&gt;P 29090&quot;]
+        Loki[&quot;Loki&lt;br/&gt;D 13100&lt;br/&gt;P 23100&quot;]
+        Grafana[&quot;Grafana&lt;br/&gt;D 13000&lt;br/&gt;P 23000&quot;]
+        Grafana --&gt; Prometheus
+        Grafana --&gt; Loki
+    end
+
+    Angular ~~~ Prometheus
+
+</code></pre>
+<p>Convención del diagrama: las flechas continuas representan interacciones de negocio o consultas directas; las flechas punteadas representan dependencias de infraestructura, configuración o descubrimiento.</p>
+<h2 id="flujo-de-trabajo">Flujo de trabajo</h2>
+<ol>
+<li>El alumno construye primero un microservicio base en <code>services/catalogo-ms</code> y replica el patrón en otros servicios.</li>
+<li>La infraestructura en <code>infra/</code> centraliza configuración, descubrimiento y acceso por Gateway; los microservicios importan configuración con <code>optional:configserver:${CONFIG_SERVER_URL:http://localhost:18888}</code>.</li>
+<li>Los microservicios se ejecutan en DEV con Maven y bases de datos en Docker; al cierre de cada sesión se valida producción local con Docker.</li>
+<li>Las pruebas de API se realizan con PowerShell o bash/curl, sin depender de Postman.</li>
+<li>Los flujos asincronos usan mensajería para coordinar ordenes y pagos.</li>
+<li>La observabilidad acompaña el curso desde S2 y se consolida en S10.</li>
+<li>El frontend <code>clients/pagatu-ng</code> consume el sistema mediante Gateway.</li>
+<li>El producto final se valida end-to-end, se estabiliza y se defiende técnicamente.</li>
+</ol>
+<h2 id="enlaces">Enlaces</h2>
+<ul>
+<li><a href="silabo.md">Sílabo detallado</a></li>
+<li><a href="guia-curso.md">Guía del curso</a></li>
+<li><a href="referencias/puertos.md">Puertos y accesos</a></li>
+<li><a href="referencias/comandos-powershell.md">Comandos PowerShell</a></li>
+<li><a href="referencias/comandos-bash.md">Comandos bash macOS/Linux</a></li>
+<li><a href="referencias/troubleshooting.md">Troubleshooting</a></li>
+<li><a href="referencias/rubrica.md">Rúbrica</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "content.code.copy"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

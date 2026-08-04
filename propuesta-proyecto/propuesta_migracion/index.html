@@ -1,0 +1,1641 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://262dist.github.io/pagatu/propuesta-proyecto/propuesta_migracion/">
+      
+      
+        <link rel="prev" href="../OFICIAL_ESTRUCTURA_ESTANDAR/">
+      
+      
+        <link rel="next" href="../">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Propuesta de migración - Pagatu DIST - Desarrollo de Aplicaciones Distribuidas</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#propuesta-de-migracion-proyectosms2026-a-arquitectura-pagatu" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" class="md-header__button md-logo" aria-label="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Pagatu DIST - Desarrollo de Aplicaciones Distribuidas
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Propuesta de migración
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" class="md-nav__button md-logo" aria-label="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Pagatu DIST - Desarrollo de Aplicaciones Distribuidas
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sílabos
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sílabos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sílabo DIST 2026-1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sílabo DIST 2026-2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Propuesta de proyecto
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Propuesta de proyecto
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contenido/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contenido
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OFICIAL_ESTRUCTURA_ESTANDAR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Estructura estándar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Propuesta de migración
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Propuesta de migración
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-diagnostico-de-la-arquitectura-anterior-proyectosms2026" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. DIAGNÓSTICO DE LA ARQUITECTURA ANTERIOR (ProyectosMS2026)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. DIAGNÓSTICO DE LA ARQUITECTURA ANTERIOR (ProyectosMS2026)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-patrones-reutilizables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1. Patrones Reutilizables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-codigo-obsoleto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2. Código Obsoleto
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-puertos-fijos-detectados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3. Puertos Fijos Detectados
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-inconsistencias-de-nomenclatura-naming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4. Inconsistencias de Nomenclatura (Naming)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-configuraciones-utiles-a-migrar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5. Configuraciones Útiles a Migrar
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-estrategia-de-migracion-y-modernizacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. ESTRATEGIA DE MIGRACIÓN Y MODERNIZACIÓN
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. ESTRATEGIA DE MIGRACIÓN Y MODERNIZACIÓN">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-que-migrar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1. Qué Migrar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-que-reescribir-refactorizar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2. Qué Reescribir (Refactorizar)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-que-eliminar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3. Qué Eliminar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-que-modernizar-cloud-ready" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4. Qué Modernizar (Cloud-Ready)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-convencion-de-puertos-del-ecosistema-pagatu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. CONVENCIÓN DE PUERTOS DEL ECOSISTEMA PAGATU
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. CONVENCIÓN DE PUERTOS DEL ECOSISTEMA PAGATU">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-puertos-fijos-infraestructura-y-soporte" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1. Puertos Fijos (Infraestructura y Soporte)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-puertos-dinamicos-microservicios-de-negocio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2. Puertos Dinámicos (Microservicios de Negocio)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-migracion-de-motor-de-base-de-datos-mysql-postgresql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. MIGRACIÓN DE MOTOR DE BASE DE DATOS: MySQL → PostgreSQL
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. MIGRACIÓN DE MOTOR DE BASE DE DATOS: MySQL → PostgreSQL">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-decision-tecnica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1. Decisión Técnica
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-convencion-de-puertos-de-bases-de-datos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2. Convención de Puertos de Bases de Datos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-cambios-tecnicos-requeridos-en-los-proyectos-spring-boot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3. Cambios Técnicos Requeridos en los Proyectos Spring Boot
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3. Cambios Técnicos Requeridos en los Proyectos Spring Boot">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dependencia-maven-pomxml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependencia Maven (pom.xml):
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#url-de-conexion-jdbc-en-config-repo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        URL de Conexión JDBC en config-repo:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compose-devyml-con-puerto-expuesto-al-host-para-herramientas-de-administracion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compose-dev.yml (con puerto expuesto al host para herramientas de administración):
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#composeyml-sin-puerto-expuesto-al-host-solo-acceso-interno" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compose.yml (sin puerto expuesto al host — solo acceso interno):
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    README
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README_01_ACERCA_DEL_PROYECTO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Acerca del proyecto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README_02_ARQUITECTURA_DETALLADA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arquitectura detallada
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-diagnostico-de-la-arquitectura-anterior-proyectosms2026" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. DIAGNÓSTICO DE LA ARQUITECTURA ANTERIOR (ProyectosMS2026)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. DIAGNÓSTICO DE LA ARQUITECTURA ANTERIOR (ProyectosMS2026)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-patrones-reutilizables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1. Patrones Reutilizables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-codigo-obsoleto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2. Código Obsoleto
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-puertos-fijos-detectados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3. Puertos Fijos Detectados
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-inconsistencias-de-nomenclatura-naming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4. Inconsistencias de Nomenclatura (Naming)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-configuraciones-utiles-a-migrar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5. Configuraciones Útiles a Migrar
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-estrategia-de-migracion-y-modernizacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. ESTRATEGIA DE MIGRACIÓN Y MODERNIZACIÓN
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. ESTRATEGIA DE MIGRACIÓN Y MODERNIZACIÓN">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-que-migrar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1. Qué Migrar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-que-reescribir-refactorizar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2. Qué Reescribir (Refactorizar)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-que-eliminar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3. Qué Eliminar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-que-modernizar-cloud-ready" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4. Qué Modernizar (Cloud-Ready)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-convencion-de-puertos-del-ecosistema-pagatu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. CONVENCIÓN DE PUERTOS DEL ECOSISTEMA PAGATU
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. CONVENCIÓN DE PUERTOS DEL ECOSISTEMA PAGATU">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-puertos-fijos-infraestructura-y-soporte" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1. Puertos Fijos (Infraestructura y Soporte)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-puertos-dinamicos-microservicios-de-negocio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2. Puertos Dinámicos (Microservicios de Negocio)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-migracion-de-motor-de-base-de-datos-mysql-postgresql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. MIGRACIÓN DE MOTOR DE BASE DE DATOS: MySQL → PostgreSQL
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. MIGRACIÓN DE MOTOR DE BASE DE DATOS: MySQL → PostgreSQL">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-decision-tecnica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1. Decisión Técnica
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-convencion-de-puertos-de-bases-de-datos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2. Convención de Puertos de Bases de Datos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-cambios-tecnicos-requeridos-en-los-proyectos-spring-boot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3. Cambios Técnicos Requeridos en los Proyectos Spring Boot
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3. Cambios Técnicos Requeridos en los Proyectos Spring Boot">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dependencia-maven-pomxml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependencia Maven (pom.xml):
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#url-de-conexion-jdbc-en-config-repo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        URL de Conexión JDBC en config-repo:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compose-devyml-con-puerto-expuesto-al-host-para-herramientas-de-administracion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compose-dev.yml (con puerto expuesto al host para herramientas de administración):
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#composeyml-sin-puerto-expuesto-al-host-solo-acceso-interno" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compose.yml (sin puerto expuesto al host — solo acceso interno):
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="propuesta-de-migracion-proyectosms2026-a-arquitectura-pagatu">Propuesta de Migración: ProyectosMS2026 a Arquitectura Pagatu</h1>
+<p>Este documento detalla el análisis de la arquitectura anterior (<code>ProyectosMS2026</code>) y establece la estrategia técnica para migrar los componentes útiles hacia el nuevo estándar unificado de <strong>Pagatu</strong>.</p>
+<hr />
+<h2 id="1-diagnostico-de-la-arquitectura-anterior-proyectosms2026">1. DIAGNÓSTICO DE LA ARQUITECTURA ANTERIOR (<code>ProyectosMS2026</code>)</h2>
+<h3 id="11-patrones-reutilizables">1.1. Patrones Reutilizables</h3>
+<ul>
+<li><strong>Trazabilidad Distribuida (Correlación)</strong>:<ul>
+<li><code>TraceIdGlobalFilter</code> (en el API Gateway) que genera e inyecta la cabecera HTTP <code>X-Trace-ID</code>.</li>
+<li><code>CorrelationIdFilter</code> (en cada microservicio) que extrae dicha cabecera e inicializa el <code>MDC</code> (Mapped Diagnostic Context) de Logback para asegurar la trazabilidad transversal en todos los hilos de logs.</li>
+<li><code>FeignTraceConfig</code> que inyecta automáticamente el identificador de traza en las peticiones síncronas salientes realizadas mediante clientes OpenFeign.</li>
+</ul>
+</li>
+<li><strong>Seguridad JWT Descentralizada</strong>:<ul>
+<li>Mecanismo sin estado (Stateless) donde <code>auth-ms</code> valida credenciales en base de datos local y emite tokens firmados con HMAC-SHA256, y el Gateway actúa como un Resource Server reactivo validando digitalmente las firmas.</li>
+</ul>
+</li>
+<li><strong>Consumo Resiliente en Kafka</strong>:<ul>
+<li>Uso de <code>ErrorHandlingDeserializer</code> y <code>CommonErrorHandler</code> con políticas de retroceso (<code>FixedBackOff</code>) en <code>pago-ms</code> para neutralizar fallos catastróficos por mensajes corruptos (<em>poison pills</em>).</li>
+</ul>
+</li>
+</ul>
+<h3 id="12-codigo-obsoleto">1.2. Código Obsoleto</h3>
+<ul>
+<li><strong>Microservicio <code>producto</code> independiente</strong>:<ul>
+<li>En la nueva arquitectura de Pagatu, el microservicio <code>producto</code> queda obsoleto como módulo separado. Sus responsabilidades de inventario e ítems se fusionarán directamente con <code>catalogo-ms</code> para simplificar la topología y evitar comunicaciones de red innecesarias para obtener categorías.</li>
+</ul>
+</li>
+<li><strong><code>GatewayInstanciasController</code></strong>:<ul>
+<li>Controlador de depuración presente en <code>producto</code> y <code>catalogo</code> que expone la lista de IPs físicas registradas en Eureka. Debe eliminarse por motivos de seguridad informática.</li>
+</ul>
+</li>
+<li><strong>Excepciones de seguridad permisivas en Gateway</strong>:<ul>
+<li>Mapeos temporales en <code>SecurityConfig</code> que permiten peticiones anónimas hacia recursos core (<code>/api/v1/categorias/**</code>, etc.).</li>
+</ul>
+</li>
+</ul>
+<h3 id="13-puertos-fijos-detectados">1.3. Puertos Fijos Detectados</h3>
+<p>Puertos configurados de forma rígida en la arquitectura anterior:</p>
+<table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Perfil</th>
+<th>Puerto Interno</th>
+<th>Puerto Host Expuesto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Config Server</strong></td>
+<td>prod (Docker)</td>
+<td><code>7071</code></td>
+<td><code>7072</code></td>
+</tr>
+<tr>
+<td><strong>Registry (Eureka)</strong></td>
+<td>prod (Docker)</td>
+<td><code>7081</code></td>
+<td><code>7082</code></td>
+</tr>
+<tr>
+<td><strong>Gateway</strong></td>
+<td>prod (Docker)</td>
+<td><code>7091</code></td>
+<td><code>7092</code></td>
+</tr>
+<tr>
+<td><strong>Auth MS</strong></td>
+<td>dev / prod</td>
+<td><code>8041</code> / <code>8042</code></td>
+<td><code>8041</code> / <code>8042</code></td>
+</tr>
+<tr>
+<td><strong>Catalogo MS</strong></td>
+<td>dev / prod</td>
+<td><code>8081</code> / <code>8082</code></td>
+<td><code>8081</code> / <code>8082</code></td>
+</tr>
+<tr>
+<td><strong>Producto MS</strong></td>
+<td>dev / prod</td>
+<td><code>9091</code> / <code>9092</code></td>
+<td><code>9091</code> / <code>9092</code></td>
+</tr>
+<tr>
+<td><strong>Orden MS</strong></td>
+<td>dev / prod</td>
+<td><code>19051</code> / <code>9021</code></td>
+<td><code>19051</code> / <code>29051</code></td>
+</tr>
+<tr>
+<td><strong>Pago MS</strong></td>
+<td>dev / prod</td>
+<td><code>19061</code> / <code>9031</code></td>
+<td><code>19061</code> / <code>29061</code></td>
+</tr>
+<tr>
+<td><strong>Kafka Broker</strong></td>
+<td>prod (Docker)</td>
+<td><code>9092</code></td>
+<td><code>29092</code></td>
+</tr>
+<tr>
+<td><strong>Kafka UI</strong></td>
+<td>prod (Docker)</td>
+<td><code>8080</code></td>
+<td><code>28085</code></td>
+</tr>
+<tr>
+<td><strong>Grafana</strong></td>
+<td>prod (Docker)</td>
+<td><code>3000</code></td>
+<td><code>23000</code></td>
+</tr>
+<tr>
+<td><strong>Loki</strong></td>
+<td>prod (Docker)</td>
+<td><code>3100</code></td>
+<td><code>23100</code></td>
+</tr>
+<tr>
+<td><strong>Prometheus</strong></td>
+<td>prod (Docker)</td>
+<td><code>9090</code></td>
+<td><code>29090</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="14-inconsistencias-de-nomenclatura-naming">1.4. Inconsistencias de Nomenclatura (Naming)</h3>
+<ul>
+<li><strong>Carpetas de microservicios</strong>: Mezcla de nombres cortos (<code>auth</code>, <code>catalogo</code>) con nombres que llevan sufijo (<code>orden-ms</code>, <code>pago-ms</code>).</li>
+<li><strong>Service Name en Eureka y Artifacts</strong>: Registros bajo nombres simples como <code>auth</code> o <code>catalogo</code>. El estándar de Pagatu define el uso del prefijo corporativo: <code>pagatu-auth-ms</code>, <code>pagatu-catalogo-ms</code>, etc.</li>
+<li><strong>Paquetes Base Java</strong>: Inconsistencia en nombres compuestos (<code>com.upeu.ordenms</code> vs <code>com.upeu.pagoms</code>).</li>
+<li><strong>Idioma Técnico</strong>: <code>orden-ms</code> y <code>pago-ms</code> utilizan paquetes y clases en español (<code>controlador</code>, <code>servicio</code>, <code>repositorio</code>, <code>entidad</code>, <code>OrdenControlador</code>, <code>PagoControlador</code>), mientras que el resto usa estándares en inglés (<code>controller</code>, <code>service</code>, <code>repository</code>, <code>entity</code>).</li>
+</ul>
+<h3 id="15-configuraciones-utiles-a-migrar">1.5. Configuraciones Útiles a Migrar</h3>
+<ul>
+<li><strong>Resilience4j CB</strong>: Configuración centralizada de ventanas y tasas de fallos para llamadas a servicios externos en los archivos <code>.yml</code>.</li>
+<li><strong>Flyway Diferenciado</strong>: Estrategia de desactivación de Flyway en desarrollo local (<code>ddl-auto: update</code>) y activación obligatoria con validación en producción (<code>ddl-auto: validate</code>).</li>
+</ul>
+<hr />
+<h2 id="2-estrategia-de-migracion-y-modernizacion">2. ESTRATEGIA DE MIGRACIÓN Y MODERNIZACIÓN</h2>
+<h3 id="21-que-migrar">2.1. Qué Migrar</h3>
+<ol>
+<li><strong>Código del API Gateway</strong>: Reubicar bajo <code>infra/gateway/</code> conservando filtros de CORS y enrutamiento dinámico <code>lb://</code>.</li>
+<li><strong>Lógica del Servidor de Autenticación</strong>: Reubicar bajo <code>auth-ms/</code> conservando el cifrado de datos y tokenización local de Spring Security.</li>
+<li><strong>Mecanismos de Correlación</strong>: Copiar <code>CorrelationIdFilter</code> y <code>FeignTraceConfig</code> a todos los microservicios core.</li>
+</ol>
+<h3 id="22-que-reescribir-refactorizar">2.2. Qué Reescribir (Refactorizar)</h3>
+<ol>
+<li><strong>Estandarización al Inglés</strong>: Traducir nombres de clases, métodos y paquetes en <code>orden-ms</code> y <code>pago-ms</code> (ej. cambiar paquete <code>controlador</code> a <code>controller</code> y clase <code>OrdenControlador</code> a <code>OrdenController</code>).</li>
+<li><strong>Consolidación de Catálogo y Producto</strong>: Fusionar entidades, repositorios y lógica de categorías y productos en el microservicio unificado <strong><code>catalogo-ms</code></strong>.</li>
+<li><strong>Naming de Eureka y Maven</strong>: Actualizar todos los archivos <code>pom.xml</code> y propiedades <code>spring.application.name</code> para adoptar la sintaxis <code>&lt;proyecto&gt;-&lt;contexto&gt;-ms</code> (ej: <code>pagatu-orden-ms</code>).</li>
+</ol>
+<h3 id="23-que-eliminar">2.3. Qué Eliminar</h3>
+<ol>
+<li><strong>Microservicio <code>producto</code> independiente</strong> (su funcionalidad es absorbida por <code>catalogo-ms</code>).</li>
+<li><strong>Controlador <code>GatewayInstanciasController.java</code></strong> de depuración.</li>
+<li><strong>Rutas absolutas fijas</strong> (ej: <code>file:///C:/ms1/...</code>) en la configuración nativa de <code>config-server</code>.</li>
+<li><strong>Excepciones de seguridad temporales</strong> que saltan la validación del JWT en producción.</li>
+</ol>
+<h3 id="24-que-modernizar-cloud-ready">2.4. Qué Modernizar (Cloud-Ready)</h3>
+<ol>
+<li><strong>Valores por Defecto Inteligentes (Single-Profile)</strong>: Configurar propiedades con fallbacks dinámicos (ej: <code>server.port: ${PORT:8080}</code>). Si no se inyectan variables, usa <code>localhost</code> y puertos estándar por defecto para desarrollo ágil en IDE; si se corre en Docker/Kubernetes, se inyectan variables del entorno de red.</li>
+<li><strong>Health Checks Nativos de Kubernetes</strong>: Mapear probes de Kubernetes directamente a los endpoints <code>/actuator/health/liveness</code> y <code>/actuator/health/readiness</code> expuestos por Spring Actuator.</li>
+<li><strong>Logs Orientados a Salida Estándar</strong>: Desactivar logs a archivos físicos en entornos productivos, imprimiendo únicamente a <code>stdout</code> en formato JSON estructurado.</li>
+<li><strong>Estructura de Manifiestos Separados</strong>:<ul>
+<li><code>/k8s-local</code>: Incluye el microservicio y el StatefulSet de base de datos MySQL local para desarrollo local rápido (Minikube).</li>
+<li><code>/k8s</code>: Incluye únicamente el Deployment del microservicio sin base de datos local (apunta a base de datos administrada del Centro de Datos).</li>
+</ul>
+</li>
+<li><strong>Estrategia de Puertos Dinámicos (Local vs Docker / Kubernetes)</strong>:<ul>
+<li><strong>En Local (Entorno IDE):</strong> Para simular alta disponibilidad (múltiples instancias en la misma máquina física) sin conflictos de puerto, el puerto se configura dinámicamente usando el argumento de JVM <code>-Dserver.port=0</code> (asignación de puerto aleatorio libre por el SO) o sobrescribiéndolo en el arranque (ej. <code>mvn spring-boot:run -Dspring-boot.run.arguments="--server.port=8083"</code>).</li>
+<li><strong>En Docker / Kubernetes:</strong> Cada contenedor cuenta con su propio namespace e IP privada aislada. Todos los contenedores de un mismo microservicio pueden escuchar internamente en el mismo puerto estático (ej. <code>8080</code>) sin colisión. El balanceo de carga se realiza a nivel del API Gateway resolviendo las IPs internas devueltas por Eureka o Kubernetes DNS.</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="3-convencion-de-puertos-del-ecosistema-pagatu">3. CONVENCIÓN DE PUERTOS DEL ECOSISTEMA PAGATU</h2>
+<h3 id="31-puertos-fijos-infraestructura-y-soporte">3.1. Puertos Fijos (Infraestructura y Soporte)</h3>
+<p>Los componentes de infraestructura que actúan como punto de entrada único o como base de autoconfiguración del sistema deben conservar puertos estáticos y predecibles. Son los únicos servicios cuyo puerto debe ser conocido de antemano por el resto del ecosistema:</p>
+<table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Puerto DEV (Host)</th>
+<th>Puerto PROD (Host)</th>
+<th>Puerto Interno (Contenedor)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>pagatu-gateway</code></strong></td>
+<td><code>8080</code></td>
+<td><code>8090</code> (coexistencia con DEV)</td>
+<td><code>8080</code></td>
+</tr>
+<tr>
+<td><strong><code>pagatu-config</code></strong></td>
+<td><code>8888</code></td>
+<td><code>8888</code></td>
+<td><code>8888</code></td>
+</tr>
+<tr>
+<td><strong><code>pagatu-eureka</code></strong></td>
+<td><code>8761</code></td>
+<td><code>8761</code></td>
+<td><code>8761</code></td>
+</tr>
+<tr>
+<td><strong>Keycloak</strong> (IdP)</td>
+<td><code>9090</code></td>
+<td><code>9090</code></td>
+<td><code>8080</code></td>
+</tr>
+<tr>
+<td><strong>Angular Frontend</strong></td>
+<td><code>4200</code> (ng serve)</td>
+<td><code>80</code> (Nginx)</td>
+<td><code>80</code></td>
+</tr>
+<tr>
+<td><strong>Grafana</strong></td>
+<td><code>3000</code></td>
+<td><code>3000</code></td>
+<td><code>3000</code></td>
+</tr>
+<tr>
+<td><strong>Prometheus</strong></td>
+<td><code>9091</code></td>
+<td><code>9091</code></td>
+<td><code>9090</code></td>
+</tr>
+<tr>
+<td><strong>Loki</strong></td>
+<td><code>3100</code></td>
+<td><code>3100</code></td>
+<td><code>3100</code></td>
+</tr>
+<tr>
+<td><strong>Kafka Broker</strong></td>
+<td><code>29092</code> (host)</td>
+<td><code>29092</code> (host)</td>
+<td><code>9092</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Nota sobre Gateway DEV vs PROD en paralelo:</strong> Si el estudiante necesita levantar simultáneamente la versión DEV (IDE en <code>8080</code>) y la versión PROD (Docker Compose), el <code>compose.yml</code> expone el Gateway en el puerto <code>8090</code> del host (<code>-p 8090:8080</code>). De esta forma ambas versiones coexisten sin conflicto de sockets en el mismo host.</p>
+</blockquote>
+<h3 id="32-puertos-dinamicos-microservicios-de-negocio">3.2. Puertos Dinámicos (Microservicios de Negocio)</h3>
+<p>Los microservicios de negocio registrados en Eureka no requieren un puerto fijo en el host:</p>
+<ul>
+<li><strong>En DEV (IDE):</strong> Se configura <code>server.port=0</code> para que el sistema operativo asigne un puerto libre aleatorio. Eureka registra automáticamente la IP y el puerto asignado.</li>
+<li><strong>En PROD (Docker / Kubernetes):</strong> Todos los contenedores de un mismo microservicio usan internamente el mismo puerto estático (ej. <code>8080</code>) sin colisión gracias al aislamiento de red por namespace de contenedor. El Gateway balancea la carga entre las instancias resolviendo sus IPs internas mediante el Service Registry.</li>
+</ul>
+<hr />
+<h2 id="4-migracion-de-motor-de-base-de-datos-mysql-postgresql">4. MIGRACIÓN DE MOTOR DE BASE DE DATOS: MySQL → PostgreSQL</h2>
+<h3 id="41-decision-tecnica">4.1. Decisión Técnica</h3>
+<p>Se decide migrar de <strong>MySQL 8</strong> a <strong>PostgreSQL 16</strong> como motor de persistencia para todos los microservicios de negocio de la arquitectura Pagatu.</p>
+<p><strong>Justificación:</strong>
+*   La imagen <code>postgres:16-alpine</code> ocupa aproximadamente <strong>79 MB</strong>, frente a los <strong>631 MB</strong> de <code>mysql:8.4</code>. Reducción del 87% en tamaño de imagen base. Crítico en entornos de laboratorio donde el estudiante puede correr 6 o más contenedores de base de datos simultáneamente.
+*   PostgreSQL consume significativamente menos RAM por conexión activa en comparación con MySQL 8, reduciendo el riesgo de saturar la memoria del equipo del estudiante durante las prácticas.</p>
+<h3 id="42-convencion-de-puertos-de-bases-de-datos">4.2. Convención de Puertos de Bases de Datos</h3>
+<p>El puerto interno en todos los contenedores PostgreSQL es el estándar <strong><code>5432</code></strong>. Los puertos expuestos al host en DEV son únicos por microservicio para permitir conexiones simultáneas desde herramientas de administración (DBeaver, pgAdmin, DataGrip):</p>
+<table>
+<thead>
+<tr>
+<th>Microservicio</th>
+<th>Base de Datos</th>
+<th>Puerto Interno</th>
+<th>Puerto Host DEV</th>
+<th>Puerto Host PROD</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pagatu-auth-ms</code></td>
+<td><code>pagatu_auth_db</code></td>
+<td><code>5432</code></td>
+<td><strong><code>5401</code></strong></td>
+<td>❌ No expuesto</td>
+</tr>
+<tr>
+<td><code>pagatu-ubigeo-ms</code></td>
+<td><code>pagatu_ubigeo_db</code></td>
+<td><code>5432</code></td>
+<td><strong><code>5402</code></strong></td>
+<td>❌ No expuesto</td>
+</tr>
+<tr>
+<td><code>pagatu-cliente-ms</code></td>
+<td><code>pagatu_cliente_db</code></td>
+<td><code>5432</code></td>
+<td><strong><code>5403</code></strong></td>
+<td>❌ No expuesto</td>
+</tr>
+<tr>
+<td><code>pagatu-catalogo-ms</code></td>
+<td><code>pagatu_catalogo_db</code></td>
+<td><code>5432</code></td>
+<td><strong><code>5404</code></strong></td>
+<td>❌ No expuesto</td>
+</tr>
+<tr>
+<td><code>pagatu-orden-ms</code></td>
+<td><code>pagatu_orden_db</code></td>
+<td><code>5432</code></td>
+<td><strong><code>5405</code></strong></td>
+<td>❌ No expuesto</td>
+</tr>
+<tr>
+<td><code>pagatu-pago-ms</code></td>
+<td><code>pagatu_pago_db</code></td>
+<td><code>5432</code></td>
+<td><strong><code>5406</code></strong></td>
+<td>❌ No expuesto</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Motivo de no exponer puertos de BD en PROD:</strong> En el entorno contenerizado, el microservicio accede a su base de datos a través de la red interna de Docker usando el nombre del servicio como hostname (ej. <code>postgres-orden:5432</code>). Exponer el puerto al host en producción representa un riesgo de seguridad innecesario.</p>
+</blockquote>
+<h3 id="43-cambios-tecnicos-requeridos-en-los-proyectos-spring-boot">4.3. Cambios Técnicos Requeridos en los Proyectos Spring Boot</h3>
+<h4 id="dependencia-maven-pomxml">Dependencia Maven (<code>pom.xml</code>):</h4>
+<pre><code class="language-xml">&lt;!-- ELIMINAR --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;com.mysql&lt;/groupId&gt;
+    &lt;artifactId&gt;mysql-connector-j&lt;/artifactId&gt;
+    &lt;scope&gt;runtime&lt;/scope&gt;
+&lt;/dependency&gt;
+&lt;!-- ELIMINAR si existe --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.flywaydb&lt;/groupId&gt;
+    &lt;artifactId&gt;flyway-mysql&lt;/artifactId&gt;
+&lt;/dependency&gt;
+
+&lt;!-- AGREGAR --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.postgresql&lt;/groupId&gt;
+    &lt;artifactId&gt;postgresql&lt;/artifactId&gt;
+    &lt;scope&gt;runtime&lt;/scope&gt;
+&lt;/dependency&gt;
+</code></pre>
+<h4 id="url-de-conexion-jdbc-en-config-repo">URL de Conexión JDBC en <code>config-repo</code>:</h4>
+<pre><code class="language-yaml">spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:pagatu_orden_db}
+    username: ${DB_USER:pagatu}
+    password: ${DB_PASS:pagatu}
+    driver-class-name: org.postgresql.Driver
+</code></pre>
+<h4 id="compose-devyml-con-puerto-expuesto-al-host-para-herramientas-de-administracion"><code>compose-dev.yml</code> (con puerto expuesto al host para herramientas de administración):</h4>
+<pre><code class="language-yaml">services:
+  postgres-orden:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: pagatu_orden_db
+      POSTGRES_USER: pagatu
+      POSTGRES_PASSWORD: pagatu
+    ports:
+      - &quot;5405:5432&quot;
+    volumes:
+      - postgres_orden_dev_data:/var/lib/postgresql/data
+</code></pre>
+<h4 id="composeyml-sin-puerto-expuesto-al-host-solo-acceso-interno"><code>compose.yml</code> (sin puerto expuesto al host — solo acceso interno):</h4>
+<pre><code class="language-yaml">services:
+  postgres-orden:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${ORDEN_DB_NAME}
+      POSTGRES_USER: ${ORDEN_DB_USER}
+      POSTGRES_PASSWORD: ${ORDEN_DB_PASSWORD}
+    volumes:
+      - postgres_orden_data:/var/lib/postgresql/data
+    networks:
+      - orden-internal-net
+
+  pagatu-orden-ms:
+    build: .
+    environment:
+      DB_HOST: postgres-orden
+      DB_PORT: 5432
+    networks:
+      - orden-internal-net
+      - ms-net
+</code></pre>
+<blockquote>
+<p><strong>Nota sobre Flyway:</strong> No se requiere cambio en <code>flyway-core</code>. Flyway detecta automáticamente el dialecto de PostgreSQL a través del driver JDBC activo en el classpath.</p>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

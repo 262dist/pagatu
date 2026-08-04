@@ -1,0 +1,1964 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://262dist.github.io/pagatu/propuesta-proyecto/README_01_ACERCA_DEL_PROYECTO/">
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../README_02_ARQUITECTURA_DETALLADA/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Acerca del proyecto - Pagatu DIST - Desarrollo de Aplicaciones Distribuidas</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#acerca-del-proyecto-pagatu" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" class="md-header__button md-logo" aria-label="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Pagatu DIST - Desarrollo de Aplicaciones Distribuidas
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Acerca del proyecto
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" class="md-nav__button md-logo" aria-label="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Pagatu DIST - Desarrollo de Aplicaciones Distribuidas
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sílabos
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sílabos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sílabo DIST 2026-1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sílabo DIST 2026-2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Propuesta de proyecto
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Propuesta de proyecto
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contenido/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contenido
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OFICIAL_ESTRUCTURA_ESTANDAR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Estructura estándar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../propuesta_migracion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Propuesta de migración
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    README
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Acerca del proyecto
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Acerca del proyecto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objetivo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stack-tecnico" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stack Tecnico
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#microservicios-del-proyecto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Microservicios del Proyecto
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#release-1-core-inicial" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Release 1: Core Inicial
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#infraestructura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Infraestructura
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flujo-principal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flujo Principal
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#regla-de-comunicacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regla de Comunicacion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estructura-general" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estructura General
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#convencion-de-nombres" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Convencion de Nombres
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estructura-interna-por-microservicio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estructura Interna por Microservicio
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuracion-comun" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuracion Comun
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bases-de-datos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bases de Datos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#seguridad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Seguridad
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docker-y-kubernetes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker y Kubernetes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alcance-de-release-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alcance de Release 1
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aspectos-transversales-pendientes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aspectos Transversales Pendientes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arquitectura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arquitectura
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#activos-de-software-de-pagatu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Activos de Software de Pagatu
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arquitectura-c4-de-pagatu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arquitectura C4 de Pagatu
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Arquitectura C4 de Pagatu">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#c4-nivel-1-contexto-del-sistema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C4 Nivel 1: Contexto del Sistema
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c4-nivel-2-software-system-pagatu-platform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C4 Nivel 2: Software System - Pagatu Platform
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c4-despliegue-por-ambientes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C4: Despliegue por Ambientes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pendiente-para-release-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pendiente para Release 2
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README_02_ARQUITECTURA_DETALLADA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arquitectura detallada
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objetivo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stack-tecnico" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stack Tecnico
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#microservicios-del-proyecto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Microservicios del Proyecto
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#release-1-core-inicial" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Release 1: Core Inicial
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#infraestructura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Infraestructura
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flujo-principal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flujo Principal
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#regla-de-comunicacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regla de Comunicacion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estructura-general" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estructura General
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#convencion-de-nombres" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Convencion de Nombres
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estructura-interna-por-microservicio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estructura Interna por Microservicio
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuracion-comun" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuracion Comun
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bases-de-datos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bases de Datos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#seguridad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Seguridad
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docker-y-kubernetes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker y Kubernetes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alcance-de-release-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alcance de Release 1
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aspectos-transversales-pendientes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aspectos Transversales Pendientes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arquitectura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arquitectura
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#activos-de-software-de-pagatu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Activos de Software de Pagatu
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arquitectura-c4-de-pagatu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arquitectura C4 de Pagatu
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Arquitectura C4 de Pagatu">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#c4-nivel-1-contexto-del-sistema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C4 Nivel 1: Contexto del Sistema
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c4-nivel-2-software-system-pagatu-platform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C4 Nivel 2: Software System - Pagatu Platform
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c4-despliegue-por-ambientes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C4: Despliegue por Ambientes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pendiente-para-release-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pendiente para Release 2
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="acerca-del-proyecto-pagatu">Acerca del Proyecto: pagatu</h1>
+<h2 id="objetivo">Objetivo</h2>
+<p><code>pagatu</code> es una arquitectura base de microservicios para un sistema de pagos y comercio institucional. El proyecto busca ser profesional, didactico y evolutivo: incluye CRUD, comunicacion sincrona con Feign, mensajeria asincrona con Kafka, configuracion centralizada, descubrimiento de servicios, gateway, seguridad JWT, Docker y Kubernetes, sin caer en una arquitectura innecesariamente compleja.</p>
+<p>La propuesta usa una arquitectura por capas simple, no hexagonal, pensada para mantener el codigo claro y facil de explicar.</p>
+<h2 id="stack-tecnico">Stack Tecnico</h2>
+<ul>
+<li>Java 17</li>
+<li>Spring Boot 3.5.x</li>
+<li>Maven</li>
+<li>Spring Web</li>
+<li>Spring Data JPA</li>
+<li>Spring Validation</li>
+<li>OpenFeign</li>
+<li>Eureka Client</li>
+<li>Config Client</li>
+<li>Spring Kafka</li>
+<li>MySQL 8</li>
+<li>Flyway</li>
+<li>Lombok</li>
+<li>MapStruct</li>
+<li>Seguridad JWT inicial con <code>auth-ms</code></li>
+<li>Keycloak como modulo opcional futuro</li>
+<li>Docker y Docker Compose</li>
+<li>Kubernetes con manifiestos YAML</li>
+</ul>
+<h2 id="microservicios-del-proyecto">Microservicios del Proyecto</h2>
+<p>El proyecto se plantea en releases para mantener una evolucion ordenada. No todos los microservicios se implementan desde el inicio: primero se construye el flujo principal y luego se agregan capacidades complementarias.</p>
+<table>
+<thead>
+<tr>
+<th>Microservicio</th>
+<th style="text-align: right;">Release</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pagatu-auth-ms</code></td>
+<td style="text-align: right;">1</td>
+<td>Gestiona autenticacion y control de acceso inicial: usuarios, credenciales, roles logicos y emision/validacion de tokens propios.</td>
+</tr>
+<tr>
+<td><code>pagatu-ubigeo-ms</code></td>
+<td style="text-align: right;">1</td>
+<td>Gestiona ubicaciones geograficas por pais: pais, departamento/region, provincia, distrito y codigos territoriales.</td>
+</tr>
+<tr>
+<td><code>pagatu-cliente-ms</code></td>
+<td style="text-align: right;">1</td>
+<td>Gestiona clientes: alumno universitario, alumno colegio, apoderado y cliente externo. Permite CRUD, busqueda por documento y validacion de cliente.</td>
+</tr>
+<tr>
+<td><code>pagatu-catalogo-ms</code></td>
+<td style="text-align: right;">1</td>
+<td>Gestiona lo que se puede comprar o pagar: productos, conceptos de pago, familias, categorias, tipos, precios y activacion.</td>
+</tr>
+<tr>
+<td><code>pagatu-orden-ms</code></td>
+<td style="text-align: right;">1</td>
+<td>Es el nucleo del negocio. Crea ordenes, agrega items, calcula totales, consulta estados y lista ordenes por cliente.</td>
+</tr>
+<tr>
+<td><code>pagatu-pago-ms</code></td>
+<td style="text-align: right;">1</td>
+<td>Gestiona el proceso financiero: registra, valida o rechaza pagos e integra una pasarela externa como Niubiz o Culqi.</td>
+</tr>
+<tr>
+<td><code>pagatu-notificacion-ms</code></td>
+<td style="text-align: right;">2</td>
+<td>Envia notificaciones por eventos relevantes, como orden creada, pago validado o pago rechazado.</td>
+</tr>
+<tr>
+<td><code>pagatu-contabilidad-ms</code></td>
+<td style="text-align: right;">2</td>
+<td>Integra pagos validados con procesos contables, conciliacion y registros financieros internos.</td>
+</tr>
+<tr>
+<td><code>pagatu-reportes-ms</code></td>
+<td style="text-align: right;">2</td>
+<td>Expone reportes operativos, financieros y analiticos sobre clientes, ordenes, pagos y catalogo.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="release-1-core-inicial">Release 1: Core Inicial</h2>
+<table>
+<thead>
+<tr>
+<th>Microservicio</th>
+<th>Responsabilidad</th>
+<th>Comunicacion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pagatu-auth-ms</code></td>
+<td>Gestiona autenticacion inicial, roles y tokens propios sin depender aun de Keycloak.</td>
+<td>REST</td>
+</tr>
+<tr>
+<td><code>pagatu-ubigeo-ms</code></td>
+<td>Gestiona datos geograficos por pais para completar nacimiento, direccion o residencia del cliente.</td>
+<td>REST</td>
+</tr>
+<tr>
+<td><code>pagatu-cliente-ms</code></td>
+<td>Gestiona clientes: alumno universitario, alumno colegio, apoderado y cliente externo. Permite CRUD, busqueda por documento y validacion de cliente.</td>
+<td>REST y Feign</td>
+</tr>
+<tr>
+<td><code>pagatu-catalogo-ms</code></td>
+<td>Gestiona productos, conceptos de pago, familias, categorias, tipos, precios y activacion.</td>
+<td>REST</td>
+</tr>
+<tr>
+<td><code>pagatu-orden-ms</code></td>
+<td>Es el nucleo del negocio. Crea ordenes, agrega items, calcula totales, consulta estados y lista ordenes por cliente.</td>
+<td>REST, Feign y Kafka</td>
+</tr>
+<tr>
+<td><code>pagatu-pago-ms</code></td>
+<td>Gestiona el proceso financiero, consume eventos de orden, integra una pasarela externa como Niubiz o Culqi y publica resultados de pago.</td>
+<td>Kafka, REST externo</td>
+</tr>
+</tbody>
+</table>
+<h2 id="infraestructura">Infraestructura</h2>
+<table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Funcion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pagatu-config</code></td>
+<td>Centraliza la configuracion de los microservicios.</td>
+</tr>
+<tr>
+<td><code>pagatu-eureka</code></td>
+<td>Provee descubrimiento de servicios con Eureka.</td>
+</tr>
+<tr>
+<td><code>pagatu-gateway</code></td>
+<td>Es la entrada unica al sistema y enruta las peticiones a los microservicios.</td>
+</tr>
+</tbody>
+</table>
+<p>Rutas principales del Gateway:</p>
+<pre><code class="language-text">/api/auth/**
+/api/clientes/**
+/api/catalogo/**
+/api/ubigeo/**
+/api/ordenes/**
+/api/pagos/**
+</code></pre>
+<h2 id="flujo-principal">Flujo Principal</h2>
+<pre><code class="language-text">Usuario
+  -&gt; Gateway
+  -&gt; pagatu-auth-ms
+  -&gt; pagatu-orden-ms
+  -&gt; Feign: pagatu-cliente-ms
+  -&gt; Feign interno: pagatu-cliente-ms -&gt; pagatu-ubigeo-ms
+  -&gt; Feign: pagatu-catalogo-ms
+  -&gt; Kafka: orden.creada
+  -&gt; pagatu-pago-ms
+  -&gt; Pasarela externa: Niubiz / Culqi
+  -&gt; Kafka: pago.validado
+</code></pre>
+<p><code>pagatu-orden-ms</code> consulta de forma sincrona a cliente y catalogo porque necesita respuestas inmediatas antes de crear una orden. <code>pagatu-cliente-ms</code> puede consultar a <code>pagatu-ubigeo-ms</code> para completar detalles de nacimiento, residencia o direccion. Si el cliente no es valido o el producto/concepto no existe, esta inactivo o no tiene precio valido, la orden no se crea. Una vez creada, publica el evento <code>orden.creada</code> para que <code>pagatu-pago-ms</code> continue el proceso de pago de forma asincrona e integre una pasarela externa como Niubiz, Culqi u otro proveedor.</p>
+<h2 id="regla-de-comunicacion">Regla de Comunicacion</h2>
+<p>Feign y Kafka se usan para problemas distintos:</p>
+<ul>
+<li>Feign se usa cuando el servicio necesita una respuesta inmediata para tomar una decision.</li>
+<li>Kafka se usa cuando algo ya ocurrio y otros servicios deben reaccionar.</li>
+</ul>
+<p>En Release 1, Feign se usa para decisiones inmediatas: <code>pagatu-cliente-ms</code> consulta <code>pagatu-ubigeo-ms</code>, y <code>pagatu-orden-ms</code> consulta <code>pagatu-cliente-ms</code> y <code>pagatu-catalogo-ms</code>. <code>pagatu-ubigeo-ms</code> queda como servicio sincrono estable; no necesita evolucionar a Kafka. Kafka se usa entre <code>pagatu-orden-ms</code> y <code>pagatu-pago-ms</code>.</p>
+<h2 id="estructura-general">Estructura General</h2>
+<pre><code class="language-text">pagatu/
+|-- infra/
+|   |-- config/
+|   |   |-- config-repo/
+|   |   |-- src/
+|   |   |-- pom.xml
+|   |   `-- Dockerfile
+|   |-- eureka/
+|   |-- gateway/
+|   |-- docker-compose.yml
+|   |-- k8s-local/
+|   `-- k8s/
+|-- platform/
+|   |-- kafka-compose.yml
+|   |-- observability-compose.yml
+|   `-- k8s-local/
+|-- auth-ms/
+|   |-- src/
+|   |-- pom.xml
+|   |-- Dockerfile
+|   |-- docker-compose-dev.yml
+|   |-- docker-compose.yml
+|   |-- k8s-local/
+|   `-- k8s/
+|-- ubigeo-ms/
+|   |-- src/
+|   |-- pom.xml
+|   |-- Dockerfile
+|   |-- docker-compose-dev.yml
+|   |-- docker-compose.yml
+|   |-- k8s-local/
+|   `-- k8s/
+|-- cliente-ms/
+|   |-- src/
+|   |-- pom.xml
+|   |-- Dockerfile
+|   |-- docker-compose-dev.yml
+|   |-- docker-compose.yml
+|   |-- k8s-local/
+|   `-- k8s/
+|-- catalogo-ms/
+|   |-- src/
+|   |-- pom.xml
+|   |-- Dockerfile
+|   |-- docker-compose-dev.yml
+|   |-- docker-compose.yml
+|   |-- k8s-local/
+|   `-- k8s/
+|-- orden-ms/
+|   |-- src/
+|   |-- pom.xml
+|   |-- Dockerfile
+|   |-- docker-compose-dev.yml
+|   |-- docker-compose.yml
+|   |-- k8s-local/
+|   `-- k8s/
+`-- pago-ms/
+    |-- src/
+    |-- pom.xml
+    |-- Dockerfile
+    |-- docker-compose-dev.yml
+    |-- docker-compose.yml
+    |-- k8s-local/
+    `-- k8s/
+</code></pre>
+<h2 id="convencion-de-nombres">Convencion de Nombres</h2>
+<p>Las carpetas del repositorio usan nombres cortos para facilitar el trabajo diario. Los artefactos operativos usan el prefijo <code>pagatu-</code> para evitar colisiones en Docker, Eureka, Config Server y Kubernetes.</p>
+<table>
+<thead>
+<tr>
+<th>Elemento</th>
+<th>Ejemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Carpeta del proyecto</td>
+<td><code>cliente-ms</code></td>
+</tr>
+<tr>
+<td>Maven <code>artifactId</code></td>
+<td><code>pagatu-cliente-ms</code></td>
+</tr>
+<tr>
+<td><code>spring.application.name</code></td>
+<td><code>pagatu-cliente-ms</code></td>
+</tr>
+<tr>
+<td>Imagen Docker</td>
+<td><code>pagatu-cliente-ms:latest</code></td>
+</tr>
+<tr>
+<td>Servicio Docker Compose</td>
+<td><code>pagatu-cliente-ms</code></td>
+</tr>
+<tr>
+<td>Deployment Kubernetes</td>
+<td><code>pagatu-cliente-ms</code></td>
+</tr>
+<tr>
+<td>Service Kubernetes</td>
+<td><code>pagatu-cliente-ms</code></td>
+</tr>
+<tr>
+<td>Config Server file</td>
+<td><code>pagatu-cliente-ms.yml</code></td>
+</tr>
+<tr>
+<td>Base de datos</td>
+<td><code>pagatu_cliente_db</code></td>
+</tr>
+<tr>
+<td>Paquete Java</td>
+<td><code>com.pagatu.cliente</code></td>
+</tr>
+<tr>
+<td>Ruta Gateway</td>
+<td><code>/api/clientes/**</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="estructura-interna-por-microservicio">Estructura Interna por Microservicio</h2>
+<p>Cada microservicio core debe seguir una estructura por capas simple:</p>
+<pre><code class="language-text">com.pagatu.&lt;contexto&gt;
+|-- config
+|-- controller
+|-- dto
+|   |-- request
+|   `-- response
+|-- entity
+|-- exception
+|-- filter
+|-- mapper
+|-- repository
+|-- service
+|   `-- impl
+|-- client
+|-- event
+`-- &lt;Contexto&gt;Application.java
+</code></pre>
+<p>Las carpetas <code>client</code> y <code>event</code> solo se crean cuando el microservicio las necesita:</p>
+<table>
+<thead>
+<tr>
+<th>Microservicio</th>
+<th style="text-align: right;"><code>client</code></th>
+<th style="text-align: right;"><code>event</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pagatu-auth-ms</code></td>
+<td style="text-align: right;">No</td>
+<td style="text-align: right;">No</td>
+</tr>
+<tr>
+<td><code>pagatu-ubigeo-ms</code></td>
+<td style="text-align: right;">No</td>
+<td style="text-align: right;">No</td>
+</tr>
+<tr>
+<td><code>pagatu-cliente-ms</code></td>
+<td style="text-align: right;">Si</td>
+<td style="text-align: right;">No</td>
+</tr>
+<tr>
+<td><code>pagatu-catalogo-ms</code></td>
+<td style="text-align: right;">No</td>
+<td style="text-align: right;">No</td>
+</tr>
+<tr>
+<td><code>pagatu-orden-ms</code></td>
+<td style="text-align: right;">Si</td>
+<td style="text-align: right;">Si</td>
+</tr>
+<tr>
+<td><code>pagatu-pago-ms</code></td>
+<td style="text-align: right;">No</td>
+<td style="text-align: right;">Si</td>
+</tr>
+</tbody>
+</table>
+<h2 id="configuracion-comun">Configuracion Comun</h2>
+<p>En los microservicios se considera la siguiente configuracion base:</p>
+<ul>
+<li><code>SecurityConfig.java</code> para proteger endpoints con JWT.</li>
+<li><code>JwtProperties.java</code> para centralizar propiedades de seguridad.</li>
+<li><code>FeignTraceConfig.java</code> para propagar trazabilidad en llamadas Feign.</li>
+<li><code>OpenApiConfig.java</code> para documentacion de API.</li>
+<li><code>KafkaConfig.java</code> solo cuando el servicio use Kafka.</li>
+<li><code>CorrelationIdFilter.java</code> para leer o generar <code>X-Trace-ID</code>, guardarlo en MDC y retornarlo en la respuesta.</li>
+<li><code>logback-spring.xml</code> con <code>traceId=%X{X-Trace-ID}</code> para trazabilidad en logs.</li>
+</ul>
+<p>No se crea carpeta <code>security</code>; la configuracion de seguridad vive dentro de <code>config</code>.</p>
+<h2 id="bases-de-datos">Bases de Datos</h2>
+<p>Cada microservicio core tiene su propia base de datos:</p>
+<table>
+<thead>
+<tr>
+<th>Microservicio</th>
+<th>Base de datos</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pagatu-auth-ms</code></td>
+<td><code>pagatu_auth_db</code></td>
+</tr>
+<tr>
+<td><code>pagatu-ubigeo-ms</code></td>
+<td><code>pagatu_ubigeo_db</code></td>
+</tr>
+<tr>
+<td><code>pagatu-cliente-ms</code></td>
+<td><code>pagatu_cliente_db</code></td>
+</tr>
+<tr>
+<td><code>pagatu-catalogo-ms</code></td>
+<td><code>pagatu_catalogo_db</code></td>
+</tr>
+<tr>
+<td><code>pagatu-orden-ms</code></td>
+<td><code>pagatu_orden_db</code></td>
+</tr>
+<tr>
+<td><code>pagatu-pago-ms</code></td>
+<td><code>pagatu_pago_db</code></td>
+</tr>
+</tbody>
+</table>
+<p>Las migraciones se gestionan con Flyway mediante <code>V1__init.sql</code>.</p>
+<h2 id="seguridad">Seguridad</h2>
+<p>Release 1 usa <code>auth-ms</code> para autenticacion y control de acceso inicial. Los endpoints deben validar autenticacion y roles segun la responsabilidad de cada microservicio. Keycloak queda como modulo opcional futuro para reemplazar o complementar la emision de tokens.</p>
+<h2 id="docker-y-kubernetes">Docker y Kubernetes</h2>
+<p>El proyecto contempla:</p>
+<ul>
+<li><code>Dockerfile</code> por microservicio y componente de infraestructura.</li>
+<li><code>docker-compose.yml</code> en <code>infra/</code> para Config Server, Eureka y Gateway.</li>
+<li><code>platform/kafka-compose.yml</code> y <code>platform/observability-compose.yml</code> para dependencias compartidas de laboratorio.</li>
+<li><code>docker-compose-dev.yml</code> por microservicio para levantar dependencias locales del MS, por ejemplo MySQL, mientras la aplicacion corre con Java local.</li>
+<li><code>docker-compose.yml</code> por microservicio para validar su imagen Docker de forma aislada con dependencias minimas.</li>
+<li><code>k8s-local/</code> para Minikube o Kubernetes local.</li>
+<li><code>k8s/</code> para nube o produccion real.</li>
+</ul>
+<p>El Gateway es la entrada externa; los microservicios no deben consumirse directamente por puertos publicos.</p>
+<p>En Minikube se permite levantar MySQL por microservicio y plataformas compartidas de laboratorio, como Kafka u observabilidad, para practicar despliegue completo. En nube real, MySQL debe ser una base administrada o externa, Kafka debe ser corporativo/administrado y observabilidad debe venir de una plataforma compartida o proveedor cloud.</p>
+<h2 id="alcance-de-release-1">Alcance de Release 1</h2>
+<p>Release 1 incluye los 6 microservicios core necesarios para explicar y validar el flujo principal:</p>
+<ul>
+<li>Autenticacion inicial, usuarios, roles y tokens con <code>auth-ms</code>.</li>
+<li>CRUD de clientes.</li>
+<li>CRUD/consulta de ubigeo por pais para completar nacimiento, residencia o direccion del cliente.</li>
+<li>CRUD de catalogo: productos, conceptos, familias, categorias, tipos y precios.</li>
+<li>Creacion y consulta de ordenes.</li>
+<li>Validacion sincrona con Feign desde cliente hacia ubigeo, y desde orden hacia cliente y catalogo.</li>
+<li>Publicacion de <code>orden.creada</code>.</li>
+<li>Consumo de <code>orden.creada</code> desde pago.</li>
+<li>Integracion de <code>pago-ms</code> con una pasarela externa de pagos como Niubiz o Culqi.</li>
+<li>Publicacion de <code>pago.validado</code>.</li>
+<li>Configuracion centralizada, Eureka, Gateway, seguridad con <code>auth-ms</code>, trazabilidad, Docker y Kubernetes.</li>
+</ul>
+<h2 id="aspectos-transversales-pendientes">Aspectos Transversales Pendientes</h2>
+<p>Estos puntos no pertenecen a un solo microservicio. Deben mantenerse visibles durante el curso para que la arquitectura avance de forma consistente.</p>
+<table>
+<thead>
+<tr>
+<th>Aspecto</th>
+<th>Que debe definirse</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Contratos REST</td>
+<td>Endpoints, DTO request/response, codigos de error y headers obligatorios como <code>X-Trace-ID</code>.</td>
+</tr>
+<tr>
+<td>Contratos Kafka</td>
+<td>Topicos, eventos, payloads, versionado y comportamiento ante mensajes no procesables.</td>
+</tr>
+<tr>
+<td>Errores comunes</td>
+<td>Formato estandar para validacion, recurso no encontrado, error de negocio, timeout, fallback y error de integracion.</td>
+</tr>
+<tr>
+<td>Versionado</td>
+<td>Uso de rutas como <code>/api/v1/...</code> y compatibilidad de DTOs y eventos.</td>
+</tr>
+<tr>
+<td>Seguridad</td>
+<td>Validacion en Gateway, validacion en cada MS, roles base, endpoints publicos/protegidos y propagacion del JWT.</td>
+</tr>
+<tr>
+<td>Observabilidad</td>
+<td>Health checks, metricas HTTP, logs con <code>X-Trace-ID</code>, errores Feign, eventos Kafka y latencia por MS.</td>
+</tr>
+<tr>
+<td>Persistencia</td>
+<td>Una base de datos por MS, migraciones Flyway, datos iniciales y prohibicion de compartir tablas entre MS.</td>
+</tr>
+<tr>
+<td>Ejecucion</td>
+<td>Diferenciar DEV local, PROD local con Docker Compose, Kubernetes local y nube.</td>
+</tr>
+<tr>
+<td>Alcance Release 1</td>
+<td>Mantener fuera inventario, notificaciones, contabilidad, reportes y sagas complejas.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="arquitectura">Arquitectura</h2>
+<p>Pagatu se organiza como una arquitectura de microservicios con entrada unica por Gateway, configuracion centralizada, descubrimiento de servicios, comunicacion sincrona con Feign, comunicacion asincrona con Kafka y observabilidad con Prometheus, Loki y Grafana.</p>
+<p>En Release 1, el flujo principal se apoya en estos servicios:</p>
+<ul>
+<li><code>cliente-ms</code>: gestiona clientes, documentos, contacto y datos de nacimiento.</li>
+<li><code>ubigeo-ms</code>: provee datos geograficos por pais para completar informacion del cliente.</li>
+<li><code>catalogo-ms</code>: gestiona productos, conceptos de pago, familias, categorias, tipos y precios.</li>
+<li><code>orden-ms</code>: orquesta la creacion de ordenes; valida cliente y catalogo por Feign.</li>
+<li><code>pago-ms</code>: procesa eventos de orden creada, integra una pasarela externa como Niubiz o Culqi y publica resultados de pago.</li>
+<li><code>auth-ms</code>: gestiona autenticacion y control de acceso inicial sin depender aun de Keycloak.</li>
+</ul>
+<p>La comunicacion queda dividida por responsabilidad:</p>
+<ul>
+<li>Gateway enruta las llamadas externas hacia los MS.</li>
+<li>Config Server entrega configuracion centralizada desde <code>config-repo</code>.</li>
+<li>Eureka permite descubrimiento de servicios.</li>
+<li>Feign se usa cuando un MS necesita respuesta inmediata.</li>
+<li>Circuit Breaker protege llamadas Feign ante fallos o latencia.</li>
+<li>Kafka se usa cuando algo ya ocurrio y otros servicios deben reaccionar.</li>
+<li><code>pago-ms</code> encapsula la integracion con proveedores externos de pago para no acoplar el resto del sistema a Niubiz, Culqi u otro proveedor.</li>
+<li>Prometheus recolecta metricas, Loki centraliza logs y Grafana visualiza ambos.</li>
+<li>Angular consume el sistema siempre por Gateway.</li>
+</ul>
+<h2 id="activos-de-software-de-pagatu">Activos de Software de Pagatu</h2>
+<p>Este mapa no es un nivel C4. Representa solo las aplicaciones y activos de alto nivel relacionados con Pagatu, agrupados por capa de alojamiento o servicio: SaaS, Cloud/IaaS y Local/Laboratorio.</p>
+<pre><code class="language-mermaid">flowchart TB
+    subgraph pagatuAssets[&quot;Activos del proyecto Pagatu&quot;]
+        subgraph saas[&quot;SaaS&quot;]
+            pasarela[&quot;Pasarela de pago&lt;br/&gt;Niubiz / Culqi&quot;]
+        end
+
+        subgraph cloud[&quot;Cloud / IaaS&quot;]
+            pagatuPlatform[&quot;Pagatu Platform&lt;br/&gt;pagos y comercio institucional&quot;]
+            kafkaEmp[&quot;Kafka empresarial compartido&quot;]
+            authApp[&quot;Auth institucional&lt;br/&gt;auth-ms, luego Keycloak&quot;]
+            obsInst[&quot;Observabilidad institucional&quot;]
+        end
+
+        subgraph local[&quot;Local / Laboratorio&quot;]
+            devLocal[&quot;DEV local&quot;]
+            prodLocal[&quot;PROD local Docker Compose&quot;]
+            minikube[&quot;Minikube&quot;]
+        end
+    end
+
+    pagatuPlatform --&gt; authApp
+    pagatuPlatform --&gt; kafkaEmp
+    pagatuPlatform --&gt; obsInst
+    pagatuPlatform --&gt; pasarela
+    devLocal -. simula .-&gt; pagatuPlatform
+    prodLocal -. valida imagenes .-&gt; pagatuPlatform
+    minikube -. simula k8s .-&gt; pagatuPlatform
+
+    classDef external fill:#fff3cd,stroke:#d97706,stroke-width:2px,color:#111827
+    class pasarela external
+</code></pre>
+<p>Este mapa ayuda a explicar donde vive cada activo. Pagatu se presenta como una sola aplicacion del portafolio institucional y su destino natural es Cloud/IaaS; los entornos locales sirven para desarrollo, validacion y simulacion. Los detalles como Angular, Gateway, Config Server, Eureka y microservicios aparecen despues en los diagramas C4.</p>
+<h2 id="arquitectura-c4-de-pagatu">Arquitectura C4 de Pagatu</h2>
+<h3 id="c4-nivel-1-contexto-del-sistema">C4 Nivel 1: Contexto del Sistema</h3>
+<pre><code class="language-mermaid">flowchart LR
+    auth[&quot;Software System: Auth institucional (auth-ms, luego Keycloak)&quot;]
+    usuario[&quot;Person: Usuario institucional&quot;]
+    pagatu[&quot;Software System: Pagatu Platform&quot;]
+    kafkaCorp[&quot;External System: Kafka empresarial compartido&quot;]
+    pasarela[&quot;External System: Pasarela de pago (Niubiz/Culqi)&quot;]
+
+    usuario --&gt;|se identifica| auth
+    usuario --&gt;|usa| pagatu
+    auth --&gt;|entrega identidad y roles| pagatu
+    pagatu --&gt;|publica/consume eventos| kafkaCorp
+    pagatu --&gt;|procesa pago| pasarela
+
+    classDef external fill:#fff3cd,stroke:#d97706,stroke-width:2px,color:#111827
+    class pasarela external
+</code></pre>
+<p>Este nivel muestra Pagatu como una caja principal frente a su actor institucional y sistemas compartidos. <code>auth-ms</code> aparece aqui porque representa la identidad institucional transversal: el mismo punto de autenticacion puede servir a Pagatu y tambien a otros modulos de la empresa, como planes de estudios, carga academica, matricula, contabilidad o LMS. En Release 1 se implementa como <code>auth-ms</code>; luego puede evolucionar a Keycloak sin cambiar la idea arquitectonica. Los detalles internos de Pagatu, como Angular, Gateway, microservicios, Config Server y Eureka, aparecen recien en el nivel de contenedores. Kafka se trata como plataforma empresarial compartida, no como componente exclusivo del proyecto.</p>
+<h3 id="c4-nivel-2-software-system-pagatu-platform">C4 Nivel 2: Software System - Pagatu Platform</h3>
+<p>Contenedores de Release 1.</p>
+<pre><code class="language-mermaid">flowchart LR
+    usuario[&quot;Person: Usuario institucional&quot;] --&gt; angular[&quot;Container: Angular App&quot;]
+    angular --&gt; gateway[&quot;Container: Gateway&quot;]
+
+    gateway --&gt; cliente[&quot;Container: cliente-ms&quot;]
+    gateway --&gt; ubigeo[&quot;Container: ubigeo-ms&quot;]
+    gateway --&gt; catalogo[&quot;Container: catalogo-ms&quot;]
+    gateway --&gt; orden[&quot;Container: orden-ms&quot;]
+    gateway --&gt; pago[&quot;Container: pago-ms&quot;]
+    gateway --&gt; auth[&quot;Container: auth-ms&quot;]
+
+    cliente -- Feign + Circuit Breaker --&gt; ubigeo
+    orden -- Feign + Circuit Breaker --&gt; cliente
+    orden -- Feign + Circuit Breaker --&gt; catalogo
+
+    orden -- publica orden.creada --&gt; kafka[&quot;External System: Kafka empresarial compartido&quot;]
+    kafka -- consume orden.creada --&gt; pago
+    pago -- publica pago.validado --&gt; kafka
+    pago -- autoriza/captura pago --&gt; pasarela[&quot;External System: Pasarela de pago (Niubiz/Culqi)&quot;]
+
+    config[&quot;Container: Config Server&quot;] --&gt; configrepo[(Data Store: config-repo)]
+    auth -. config .-&gt; config
+    cliente -. config .-&gt; config
+    ubigeo -. config .-&gt; config
+    catalogo -. config .-&gt; config
+    orden -. config .-&gt; config
+    pago -. config .-&gt; config
+    gateway -. config .-&gt; config
+
+    eureka[&quot;Container: Eureka&quot;] -. registro .- auth
+    eureka -. registro .- cliente
+    eureka -. registro .- ubigeo
+    eureka -. registro .- catalogo
+    eureka -. registro .- orden
+    eureka -. registro .- pago
+    eureka -. registro .- gateway
+
+    prometheus[&quot;External System: Prometheus compartido&quot;] -. metrics .-&gt; auth
+    prometheus -. metrics .-&gt; gateway
+    prometheus -. metrics .-&gt; cliente
+    prometheus -. metrics .-&gt; ubigeo
+    prometheus -. metrics .-&gt; catalogo
+    prometheus -. metrics .-&gt; orden
+    prometheus -. metrics .-&gt; pago
+
+    loki[&quot;External System: Loki compartido&quot;] -. logs .-&gt; auth
+    loki -. logs .-&gt; gateway
+    loki -. logs .-&gt; cliente
+    loki -. logs .-&gt; ubigeo
+    loki -. logs .-&gt; catalogo
+    loki -. logs .-&gt; orden
+    loki -. logs .-&gt; pago
+
+    grafana[&quot;External System: Grafana compartido&quot;] --&gt; prometheus
+    grafana --&gt; loki
+
+    classDef external fill:#fff3cd,stroke:#d97706,stroke-width:2px,color:#111827
+    class pasarela external
+</code></pre>
+<p>Este nivel ya puede mostrar tecnologia y responsabilidades internas: Angular, Gateway, microservicios, bases de configuracion, servicios de soporte y sistemas externos consumidos por los contenedores.</p>
+<p>Las vistas dinamicas, C4 nivel 3 y C4 nivel 4 viven en <a href="../README_02_ARQUITECTURA_DETALLADA/">README_02_ARQUITECTURA_DETALLADA.md</a> para mantener este documento enfocado en la vision general.</p>
+<h3 id="c4-despliegue-por-ambientes">C4: Despliegue por Ambientes</h3>
+<pre><code class="language-mermaid">flowchart TB
+    subgraph dev[DEV local]
+        subgraph devMessagingBox[1. Mensajeria compartida]
+            devkafkacompose[platform/kafka-compose.yml]
+            devmessaging[(Kafka local)]
+            devkafkacompose --&gt; devmessaging
+        end
+
+        subgraph devInfraBox[2. Infra compartida]
+            devgateway[Gateway]
+            deveureka[Eureka]
+            devconfig[&quot;Config&lt;br/&gt;(+config-repo)&quot;]
+            deveureka -. solicita config .-&gt; devconfig
+            devgateway -. solicita config .-&gt; devconfig
+            devgateway -. discovery .-&gt; deveureka
+        end
+
+        subgraph devMsBox[3. Microservicio]
+            devmscompose[docker-compose-dev.yml del MS]
+            devjava[MS con Java 17 local]
+            devmysql[(MySQL del MS)]
+            devmscompose --&gt; devmysql
+        end
+
+        subgraph devObsBox[4. Observabilidad compartida]
+            devobscompose[platform/observability-compose.yml]
+            devobs[Prometheus + Loki + Grafana]
+            devobscompose --&gt; devobs
+        end
+
+        devmessaging -. eventos segun MS .- devjava
+        devjava -. solicita config .-&gt; devconfig
+        devjava -. registro .-&gt; deveureka
+        devgateway -. enruta y balancea .-&gt; devjava
+        devjava --&gt; devmysql
+        devobs -. scrape metrics / colecta logs .-&gt; devjava
+    end
+
+    subgraph compose[PROD local - Docker Compose]
+        subgraph messagingBox[Mensajeria compartida]
+            kafkacompose[platform/kafka-compose.yml]
+            composekafka[(Kafka)]
+            kafkacompose --&gt; composekafka
+        end
+
+        subgraph composeinfraBox[Infra compartida]
+            infracompose[infra/docker-compose.yml]
+            composeinfra[Config + Eureka + Gateway]
+            infracompose --&gt; composeinfra
+        end
+
+        subgraph observabilityBox[Observabilidad compartida]
+            obscompose[platform/observability-compose.yml]
+            obsstack[Prometheus + Loki + Grafana]
+            obscompose --&gt; obsstack
+        end
+
+        subgraph composemsBox[Microservicio]
+            mscompose[docker-compose.yml del MS]
+            composems[MS como contenedor Java 17]
+            composedb[(MySQL del MS)]
+            mscompose --&gt; composems
+            mscompose --&gt; composedb
+        end
+
+        composems --&gt; composeinfra
+        composems --&gt; composekafka
+        composems --&gt; obsstack
+    end
+
+    subgraph k8slocal[Kubernetes local - Minikube]
+        k8sinfra[Config + Eureka + Gateway]
+        k8sdeploy[Deployments de MS]
+        k8ssvc[Services ClusterIP por MS]
+        k8sdb[(MySQL por MS con StatefulSet/PVC)]
+        k8splatform[Kafka y observabilidad de laboratorio]
+        k8sing[Gateway o Ingress local]
+        k8sing --&gt; k8ssvc
+        k8ssvc --&gt; k8sdeploy
+        k8sdeploy --&gt; k8sinfra
+        k8sdeploy --&gt; k8sdb
+        k8sdeploy --&gt; k8splatform
+    end
+
+    subgraph cloud[Nube / Produccion real]
+        cloudk8s[Kubernetes administrado para MS]
+        registry[Container Registry]
+        manageddb[(Base de datos administrada)]
+        managedkafka[(Kafka corporativo o administrado)]
+        managedobs[Observabilidad corporativa o cloud]
+        cloudinfra[Config/Eureka/Gateway o equivalentes cloud]
+        ingress[Ingress / Load Balancer]
+        registry --&gt; cloudk8s
+        ingress --&gt; cloudk8s
+        cloudk8s --&gt; cloudinfra
+        cloudk8s --&gt; manageddb
+        cloudk8s --&gt; managedkafka
+        cloudk8s --&gt; managedobs
+    end
+
+    dev --&gt; compose --&gt; k8slocal --&gt; cloud
+</code></pre>
+<p>DEV local y PROD local representan el mismo sistema corriendo en paralelo, pero con distinto modo de ejecucion. En DEV local, los microservicios y la infraestructura (<code>config</code>, <code>eureka</code>, <code>gateway</code>) corren con Java 17 en la maquina del desarrollador para facilitar cambios rapidos; Docker se usa para dependencias como MySQL por MS, Kafka y observabilidad compartida. En PROD local, los mismos componentes se validan como imagenes y contenedores: la infraestructura propia se levanta con <code>infra/docker-compose.yml</code>, Kafka y observabilidad con <code>platform/</code>, y cada microservicio con su propio <code>&lt;ms&gt;/docker-compose.yml</code>. En Kubernetes local se usan manifiestos <code>k8s-local/</code>: los MS van como <code>Deployment</code>, los servicios internos como <code>ClusterIP</code>, MySQL puede ir como <code>StatefulSet</code> con PVC y el acceso externo pasa por Gateway o Ingress. En nube se usan imagenes desde registry, manifiestos <code>k8s/</code> para los MS, bases de datos administradas, Kafka corporativo/administrado y observabilidad de plataforma.</p>
+<h2 id="pendiente-para-release-2">Pendiente para Release 2</h2>
+<p>No se incluyen por ahora:</p>
+<ul>
+<li><code>pagatu-notificacion-ms</code></li>
+<li><code>pagatu-contabilidad-ms</code></li>
+<li><code>pagatu-inventario-ms</code></li>
+<li><code>pagatu-reportes-ms</code></li>
+</ul>
+<p>Estos servicios pueden agregarse cuando el flujo principal este estable y sea necesario cubrir mensajes, integracion contable, inventario, reservas reales de stock o analitica.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
