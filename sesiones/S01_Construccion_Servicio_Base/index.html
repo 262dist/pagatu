@@ -1,0 +1,4380 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://262dist.github.io/pagatu/sesiones/S01_Construccion_Servicio_Base/">
+      
+      
+        <link rel="prev" href="../../silabo_dist_2026_2/">
+      
+      
+        <link rel="next" href="../../propuesta-proyecto/contenido/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>S1 - Construcción de un servicio base para un sistema distribuido - Pagatu DIST - Desarrollo de Aplicaciones Distribuidas</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#s1-construccion-de-un-servicio-base-para-un-sistema-distribuido" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" class="md-header__button md-logo" aria-label="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Pagatu DIST - Desarrollo de Aplicaciones Distribuidas
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              S1 - Construcción de un servicio base para un sistema distribuido
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/262dist/pagatu" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    262dist/pagatu
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" class="md-nav__button md-logo" aria-label="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Pagatu DIST - Desarrollo de Aplicaciones Distribuidas
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/262dist/pagatu" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    262dist/pagatu
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plan-trabajo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plan de trabajo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía de Proyecto Sello
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guía de Proyecto Sello
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía del proyecto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabos
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Silabos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabo 2026-1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabo 2026-2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Sistema distribuido base orientado a producción
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    1. Sistema distribuido base orientado a producción
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S1 - Construcción de un servicio base para un sistema distribuido
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S1 - Construcción de un servicio base para un sistema distribuido
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introducción
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introducción">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-contexto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Contexto
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-indice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Índice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-proposito-de-aprendizaje" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Propósito de aprendizaje
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-producto-de-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Producto de sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-metodologia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Metodología
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-motivacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6 Motivación de la sesión
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.6 Motivación de la sesión">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#161-caso-plataforma-de-comercio-electronico" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6.1 Caso: plataforma de comercio electrónico
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-ubicacion-en-el-curso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.7 Ubicación en el curso
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-explica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Explica
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Explica">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-conceptos-clave" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Conceptos clave
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-arquitectura-del-producto-en-pagatu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Arquitectura del producto en pagatu
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.2 Arquitectura del producto en pagatu">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#221-dev-aplicacion-fuera-de-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2.1 DEV: aplicación fuera de Docker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#222-prod-local-aplicacion-dentro-de-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2.2 PROD local: aplicación dentro de Docker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#223-flujo-de-trabajo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2.3 Flujo de trabajo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-observabilidad-y-diagnostico" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Observabilidad y diagnóstico
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.3 Observabilidad y diagnóstico">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#231-senales-basicas-a-revisar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3.1 Señales básicas a revisar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#232-errores-frecuentes-y-diagnostico" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3.2 Errores frecuentes y diagnóstico
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-aplica-actividad-practica-guiada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Aplica: actividad práctica guiada
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Aplica: actividad práctica guiada">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-preparar-ambiente-local-java-21-maven-docker-y-vs-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Preparar ambiente local: Java 21, Maven, Docker y VS Code
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.1 Preparar ambiente local: Java 21, Maven, Docker y VS Code">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#311-instalar-o-verificar-java-21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1.1 Instalar o verificar Java 21
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#312-instalar-o-verificar-maven-3x" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1.2 Instalar o verificar Maven 3.x
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#313-instalar-o-verificar-docker-desktop-y-docker-compose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1.3 Instalar o verificar Docker Desktop y Docker Compose
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#314-abrir-el-proyecto-en-vs-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1.4 Abrir el proyecto en VS Code
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-crear-el-proyecto-spring-boot-desde-vs-code-con-dependencias-base" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Crear el proyecto Spring Boot desde VS Code con dependencias base
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.2 Crear el proyecto Spring Boot desde VS Code con dependencias base">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#321-crear-el-proyecto-con-spring-initializr-desde-vs-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2.1 Crear el proyecto con Spring Initializr desde VS Code
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#322-revisar-dependencias-postgresql-y-flyway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2.2 Revisar dependencias PostgreSQL y Flyway
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#323-ejecutar-una-primera-vez-y-reconocer-el-fallo-esperado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2.3 Ejecutar una primera vez y reconocer el fallo esperado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#324-crear-compose-devyml-para-postgresql-dev" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2.4 Crear compose-dev.yml para PostgreSQL DEV
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#325-configurar-applicationyml-y-application-devyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2.5 Configurar application.yml y application-dev.yml
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#326-crear-un-endpoint-temporal-de-saludo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2.6 Crear un endpoint temporal de saludo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#327-ejecutar-y-comprobar-que-ya-no-falla" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2.7 Ejecutar y comprobar que ya no falla
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-construir-el-crud-de-categoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Construir el CRUD de Categoria
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.3 Construir el CRUD de Categoria">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#331-crear-la-entidad-categoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.1 Crear la entidad Categoria
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#332-crear-el-repositorio-los-dto-y-el-mapper" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.2 Crear el repositorio, los DTO y el mapper
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#333-crear-las-excepciones-y-el-manejador-global-de-errores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.3 Crear las excepciones y el manejador global de errores
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#334-crear-el-servicio-de-aplicacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.4 Crear el servicio de aplicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#335-crear-el-controlador-rest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.5 Crear el controlador REST
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#336-crear-el-filtro-de-trazabilidad-correlationidfilter-y-configurar-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.6 Crear el filtro de trazabilidad CorrelationIdFilter y configurar logs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#337-revisar-la-migracion-flyway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.7 Revisar la migración Flyway
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#338-revisar-estructura-resultante" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.8 Revisar estructura resultante
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#339-preguntas-de-verificacion-antes-de-ejecutar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.9 Preguntas de verificación antes de ejecutar
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-ejecutar-y-probar-el-microservicio-en-dev" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Ejecutar y probar el microservicio en DEV
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.4 Ejecutar y probar el microservicio en DEV">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#341-verificar-postgresql-dev" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4.1 Verificar PostgreSQL DEV
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#342-ejecutar-con-maven" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4.2 Ejecutar con Maven
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#343-verificar-tabla-creada-por-flyway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4.3 Verificar tabla creada por Flyway
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#344-revisar-swagger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4.4 Revisar Swagger
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#345-verificar-health-y-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4.5 Verificar health y metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#346-probar-crud-por-shell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4.6 Probar CRUD por shell
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#347-ejecutar-una-segunda-instancia-en-dev" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4.7 Ejecutar una segunda instancia en DEV
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-configurar-produccion-local-con-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Configurar producción local con Docker
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.5 Configurar producción local con Docker">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#351-crear-dockerfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.1 Crear Dockerfile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#352-crear-env-y-envexample" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.2 Crear .env y .env.example
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#353-crear-application-prodyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.3 Crear application-prod.yml
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#354-crear-composeyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.4 Crear compose.yml
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-probar-produccion-local-con-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 Probar producción local con Docker
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.6 Probar producción local con Docker">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#361-levantar-produccion-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6.1 Levantar producción local
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#362-verificar-la-base-de-datos-prod" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6.2 Verificar la base de datos PROD
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#363-verificar-health-desde-la-red-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6.3 Verificar health desde la red Docker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#364-revisar-logs-y-bajar-el-entorno" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6.4 Revisar logs y bajar el entorno
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-ruta-alternativa-partir-del-tag-de-cierre-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7 Ruta alternativa: partir del tag de cierre de la sesión
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.7 Ruta alternativa: partir del tag de cierre de la sesión">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#371-archivos-clave-por-modo-de-ejecucion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7.1 Archivos clave por modo de ejecución
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#372-verificacion-rapida-de-base-de-datos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7.2 Verificación rápida de base de datos
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-crea-actividad-autonoma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Crea: actividad autónoma
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Crea: actividad autónoma">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-plantilla-de-evidencia-individual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Plantilla de evidencia individual
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.1 Plantilla de evidencia individual">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#411-datos-del-estudiante" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.1 Datos del estudiante
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#412-trabajo-autonomo-realizado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.2 Trabajo autónomo realizado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#413-evidencia-tecnica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.3 Evidencia técnica
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#414-error-o-hallazgo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.4 Error o hallazgo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#415-reflexion-tecnica-breve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.5 Reflexión técnica breve
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-criterios-minimos-de-aceptacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Criterios mínimos de aceptación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-cierre-evaluativo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Cierre evaluativo
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Cierre evaluativo">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-resultados-esperados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Resultados esperados
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-evidencia-del-producto-de-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Evidencia del producto de sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-preguntas-de-defensa-y-reflexion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Preguntas de defensa y reflexión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-rubrica-de-evaluacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 Rúbrica de evaluación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Propuesta de proyecto
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Propuesta de proyecto
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../propuesta-proyecto/contenido/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contenido
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../propuesta-proyecto/OFICIAL_ESTRUCTURA_ESTANDAR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Estructura estándar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../propuesta-proyecto/propuesta_migracion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Propuesta de migración
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../propuesta-proyecto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    README
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../propuesta-proyecto/README_01_ACERCA_DEL_PROYECTO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Acerca del proyecto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../propuesta-proyecto/README_02_ARQUITECTURA_DETALLADA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arquitectura detallada
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introducción
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introducción">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-contexto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Contexto
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-indice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Índice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-proposito-de-aprendizaje" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Propósito de aprendizaje
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-producto-de-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Producto de sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-metodologia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Metodología
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-motivacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6 Motivación de la sesión
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.6 Motivación de la sesión">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#161-caso-plataforma-de-comercio-electronico" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6.1 Caso: plataforma de comercio electrónico
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-ubicacion-en-el-curso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.7 Ubicación en el curso
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-explica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Explica
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Explica">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-conceptos-clave" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Conceptos clave
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-arquitectura-del-producto-en-pagatu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Arquitectura del producto en pagatu
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.2 Arquitectura del producto en pagatu">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#221-dev-aplicacion-fuera-de-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2.1 DEV: aplicación fuera de Docker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#222-prod-local-aplicacion-dentro-de-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2.2 PROD local: aplicación dentro de Docker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#223-flujo-de-trabajo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2.3 Flujo de trabajo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-observabilidad-y-diagnostico" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Observabilidad y diagnóstico
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.3 Observabilidad y diagnóstico">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#231-senales-basicas-a-revisar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3.1 Señales básicas a revisar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#232-errores-frecuentes-y-diagnostico" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3.2 Errores frecuentes y diagnóstico
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-aplica-actividad-practica-guiada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Aplica: actividad práctica guiada
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Aplica: actividad práctica guiada">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-preparar-ambiente-local-java-21-maven-docker-y-vs-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Preparar ambiente local: Java 21, Maven, Docker y VS Code
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.1 Preparar ambiente local: Java 21, Maven, Docker y VS Code">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#311-instalar-o-verificar-java-21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1.1 Instalar o verificar Java 21
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#312-instalar-o-verificar-maven-3x" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1.2 Instalar o verificar Maven 3.x
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#313-instalar-o-verificar-docker-desktop-y-docker-compose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1.3 Instalar o verificar Docker Desktop y Docker Compose
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#314-abrir-el-proyecto-en-vs-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1.4 Abrir el proyecto en VS Code
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-crear-el-proyecto-spring-boot-desde-vs-code-con-dependencias-base" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Crear el proyecto Spring Boot desde VS Code con dependencias base
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.2 Crear el proyecto Spring Boot desde VS Code con dependencias base">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#321-crear-el-proyecto-con-spring-initializr-desde-vs-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2.1 Crear el proyecto con Spring Initializr desde VS Code
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#322-revisar-dependencias-postgresql-y-flyway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2.2 Revisar dependencias PostgreSQL y Flyway
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#323-ejecutar-una-primera-vez-y-reconocer-el-fallo-esperado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2.3 Ejecutar una primera vez y reconocer el fallo esperado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#324-crear-compose-devyml-para-postgresql-dev" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2.4 Crear compose-dev.yml para PostgreSQL DEV
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#325-configurar-applicationyml-y-application-devyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2.5 Configurar application.yml y application-dev.yml
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#326-crear-un-endpoint-temporal-de-saludo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2.6 Crear un endpoint temporal de saludo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#327-ejecutar-y-comprobar-que-ya-no-falla" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2.7 Ejecutar y comprobar que ya no falla
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-construir-el-crud-de-categoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Construir el CRUD de Categoria
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.3 Construir el CRUD de Categoria">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#331-crear-la-entidad-categoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.1 Crear la entidad Categoria
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#332-crear-el-repositorio-los-dto-y-el-mapper" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.2 Crear el repositorio, los DTO y el mapper
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#333-crear-las-excepciones-y-el-manejador-global-de-errores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.3 Crear las excepciones y el manejador global de errores
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#334-crear-el-servicio-de-aplicacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.4 Crear el servicio de aplicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#335-crear-el-controlador-rest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.5 Crear el controlador REST
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#336-crear-el-filtro-de-trazabilidad-correlationidfilter-y-configurar-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.6 Crear el filtro de trazabilidad CorrelationIdFilter y configurar logs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#337-revisar-la-migracion-flyway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.7 Revisar la migración Flyway
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#338-revisar-estructura-resultante" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.8 Revisar estructura resultante
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#339-preguntas-de-verificacion-antes-de-ejecutar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.9 Preguntas de verificación antes de ejecutar
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-ejecutar-y-probar-el-microservicio-en-dev" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Ejecutar y probar el microservicio en DEV
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.4 Ejecutar y probar el microservicio en DEV">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#341-verificar-postgresql-dev" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4.1 Verificar PostgreSQL DEV
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#342-ejecutar-con-maven" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4.2 Ejecutar con Maven
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#343-verificar-tabla-creada-por-flyway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4.3 Verificar tabla creada por Flyway
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#344-revisar-swagger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4.4 Revisar Swagger
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#345-verificar-health-y-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4.5 Verificar health y metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#346-probar-crud-por-shell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4.6 Probar CRUD por shell
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#347-ejecutar-una-segunda-instancia-en-dev" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4.7 Ejecutar una segunda instancia en DEV
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-configurar-produccion-local-con-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Configurar producción local con Docker
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.5 Configurar producción local con Docker">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#351-crear-dockerfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.1 Crear Dockerfile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#352-crear-env-y-envexample" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.2 Crear .env y .env.example
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#353-crear-application-prodyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.3 Crear application-prod.yml
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#354-crear-composeyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.4 Crear compose.yml
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-probar-produccion-local-con-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 Probar producción local con Docker
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.6 Probar producción local con Docker">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#361-levantar-produccion-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6.1 Levantar producción local
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#362-verificar-la-base-de-datos-prod" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6.2 Verificar la base de datos PROD
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#363-verificar-health-desde-la-red-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6.3 Verificar health desde la red Docker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#364-revisar-logs-y-bajar-el-entorno" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6.4 Revisar logs y bajar el entorno
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-ruta-alternativa-partir-del-tag-de-cierre-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7 Ruta alternativa: partir del tag de cierre de la sesión
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.7 Ruta alternativa: partir del tag de cierre de la sesión">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#371-archivos-clave-por-modo-de-ejecucion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7.1 Archivos clave por modo de ejecución
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#372-verificacion-rapida-de-base-de-datos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7.2 Verificación rápida de base de datos
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-crea-actividad-autonoma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Crea: actividad autónoma
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Crea: actividad autónoma">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-plantilla-de-evidencia-individual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Plantilla de evidencia individual
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.1 Plantilla de evidencia individual">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#411-datos-del-estudiante" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.1 Datos del estudiante
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#412-trabajo-autonomo-realizado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.2 Trabajo autónomo realizado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#413-evidencia-tecnica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.3 Evidencia técnica
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#414-error-o-hallazgo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.4 Error o hallazgo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#415-reflexion-tecnica-breve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.5 Reflexión técnica breve
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-criterios-minimos-de-aceptacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Criterios mínimos de aceptación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-cierre-evaluativo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Cierre evaluativo
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Cierre evaluativo">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-resultados-esperados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Resultados esperados
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-evidencia-del-producto-de-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Evidencia del producto de sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-preguntas-de-defensa-y-reflexion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Preguntas de defensa y reflexión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-rubrica-de-evaluacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 Rúbrica de evaluación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="s1-construccion-de-un-servicio-base-para-un-sistema-distribuido">S1 - Construcción de un servicio base para un sistema distribuido</h1>
+<h2 id="1-introduccion">1. Introducción</h2>
+<p>Tiempo: 20 min.</p>
+<h3 id="11-contexto">1.1 Contexto</h3>
+<p>Un sistema distribuido de comercio electrónico no nace como microservicios completos desde el primer día: nace de un primer servicio de negocio, bien delimitado, persistente y observable, que sirve como patrón para los siguientes. Esta sesión construye ese primer servicio, <code>catalogo-ms</code>, y deja establecidas las convenciones (estructura de capas, ejecución DEV/PROD local, trazabilidad) que se repetirán en cada microservicio del proyecto <code>pagatu</code>.</p>
+<h3 id="12-indice">1.2 Índice</h3>
+<ol>
+<li>Arquitectura de microservicios y responsabilidad única.</li>
+<li>Entornos de ejecución: DEV con Maven y PROD local con Docker.</li>
+<li>Observabilidad y diagnóstico básico del servicio.</li>
+<li>Construcción guiada de <code>catalogo-ms</code>.</li>
+</ol>
+<h3 id="13-proposito-de-aprendizaje">1.3 Propósito de aprendizaje</h3>
+<p>Al concluir la clase, estarás en condiciones de:</p>
+<ul>
+<li><strong>Construir e implementar</strong> un microservicio stateless con API REST, persistencia en PostgreSQL, validación de entradas, documentación de endpoints con Swagger, verificación de salud con Actuator y ejecución reproducible en desarrollo y en producción local con Docker.</li>
+</ul>
+<h3 id="14-producto-de-sesion">1.4 Producto de sesión</h3>
+<p><code>catalogo-ms</code> funcional con CRUD de categorías, PostgreSQL en Docker, Swagger, Actuator, README operativo y pruebas por shell.</p>
+<h3 id="15-metodologia">1.5 Metodología</h3>
+<table>
+<thead>
+<tr>
+<th>Fase</th>
+<th>Actividades</th>
+<th>Orientaciones</th>
+<th>Material</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Revisión previa individual</td>
+<td>Leer el sílabo de la Unidad 1 y el caso de la plataforma de comercio electrónico (ver 1.6).</td>
+<td>Trabajo individual, antes de clase; preparar el entorno local (Java 21, Maven, Docker) si aún no está listo.</td>
+<td>Sílabo DIST U1.</td>
+</tr>
+<tr>
+<td>Clase presencial</td>
+<td>Construcción guiada de <code>catalogo-ms</code>: entidad, CRUD, PostgreSQL, Flyway, Swagger, Actuator y filtro de trazabilidad.</td>
+<td>Trabajo individual, siguiendo al docente paso a paso; consulta inmediata ante errores de arranque o de conexión a base de datos.</td>
+<td>Pasos 3.1 a 3.7 de esta guía.</td>
+</tr>
+<tr>
+<td>Evaluación formativa</td>
+<td>Revisión en clase del servicio ejecutando en DEV y en producción local con Docker.</td>
+<td>La evidencia se completa y sustenta de forma individual, fuera del aula, según los criterios mínimos de la sección 4.2.</td>
+<td>Plantilla de evidencia individual (4.1), rúbrica de evaluación (5.4).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="16-motivacion-de-la-sesion">1.6 Motivación de la sesión</h3>
+<h4 id="161-caso-plataforma-de-comercio-electronico">1.6.1 Caso: plataforma de comercio electrónico</h4>
+<p>Una empresa desarrolla un sistema de comercio electrónico. Inicialmente, todo el sistema fue construido como una sola aplicación monolítica.</p>
+<p>Con el crecimiento del negocio comienzan a aparecer problemas:</p>
+<ul>
+<li>El sistema tarda más en desplegarse.</li>
+<li>Errores en un módulo afectan a todo el sistema.</li>
+<li>Es difícil escalar partes específicas del sistema.</li>
+<li>Los equipos de desarrollo trabajan sobre el mismo código.</li>
+</ul>
+<p>El equipo de ingeniería decide rediseñar la arquitectura del sistema utilizando microservicios.</p>
+<p>Preguntas para los estudiantes:</p>
+<ol>
+<li>¿Qué problemas tiene la arquitectura monolítica en este caso?</li>
+<li>¿Por qué una empresa migraría a microservicios?</li>
+<li>¿Qué ventajas ofrece dividir el sistema en servicios?</li>
+</ol>
+<p>En esta sesión se inicia ese rediseño construyendo el primer componente del sistema <code>pagatu</code>: <code>catalogo-ms</code>.</p>
+<h3 id="17-ubicacion-en-el-curso">1.7 Ubicación en el curso</h3>
+<ul>
+<li>Unidad: U1 - Sistema distribuido base orientado a producción.</li>
+<li>Producto de unidad: sistema distribuido base funcional, configurable y preparado para múltiples instancias, ejecutable en desarrollo y producción local en paralelo.</li>
+<li>Producto del curso: Proyecto Sello: sistema distribuido de microservicios end-to-end, configurable, escalable, seguro, resiliente, consistente, observable, integrado con frontend y defendido técnicamente.</li>
+<li>Avance del producto en esta sesión: primer microservicio REST funcional, persistente, observable y ejecutable fuera del IDE.</li>
+</ul>
+<p>Roadmap para elaborar el producto de la unidad:</p>
+<pre><code class="language-mermaid">flowchart TB
+    Cliente[&quot;Cliente de prueba&lt;br/&gt;PowerShell / bash / Swagger&quot;]
+    Gateway[&quot;Gateway&lt;br/&gt;punto único de acceso&lt;br/&gt;balanceo de carga&quot;]
+    Catalogo[&quot;catalogo-ms&lt;br/&gt;HOY&lt;br/&gt;REST + BD + health&quot;]
+    Producto[&quot;producto-ms&lt;br/&gt;trabajo aplicado&quot;]
+    Eureka[&quot;Registro de servicios&lt;br/&gt;Eureka&quot;]
+    Config[&quot;Servidor de configuración&lt;br/&gt;Config Server&quot;]
+    Repo[&quot;Repositorio de configuración&lt;br/&gt;catalogo-ms.yml&lt;br/&gt;producto-ms.yml&quot;]
+
+    Cliente --&gt; Gateway
+    Gateway --&gt; Catalogo
+    Gateway --&gt; Producto
+    Gateway -. descubre servicios .-&gt; Eureka
+    Catalogo -. registra instancia .-&gt; Eureka
+    Producto -. registra instancia .-&gt; Eureka
+    Catalogo -. carga configuración .-&gt; Config
+    Producto -. carga configuración .-&gt; Config
+    Config --&gt; Repo
+
+    classDef today fill:#ffe08a,stroke:#9a6b00,stroke-width:2px,color:#111;
+    class Catalogo today;
+</code></pre>
+<p>Hoy se construye el primer componente real de la U1: <code>catalogo-ms</code>. En las siguientes sesiones se agregan configuración centralizada, registro de servicios, múltiples instancias, Gateway y balanceo. La evaluación U1 valida el sistema base integrado construido con esos componentes.</p>
+<h2 id="2-explica">2. Explica</h2>
+<p>Tiempo: 25 min.</p>
+<h3 id="21-conceptos-clave">2.1 Conceptos clave</h3>
+<p>Un microservicio debe tener responsabilidad clara, persistencia propia, configuración por ambiente y capacidad de ejecutarse de forma independiente.</p>
+<p>Ejemplo: <code>catalogo-ms</code> se encarga de gestionar categorías y su propia base de datos. No debería guardar productos, órdenes ni pagos. Si más adelante <code>producto-ms</code> necesita saber a qué categoría pertenece un producto, consulta a <code>catalogo-ms</code> por red en lugar de leer directamente su base de datos.</p>
+<h3 id="22-arquitectura-del-producto-en-pagatu">2.2 Arquitectura del producto en <code>pagatu</code></h3>
+<h4 id="221-dev-aplicacion-fuera-de-docker">2.2.1 DEV: aplicación fuera de Docker</h4>
+<pre><code class="language-mermaid">flowchart TB
+    DevClient[&quot;Cliente&lt;br/&gt;PowerShell / bash / Swagger&quot;]
+    DevApp1[&quot;catalogo-ms&lt;br/&gt;Java 21 + Maven&lt;br/&gt;puerto dinámico&quot;]
+    DevApp2[&quot;catalogo-ms&lt;br/&gt;segunda instancia&lt;br/&gt;puerto dinámico&quot;]
+    subgraph DevDocker[&quot;Docker: solo base de datos&quot;]
+        DevDb[(&quot;pagatu_catalogo_db&lt;br/&gt;PostgreSQL&lt;br/&gt;localhost:15432 -&gt; 5432&quot;)]
+    end
+
+    DevClient --&gt;|&quot;localhost:&lt;puerto-asignado&gt;&quot;| DevApp1
+    DevClient --&gt;|&quot;localhost:&lt;otro-puerto&gt;&quot;| DevApp2
+    DevApp1 --&gt;|&quot;localhost:15432&quot;| DevDb
+    DevApp2 --&gt;|&quot;localhost:15432&quot;| DevDb
+
+    classDef app fill:#eef6ff,stroke:#2b6cb0,color:#111;
+    classDef db fill:#fff4de,stroke:#b7791f,color:#111;
+    class DevApp1,DevApp2 app;
+    class DevDb db;
+</code></pre>
+<h4 id="222-prod-local-aplicacion-dentro-de-docker">2.2.2 PROD local: aplicación dentro de Docker</h4>
+<pre><code class="language-mermaid">flowchart TB
+    ProdClient[&quot;Cliente interno&lt;br/&gt;curl container&quot;]
+    subgraph ProdDocker[&quot;Docker Network: pagatu-catalogo-int&quot;]
+        ProdApp1[&quot;catalogo-ms&lt;br/&gt;jar&lt;br/&gt;8080 interno&quot;]
+        ProdApp2[&quot;catalogo-ms&lt;br/&gt;jar&lt;br/&gt;8080 interno&quot;]
+        ProdDb[(&quot;pagatu_catalogo_db&lt;br/&gt;PostgreSQL&lt;br/&gt;pagatu-postgres-catalogo:5432&quot;)]
+    end
+
+    ProdClient --&gt;|&quot;catalogo-ms:8080&quot;| ProdApp1
+    ProdClient --&gt;|&quot;catalogo-ms:8080&quot;| ProdApp2
+    ProdApp1 --&gt;|&quot;pagatu-postgres-catalogo:5432&quot;| ProdDb
+    ProdApp2 --&gt;|&quot;pagatu-postgres-catalogo:5432&quot;| ProdDb
+
+    classDef app fill:#eef6ff,stroke:#2b6cb0,color:#111;
+    classDef db fill:#fff4de,stroke:#b7791f,color:#111;
+    class ProdApp1,ProdApp2 app;
+    class ProdDb db;
+</code></pre>
+<p>Regla práctica:</p>
+<ul>
+<li>Si la aplicación corre fuera de Docker, usa <code>localhost</code> con el puerto expuesto por Docker.</li>
+<li>Si la aplicación corre dentro de Docker, usa el nombre del servicio y el puerto interno.</li>
+</ul>
+<h4 id="223-flujo-de-trabajo">2.2.3 Flujo de trabajo</h4>
+<ol>
+<li>Preparar ambiente.</li>
+<li>Crear proyecto Spring Boot y levantar PostgreSQL DEV.</li>
+<li>Construir el CRUD de <code>Categoria</code>.</li>
+<li>Ejecutar y probar en DEV.</li>
+<li>Preparar archivos de PROD local.</li>
+<li>Ejecutar y probar en Docker.</li>
+<li>Registrar evidencias y defender el resultado.</li>
+</ol>
+<h3 id="23-observabilidad-y-diagnostico">2.3 Observabilidad y diagnóstico</h3>
+<p>La observabilidad inicia desde S1 como hábito transversal. En esta sesión todavía no hay stack completo de métricas y paneles, pero el estudiante ya debe revisar señales básicas del servicio y usar los errores como insumo de diagnóstico.</p>
+<h4 id="231-senales-basicas-a-revisar">2.3.1 Señales básicas a revisar</h4>
+<ul>
+<li>Logs de arranque.</li>
+<li>Puerto dinámico asignado.</li>
+<li>Estado de <code>/actuator/health</code>.</li>
+<li>Métricas de <code>/actuator/metrics</code>.</li>
+<li>Conexión a PostgreSQL.</li>
+<li>Migraciones Flyway ejecutadas.</li>
+<li>Errores de validación HTTP 400.</li>
+<li>Logs de contenedores con <code>docker compose logs</code>.</li>
+</ul>
+<h4 id="232-errores-frecuentes-y-diagnostico">2.3.2 Errores frecuentes y diagnóstico</h4>
+<table>
+<thead>
+<tr>
+<th>Problema</th>
+<th>Causa probable</th>
+<th>Solución</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No conecta a BD</td>
+<td>PostgreSQL apagado o puerto incorrecto</td>
+<td>Revisar compose y variables</td>
+</tr>
+<tr>
+<td>Swagger no abre</td>
+<td>Puerto dinámico no identificado</td>
+<td>Revisar consola o Eureka cuando aplique</td>
+</tr>
+<tr>
+<td>Validación no responde</td>
+<td>Falta <code>@Valid</code> o anotaciones</td>
+<td>Revisar controlador y DTO</td>
+</tr>
+<tr>
+<td>PROD local no responde desde host</td>
+<td>El microservicio no publica puerto host</td>
+<td>Probar desde red Docker o esperar Gateway</td>
+</tr>
+<tr>
+<td>Escalado consume demasiados recursos</td>
+<td>Muchas instancias locales</td>
+<td>Usar máximo dos instancias</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-aplica-actividad-practica-guiada">3. Aplica: actividad práctica guiada</h2>
+<p>Tiempo: 2h.</p>
+<p>En el laboratorio, el docente guía la construcción de <code>catalogo-ms</code> y los estudiantes verifican el resultado con comandos de consola. En <code>pagatu</code>, el docente guía <code>catalogo-ms</code> y el estudiante replica el patrón en <code>producto-ms</code> como trabajo aplicado. La versión actual usa monorepo, nombres con sufijo <code>-ms</code>, PostgreSQL y puertos dinámicos para los microservicios.</p>
+<p>Hoja de ruta de la sesión práctica:</p>
+<ul>
+<li><strong>3.1</strong> Preparar el ambiente local: Java 21, Maven, Docker y VS Code.</li>
+<li><strong>3.2</strong> Crear el proyecto Spring Boot con las dependencias base.</li>
+<li><strong>3.3</strong> Construir el CRUD de <code>Categoria</code>.</li>
+<li><strong>3.4</strong> Ejecutar y probar el microservicio en DEV.</li>
+<li><strong>3.5</strong> Configurar producción local con Docker.</li>
+<li><strong>3.6</strong> Probar producción local con Docker.</li>
+<li><strong>3.7</strong> Ruta alternativa: partir del tag de cierre de la sesión.</li>
+</ul>
+<h3 id="31-preparar-ambiente-local-java-21-maven-docker-y-vs-code">3.1 Preparar ambiente local: Java 21, Maven, Docker y VS Code</h3>
+<p><strong>Producto del paso:</strong> ambiente local con Java 21, Maven, Docker, Docker Compose y VS Code verificados, listo para crear y ejecutar el microservicio.</p>
+<p>Antes de crear el microservicio, el estudiante debe preparar el entorno DEV. En esta sesión Java y Maven se ejecutan en el host; PostgreSQL no se instala en el host, se levanta con Docker desde el paso 3.2.</p>
+<p><strong>Herramientas necesarias</strong></p>
+<ul>
+<li>Java 21 (Eclipse Temurin 21).</li>
+<li>Maven 3.x.</li>
+<li>Docker Desktop.</li>
+<li>VS Code.</li>
+<li>Extension Pack for Java.</li>
+<li>Spring Boot Extension Pack.</li>
+</ul>
+<p>Puedes usar otro IDE si ya lo dominas, pero en este curso se trabajará con VS Code para mantener una guía común. Aún usando IDE, la ejecución recomendada del microservicio será desde la consola de comandos, al estilo de un servidor Linux.</p>
+<h4 id="311-instalar-o-verificar-java-21">3.1.1 Instalar o verificar Java 21</h4>
+<p>Se recomienda Eclipse Temurin 21, una distribución OpenJDK de soporte prolongado (LTS), instalada con el gestor de paquetes nativo de cada sistema operativo. Este workspace estandariza Java 21 LTS para todos los cursos y microservicios.</p>
+<p><strong>Windows</strong> — PowerShell como usuario normal:</p>
+<pre><code class="language-powershell">winget install --id EclipseAdoptium.Temurin.21.JDK --exact
+</code></pre>
+<p><strong>macOS</strong> (con Homebrew ya instalado):</p>
+<pre><code class="language-bash">brew install --cask temurin@21
+</code></pre>
+<p><strong>Linux (Ubuntu/Debian)</strong>:</p>
+<pre><code class="language-bash">sudo apt update
+sudo apt install -y wget apt-transport-https gpg
+wget -qO - https://packages.adoptium.net/artifactory/api/gpg/key/public | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/adoptium.gpg &gt; /dev/null
+echo &quot;deb https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main&quot; | sudo tee /etc/apt/sources.list.d/adoptium.list
+sudo apt update
+sudo apt install -y temurin-21-jdk
+</code></pre>
+<p>Al finalizar, cierra y vuelve a abrir la terminal. Verifica la instalación:</p>
+<pre><code class="language-bash">java -version
+</code></pre>
+<p>Resultado esperado:</p>
+<pre><code class="language-text">openjdk version &quot;21&quot;
+</code></pre>
+<h4 id="312-instalar-o-verificar-maven-3x">3.1.2 Instalar o verificar Maven 3.x</h4>
+<p>En Windows, si no tienes Chocolatey, abre PowerShell como administrador y ejecútalo:</p>
+<pre><code class="language-powershell">Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+</code></pre>
+<p>Luego cierra y vuelve a abrir PowerShell e instala Maven:</p>
+<pre><code class="language-powershell">choco install maven -y
+</code></pre>
+<p>En macOS con Homebrew:</p>
+<pre><code class="language-bash">brew install maven
+</code></pre>
+<p>En Linux Debian/Ubuntu:</p>
+<pre><code class="language-bash">sudo apt update
+sudo apt install -y maven
+</code></pre>
+<p>Verificar instalación:</p>
+<p>PowerShell / bash macOS/Linux:</p>
+<pre><code class="language-bash">mvn -version
+</code></pre>
+<p>Resultado esperado:</p>
+<pre><code class="language-text">Apache Maven
+Java versión: 21
+</code></pre>
+<p>Uso esperado de Maven: ubicarse en la carpeta donde está el <code>pom.xml</code> del microservicio y ejecutar:</p>
+<pre><code class="language-bash">mvn spring-boot:run
+</code></pre>
+<h4 id="313-instalar-o-verificar-docker-desktop-y-docker-compose">3.1.3 Instalar o verificar Docker Desktop y Docker Compose</h4>
+<p>Opcional recomendado: antes de iniciar el laboratorio, crea una cuenta gratuita en Docker Hub:</p>
+<pre><code class="language-text">https://hub.docker.com/signup
+</code></pre>
+<p>Docker funciona sin iniciar sesión, pero Docker Hub puede aplicar límites de descarga de imágenes. En equipos de laboratorio o redes compartidas, iniciar sesión ayuda a evitar bloqueos durante la descarga de imágenes como PostgreSQL.</p>
+<p>PowerShell / bash macOS/Linux:</p>
+<pre><code class="language-bash">docker login
+</code></pre>
+<p>En Windows y macOS, Docker Compose se instala junto con Docker Desktop:</p>
+<pre><code class="language-text">https://www.docker.com/products/docker-desktop
+</code></pre>
+<p>En Linux puedes usar Docker Engine con el plugin Compose siguiendo la documentación oficial de Docker:</p>
+<pre><code class="language-text">https://docs.docker.com/engine/install/
+https://docs.docker.com/compose/install/linux/
+</code></pre>
+<p>Verificar Docker:</p>
+<p>PowerShell / bash macOS/Linux:</p>
+<pre><code class="language-bash">docker version
+docker compose version
+docker ps
+</code></pre>
+<p>Resultado esperado:</p>
+<pre><code class="language-text">Docker versión
+Docker Compose versión
+</code></pre>
+<h4 id="314-abrir-el-proyecto-en-vs-code">3.1.4 Abrir el proyecto en VS Code</h4>
+<p>Ubícate en la raíz del monorepo <code>pagatu</code>, no dentro de un microservicio específico. VS Code soporta trabajar con múltiples proyectos/carpetas dentro del mismo workspace; abrir la raíz evita tener una ventana distinta por cada microservicio.</p>
+<p>PowerShell / bash macOS/Linux:</p>
+<pre><code class="language-bash">cd c:/262/2625dist/pagatu
+code .
+</code></pre>
+<p>Desde VS Code, confirma que se reconoce el proyecto Java y que las extensiones de Spring Boot están disponibles.</p>
+<p><strong>Evidencia de cierre del paso 3.1</strong></p>
+<ul>
+<li>Salida de <code>java -version</code>.</li>
+<li>Salida de <code>mvn -version</code>.</li>
+<li>Salida de <code>docker version</code>.</li>
+<li>Salida de <code>docker compose version</code>.</li>
+<li>VS Code abierto en la raíz del repositorio <code>pagatu</code>.</li>
+</ul>
+<h3 id="32-crear-el-proyecto-spring-boot-desde-vs-code-con-dependencias-base">3.2 Crear el proyecto Spring Boot desde VS Code con dependencias base</h3>
+<p><strong>Producto del paso:</strong> proyecto Spring Boot creado en <code>services/catalogo-ms</code>, con <code>artifactId</code> <code>pagatu-catalogo-ms</code>, paquete <code>com.upeu.catalogo</code>, dependencias base instaladas, PostgreSQL DEV levantado en Docker y un endpoint web simple respondiendo desde el navegador o shell.</p>
+<p>En este paso no basta con crear el proyecto. Como se agregan <code>Spring Data JPA</code>, <code>PostgreSQL Driver</code> y <code>Flyway</code>, Spring Boot intentará configurar una conexión a base de datos al arrancar. Por eso, si ejecutas el microservicio sin configurar y levantar PostgreSQL, el arranque fallará.</p>
+<p>Ese fallo es útil para aprender: un microservicio con persistencia necesita una dependencia de infraestructura disponible. En el curso no usaremos H2 para ocultar el problema ni desactivaremos la conexión a BD; levantaremos PostgreSQL con Docker desde el inicio.</p>
+<h4 id="321-crear-el-proyecto-con-spring-initializr-desde-vs-code">3.2.1 Crear el proyecto con Spring Initializr desde VS Code</h4>
+<p>Desde la raíz del monorepo <code>pagatu</code>, abre VS Code y ejecuta el comando:</p>
+<pre><code class="language-text">Spring Initializr: Create a Maven Project
+</code></pre>
+<p>Usa la siguiente configuración:</p>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Project</td>
+<td>Maven Project</td>
+</tr>
+<tr>
+<td>Spring Boot</td>
+<td>3.5.x</td>
+</tr>
+<tr>
+<td>Language</td>
+<td>Java</td>
+</tr>
+<tr>
+<td>Java</td>
+<td>21</td>
+</tr>
+<tr>
+<td>Group Id</td>
+<td><code>com.upeu</code></td>
+</tr>
+<tr>
+<td>Artifact Id</td>
+<td><code>pagatu-catalogo-ms</code></td>
+</tr>
+<tr>
+<td>Package name</td>
+<td><code>com.upeu.catalogo</code></td>
+</tr>
+<tr>
+<td>Packaging</td>
+<td>Jar</td>
+</tr>
+<tr>
+<td>Ubicación</td>
+<td><code>services/catalogo-ms</code></td>
+</tr>
+</tbody>
+</table>
+<p>Dependencias a seleccionar:</p>
+<table>
+<thead>
+<tr>
+<th>Grupo</th>
+<th>Dependencias</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API REST base</td>
+<td>Spring Web, Validation</td>
+<td>Exponer endpoints HTTP y validar entradas</td>
+</tr>
+<tr>
+<td>Productividad</td>
+<td>Lombok, Spring Boot DevTools</td>
+<td>Reducir código repetitivo y facilitar ejecución en desarrollo</td>
+</tr>
+<tr>
+<td>Documentación y operación</td>
+<td>SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator</td>
+<td>Documentar la API con Swagger y verificar health</td>
+</tr>
+<tr>
+<td>Persistencia</td>
+<td>Spring Data JPA, PostgreSQL Driver, Flyway</td>
+<td>Acceso a datos, conexión a PostgreSQL y migraciones de BD</td>
+</tr>
+</tbody>
+</table>
+<p>Nota: SpringDoc/Swagger documenta los endpoints del microservicio; no es infraestructura distribuida. La infraestructura distribuida inicia desde S2 con configuración centralizada.</p>
+<p>Nota: el directorio del microservicio en el monorepo es <code>services/catalogo-ms</code>, pero el <code>artifactId</code> Maven usado por el proyecto actual es <code>pagatu-catalogo-ms</code>.</p>
+<h4 id="322-revisar-dependencias-postgresql-y-flyway">3.2.2 Revisar dependencias PostgreSQL y Flyway</h4>
+<p>Abre <code>services/catalogo-ms/pom.xml</code> y verifica que existan las dependencias de persistencia para PostgreSQL:</p>
+<pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;org.flywaydb&lt;/groupId&gt;
+    &lt;artifactId&gt;flyway-core&lt;/artifactId&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.flywaydb&lt;/groupId&gt;
+    &lt;artifactId&gt;flyway-database-postgresql&lt;/artifactId&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.postgresql&lt;/groupId&gt;
+    &lt;artifactId&gt;postgresql&lt;/artifactId&gt;
+    &lt;scope&gt;runtime&lt;/scope&gt;
+&lt;/dependency&gt;
+</code></pre>
+<p>Si vienes de material anterior con MySQL, reemplaza la idea de <code>flyway-mysql</code> y <code>mysql-connector</code> por PostgreSQL.</p>
+<h4 id="323-ejecutar-una-primera-vez-y-reconocer-el-fallo-esperado">3.2.3 Ejecutar una primera vez y reconocer el fallo esperado</h4>
+<p>Ubícate en la carpeta del microservicio:</p>
+<p>PowerShell / bash macOS/Linux:</p>
+<pre><code class="language-bash">cd services/catalogo-ms
+mvn spring-boot:run
+</code></pre>
+<p>Si todavía no existe configuración de base de datos, el error esperado será parecido a:</p>
+<pre><code class="language-text">APPLICATION FAILED TO START
+Failed to configure a DataSource: 'url' attribute is not specified and no embedded datasource could be configured.
+Reason: Failed to determine a suitable driver class
+</code></pre>
+<p>No se corrige quitando JPA ni usando H2. Se corrige declarando PostgreSQL DEV y levantando la base de datos con Docker.</p>
+<h4 id="324-crear-compose-devyml-para-postgresql-dev">3.2.4 Crear <code>compose-dev.yml</code> para PostgreSQL DEV</h4>
+<p>En <code>services/catalogo-ms</code>, crea el archivo <code>compose-dev.yml</code>:</p>
+<pre><code class="language-yaml">name: pagatu-catalogo-dev
+
+services:
+  postgres-catalogo-dev:
+    image: postgres:16-alpine
+    container_name: pagatu-postgres-catalogo-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: pagatu_catalogo_db
+      POSTGRES_USER: pagatu
+      POSTGRES_PASSWORD: pagatu
+    ports:
+      - &quot;15432:5432&quot;
+    volumes:
+      - pagatu_catalogo_dev_data:/var/lib/postgresql/data
+
+volumes:
+  pagatu_catalogo_dev_data:
+</code></pre>
+<p>Levanta la base de datos:</p>
+<p>PowerShell / bash macOS/Linux:</p>
+<pre><code class="language-bash">docker compose -f compose-dev.yml up -d
+docker ps
+</code></pre>
+<h4 id="325-configurar-applicationyml-y-application-devyml">3.2.5 Configurar <code>application.yml</code> y <code>application-dev.yml</code></h4>
+<p>En S1 la aplicación <code>catalogo-ms</code> se ejecuta en DEV con Maven desde el host. Solo PostgreSQL se ejecuta en Docker. Por eso la configuración debe apuntar a <code>localhost:15432</code>, que es el puerto publicado por el contenedor de base de datos.</p>
+<p>En <code>src/main/resources</code>, crea o ajusta <code>application.yml</code> como configuración base:</p>
+<pre><code class="language-yaml">spring:
+  application:
+    name: catalogo-ms
+  profiles:
+    active: dev
+</code></pre>
+<p>Luego crea <code>application-dev.yml</code> para la configuración de desarrollo:</p>
+<pre><code class="language-yaml">server:
+  port: 0
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:15432/pagatu_catalogo_db
+    username: pagatu
+    password: pagatu
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    com.upeu.catalogo: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+</code></pre>
+<p>Con <code>server.port: 0</code>, Spring Boot asigna un puerto libre automáticamente. Esto permite levantar varias instancias del mismo microservicio en paralelo sin cambiar el archivo de configuración.</p>
+<p>En DEV, Flyway queda activo y ejecuta automáticamente <code>V1__create_categorias_table.sql</code> al arrancar la aplicación. JPA/Hibernate no crea tablas; solo valida que la entidad coincida con la estructura de la base de datos mediante <code>ddl-auto: validate</code>.</p>
+<p>En S2 esta configuración se moverá progresivamente al Config Server. En S1 se mantiene local para que el alumno entienda primero qué necesita el microservicio para arrancar.</p>
+<h4 id="326-crear-un-endpoint-temporal-de-saludo">3.2.6 Crear un endpoint temporal de saludo</h4>
+<p>Antes del CRUD, crea un controlador mínimo para comprobar que la aplicación web responde.</p>
+<p>Archivo: <code>src/main/java/com/upeu/catalogo/controller/SaludoController.java</code></p>
+<pre><code class="language-java">package com.upeu.catalogo.controller;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class SaludoController {
+
+    @GetMapping(&quot;/saludo&quot;)
+    public String saludo() {
+        return &quot;catalogo-ms activo&quot;;
+    }
+}
+</code></pre>
+<p>Este endpoint es temporal para validar el arranque web. Luego el foco pasará al CRUD de categorías.</p>
+<h4 id="327-ejecutar-y-comprobar-que-ya-no-falla">3.2.7 Ejecutar y comprobar que ya no falla</h4>
+<p>Antes de ejecutar la aplicación, comprueba desde la consola que PostgreSQL DEV está listo y que la base de datos existe.</p>
+<p>PowerShell / bash macOS/Linux:</p>
+<pre><code class="language-bash">docker exec -it pagatu-postgres-catalogo-dev psql -U pagatu -d pagatu_catalogo_db -c &quot;SELECT current_database();&quot;
+docker exec -it pagatu-postgres-catalogo-dev psql -U pagatu -d pagatu_catalogo_db -c &quot;\dt&quot;
+</code></pre>
+<p>Resultado esperado:</p>
+<pre><code class="language-text">current_database
+------------------
+pagatu_catalogo_db
+</code></pre>
+<p>Si <code>\dt</code> muestra <code>Did not find any relations</code>, está bien en este momento: aún no se ha creado la tabla <code>categorias</code>.</p>
+<p>Con PostgreSQL DEV levantado y verificado, ejecuta la aplicación:</p>
+<p>PowerShell / bash macOS/Linux:</p>
+<pre><code class="language-bash">mvn spring-boot:run
+</code></pre>
+<p>Prueba el endpoint:</p>
+<p>PowerShell:</p>
+<pre><code class="language-powershell">Invoke-RestMethod `
+  -Method Get `
+  -Uri &quot;http://localhost:&lt;puerto-asignado&gt;/saludo&quot;
+</code></pre>
+<p>bash macOS/Linux:</p>
+<pre><code class="language-bash">curl http://localhost:&lt;puerto-asignado&gt;/saludo
+</code></pre>
+<p>Resultado esperado:</p>
+<pre><code class="language-text">catalogo-ms activo
+</code></pre>
+<p>También puedes revisar Swagger usando el puerto que aparezca en la consola de arranque:</p>
+<pre><code class="language-text">http://localhost:&lt;puerto-asignado&gt;/swagger-ui/index.html
+</code></pre>
+<p><strong>Evidencia de cierre del paso 3.2</strong></p>
+<ul>
+<li>Proyecto creado en <code>services/catalogo-ms</code>.</li>
+<li><code>pom.xml</code> con dependencias base y persistencia PostgreSQL.</li>
+<li>PostgreSQL DEV ejecutando en Docker.</li>
+<li><code>application.yml</code> con perfil <code>dev</code> activo.</li>
+<li><code>application-dev.yml</code> con puerto dinámico y conexión a PostgreSQL DEV.</li>
+<li>Endpoint <code>/saludo</code> respondiendo.</li>
+</ul>
+<h3 id="33-construir-el-crud-de-categoria">3.3 Construir el CRUD de <code>Categoria</code></h3>
+<p><strong>Producto del paso:</strong> CRUD de <code>Categoria</code> incorporado en <code>catalogo-ms</code>, incluyendo entidad, capas de aplicación, validaciones, filtro de trazabilidad y migración de base de datos, escritos directamente por el estudiante (sin depender de un repositorio externo).</p>
+<p>En esta sesión se trabajará con la entidad <code>Categoria</code> como primer recurso del microservicio <code>catalogo-ms</code>. La entidad representa la tabla <code>categorias</code> y será la base para construir el CRUD. Cada archivo de este paso se crea directamente dentro de <code>services/catalogo-ms/src/main/java/com/upeu/catalogo</code> (o en <code>src/main/resources</code> cuando corresponda), siguiendo la misma estructura de carpetas usada en todo el curso:</p>
+<pre><code class="language-text">config
+controller
+dto
+entity
+exception
+filter
+mapper
+repository
+service
+</code></pre>
+<h4 id="331-crear-la-entidad-categoria">3.3.1 Crear la entidad <code>Categoria</code></h4>
+<p>Archivo: <code>entity/Categoria.java</code></p>
+<pre><code class="language-java">package com.upeu.catalogo.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Table(name = &quot;categorias&quot;)
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Categoria {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = &quot;nombre&quot;, nullable = false, length = 100)
+    private String nombre;
+
+    @Column(name = &quot;descripcion&quot;, length = 255)
+    private String descripcion;
+}
+</code></pre>
+<h4 id="332-crear-el-repositorio-los-dto-y-el-mapper">3.3.2 Crear el repositorio, los DTO y el mapper</h4>
+<p>Archivo: <code>repository/CategoriaRepository.java</code></p>
+<pre><code class="language-java">package com.upeu.catalogo.repository;
+
+import com.upeu.catalogo.entity.Categoria;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface CategoriaRepository extends JpaRepository&lt;Categoria, Long&gt; {
+}
+</code></pre>
+<p>Archivo: <code>dto/CategoriaRequest.java</code></p>
+<pre><code class="language-java">package com.upeu.catalogo.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class CategoriaRequest {
+
+    @NotBlank
+    @Size(max = 100)
+    private String nombre;
+
+    @Size(max = 255)
+    private String descripcion;
+}
+</code></pre>
+<p>Archivo: <code>dto/CategoriaResponse.java</code></p>
+<pre><code class="language-java">package com.upeu.catalogo.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class CategoriaResponse {
+    private Long id;
+    private String nombre;
+    private String descripcion;
+}
+</code></pre>
+<p>Archivo: <code>mapper/CategoriaMapper.java</code></p>
+<pre><code class="language-java">package com.upeu.catalogo.mapper;
+
+import com.upeu.catalogo.dto.CategoriaRequest;
+import com.upeu.catalogo.dto.CategoriaResponse;
+import com.upeu.catalogo.entity.Categoria;
+import org.springframework.stereotype.Component;
+
+@Component
+public class CategoriaMapper {
+
+    public Categoria toEntity(CategoriaRequest request) {
+        return Categoria.builder()
+                .nombre(request.getNombre())
+                .descripcion(request.getDescripcion())
+                .build();
+    }
+
+    public CategoriaResponse toResponse(Categoria categoria) {
+        return CategoriaResponse.builder()
+                .id(categoria.getId())
+                .nombre(categoria.getNombre())
+                .descripcion(categoria.getDescripcion())
+                .build();
+    }
+}
+</code></pre>
+<h4 id="333-crear-las-excepciones-y-el-manejador-global-de-errores">3.3.3 Crear las excepciones y el manejador global de errores</h4>
+<p>Archivo: <code>exception/ResourceNotFoundException.java</code></p>
+<pre><code class="language-java">package com.upeu.catalogo.exception;
+
+public class ResourceNotFoundException extends RuntimeException {
+    public ResourceNotFoundException(String mensaje) {
+        super(mensaje);
+    }
+}
+</code></pre>
+<p>Archivo: <code>exception/GlobalExceptionHandler.java</code></p>
+<pre><code class="language-java">package com.upeu.catalogo.exception;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
+
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; handleNotFound(ResourceNotFoundException ex) {
+        Map&lt;String, Object&gt; body = new HashMap&lt;&gt;();
+        body.put(&quot;timestamp&quot;, Instant.now().toString());
+        body.put(&quot;status&quot;, HttpStatus.NOT_FOUND.value());
+        body.put(&quot;error&quot;, &quot;Not Found&quot;);
+        body.put(&quot;message&quot;, ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; handleValidation(MethodArgumentNotValidException ex) {
+        Map&lt;String, Object&gt; body = new HashMap&lt;&gt;();
+        body.put(&quot;timestamp&quot;, Instant.now().toString());
+        body.put(&quot;status&quot;, HttpStatus.BAD_REQUEST.value());
+        body.put(&quot;error&quot;, &quot;Bad Request&quot;);
+        body.put(&quot;message&quot;, &quot;Error de validación en los datos enviados&quot;);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+}
+</code></pre>
+<h4 id="334-crear-el-servicio-de-aplicacion">3.3.4 Crear el servicio de aplicación</h4>
+<p>Archivo: <code>service/CategoriaService.java</code></p>
+<pre><code class="language-java">package com.upeu.catalogo.service;
+
+import com.upeu.catalogo.dto.CategoriaRequest;
+import com.upeu.catalogo.dto.CategoriaResponse;
+import com.upeu.catalogo.entity.Categoria;
+import com.upeu.catalogo.exception.ResourceNotFoundException;
+import com.upeu.catalogo.mapper.CategoriaMapper;
+import com.upeu.catalogo.repository.CategoriaRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class CategoriaService {
+
+    private final CategoriaRepository categoriaRepository;
+    private final CategoriaMapper categoriaMapper;
+
+    public List&lt;CategoriaResponse&gt; listar() {
+        return categoriaRepository.findAll().stream()
+                .map(categoriaMapper::toResponse)
+                .toList();
+    }
+
+    public CategoriaResponse obtener(Long id) {
+        return categoriaMapper.toResponse(buscarOFallar(id));
+    }
+
+    public CategoriaResponse crear(CategoriaRequest request) {
+        Categoria categoria = categoriaMapper.toEntity(request);
+        return categoriaMapper.toResponse(categoriaRepository.save(categoria));
+    }
+
+    public CategoriaResponse actualizar(Long id, CategoriaRequest request) {
+        Categoria categoria = buscarOFallar(id);
+        categoria.setNombre(request.getNombre());
+        categoria.setDescripcion(request.getDescripcion());
+        return categoriaMapper.toResponse(categoriaRepository.save(categoria));
+    }
+
+    public void eliminar(Long id) {
+        categoriaRepository.delete(buscarOFallar(id));
+    }
+
+    private Categoria buscarOFallar(Long id) {
+        return categoriaRepository.findById(id)
+                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Categoria no encontrada: &quot; + id));
+    }
+}
+</code></pre>
+<h4 id="335-crear-el-controlador-rest">3.3.5 Crear el controlador REST</h4>
+<p>Archivo: <code>controller/CategoriaController.java</code></p>
+<pre><code class="language-java">package com.upeu.catalogo.controller;
+
+import com.upeu.catalogo.dto.CategoriaRequest;
+import com.upeu.catalogo.dto.CategoriaResponse;
+import com.upeu.catalogo.service.CategoriaService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/api/categorias&quot;)
+@RequiredArgsConstructor
+public class CategoriaController {
+
+    private final CategoriaService categoriaService;
+
+    @GetMapping
+    public List&lt;CategoriaResponse&gt; listar() {
+        return categoriaService.listar();
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    public CategoriaResponse obtener(@PathVariable Long id) {
+        return categoriaService.obtener(id);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public CategoriaResponse crear(@Valid @RequestBody CategoriaRequest request) {
+        return categoriaService.crear(request);
+    }
+
+    @PutMapping(&quot;/{id}&quot;)
+    public CategoriaResponse actualizar(@PathVariable Long id, @Valid @RequestBody CategoriaRequest request) {
+        return categoriaService.actualizar(id, request);
+    }
+
+    @DeleteMapping(&quot;/{id}&quot;)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void eliminar(@PathVariable Long id) {
+        categoriaService.eliminar(id);
+    }
+}
+</code></pre>
+<p>La validación evita que el microservicio acepte datos incompletos antes de llegar a la base de datos: <code>@NotBlank</code> y <code>@Size(max = 100)</code> en <code>nombre</code> (dto/CategoriaRequest.java) junto con <code>@Valid</code> en el controlador rechazan con HTTP 400 cualquier solicitud sin nombre o con un nombre demasiado largo.</p>
+<h4 id="336-crear-el-filtro-de-trazabilidad-correlationidfilter-y-configurar-logs">3.3.6 Crear el filtro de trazabilidad <code>CorrelationIdFilter</code> y configurar logs</h4>
+<p>Este filtro agrega un identificador de trazabilidad a cada request usando el header <code>X-Trace-ID</code>. Si el cliente no lo envía, el filtro genera un UUID.</p>
+<p>En S1 la trazabilidad es interna al microservicio:</p>
+<pre><code class="language-text">Cliente shell / Swagger -&gt; Controller -&gt; Service -&gt; Repository -&gt; BD
+</code></pre>
+<p>Todos los logs producidos durante esa petición pueden compartir el mismo <code>traceId</code>.</p>
+<p>Archivo: <code>filter/CorrelationIdFilter.java</code></p>
+<pre><code class="language-java">package com.upeu.catalogo.filter;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.MDC;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.UUID;
+
+@Component
+public class CorrelationIdFilter extends OncePerRequestFilter {
+
+    public static final String TRACE_ID_HEADER = &quot;X-Trace-ID&quot;;
+    public static final String MDC_KEY = &quot;traceId&quot;;
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                     HttpServletResponse response,
+                                     FilterChain filterChain) throws ServletException, IOException {
+        String traceId = request.getHeader(TRACE_ID_HEADER);
+        if (traceId == null || traceId.isBlank()) {
+            traceId = UUID.randomUUID().toString();
+        }
+        try {
+            MDC.put(MDC_KEY, traceId);
+            response.setHeader(TRACE_ID_HEADER, traceId);
+            filterChain.doFilter(request, response);
+        } finally {
+            MDC.remove(MDC_KEY);
+        }
+    }
+}
+</code></pre>
+<p>Crea también <code>src/main/resources/logback-spring.xml</code>. Este archivo define el formato de logs e incluye el <code>traceId</code> en cada línea (<code>[%X{traceId}]</code>), con salida por consola y por archivo en <code>logs/catalogo.log</code>:</p>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;configuration&gt;
+    &lt;include resource=&quot;org/springframework/boot/logging/logback/defaults.xml&quot;/&gt;
+
+    &lt;property name=&quot;LOG_PATTERN&quot;
+              value=&quot;%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId}] %-5level %logger{36} - %msg%n&quot;/&gt;
+
+    &lt;appender name=&quot;CONSOLE&quot; class=&quot;ch.qos.logback.core.ConsoleAppender&quot;&gt;
+        &lt;encoder&gt;
+            &lt;pattern&gt;${LOG_PATTERN}&lt;/pattern&gt;
+        &lt;/encoder&gt;
+    &lt;/appender&gt;
+
+    &lt;appender name=&quot;FILE&quot; class=&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;&gt;
+        &lt;file&gt;logs/catalogo.log&lt;/file&gt;
+        &lt;encoder&gt;
+            &lt;pattern&gt;${LOG_PATTERN}&lt;/pattern&gt;
+        &lt;/encoder&gt;
+        &lt;rollingPolicy class=&quot;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&quot;&gt;
+            &lt;fileNamePattern&gt;logs/catalogo-%d{yyyy-MM-dd}.log&lt;/fileNamePattern&gt;
+            &lt;maxHistory&gt;7&lt;/maxHistory&gt;
+        &lt;/rollingPolicy&gt;
+    &lt;/appender&gt;
+
+    &lt;root level=&quot;INFO&quot;&gt;
+        &lt;appender-ref ref=&quot;CONSOLE&quot;/&gt;
+        &lt;appender-ref ref=&quot;FILE&quot;/&gt;
+    &lt;/root&gt;
+&lt;/configuration&gt;
+</code></pre>
+<p>Más adelante, cuando se agreguen Gateway, Feign o frontend, el mismo header <code>X-Trace-ID</code> podrá propagarse entre componentes para trazabilidad distribuida.</p>
+<h4 id="337-revisar-la-migracion-flyway">3.3.7 Revisar la migración Flyway</h4>
+<p>Crea la migración en <code>src/main/resources/db/migration/V1__create_categorias_table.sql</code>:</p>
+<pre><code class="language-sql">CREATE TABLE IF NOT EXISTS categorias (
+    id BIGINT GENERATED BY DEFAULT AS IDENTITY,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion VARCHAR(255),
+    PRIMARY KEY (id)
+);
+</code></pre>
+<p>En DEV y PROD local, Flyway ejecuta esta migración automáticamente al arrancar la aplicación. Luego Hibernate valida que la entidad <code>Categoria</code> coincida con la tabla mediante <code>ddl-auto: validate</code>.</p>
+<h4 id="338-revisar-estructura-resultante">3.3.8 Revisar estructura resultante</h4>
+<p>Después de crear los archivos anteriores, revisa que la estructura de <code>catalogo-ms</code> quede similar a:</p>
+<pre><code class="language-text">src/main/java/com/upeu/catalogo
+  config/
+  controller/
+    CategoriaController.java
+    SaludoController.java
+  dto/
+    CategoriaRequest.java
+    CategoriaResponse.java
+  entity/
+    Categoria.java
+  exception/
+    ResourceNotFoundException.java
+    GlobalExceptionHandler.java
+  filter/
+    CorrelationIdFilter.java
+  mapper/
+    CategoriaMapper.java
+  repository/
+    CategoriaRepository.java
+  service/
+    CategoriaService.java
+  CatalogoApplication.java
+src/main/resources/db/migration
+  V1__create_categorias_table.sql
+src/main/resources
+  logback-spring.xml
+</code></pre>
+<p><code>config/</code> queda disponible para configuraciones locales del servicio (por ejemplo, un bean de OpenAPI); en S1 puede quedar vacío.</p>
+<h4 id="339-preguntas-de-verificacion-antes-de-ejecutar">3.3.9 Preguntas de verificación antes de ejecutar</h4>
+<p>Antes de ejecutar, la lectura del CRUD debe responder:</p>
+<ol>
+<li>¿Qué clase representa la tabla <code>categorias</code>?</li>
+<li>¿Qué archivo recibe la petición HTTP?</li>
+<li>¿Qué archivo concentra la lógica de aplicación?</li>
+<li>¿Qué archivo conversa con JPA?</li>
+<li>¿Qué DTO se usa para recibir datos desde la API?</li>
+<li>¿Qué excepción se devuelve cuando no existe una categoría?</li>
+<li>¿Para qué sirve <code>CorrelationIdFilter</code>?</li>
+<li>¿Cómo aparece el <code>traceId</code> en los logs?</li>
+</ol>
+<h3 id="34-ejecutar-y-probar-el-microservicio-en-dev">3.4 Ejecutar y probar el microservicio en DEV</h3>
+<p><strong>Producto del paso:</strong> microservicio ejecutando en desarrollo fuera del IDE, tabla <code>categorias</code> creada por Flyway, Swagger disponible, health activo y CRUD verificado por shell.</p>
+<h4 id="341-verificar-postgresql-dev">3.4.1 Verificar PostgreSQL DEV</h4>
+<p>Verifica que PostgreSQL DEV siga activo:</p>
+<p>PowerShell / bash macOS/Linux:</p>
+<pre><code class="language-bash">docker ps
+</code></pre>
+<h4 id="342-ejecutar-con-maven">3.4.2 Ejecutar con Maven</h4>
+<p>Ejecuta el microservicio:</p>
+<p>PowerShell / bash macOS/Linux:</p>
+<pre><code class="language-bash">cd services/catalogo-ms
+mvn spring-boot:run
+</code></pre>
+<p>En la consola identifica el puerto asignado por Spring Boot. Debes ver una línea similar a:</p>
+<pre><code class="language-text">Tomcat started on port XXXXX
+</code></pre>
+<h4 id="343-verificar-tabla-creada-por-flyway">3.4.3 Verificar tabla creada por Flyway</h4>
+<p>Luego verifica que Flyway haya creado la tabla en DEV:</p>
+<p>PowerShell / bash macOS/Linux:</p>
+<pre><code class="language-bash">docker exec -it pagatu-postgres-catalogo-dev psql -U pagatu -d pagatu_catalogo_db -c &quot;\dt&quot;
+docker exec -it pagatu-postgres-catalogo-dev psql -U pagatu -d pagatu_catalogo_db -c &quot;\d categorias&quot;
+</code></pre>
+<h4 id="344-revisar-swagger">3.4.4 Revisar Swagger</h4>
+<p>Abre Swagger usando el puerto que aparece en la consola:</p>
+<pre><code class="language-text">http://localhost:&lt;puerto-asignado&gt;/swagger-ui/index.html
+</code></pre>
+<p>Verifica que aparezcan las operaciones del controlador de categorías.</p>
+<h4 id="345-verificar-health-y-metrics">3.4.5 Verificar health y metrics</h4>
+<p>Verifica <code>/actuator/health</code>:</p>
+<p>PowerShell:</p>
+<pre><code class="language-powershell">Invoke-RestMethod `
+  -Method Get `
+  -Uri &quot;http://localhost:&lt;puerto-asignado&gt;/actuator/health&quot;
+</code></pre>
+<p>bash macOS/Linux:</p>
+<pre><code class="language-bash">curl http://localhost:&lt;puerto-asignado&gt;/actuator/health
+</code></pre>
+<p>Verifica <code>/actuator/metrics</code>. Este endpoint solo requiere <code>spring-boot-starter-actuator</code>; no necesita una librería adicional.</p>
+<p>PowerShell:</p>
+<pre><code class="language-powershell">Invoke-RestMethod `
+  -Method Get `
+  -Uri &quot;http://localhost:&lt;puerto-asignado&gt;/actuator/metrics&quot;
+</code></pre>
+<p>bash macOS/Linux:</p>
+<pre><code class="language-bash">curl http://localhost:&lt;puerto-asignado&gt;/actuator/metrics
+</code></pre>
+<p>También puedes consultar una métrica específica:</p>
+<p>PowerShell:</p>
+<pre><code class="language-powershell">Invoke-RestMethod `
+  -Method Get `
+  -Uri &quot;http://localhost:&lt;puerto-asignado&gt;/actuator/metrics/jvm.memory.used&quot;
+</code></pre>
+<p>bash macOS/Linux:</p>
+<pre><code class="language-bash">curl http://localhost:&lt;puerto-asignado&gt;/actuator/metrics/jvm.memory.used
+</code></pre>
+<p>Nota: para exponer <code>/actuator/prometheus</code> se requiere agregar <code>micrometer-registry-prometheus</code>.</p>
+<h4 id="346-probar-crud-por-shell">3.4.6 Probar CRUD por shell</h4>
+<p>Crea una categoría:</p>
+<p>PowerShell:</p>
+<pre><code class="language-powershell">Invoke-RestMethod `
+  -Method Post `
+  -Uri &quot;http://localhost:&lt;puerto-asignado&gt;/api/categorias&quot; `
+  -ContentType &quot;application/json&quot; `
+  -Body '{&quot;nombre&quot;:&quot;Electrodomesticos&quot;,&quot;descripcion&quot;:&quot;Linea blanca y pequenos electrodomesticos&quot;}'
+</code></pre>
+<p>bash macOS/Linux:</p>
+<pre><code class="language-bash">curl -X POST http://localhost:&lt;puerto-asignado&gt;/api/categorias \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;nombre&quot;:&quot;Electrodomesticos&quot;,&quot;descripcion&quot;:&quot;Linea blanca y pequenos electrodomesticos&quot;}'
+</code></pre>
+<p>Lista todas las categorías:</p>
+<pre><code class="language-bash">curl http://localhost:&lt;puerto-asignado&gt;/api/categorias
+</code></pre>
+<p>Obtiene una categoría por id:</p>
+<pre><code class="language-bash">curl http://localhost:&lt;puerto-asignado&gt;/api/categorias/1
+</code></pre>
+<p>Actualiza una categoría:</p>
+<pre><code class="language-bash">curl -X PUT http://localhost:&lt;puerto-asignado&gt;/api/categorias/1 \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;nombre&quot;:&quot;Electrodomesticos&quot;,&quot;descripcion&quot;:&quot;Linea blanca, pequenos y grandes electrodomesticos&quot;}'
+</code></pre>
+<p>Elimina una categoría:</p>
+<pre><code class="language-bash">curl -X DELETE http://localhost:&lt;puerto-asignado&gt;/api/categorias/1
+</code></pre>
+<p>Prueba también un caso de validación fallida (sin <code>nombre</code>) y confirma que responde HTTP 400, y una consulta a un <code>id</code> inexistente y confirma que responde HTTP 404.</p>
+<h4 id="347-ejecutar-una-segunda-instancia-en-dev">3.4.7 Ejecutar una segunda instancia en DEV</h4>
+<p>Para cerrar el paso, ejecuta una segunda instancia del microservicio en otra terminal. Como <code>application-dev.yml</code> usa <code>server.port: 0</code>, Spring Boot asignará otro puerto libre automáticamente.</p>
+<p>PowerShell / bash macOS/Linux:</p>
+<pre><code class="language-bash">cd services/catalogo-ms
+mvn spring-boot:run
+</code></pre>
+<p>Verifica en cada terminal que los puertos sean diferentes. Esta prueba demuestra que el microservicio puede ejecutarse en múltiples instancias en DEV sin cambiar la configuración.</p>
+<h3 id="35-configurar-produccion-local-con-docker">3.5 Configurar producción local con Docker</h3>
+<p><strong>Producto del paso:</strong> archivos de producción local preparados: <code>Dockerfile</code>, <code>.env</code>, <code>.env.example</code>, <code>compose.yml</code> y <code>application-prod.yml</code>.</p>
+<p>En DEV la aplicación se ejecuta con Maven desde el host y solo PostgreSQL corre en Docker. En PROD local, la aplicación también se ejecutará como contenedor. Por eso se agregan archivos separados para construir la imagen, pasar variables de entorno y conectar el contenedor de la aplicación con su PostgreSQL dockerizado.</p>
+<p>Agrega o revisa estos archivos en <code>services/catalogo-ms</code>:</p>
+<pre><code class="language-text">.env
+.env.example
+Dockerfile
+compose.yml
+</code></pre>
+<p>Y este archivo en <code>services/catalogo-ms/src/main/resources</code>:</p>
+<pre><code class="language-text">application-prod.yml
+</code></pre>
+<h4 id="351-crear-dockerfile">3.5.1 Crear <code>Dockerfile</code></h4>
+<p>El <code>Dockerfile</code> construye el JAR con Maven y luego ejecuta la aplicación con Java 21:</p>
+<pre><code class="language-dockerfile">FROM maven:3.9.9-eclipse-temurin-21 AS build
+WORKDIR /app
+
+COPY pom.xml .
+RUN mvn -q -DskipTests dependency:go-offline
+
+COPY src ./src
+RUN mvn -q clean package -DskipTests
+
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+
+COPY --from=build /app/target/*.jar app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT [&quot;java&quot;, &quot;-jar&quot;, &quot;app.jar&quot;]
+</code></pre>
+<h4 id="352-crear-env-y-envexample">3.5.2 Crear <code>.env</code> y <code>.env.example</code></h4>
+<p><code>.env</code> contiene variables para producción local. <code>.env.example</code> debe tener la misma estructura para que otro estudiante pueda reproducir el entorno sin adivinar nombres.</p>
+<pre><code class="language-env">SPRING_PROFILES_ACTIVE=prod
+
+DB_NAME=pagatu_catalogo_db
+DB_USER=pagatu
+DB_PASS=pagatu
+</code></pre>
+<p>En S2 se agregará la URL del Config Server. En S1 el objetivo es que el microservicio pueda ejecutar en producción local con configuración propia.</p>
+<h4 id="353-crear-application-prodyml">3.5.3 Crear <code>application-prod.yml</code></h4>
+<p><code>application-prod.yml</code> define cómo se comporta la aplicación dentro de Docker. La base de datos no se busca en <code>localhost</code>, sino por el nombre del servicio PostgreSQL declarado en <code>compose.yml</code>.</p>
+<pre><code class="language-yaml">server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASS}
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+</code></pre>
+<p>La regla es la misma para DEV y PROD local: Flyway crea la estructura y JPA solo valida. Si vienes del material anterior con MySQL, el patrón es el mismo, pero en <code>pagatu</code> se adapta a PostgreSQL:</p>
+<pre><code class="language-text">DEV  -&gt; flyway.enabled=true + ddl-auto=validate
+PROD -&gt; flyway.enabled=true + ddl-auto=validate
+</code></pre>
+<h4 id="354-crear-composeyml">3.5.4 Crear <code>compose.yml</code></h4>
+<p><code>compose.yml</code> levanta PostgreSQL y el microservicio en contenedores. La base de datos queda en una red interna del microservicio y la aplicación queda preparada para conectarse después a una red compartida del sistema.</p>
+<pre><code class="language-yaml">name: pagatu-catalogo-prod
+
+services:
+  postgres-catalogo:
+    image: postgres:16-alpine
+    container_name: pagatu-postgres-catalogo
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    healthcheck:
+      test: [&quot;CMD-SHELL&quot;, &quot;pg_isready -U ${DB_USER} -d ${DB_NAME}&quot;]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    volumes:
+      - pagatu_catalogo_data:/var/lib/postgresql/data
+    ports:
+      - &quot;25432:5432&quot;
+    networks:
+      - pagatu-catalogo-int
+
+  catalogo-ms:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      postgres-catalogo:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      DB_HOST: pagatu-postgres-catalogo
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - pagatu-catalogo-int
+
+volumes:
+  pagatu_catalogo_data:
+
+networks:
+  pagatu-catalogo-int:
+    name: pagatu-catalogo-int
+</code></pre>
+<p>En S1 basta con la red interna del microservicio. Más adelante, cuando aparezcan Gateway, Eureka y Config Server, la aplicación se conectará también a la red compartida del sistema.</p>
+<h3 id="36-probar-produccion-local-con-docker">3.6 Probar producción local con Docker</h3>
+<p><strong>Producto del paso:</strong> microservicio ejecutando en producción local con Docker, PostgreSQL PROD disponible y escalado controlado a dos instancias.</p>
+<h4 id="361-levantar-produccion-local">3.6.1 Levantar producción local</h4>
+<p>PowerShell / bash macOS/Linux:</p>
+<pre><code class="language-bash">cd services/catalogo-ms
+docker compose up -d --build --scale catalogo-ms=2
+docker compose ps
+</code></pre>
+<h4 id="362-verificar-la-base-de-datos-prod">3.6.2 Verificar la base de datos PROD</h4>
+<p>PowerShell / bash macOS/Linux:</p>
+<pre><code class="language-bash">docker exec -it pagatu-postgres-catalogo psql -U pagatu -d pagatu_catalogo_db -c &quot;\dt&quot;
+docker exec -it pagatu-postgres-catalogo psql -U pagatu -d pagatu_catalogo_db -c &quot;\d categorias&quot;
+</code></pre>
+<h4 id="363-verificar-health-desde-la-red-docker">3.6.3 Verificar health desde la red Docker</h4>
+<p>En S1 el microservicio en PROD local no publica puerto host directo. Se valida desde la red Docker interna; en sesiones posteriores el acceso externo se hará por Gateway.</p>
+<p>PowerShell / bash macOS/Linux:</p>
+<pre><code class="language-bash">docker run --rm --network pagatu-catalogo-int curlimages/curl:8.10.1 -s http://catalogo-ms:8080/actuator/health
+</code></pre>
+<p>Resultado esperado:</p>
+<pre><code class="language-json">{&quot;status&quot;:&quot;UP&quot;}
+</code></pre>
+<h4 id="364-revisar-logs-y-bajar-el-entorno">3.6.4 Revisar logs y bajar el entorno</h4>
+<p>La producción local se levantó con dos instancias usando <code>--scale catalogo-ms=2</code>. No uses más de dos en laboratorio porque cada instancia consume CPU y memoria.</p>
+<p>PowerShell / bash macOS/Linux:</p>
+<pre><code class="language-bash">docker compose ps
+</code></pre>
+<p>Revisa logs de ambas instancias:</p>
+<pre><code class="language-bash">docker compose logs --tail=80 catalogo-ms
+</code></pre>
+<p>Al terminar la evidencia, baja el entorno para liberar CPU, memoria, red y contenedores:</p>
+<pre><code class="language-bash">docker compose down
+</code></pre>
+<h3 id="37-ruta-alternativa-partir-del-tag-de-cierre-de-la-sesion">3.7 Ruta alternativa: partir del tag de cierre de la sesión</h3>
+<p>Esta sección sirve si tu equipo ya cerró la sesión con un tag de git en su propio repositorio del proyecto (por ejemplo <code>s01</code>) y quieres solo levantar, probar y revisar evidencias sin repetir toda la construcción paso a paso.</p>
+<table>
+<thead>
+<tr>
+<th>Necesidad</th>
+<th>Referencia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Levantar y probar en DEV</td>
+<td><a href="#34-ejecutar-y-probar-el-microservicio-en-dev">Ver paso 3.4</a></td>
+</tr>
+<tr>
+<td>Revisar Swagger</td>
+<td><a href="#344-revisar-swagger">Ver paso 3.4.4</a></td>
+</tr>
+<tr>
+<td>Revisar health y metrics</td>
+<td><a href="#345-verificar-health-y-metrics">Ver paso 3.4.5</a></td>
+</tr>
+<tr>
+<td>Probar CRUD por shell</td>
+<td><a href="#346-probar-crud-por-shell">Ver paso 3.4.6</a></td>
+</tr>
+<tr>
+<td>Levantar y escalar PROD local</td>
+<td><a href="#36-probar-produccion-local-con-docker">Ver paso 3.6</a></td>
+</tr>
+</tbody>
+</table>
+<p>Comandos mínimos DEV:</p>
+<p>PowerShell / bash macOS/Linux:</p>
+<pre><code class="language-bash">cd services/catalogo-ms
+docker compose -f compose-dev.yml up -d
+mvn spring-boot:run
+</code></pre>
+<p>Comandos mínimos PROD local:</p>
+<pre><code class="language-bash">cd services/catalogo-ms
+docker compose up -d --build --scale catalogo-ms=2
+docker compose ps
+</code></pre>
+<h4 id="371-archivos-clave-por-modo-de-ejecucion">3.7.1 Archivos clave por modo de ejecución</h4>
+<p>DEV:</p>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>services/catalogo-ms/compose-dev.yml</code></td>
+<td>PostgreSQL DEV</td>
+</tr>
+<tr>
+<td><code>services/catalogo-ms/src/main/resources/application.yml</code></td>
+<td>Configuración base y perfil activo</td>
+</tr>
+<tr>
+<td><code>services/catalogo-ms/src/main/resources/application-dev.yml</code></td>
+<td>Configuración DEV con puerto dinámico y BD DEV</td>
+</tr>
+</tbody>
+</table>
+<p>PROD local:</p>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>services/catalogo-ms/Dockerfile</code></td>
+<td>Imagen de aplicación</td>
+</tr>
+<tr>
+<td><code>services/catalogo-ms/compose.yml</code></td>
+<td>Producción local con Docker</td>
+</tr>
+<tr>
+<td><code>services/catalogo-ms/.env.example</code></td>
+<td>Variables esperadas para PROD local</td>
+</tr>
+<tr>
+<td><code>services/catalogo-ms/.env</code></td>
+<td>Variables locales de ejecución PROD</td>
+</tr>
+<tr>
+<td><code>services/catalogo-ms/src/main/resources/application-prod.yml</code></td>
+<td>Configuración PROD local</td>
+</tr>
+</tbody>
+</table>
+<p>Comunes:</p>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>services/catalogo-ms/pom.xml</code></td>
+<td>Dependencias del microservicio</td>
+</tr>
+<tr>
+<td><code>services/catalogo-ms/src/main/java/...</code></td>
+<td>Código del servicio</td>
+</tr>
+<tr>
+<td><code>services/catalogo-ms/src/main/resources/db/migration</code></td>
+<td>Migraciones Flyway</td>
+</tr>
+<tr>
+<td><code>services/catalogo-ms/README.md</code></td>
+<td>Operación y evidencias</td>
+</tr>
+</tbody>
+</table>
+<h4 id="372-verificacion-rapida-de-base-de-datos">3.7.2 Verificación rápida de base de datos</h4>
+<p>DEV:</p>
+<pre><code class="language-bash">docker exec -it pagatu-postgres-catalogo-dev psql -U pagatu -d pagatu_catalogo_db
+</code></pre>
+<p>Dentro de <code>psql</code>:</p>
+<pre><code class="language-sql">\dt
+\d categorias
+SELECT * FROM categorias;
+\q
+</code></pre>
+<p>PROD local:</p>
+<pre><code class="language-bash">docker exec -it pagatu-postgres-catalogo psql -U pagatu -d pagatu_catalogo_db -c &quot;\dt&quot;
+docker exec -it pagatu-postgres-catalogo psql -U pagatu -d pagatu_catalogo_db -c &quot;SELECT * FROM categorias;&quot;
+</code></pre>
+<h2 id="4-crea-actividad-autonoma">4. Crea: actividad autónoma</h2>
+<p>Tiempo: 4h fuera del aula.</p>
+<p>Esta actividad autónoma se desarrolla sobre el proyecto de fin de curso del equipo. El producto de la unidad se construye por acumulación de los avances de cada sesión; por eso, la evidencia de esta sesión debe incorporarse a la documentación del proyecto y quedar trazable en GitHub.</p>
+<h3 id="41-plantilla-de-evidencia-individual">4.1 Plantilla de evidencia individual</h3>
+<p>Entrega un PDF con el siguiente nombre:</p>
+<p>El PDF de esta sesión debe generarse como impresión o exportación de la sección correspondiente en MkDocs o una herramienta equivalente. No se acepta un PDF armado manualmente fuera de la documentación del proyecto.</p>
+<pre><code class="language-text">S01_Equipo##_ApellidoNombre.pdf
+</code></pre>
+<p>Ejemplo:</p>
+<pre><code class="language-text">S01_Equipo03_QuispeAna.pdf
+</code></pre>
+<p>El PDF debe usar esta estructura. La primera sección define el trabajo autónomo; completa las demás con tus evidencias.</p>
+<h4 id="411-datos-del-estudiante">4.1.1 Datos del estudiante</h4>
+<ul>
+<li>Nombre:</li>
+<li>Equipo:</li>
+<li>Sesión: S01 - Construcción de un servicio base para un sistema distribuido</li>
+<li>Rol o aporte realizado:</li>
+<li>Link de GitHub:</li>
+</ul>
+<h4 id="412-trabajo-autonomo-realizado">4.1.2 Trabajo autónomo realizado</h4>
+<p>Completa y evidencia estas tareas:</p>
+<ol>
+<li>Replicar el patrón de <code>catalogo-ms</code> en otro servicio del dominio, por ejemplo <code>producto-ms</code>.</li>
+<li>Ejecutar el microservicio en DEV con Maven.</li>
+<li>Probar el CRUD por PowerShell o bash.</li>
+<li>Verificar Swagger, <code>/actuator/health</code> y <code>/actuator/metrics</code> en DEV.</li>
+<li>Revisar la base de datos con comandos <code>psql</code>.</li>
+<li>Ejecutar una prueba breve en PROD local con Docker.</li>
+<li>Explicar la diferencia entre DEV Maven y PROD Docker.</li>
+</ol>
+<h4 id="413-evidencia-tecnica">4.1.3 Evidencia técnica</h4>
+<p>Incluye capturas o salidas de consola con una breve explicación debajo de cada una:</p>
+<ul>
+<li>Ejecución con <code>mvn spring-boot:run</code>.</li>
+<li>Prueba CRUD por shell.</li>
+<li>Swagger o lista de endpoints disponible.</li>
+<li>Respuesta de <code>/actuator/health</code>.</li>
+<li>Respuesta de <code>/actuator/metrics</code>.</li>
+<li>Consulta de tabla y registros con <code>psql</code>.</li>
+<li>Ejecución en PROD local con Docker.</li>
+<li>Evidencia de máximo dos instancias, si corresponde.</li>
+</ul>
+<h4 id="414-error-o-hallazgo">4.1.4 Error o hallazgo</h4>
+<p>Describe al menos un error, diferencia o hallazgo técnico:</p>
+<ul>
+<li>Qué ocurrió.</li>
+<li>Cómo lo diagnosticaste.</li>
+<li>Cómo lo corregiste o qué aprendiste.</li>
+</ul>
+<h4 id="415-reflexion-tecnica-breve">4.1.5 Reflexión técnica breve</h4>
+<p>Responde en 5 a 8 líneas:</p>
+<pre><code class="language-text">¿Por qué un microservicio debe poder ejecutarse en DEV y PROD local de forma reproducible?
+</code></pre>
+<h3 id="42-criterios-minimos-de-aceptacion">4.2 Criterios mínimos de aceptación</h3>
+<p>La evidencia individual se considera completa si:</p>
+<ul>
+<li>El archivo respeta el nombre <code>S01_Equipo##_ApellidoNombre.pdf</code>.</li>
+<li>Incluye evidencias técnicas legibles.</li>
+<li>Muestra el microservicio funcionando en DEV.</li>
+<li>Muestra prueba de CRUD y base de datos.</li>
+<li>Muestra una ejecución breve en PROD local.</li>
+<li>Explica un aporte individual verificable.</li>
+<li>No contiene solo pantallazos: cada evidencia tiene una descripción breve.</li>
+</ul>
+<h2 id="5-cierre-evaluativo">5. Cierre evaluativo</h2>
+<p>Tiempo: 20 min.</p>
+<p>Esta sección conecta el resultado de aprendizaje de la sesión con el producto que debe evidenciar cada estudiante.</p>
+<h3 id="51-resultados-esperados">5.1 Resultados esperados</h3>
+<p>Al finalizar la sesión, el estudiante debe demostrar que:</p>
+<ul>
+<li>El microservicio ejecuta en DEV con Maven.</li>
+<li>El microservicio ejecuta en PROD local con Docker.</li>
+<li>PostgreSQL funciona en DEV y PROD local.</li>
+<li>El CRUD de <code>Categoria</code> responde por shell.</li>
+<li>Swagger y <code>/actuator/health</code> funcionan en DEV.</li>
+<li>Flyway crea la tabla <code>categorias</code>.</li>
+<li>El microservicio puede levantar múltiples instancias, máximo dos en laboratorio.</li>
+<li>Puede explicar la diferencia entre DEV Maven y PROD Docker.</li>
+</ul>
+<h3 id="52-evidencia-del-producto-de-sesion">5.2 Evidencia del producto de sesión</h3>
+<p>Cada estudiante entrega un PDF individual siguiendo la plantilla de la sección 4.1.</p>
+<p>Nombre del archivo:</p>
+<pre><code class="language-text">S01_Equipo##_ApellidoNombre.pdf
+</code></pre>
+<p>La evidencia debe demostrar:</p>
+<ul>
+<li>Producto de sesión construido.</li>
+<li>Aporte individual verificable.</li>
+<li>Pruebas técnicas realizadas.</li>
+<li>Reflexión técnica breve.</li>
+</ul>
+<p>La revisión se realiza con los criterios mínimos de aceptación de la sección 4.2 y la rúbrica de la sección 5.4.</p>
+<p>Comparación mínima que debe defender:</p>
+<table>
+<thead>
+<tr>
+<th>Aspecto</th>
+<th>DEV Maven</th>
+<th>PROD Docker</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Aplicación</td>
+<td>Ejecuta en host con <code>mvn spring-boot:run</code></td>
+<td>Ejecuta dentro de contenedor</td>
+</tr>
+<tr>
+<td>Base de datos</td>
+<td>PostgreSQL en Docker DEV</td>
+<td>PostgreSQL en Docker PROD</td>
+</tr>
+<tr>
+<td>Puerto del microservicio</td>
+<td>Dinámico con <code>server.port: 0</code></td>
+<td>Interno <code>8080</code> dentro de Docker</td>
+</tr>
+<tr>
+<td>Acceso externo</td>
+<td>Directo al puerto asignado</td>
+<td>Por red Docker; luego por Gateway</td>
+</tr>
+<tr>
+<td>Propósito</td>
+<td>Desarrollo, depuración y cambios rápidos</td>
+<td>Ejecución reproducible y cercana a producción</td>
+</tr>
+</tbody>
+</table>
+<h3 id="53-preguntas-de-defensa-y-reflexion">5.3 Preguntas de defensa y reflexión</h3>
+<ol>
+<li>¿Por qué un microservicio debe ser stateless?</li>
+<li>¿Qué responsabilidad tiene <code>catalogo-ms</code>?</li>
+<li>¿Cómo se prueba el servicio sin usar Postman?</li>
+<li>¿Qué evidencia demuestra que la BD fue usada?</li>
+<li>¿Qué diferencia hay entre DEV Maven y PROD Docker?</li>
+<li>¿Por qué en PROD local no se publica directamente el puerto del microservicio?</li>
+<li>¿Qué parte implementaste o replicaste individualmente?</li>
+</ol>
+<h3 id="54-rubrica-de-evaluacion">5.4 Rúbrica de evaluación</h3>
+<table>
+<thead>
+<tr>
+<th>Dimensión</th>
+<th style="text-align: right;">Peso</th>
+<th>3 - Logro destacado</th>
+<th>2 - Logro</th>
+<th>1 - Proceso</th>
+<th>0 - Inicio</th>
+<th style="text-align: right;">Puntuación obtenida</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Microservicio funcional</td>
+<td style="text-align: right;">2</td>
+<td>Evidencia microservicio ejecutando, CRUD funcionando, health/metrics y Swagger en DEV.</td>
+<td>Evidencia microservicio ejecutando y al menos una prueba funcional.</td>
+<td>Evidencia arranque parcial o sin pruebas suficientes.</td>
+<td>No evidencia el microservicio funcionando.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>2. Persistencia y base de datos</td>
+<td style="text-align: right;">2</td>
+<td>Evidencia PostgreSQL DEV/PROD, Flyway y registros consultados con <code>psql</code>.</td>
+<td>Evidencia tabla <code>categorias</code> y consultas básicas con <code>psql</code>.</td>
+<td>Evidencia parcial de conexión a BD.</td>
+<td>No evidencia uso de PostgreSQL ni tabla creada.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>3. Ejecución DEV y PROD local</td>
+<td style="text-align: right;">2</td>
+<td>Explica y evidencia DEV Maven, PROD Docker y escalado máximo a dos instancias.</td>
+<td>Evidencia DEV con Maven y PROD local con Docker.</td>
+<td>Muestra solo DEV o solo PROD local.</td>
+<td>No diferencia DEV y PROD local.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>4. Aporte individual verificable</td>
+<td style="text-align: right;">2</td>
+<td>Aporte claro, verificable y conectado al producto del equipo.</td>
+<td>Aporte claro con archivo, comando o prueba realizada.</td>
+<td>Aporte mencionado de forma general.</td>
+<td>No se identifica aporte individual.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>5. Diagnóstico de error o hallazgo</td>
+<td style="text-align: right;">1</td>
+<td>Analiza error/hallazgo, causa, solución y aprendizaje técnico.</td>
+<td>Explica causa probable y solución parcial.</td>
+<td>Menciona un problema sin explicarlo.</td>
+<td>No presenta error ni hallazgo.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>6. Reflexión técnica y orden</td>
+<td style="text-align: right;">1</td>
+<td>Reflexión técnica precisa, PDF ordenado, capturas legibles y explicaciones breves.</td>
+<td>Reflexión clara y evidencias entendibles.</td>
+<td>Reflexión superficial o evidencias poco legibles.</td>
+<td>PDF desordenado o sin reflexión.</td>
+<td style="text-align: right;"></td>
+</tr>
+</tbody>
+</table>
+<p>Puntuación acumulada = suma de (<code>Peso</code> * <code>Puntuación obtenida</code>) = ____.</p>
+<p>Nota final = (<code>Puntuación acumulada</code> / 30) * 20 = ____.</p>
+<p>Para usar la rúbrica con IA, solicita:</p>
+<pre><code class="language-text">Evalúa el PDF usando la rúbrica de la sesión.
+Para cada dimensión selecciona la puntuación obtenida usando la escala Inicio=0, Proceso=1, Logro=2, Logro destacado=3.
+Justifica brevemente cada puntuación.
+Calcula la puntuación acumulada con la fórmula: suma de (Peso * Puntuación obtenida).
+Calcula la nota final sobre 20 con la fórmula: (Puntuación acumulada / 30) * 20.
+Indica 2 fortalezas y 2 recomendaciones.
+</code></pre>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

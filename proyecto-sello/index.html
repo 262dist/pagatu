@@ -1,0 +1,1986 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://262dist.github.io/pagatu/proyecto-sello/">
+      
+      
+        <link rel="prev" href="../plan-trabajo/">
+      
+      
+        <link rel="next" href="../silabo_dist_2026_1/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Guía del proyecto - Pagatu DIST - Desarrollo de Aplicaciones Distribuidas</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#guia-del-proyecto-sello-de-desarrollo-de-aplicaciones-distribuidas" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" class="md-header__button md-logo" aria-label="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Pagatu DIST - Desarrollo de Aplicaciones Distribuidas
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Guía del proyecto
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/262dist/pagatu" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    262dist/pagatu
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" class="md-nav__button md-logo" aria-label="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Pagatu DIST - Desarrollo de Aplicaciones Distribuidas
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/262dist/pagatu" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    262dist/pagatu
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plan-trabajo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plan de trabajo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía de Proyecto Sello
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guía de Proyecto Sello
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía del proyecto
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía del proyecto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Propósito
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Propósito">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#competencia-o-capacidad-del-proyecto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Competencia o capacidad del proyecto
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#competencias-relacionadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Competencias relacionadas
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-el-proyecto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. El Proyecto
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-evolucion-del-proyecto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Evolución del Proyecto
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Evolución del Proyecto">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#alineamiento-por-sesiones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alineamiento por sesiones
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-cronograma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Cronograma
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-producto-final" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Producto Final
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Producto Final">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#repositorio-academico-y-topics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Repositorio académico y topics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-evaluacion-por-competencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Evaluación por competencias
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Evaluación por competencias">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rubrica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rúbrica
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subaspectos-de-la-sustentacion-integral" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subaspectos de la sustentación integral
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-sustentacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Sustentación
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-resultado-esperado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Resultado Esperado
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#anexo-secuencia-sugerida-de-presentacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anexo. Secuencia sugerida de presentación
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#anexo-plantilla-minima-de-documentacion-mkdocs-o-equivalente" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anexo. Plantilla mínima de documentación MkDocs o equivalente
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#anexo-plantilla-sugerida-de-informe-del-proyecto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anexo. Plantilla sugerida de informe del proyecto
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabos
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Silabos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../silabo_dist_2026_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabo 2026-1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../silabo_dist_2026_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabo 2026-2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Sistema distribuido base orientado a producción
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    1. Sistema distribuido base orientado a producción
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sesiones/S01_Construccion_Servicio_Base/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S1 - Construcción de un servicio base para un sistema distribuido
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Propuesta de proyecto
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Propuesta de proyecto
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../propuesta-proyecto/contenido/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contenido
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../propuesta-proyecto/OFICIAL_ESTRUCTURA_ESTANDAR/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Estructura estándar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../propuesta-proyecto/propuesta_migracion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Propuesta de migración
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../propuesta-proyecto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    README
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../propuesta-proyecto/README_01_ACERCA_DEL_PROYECTO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Acerca del proyecto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../propuesta-proyecto/README_02_ARQUITECTURA_DETALLADA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arquitectura detallada
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Propósito
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Propósito">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#competencia-o-capacidad-del-proyecto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Competencia o capacidad del proyecto
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#competencias-relacionadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Competencias relacionadas
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-el-proyecto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. El Proyecto
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-evolucion-del-proyecto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Evolución del Proyecto
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Evolución del Proyecto">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#alineamiento-por-sesiones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alineamiento por sesiones
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-cronograma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Cronograma
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-producto-final" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Producto Final
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Producto Final">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#repositorio-academico-y-topics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Repositorio académico y topics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-evaluacion-por-competencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Evaluación por competencias
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Evaluación por competencias">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rubrica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rúbrica
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subaspectos-de-la-sustentacion-integral" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subaspectos de la sustentación integral
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-sustentacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Sustentación
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-resultado-esperado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Resultado Esperado
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#anexo-secuencia-sugerida-de-presentacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anexo. Secuencia sugerida de presentación
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#anexo-plantilla-minima-de-documentacion-mkdocs-o-equivalente" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anexo. Plantilla mínima de documentación MkDocs o equivalente
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#anexo-plantilla-sugerida-de-informe-del-proyecto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anexo. Plantilla sugerida de informe del proyecto
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="guia-del-proyecto-sello-de-desarrollo-de-aplicaciones-distribuidas">Guía del Proyecto Sello de Desarrollo de Aplicaciones Distribuidas</h1>
+<h2 id="1-proposito">1. Propósito</h2>
+<p>El Proyecto Sello integra las sesiones de <strong>Desarrollo de Aplicaciones Distribuidas</strong> alrededor de un sistema de microservicios construido de manera progresiva. Cada sesión agrega una capacidad real de arquitectura distribuida hasta llegar a un producto end-to-end configurable, seguro, resiliente, observable y defendible técnicamente.</p>
+<h3 id="competencia-o-capacidad-del-proyecto">Competencia o capacidad del proyecto</h3>
+<p>Al finalizar el Proyecto Sello, el estudiante demuestra que puede diseñar, implementar y defender un sistema distribuido end-to-end, aplicando microservicios, configuración centralizada, descubrimiento, Gateway, seguridad, resiliencia, mensajería, observabilidad, integración frontend, reproducibilidad y sustentación integral del producto.</p>
+<h3 id="competencias-relacionadas">Competencias relacionadas</h3>
+<table>
+<thead>
+<tr>
+<th>Código</th>
+<th>Competencia</th>
+<th>Relación con el proyecto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CE023</td>
+<td>Programación</td>
+<td>Evidencia construcción de un sistema distribuido escalable basado en servicios interoperables.</td>
+</tr>
+<tr>
+<td>CE022</td>
+<td>Ingeniería de la Información</td>
+<td>Evidencia persistencia, mensajería, consistencia y procesamiento de datos entre servicios.</td>
+</tr>
+<tr>
+<td>CE024</td>
+<td>Calidad de Software</td>
+<td>Evidencia seguridad, resiliencia, observabilidad, reproducibilidad, documentación y sustentación integral.</td>
+</tr>
+</tbody>
+</table>
+<p>Fuente oficial de los códigos: <a href="https://upeuoficial.github.io/planb/transcripcion/#c-area-de-ingenieria-de-software">Transcripción de evidencias por competencia — Ingeniería de Software</a>.</p>
+<pre><code class="language-text">Servicio -&gt; Configuración -&gt; Descubrimiento -&gt; Gateway -&gt; Seguridad -&gt; Eventos -&gt; Observabilidad -&gt; Frontend -&gt; Defensa
+</code></pre>
+<h2 id="2-el-proyecto">2. El Proyecto</h2>
+<p>Durante el semestre desarrollarás un <strong>sistema distribuido de microservicios end-to-end</strong> aplicado a un flujo de negocio.</p>
+<p>El proyecto debe integrar microservicios, infraestructura, Gateway, seguridad, comunicación síncrona y asíncrona, consistencia distribuida, observabilidad, persistencia, frontend y evidencias de operación reproducible.</p>
+<p>No se busca solo ejecutar contenedores. Se espera una arquitectura distribuida que pueda explicar por qué cada servicio existe, cómo se comunica, cómo falla, cómo se observa y cómo se recupera.</p>
+<p>No se considera Proyecto Sello:</p>
+<ul>
+<li>Microservicios aislados sin flujo de negocio.</li>
+<li>APIs sin configuración, descubrimiento o Gateway.</li>
+<li>Contenedores levantados sin evidencias de integración.</li>
+<li>Eventos sin relación con un proceso distribuido.</li>
+<li>Frontend desconectado del sistema.</li>
+<li>Un producto que el estudiante no pueda defender técnicamente.</li>
+</ul>
+<h2 id="3-evolucion-del-proyecto">3. Evolución del Proyecto</h2>
+<table>
+<thead>
+<tr>
+<th>Unidad</th>
+<th>Temas principales</th>
+<th>Evolución del proyecto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unidad 1: Sistema distribuido base orientado a producción</td>
+<td>Servicio base, configuración centralizada, descubrimiento, Gateway y múltiples instancias.</td>
+<td>Sistema distribuido base funcional, configurable y preparado para escalar.</td>
+</tr>
+<tr>
+<td>Unidad 2: Sistema distribuido robusto</td>
+<td>Comunicación resiliente, seguridad, mensajería, consistencia, observabilidad e integración frontend.</td>
+<td>Sistema distribuido robusto, seguro, observable e integrado.</td>
+</tr>
+<tr>
+<td>Unidad 3: Validación y consolidación del producto del curso</td>
+<td>Validación end-to-end, estabilización, documentación y defensa técnica.</td>
+<td>Sistema distribuido final validado, documentado y defendido.</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-mermaid">flowchart TB
+    A[Servicio REST] --&gt; B[Config Server]
+    B --&gt; C[Discovery]
+    C --&gt; D[Gateway]
+    D --&gt; E[Seguridad]
+    E --&gt; F[Comunicación resiliente]
+    F --&gt; G[Eventos Kafka]
+    G --&gt; H[Consistencia]
+    H --&gt; I[Observabilidad]
+    I --&gt; J[Frontend]
+    J --&gt; K[Defensa técnica]
+</code></pre>
+<h3 id="alineamiento-por-sesiones">Alineamiento por sesiones</h3>
+<p>Este alineamiento muestra cómo cada bloque de sesiones agrega una capacidad distribuida verificable al mismo sistema de microservicios.</p>
+<table>
+<thead>
+<tr>
+<th>Sesiones</th>
+<th>Contenido central</th>
+<th>Avance del proyecto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S1-S2</td>
+<td>Servicio base, persistencia, configuración centralizada y ambientes.</td>
+<td>Brief técnico, primer microservicio y configuración externalizada.</td>
+</tr>
+<tr>
+<td>S3-S4</td>
+<td>Registro, descubrimiento, Gateway y balanceo de carga.</td>
+<td>Infraestructura distribuida base con acceso centralizado y múltiples instancias.</td>
+</tr>
+<tr>
+<td>S5</td>
+<td>Evaluación U1.</td>
+<td>Sistema distribuido base integrado y reproducible.</td>
+</tr>
+<tr>
+<td>S6-S7</td>
+<td>Comunicación resiliente, seguridad distribuida y control de acceso.</td>
+<td>Servicios protegidos y comunicación controlada ante fallos.</td>
+</tr>
+<tr>
+<td>S8-S9</td>
+<td>Mensajería asíncrona y consistencia distribuida.</td>
+<td>Flujo de negocio por eventos, compensación o idempotencia.</td>
+</tr>
+<tr>
+<td>S10-S11</td>
+<td>Observabilidad e integración frontend.</td>
+<td>Logs, métricas, health, paneles y cliente integrado por Gateway.</td>
+</tr>
+<tr>
+<td>S12</td>
+<td>Evaluación U2.</td>
+<td>Sistema robusto validado en condiciones reales.</td>
+</tr>
+<tr>
+<td>S13-S14</td>
+<td>Validación end-to-end, estabilización y documentación.</td>
+<td>Producto final probado, documentado y listo para defensa.</td>
+</tr>
+<tr>
+<td>S15-S16</td>
+<td>Defensa técnica y evaluación final.</td>
+<td>Sustentación grupal con aporte individual verificable.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4-cronograma">4. Cronograma</h2>
+<table>
+<thead>
+<tr>
+<th>Hito</th>
+<th>Momento</th>
+<th>Producto esperado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S2</td>
+<td>Brief técnico</td>
+<td>Flujo de negocio, servicios previstos, datos, endpoints iniciales y alcance.</td>
+</tr>
+<tr>
+<td>S5</td>
+<td>Producto U1</td>
+<td>Sistema base con servicio REST, configuración, descubrimiento, Gateway y balanceo.</td>
+</tr>
+<tr>
+<td>S12</td>
+<td>Producto U2</td>
+<td>Sistema robusto con resiliencia, seguridad, eventos, consistencia, observabilidad y frontend.</td>
+</tr>
+<tr>
+<td>S15</td>
+<td>Producto final</td>
+<td>Sistema end-to-end validado, documentado y defendido técnicamente.</td>
+</tr>
+<tr>
+<td>S16</td>
+<td>Cierre individual</td>
+<td>Evaluación final y demostración de competencias pendientes.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-producto-final">5. Producto Final</h2>
+<h3 id="repositorio-academico-y-topics">Repositorio académico y topics</h3>
+<p>Desde la primera presentación del proyecto, el repositorio debe estar creado y configurado con los topics académicos mínimos. Esta configuración es obligatoria porque permite identificar campus, semestre, línea, tipo de proyecto, curso, sección y grupo.</p>
+<p>El detalle oficial del estándar se encuentra en <a href="https://upeuoficial.github.io/planb/anexos/estandar-topics-repositorios/">Estándar transversal de topics para repositorios académicos</a>.</p>
+<p>Ejemplo base para Distribuidas:</p>
+<pre><code class="language-text">campus-juliaca
+semestre-2026-2
+linea-software
+tipo-ps
+dist
+seccion-g1
+grupo-&lt;numero&gt;-&lt;nombre-proyecto&gt;
+</code></pre>
+<p>Componentes mínimos:</p>
+<ul>
+<li>Microservicios con responsabilidades claras.</li>
+<li>Configuración centralizada por ambiente.</li>
+<li>Registro y descubrimiento de servicios.</li>
+<li>API Gateway con rutas y balanceo.</li>
+<li>Persistencia por servicio según el caso.</li>
+<li>Seguridad distribuida con autenticación, autorización y rutas protegidas.</li>
+<li>Comunicación síncrona resiliente.</li>
+<li>Mensajería asíncrona con eventos de negocio.</li>
+<li>Consistencia distribuida, compensación o idempotencia según el flujo.</li>
+<li>Logs, health checks, métricas y paneles de observabilidad.</li>
+<li>Frontend integrado mediante Gateway.</li>
+<li>Docker o entorno reproducible.</li>
+<li>Documentación técnica y evidencias de ejecución.</li>
+</ul>
+<h2 id="6-evaluacion-por-competencias">6. Evaluación por competencias</h2>
+<p>Los criterios se organizan según una matriz común de evaluación de proyectos académicos: problema, arquitectura, implementación, datos o comunicación, integración y calidad, validación y sustentación. Cada criterio se adapta al enfoque de sistemas distribuidos y se verifica mediante evidencias del producto, el repositorio y la demostración.</p>
+<table>
+<thead>
+<tr>
+<th>Dimensión común</th>
+<th>Criterio del PS</th>
+<th>Capacidad evaluada</th>
+<th>Evidencias esperadas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Problema y alcance</td>
+<td>Arquitectura distribuida</td>
+<td>Delimita un problema que justifica distribución, servicios y comunicación entre componentes.</td>
+<td>Problema, alcance, servicios, actores, restricciones y justificación técnica.</td>
+</tr>
+<tr>
+<td>2. Requerimientos o funcionalidad esperada</td>
+<td>Funcionalidad distribuida</td>
+<td>Define flujos verificables entre cliente, gateway, servicios y datos.</td>
+<td>Endpoints, flujos, criterios de aceptación, seguridad esperada y escenarios de uso.</td>
+</tr>
+<tr>
+<td>3. Diseño, modelo o arquitectura</td>
+<td>Diseño de microservicios</td>
+<td>Diseña componentes distribuidos con responsabilidades claras y comunicación definida.</td>
+<td>Diagrama de arquitectura, servicios, API Gateway, seguridad, mensajería o integración.</td>
+</tr>
+<tr>
+<td>4. Implementación técnica</td>
+<td>Backend distribuido</td>
+<td>Implementa servicios, APIs, seguridad, comunicación y despliegue básico según el alcance.</td>
+<td>Código, endpoints, configuración, Docker o scripts, autenticación y servicios ejecutables.</td>
+</tr>
+<tr>
+<td>5. Datos, persistencia o procesamiento</td>
+<td>Datos por servicio</td>
+<td>Gestiona datos, persistencia o eventos de forma coherente con la arquitectura.</td>
+<td>Bases, esquemas, datos de prueba, eventos, consultas o evidencias de persistencia.</td>
+</tr>
+<tr>
+<td>6. Integración del producto y calidad técnica</td>
+<td>Integración frontend y calidad técnica</td>
+<td>Integra cliente, Gateway y servicios en una experiencia funcional, ordenada y reproducible.</td>
+<td>Cliente consumiendo servicios reales, autenticación, flujo end-to-end, comandos, logs, health checks y documentación.</td>
+</tr>
+<tr>
+<td>7. Validación, pruebas o resultados</td>
+<td>Pruebas y resultados verificables</td>
+<td>Comprueba comportamiento, seguridad, resiliencia y resultados del sistema.</td>
+<td>Pruebas, capturas, comandos, accesos permitidos/denegados y evidencias de fallos controlados.</td>
+</tr>
+<tr>
+<td>8. Sustentación técnica y profesional</td>
+<td>Sustentación integral</td>
+<td>Defiende técnica y profesionalmente la solución distribuida, evidenciando autoría, comprensión y responsabilidad académica.</td>
+<td>Pitch, demo end-to-end, defensa técnica, aporte individual, repositorio, topics y MkDocs o equivalente.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="rubrica">Rúbrica</h3>
+<table>
+<thead>
+<tr>
+<th>Criterios</th>
+<th style="text-align: right;">%</th>
+<th>A (20)</th>
+<th>B (15)</th>
+<th>C (10)</th>
+<th>D (5)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Problema y alcance</td>
+<td style="text-align: right;">10%</td>
+<td>Problema claro, viable y bien delimitado; el alcance responde al contexto y está justificado.</td>
+<td>Problema y alcance comprensibles, con algunos límites o justificaciones por precisar.</td>
+<td>Problema poco delimitado o alcance parcialmente viable.</td>
+<td>Problema confuso, sin alcance definido o sin relación clara con el producto.</td>
+</tr>
+<tr>
+<td>2. Requerimientos o funcionalidad esperada</td>
+<td style="text-align: right;">10%</td>
+<td>Funcionalidades o requerimientos completos, coherentes y verificables según la necesidad planteada.</td>
+<td>Funcionalidades principales cubiertas, con detalles menores pendientes o poco precisos.</td>
+<td>Funcionalidades incompletas o parcialmente alineadas al problema.</td>
+<td>Funcionalidades ausentes, inconexas o sin relación verificable con la necesidad.</td>
+</tr>
+<tr>
+<td>3. Diseño, modelo o arquitectura</td>
+<td style="text-align: right;">10%</td>
+<td>Diseño, modelo o arquitectura coherente, aplicado y alineado al producto; muestra estructura y decisiones claras.</td>
+<td>Diseño funcional con limitaciones menores o decisiones parcialmente justificadas.</td>
+<td>Diseño poco claro, incompleto o aplicado de forma parcial.</td>
+<td>No presenta diseño, modelo o arquitectura verificable.</td>
+</tr>
+<tr>
+<td>4. Implementación técnica</td>
+<td style="text-align: right;">10%</td>
+<td>Implementación correcta, funcional y alineada a los contenidos centrales del curso.</td>
+<td>Implementación funcional con detalles técnicos menores por corregir.</td>
+<td>Implementación parcial, con errores o uso limitado de los contenidos del curso.</td>
+<td>Implementación insuficiente, no funcional o no relacionada con los contenidos del curso.</td>
+</tr>
+<tr>
+<td>5. Datos, persistencia o procesamiento</td>
+<td style="text-align: right;">10%</td>
+<td>Los datos se gestionan, almacenan, consultan o procesan correctamente según el tipo de proyecto.</td>
+<td>Gestión de datos funcional con detalles menores de consistencia, estructura o procesamiento.</td>
+<td>Gestión de datos parcial, limitada o con errores relevantes.</td>
+<td>No hay manejo de datos verificable o este impide el funcionamiento del producto.</td>
+</tr>
+<tr>
+<td>6. Integración del producto y calidad técnica</td>
+<td style="text-align: right;">10%</td>
+<td>El producto funciona como sistema integrado, ordenado, documentado y reproducible.</td>
+<td>Integración funcional con detalles menores de organización, documentación o reproducibilidad.</td>
+<td>Integración parcial; existen componentes aislados, desorden o evidencias incompletas.</td>
+<td>Componentes desconectados, sin organización técnica ni evidencia reproducible.</td>
+</tr>
+<tr>
+<td>7. Validación, pruebas o resultados</td>
+<td style="text-align: right;">10%</td>
+<td>Presenta pruebas, evidencias o resultados claros que comprueban el funcionamiento y el valor del producto.</td>
+<td>Presenta evidencias suficientes, con algunos casos o resultados por completar.</td>
+<td>Evidencias limitadas, poco claras o con validación parcial.</td>
+<td>No presenta pruebas, evidencias ni resultados verificables.</td>
+</tr>
+<tr>
+<td>8. Sustentación técnica y profesional</td>
+<td style="text-align: right;">30%</td>
+<td>Explica y defiende el producto con solvencia; demuestra aporte individual, dominio técnico, comunicación clara, repositorio, documentación y actitud profesional.</td>
+<td>Sustentación clara y funcional, con detalles menores en defensa técnica, evidencias, comunicación o documentación.</td>
+<td>Sustentación parcial; dominio, evidencias, comunicación o aporte individual insuficientemente demostrados.</td>
+<td>No sustenta adecuadamente, no demuestra autoría o no presenta evidencias mínimas del producto.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="subaspectos-de-la-sustentacion-integral">Subaspectos de la sustentación integral</h3>
+<p>La sustentación integral debe representar como mínimo el 30% de la evaluación del proyecto. Se revisa mediante los siguientes subaspectos:</p>
+<table>
+<thead>
+<tr>
+<th>Subaspecto</th>
+<th>Qué observa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Defensa técnica</td>
+<td>Explicación de arquitectura, comunicación entre servicios, decisiones técnicas, fallos controlados, limitaciones y evidencias generadas.</td>
+</tr>
+<tr>
+<td>2. Comunicación y orden</td>
+<td>Claridad, estructura, tiempo y lenguaje técnico.</td>
+</tr>
+<tr>
+<td>3. Presentación personal y actitud</td>
+<td>Puntualidad, vestimenta limpia y adecuada, higiene, cabello ordenado, actitud profesional, respeto, honestidad y coherencia con los valores y principios cristianos de la institución.</td>
+</tr>
+<tr>
+<td>4. Aporte individual</td>
+<td>Cada integrante demuestra lo que hizo.</td>
+</tr>
+<tr>
+<td>5. Repositorio y estándares</td>
+<td>Topics, organización, commits, documentación y reproducibilidad.</td>
+</tr>
+<tr>
+<td>6. MkDocs o equivalente</td>
+<td>Documentación publicada, navegable y alineada al producto.</td>
+</tr>
+<tr>
+<td>7. Pitch/demo ejecutiva</td>
+<td>Introducción clara del problema, solución y valor, seguida de una demo funcional.</td>
+</tr>
+</tbody>
+</table>
+<p>La sustentación profesional forma parte de la evaluación porque el producto final no solo debe funcionar; también debe ser presentado, explicado y defendido con responsabilidad académica, ética, respeto, honestidad y coherencia con los valores y principios cristianos de la institución.</p>
+<h2 id="7-sustentacion">7. Sustentación</h2>
+<p>La sustentación inicia con un video pitch breve o introducción ejecutiva de 1 a 3 minutos para presentar el problema, la solución, el valor del producto y la participación del equipo o estudiante.</p>
+<table>
+<thead>
+<tr>
+<th>Momento</th>
+<th style="text-align: right;">Tiempo sugerido</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Exposición técnica</td>
+<td style="text-align: right;">10 minutos</td>
+<td>Presentar arquitectura, servicios, flujo distribuido, seguridad, eventos y observabilidad.</td>
+</tr>
+<tr>
+<td>Demostración en vivo</td>
+<td style="text-align: right;">5 minutos</td>
+<td>Ejecutar el flujo end-to-end, evidenciar Gateway, servicios, eventos, seguridad y monitoreo.</td>
+</tr>
+</tbody>
+</table>
+<p>Cada integrante debe demostrar su aporte: servicio, configuración, seguridad, frontend, mensajería, observabilidad, documentación o pruebas. La defensa es grupal, pero la nota técnica exige aporte individual verificable.</p>
+<h2 id="8-resultado-esperado">8. Resultado Esperado</h2>
+<p>Al finalizar el curso, el estudiante debe demostrar que puede construir y defender un sistema distribuido realista, reproducible y observable.</p>
+<pre><code class="language-text">Flujo de negocio -&gt; Microservicios -&gt; Infraestructura -&gt; Seguridad -&gt; Eventos -&gt; Observabilidad -&gt; Frontend -&gt; Defensa
+</code></pre>
+<h2 id="anexo-secuencia-sugerida-de-presentacion">Anexo. Secuencia sugerida de presentación</h2>
+<p>La presentación puede organizarse con una secuencia breve de apoyo visual. El video pitch o introducción ejecutiva abre la sustentación y no reemplaza la demo ni la defensa técnica.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Orden</th>
+<th>Slide o momento</th>
+<th>Propósito</th>
+<th>Competencia evidenciada</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td>Título del proyecto y equipo</td>
+<td>Identificar el proyecto, integrantes y dominio elegido.</td>
+<td>CE024</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td>Video pitch o introducción ejecutiva</td>
+<td>Presentar problema, solución, valor y participación del equipo.</td>
+<td>CE024</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>1. Problema y alcance</td>
+<td>Explicar el proceso distribuido y los límites del sistema.</td>
+<td>CE023</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td>Arquitectura distribuida</td>
+<td>Mostrar servicios, Gateway, configuración y comunicación.</td>
+<td>CE023</td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
+<td>Seguridad</td>
+<td>Evidenciar rutas protegidas, autenticación o autorización.</td>
+<td>CE024</td>
+</tr>
+<tr>
+<td style="text-align: right;">6</td>
+<td>Resiliencia y consistencia</td>
+<td>Explicar fallos controlados, eventos, compensaciones o idempotencia.</td>
+<td>CE022 + CE024</td>
+</tr>
+<tr>
+<td style="text-align: right;">7</td>
+<td>Observabilidad</td>
+<td>Mostrar logs, métricas, health checks o paneles.</td>
+<td>CE024</td>
+</tr>
+<tr>
+<td style="text-align: right;">8</td>
+<td>Integración frontend</td>
+<td>Explicar cómo el cliente consume los servicios reales.</td>
+<td>CE023</td>
+</tr>
+<tr>
+<td style="text-align: right;">9</td>
+<td>Demo end-to-end</td>
+<td>Ejecutar el flujo principal del sistema distribuido.</td>
+<td>CE023 + CE024</td>
+</tr>
+<tr>
+<td style="text-align: right;">10</td>
+<td>4. Aporte individual</td>
+<td>Indicar qué hizo cada integrante.</td>
+<td>CE024</td>
+</tr>
+<tr>
+<td style="text-align: right;">11</td>
+<td>5. Repositorio y estándares</td>
+<td>Mostrar repositorio, topics, estructura, documentación publicada en MkDocs o equivalente, y forma de ejecución.</td>
+<td>CE024</td>
+</tr>
+<tr>
+<td style="text-align: right;">12</td>
+<td>Limitaciones y mejoras</td>
+<td>Reconocer límites del producto y mejoras posibles.</td>
+<td>CE024</td>
+</tr>
+</tbody>
+</table>
+<h2 id="anexo-plantilla-minima-de-documentacion-mkdocs-o-equivalente">Anexo. Plantilla mínima de documentación MkDocs o equivalente</h2>
+<p>La documentación publicada no reemplaza al informe. Su función es permitir que otra persona comprenda, ejecute, revise y verifique el producto desde el repositorio.</p>
+<table>
+<thead>
+<tr>
+<th>Página o sección</th>
+<th>Contenido mínimo</th>
+<th>Evidencia esperada</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Inicio</td>
+<td>Nombre del proyecto, problema, solución, curso o cursos, integrantes y enlace al repositorio.</td>
+<td>Presentación clara del producto.</td>
+</tr>
+<tr>
+<td>Instalación o ejecución</td>
+<td>Requisitos, dependencias, configuración y comandos para ejecutar el proyecto.</td>
+<td>Instrucciones reproducibles.</td>
+</tr>
+<tr>
+<td>Uso del sistema</td>
+<td>Flujo principal, pantallas, comandos, endpoints, notebooks o casos de uso según corresponda.</td>
+<td>Guía breve para probar el producto.</td>
+</tr>
+<tr>
+<td>Arquitectura o estructura</td>
+<td>Diagrama, componentes, carpetas principales y decisiones técnicas.</td>
+<td>Vista técnica comprensible.</td>
+</tr>
+<tr>
+<td>Módulos o funcionalidades</td>
+<td>Descripción de las funciones principales del producto.</td>
+<td>Relación entre funcionalidades y problema.</td>
+</tr>
+<tr>
+<td>Datos</td>
+<td>Modelo, archivos, base de datos, datasets, fuentes o estructura de almacenamiento según el curso.</td>
+<td>Evidencia de gestión de datos.</td>
+</tr>
+<tr>
+<td>Pruebas y evidencias</td>
+<td>Casos de prueba, capturas, resultados, métricas, validaciones o salidas generadas.</td>
+<td>Verificación del funcionamiento.</td>
+</tr>
+<tr>
+<td>Equipo y aporte individual</td>
+<td>Integrantes, responsabilidades, aportes y evidencias de participación.</td>
+<td>Autoría verificable.</td>
+</tr>
+<tr>
+<td>5. Repositorio y estándares</td>
+<td>Topics académicos, estructura, commits, ramas si aplica y criterios de reproducibilidad.</td>
+<td>Cumplimiento de estándares técnicos.</td>
+</tr>
+<tr>
+<td>Limitaciones y mejoras</td>
+<td>Restricciones del producto y mejoras futuras priorizadas.</td>
+<td>Cierre reflexivo y realista.</td>
+</tr>
+</tbody>
+</table>
+<p>La documentación debe estar disponible desde las primeras presentaciones y crecer con el proyecto. Para FP puede ser una documentación sencilla; para proyectos integradores y cursos avanzados debe ser más completa y técnica.</p>
+<h2 id="anexo-plantilla-sugerida-de-informe-del-proyecto">Anexo. Plantilla sugerida de informe del proyecto</h2>
+<p>El informe debe documentar el producto de manera breve, verificable y alineada a las competencias evaluadas. No reemplaza la demo ni la sustentación; organiza las evidencias del proyecto.</p>
+<table>
+<thead>
+<tr>
+<th>Sección</th>
+<th>Contenido mínimo</th>
+<th>Evidencia esperada</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Portada</td>
+<td>Nombre del proyecto, curso, sección, integrantes, docente y semestre.</td>
+<td>Datos completos del equipo.</td>
+</tr>
+<tr>
+<td>Resumen del proyecto</td>
+<td>Problema, solución distribuida y valor del producto.</td>
+<td>Síntesis de 8 a 12 líneas.</td>
+</tr>
+<tr>
+<td>Competencia y alcance</td>
+<td>Competencia/capacidad del proyecto y competencias relacionadas.</td>
+<td>CE023, CE022 y CE024 vinculadas al producto.</td>
+</tr>
+<tr>
+<td>Flujo de negocio</td>
+<td>Proceso distribuido, actores, servicios y límites.</td>
+<td>Descripción del flujo end-to-end.</td>
+</tr>
+<tr>
+<td>Arquitectura distribuida</td>
+<td>Microservicios, Gateway, configuración, descubrimiento y comunicación.</td>
+<td>Diagrama de arquitectura y componentes.</td>
+</tr>
+<tr>
+<td>Datos y consistencia</td>
+<td>Persistencia, eventos, compensaciones o idempotencia.</td>
+<td>Evidencias de datos, mensajes y resultados.</td>
+</tr>
+<tr>
+<td>Observabilidad</td>
+<td>Logs, métricas, health checks o paneles.</td>
+<td>Capturas, comandos o paneles.</td>
+</tr>
+<tr>
+<td>Validación y pruebas</td>
+<td>Pruebas de flujo, seguridad, fallos y resultados.</td>
+<td>Tabla de pruebas y evidencias.</td>
+</tr>
+<tr>
+<td>Repositorio y documentación</td>
+<td>Repositorio, topics, estructura, comandos y documentación publicada.</td>
+<td>URL del repositorio y MkDocs o equivalente.</td>
+</tr>
+<tr>
+<td>4. Aporte individual</td>
+<td>Responsabilidad de cada integrante.</td>
+<td>Tabla de tareas, commits o evidencias por integrante.</td>
+</tr>
+<tr>
+<td>Limitaciones y mejoras</td>
+<td>Límites actuales y mejoras posibles.</td>
+<td>Lista priorizada y realista.</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
