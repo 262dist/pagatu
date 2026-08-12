@@ -1017,19 +1017,19 @@
   
 
 
-<h1 id="distribuidas-2026-2">DISTribuidas 2026-2</h1>
+<h1 id="distribuidas-2026-2">DISTribuidas 2026-2<a class="headerlink" href="#distribuidas-2026-2" title="Permanent link">&para;</a></h1>
 <p>Curso práctico de sistemas distribuidos con microservicios, configuración centralizada, descubrimiento de servicios, Gateway, seguridad, resiliencia, mensajería asíncrona, consistencia distribuida, observabilidad e integración frontend.</p>
 <p><a href="https://github.com/262dist/pagatu"><code>pagatu</code></a> es un entorno integrado para construir un sistema distribuido de comercio electrónico mediante laboratorios reproducibles basados en Docker y Spring Cloud. El proyecto unifica infraestructura, microservicios, cliente frontend, mensajería, observabilidad y documentación para que cada equipo pueda adaptar el sistema a su proyecto final.</p>
-<h2 id="producto-del-curso">Producto del curso</h2>
+<h2 id="producto-del-curso">Producto del curso<a class="headerlink" href="#producto-del-curso" title="Permanent link">&para;</a></h2>
 <p>Producto del curso = Producto U3:</p>
-<pre><code class="language-text">Sistema distribuido de microservicios end-to-end, configurable, escalable,
+<div class="highlight"><pre><span></span><code>Sistema distribuido de microservicios end-to-end, configurable, escalable,
 seguro, resiliente, consistente, observable, integrado con frontend y defendido
 técnicamente.
-</code></pre>
+</code></pre></div>
 <p>Resultado esperado del curso:</p>
 <p>Al finalizar el curso, el estudiante implementa, integra y sustenta un sistema distribuido basado en microservicios. La solución debe ejecutarse de forma reproducible en desarrollo y producción local, exponer evidencias de configuración, registro, enrutamiento, escalado, seguridad, comunicación entre servicios, mensajería asíncrona, consistencia distribuida, observabilidad, persistencia e integración frontend. El producto se presenta en equipo, pero cada estudiante evidencia y defiende su aporte individual.</p>
-<h2 id="contenido">Contenido</h2>
-<h3 id="u1-sistema-distribuido-base-orientado-a-produccion">U1: Sistema distribuido base orientado a producción</h3>
+<h2 id="contenido">Contenido<a class="headerlink" href="#contenido" title="Permanent link">&para;</a></h2>
+<h3 id="u1-sistema-distribuido-base-orientado-a-produccion">U1: Sistema distribuido base orientado a producción<a class="headerlink" href="#u1-sistema-distribuido-base-orientado-a-produccion" title="Permanent link">&para;</a></h3>
 <p>Producto U1: sistema distribuido base funcional, configurable y preparado para múltiples instancias.</p>
 <p>Resultado esperado U1: el estudiante construye un primer servicio REST funcional, externaliza configuración por ambientes, registra servicios dinámicamente, accede al sistema mediante un punto único de entrada y demuestra distribución de tráfico entre instancias.</p>
 <table>
@@ -1074,7 +1074,7 @@ técnicamente.
 </tr>
 </tbody>
 </table>
-<h3 id="u2-sistema-distribuido-robusto">U2: Sistema distribuido robusto</h3>
+<h3 id="u2-sistema-distribuido-robusto">U2: Sistema distribuido robusto<a class="headerlink" href="#u2-sistema-distribuido-robusto" title="Permanent link">&para;</a></h3>
 <p>Producto U2: sistema distribuido seguro, resiliente, consistente, observable e integrado con cliente frontend.</p>
 <p>Resultado esperado U2: el estudiante implementa comunicación síncrona resiliente, seguridad distribuida, mensajería asíncrona, consistencia eventual en procesos de negocio, observabilidad operacional e integración frontend mediante el punto único de acceso.</p>
 <table>
@@ -1131,7 +1131,7 @@ técnicamente.
 </tr>
 </tbody>
 </table>
-<h3 id="u3-validacion-y-consolidacion-del-producto-del-curso">U3: Validación y consolidación del producto del curso</h3>
+<h3 id="u3-validacion-y-consolidacion-del-producto-del-curso">U3: Validación y consolidación del producto del curso<a class="headerlink" href="#u3-validacion-y-consolidacion-del-producto-del-curso" title="Permanent link">&para;</a></h3>
 <p>Producto U3 / producto del curso: sistema distribuido de microservicios end-to-end, validado, documentado, estabilizado y defendido técnicamente.</p>
 <p>Resultado esperado U3: el estudiante integra los componentes desarrollados en las unidades anteriores, valida flujos completos, estabiliza documentación y despliegue local, prepara evidencias técnicas y sustenta el producto final. La defensa es grupal, pero la nota es individual.</p>
 <table>
@@ -1170,45 +1170,45 @@ técnicamente.
 </tr>
 </tbody>
 </table>
-<h2 id="arquitectura-pagatu-v2026">Arquitectura pagatu v2026</h2>
-<pre><code class="language-mermaid">%%{init: {&quot;flowchart&quot;: {&quot;nodeSpacing&quot;: 18, &quot;rankSpacing&quot;: 28, &quot;curve&quot;: &quot;basis&quot;}} }%%
+<h2 id="arquitectura-pagatu-v2026">Arquitectura pagatu v2026<a class="headerlink" href="#arquitectura-pagatu-v2026" title="Permanent link">&para;</a></h2>
+<pre class="mermaid"><code>%%{init: {"flowchart": {"nodeSpacing": 18, "rankSpacing": 28, "curve": "basis"}} }%%
 flowchart LR
-    subgraph Infra[&quot;infra&quot;]
-        Config[&quot;Config - D 18888 - P 28888&quot;]
-        Eureka[&quot;Eureka - D 18761 - P 28761&quot;]
-        Gateway[&quot;Gateway - D 18080 - P 28082&quot;]
+    subgraph Infra["infra"]
+        Config["Config - D 18888 - P 28888"]
+        Eureka["Eureka - D 18761 - P 28761"]
+        Gateway["Gateway - D 18080 - P 28082"]
     end
 
-    subgraph Runtime[&quot;microservicios&quot;]
-        subgraph Identity[&quot;identidad&quot;]
-            Auth[&quot;auth-ms (Keycloak u otro) - dinamico&quot;]
-            AuthDB[&quot;auth_db - D 15431 - P 25431&quot;]
+    subgraph Runtime["microservicios"]
+        subgraph Identity["identidad"]
+            Auth["auth-ms (Keycloak u otro) - dinamico"]
+            AuthDB["auth_db - D 15431 - P 25431"]
             Auth --&gt; AuthDB
         end
 
-        subgraph Services[&quot;services&quot;]
-            Catalogo[&quot;catalogo-ms - dinamico&quot;]
-            CatalogoDB[&quot;catálogo_db - D 15432 - P 25432&quot;]
-            Orden[&quot;orden-ms - dinamico&quot;]
-            OrdenDB[&quot;orden_db - D 15434 - P 25434&quot;]
-            Pago[&quot;pago-ms - dinamico&quot;]
-            PagoDB[&quot;pago_db - D 15435 - P 25435&quot;]
+        subgraph Services["services"]
+            Catalogo["catalogo-ms - dinamico"]
+            CatalogoDB["catálogo_db - D 15432 - P 25432"]
+            Orden["orden-ms - dinamico"]
+            OrdenDB["orden_db - D 15434 - P 25434"]
+            Pago["pago-ms - dinamico"]
+            PagoDB["pago_db - D 15435 - P 25435"]
 
             Catalogo --&gt; CatalogoDB
             Orden --&gt; OrdenDB
             Pago --&gt; PagoDB
-            Orden --&gt;|&quot;Feign: valida catálogo&quot;| Catalogo
+            Orden --&gt;|"Feign: valida catálogo"| Catalogo
         end
     end
 
-    subgraph Messaging[&quot;kafka&quot;]
-        Broker[&quot;Kafka broker - D 41092 - P 29092&quot;]
-        KafkaUI[&quot;Kafka UI - D 41085 - P 28085&quot;]
+    subgraph Messaging["kafka"]
+        Broker["Kafka broker - D 41092 - P 29092"]
+        KafkaUI["Kafka UI - D 41085 - P 28085"]
         KafkaUI --&gt; Broker
     end
 
-    subgraph External[&quot;sistema externo&quot;]
-        PaymentGateway[&quot;Pasarela de pagos externa&quot;]
+    subgraph External["sistema externo"]
+        PaymentGateway["Pasarela de pagos externa"]
     end
 
     Angular --&gt; Gateway
@@ -1217,37 +1217,36 @@ flowchart LR
     Gateway --&gt; Orden
     Gateway --&gt; Pago
 
-    Config -. &quot;carga configuración&quot; .-&gt; Eureka
-    Config -. &quot;carga configuración&quot; .-&gt; Gateway
-    Config -. &quot;carga configuración - configserver&quot; .-&gt; Runtime
-    Runtime -. &quot;registra instancias&quot; .-&gt; Eureka
-    Gateway -. &quot;descubre servicios&quot; .-&gt; Eureka
+    Config -. "carga configuración" .-&gt; Eureka
+    Config -. "carga configuración" .-&gt; Gateway
+    Config -. "carga configuración - configserver" .-&gt; Runtime
+    Runtime -. "registra instancias" .-&gt; Eureka
+    Gateway -. "descubre servicios" .-&gt; Eureka
 
-    Orden --&gt;|&quot;orden-eventos&quot;| Broker
-    Broker --&gt;|&quot;orden-eventos&quot;| Pago
-    Pago --&gt;|&quot;pago-eventos&quot;| Broker
-    Pago --&gt;|&quot;autoriza / confirma pago&quot;| PaymentGateway
+    Orden --&gt;|"orden-eventos"| Broker
+    Broker --&gt;|"orden-eventos"| Pago
+    Pago --&gt;|"pago-eventos"| Broker
+    Pago --&gt;|"autoriza / confirma pago"| PaymentGateway
 
     classDef external fill:#fff3cd,stroke:#b7791f,stroke-width:2px,color:#5f370e;
     class PaymentGateway external;
 
-    subgraph Client[&quot;clients&quot;]
-        Angular[&quot;pagatu-ng (Angular 21) - D 4200&quot;]
+    subgraph Client["clients"]
+        Angular["pagatu-ng (Angular 21) - D 4200"]
     end
 
-    subgraph Obs[&quot;observabilidad&quot;]
-        Prometheus[&quot;Prometheus - D 19090 - P 29090&quot;]
-        Loki[&quot;Loki - D 13100 - P 23100&quot;]
-        Grafana[&quot;Grafana - D 13000 - P 23000&quot;]
+    subgraph Obs["observabilidad"]
+        Prometheus["Prometheus - D 19090 - P 29090"]
+        Loki["Loki - D 13100 - P 23100"]
+        Grafana["Grafana - D 13000 - P 23000"]
         Grafana --&gt; Prometheus
         Grafana --&gt; Loki
     end
 
     Angular ~~~ Prometheus
-
 </code></pre>
 <p>Convención del diagrama: las flechas continuas representan interacciones de negocio o consultas directas; las flechas punteadas representan dependencias de infraestructura, configuración o descubrimiento.</p>
-<h2 id="flujo-de-trabajo">Flujo de trabajo</h2>
+<h2 id="flujo-de-trabajo">Flujo de trabajo<a class="headerlink" href="#flujo-de-trabajo" title="Permanent link">&para;</a></h2>
 <ol>
 <li>El alumno construye primero un microservicio base en <code>services/catalogo-ms</code> y replica el patrón en otros servicios.</li>
 <li>La infraestructura en <code>infra/</code> centraliza configuración, descubrimiento y acceso por Gateway; los microservicios importan configuración con <code>optional:configserver:${CONFIG_SERVER_URL:http://localhost:18888}</code>.</li>
@@ -1258,7 +1257,7 @@ flowchart LR
 <li>El frontend <code>clients/pagatu-ng</code> (Angular 21) consume el sistema mediante Gateway.</li>
 <li>El producto final se valida end-to-end, se estabiliza y se defiende técnicamente.</li>
 </ol>
-<h2 id="enlaces">Enlaces</h2>
+<h2 id="enlaces">Enlaces<a class="headerlink" href="#enlaces" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="silabo.md">Sílabo detallado</a></li>
 <li><a href="guia-curso.md">Guía del curso</a></li>

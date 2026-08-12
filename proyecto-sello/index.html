@@ -1255,12 +1255,12 @@
   
 
 
-<h1 id="guia-del-proyecto-sello-de-desarrollo-de-aplicaciones-distribuidas">Guía del Proyecto Sello de Desarrollo de Aplicaciones Distribuidas</h1>
-<h2 id="1-proposito">1. Propósito</h2>
+<h1 id="guia-del-proyecto-sello-de-desarrollo-de-aplicaciones-distribuidas">Guía del Proyecto Sello de Desarrollo de Aplicaciones Distribuidas<a class="headerlink" href="#guia-del-proyecto-sello-de-desarrollo-de-aplicaciones-distribuidas" title="Permanent link">&para;</a></h1>
+<h2 id="1-proposito">1. Propósito<a class="headerlink" href="#1-proposito" title="Permanent link">&para;</a></h2>
 <p>El Proyecto Sello integra las sesiones de <strong>Desarrollo de Aplicaciones Distribuidas</strong> alrededor de un sistema de microservicios construido de manera progresiva. Cada sesión agrega una capacidad real de arquitectura distribuida hasta llegar a un producto end-to-end configurable, seguro, resiliente, observable y defendible técnicamente.</p>
-<h3 id="competencia-o-capacidad-del-proyecto">Competencia o capacidad del proyecto</h3>
+<h3 id="competencia-o-capacidad-del-proyecto">Competencia o capacidad del proyecto<a class="headerlink" href="#competencia-o-capacidad-del-proyecto" title="Permanent link">&para;</a></h3>
 <p>Al finalizar el Proyecto Sello, el estudiante demuestra que puede diseñar, implementar y defender un sistema distribuido end-to-end, aplicando microservicios, configuración centralizada, descubrimiento, Gateway, seguridad, resiliencia, mensajería, observabilidad, integración frontend, reproducibilidad y sustentación integral del producto.</p>
-<h3 id="competencias-relacionadas">Competencias relacionadas</h3>
+<h3 id="competencias-relacionadas">Competencias relacionadas<a class="headerlink" href="#competencias-relacionadas" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -1288,9 +1288,9 @@
 </tbody>
 </table>
 <p>Fuente oficial de los códigos: <a href="https://upeuoficial.github.io/planb/transcripcion/#c-area-de-ingenieria-de-software">Transcripción de evidencias por competencia — Ingeniería de Software</a>.</p>
-<pre><code class="language-text">Servicio -&gt; Configuración -&gt; Descubrimiento -&gt; Gateway -&gt; Seguridad -&gt; Eventos -&gt; Observabilidad -&gt; Frontend -&gt; Defensa
-</code></pre>
-<h2 id="2-el-proyecto">2. El Proyecto</h2>
+<div class="highlight"><pre><span></span><code>Servicio -&gt; Configuración -&gt; Descubrimiento -&gt; Gateway -&gt; Seguridad -&gt; Eventos -&gt; Observabilidad -&gt; Frontend -&gt; Defensa
+</code></pre></div>
+<h2 id="2-el-proyecto">2. El Proyecto<a class="headerlink" href="#2-el-proyecto" title="Permanent link">&para;</a></h2>
 <p>Durante el semestre desarrollarás un <strong>sistema distribuido de microservicios end-to-end</strong> aplicado a un flujo de negocio.</p>
 <p>El proyecto debe integrar microservicios, infraestructura, Gateway, seguridad, comunicación síncrona y asíncrona, consistencia distribuida, observabilidad, persistencia, frontend y evidencias de operación reproducible.</p>
 <p>No se busca solo ejecutar contenedores. Se espera una arquitectura distribuida que pueda explicar por qué cada servicio existe, cómo se comunica, cómo falla, cómo se observa y cómo se recupera.</p>
@@ -1303,7 +1303,7 @@
 <li>Frontend desconectado del sistema.</li>
 <li>Un producto que el estudiante no pueda defender técnicamente.</li>
 </ul>
-<h2 id="3-evolucion-del-proyecto">3. Evolución del Proyecto</h2>
+<h2 id="3-evolucion-del-proyecto">3. Evolución del Proyecto<a class="headerlink" href="#3-evolucion-del-proyecto" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
@@ -1330,7 +1330,7 @@
 </tr>
 </tbody>
 </table>
-<pre><code class="language-mermaid">flowchart TB
+<pre class="mermaid"><code>flowchart TB
     A[Servicio REST] --&gt; B[Config Server]
     B --&gt; C[Discovery]
     C --&gt; D[Gateway]
@@ -1340,9 +1340,8 @@
     G --&gt; H[Consistencia]
     H --&gt; I[Observabilidad]
     I --&gt; J[Frontend]
-    J --&gt; K[Defensa técnica]
-</code></pre>
-<h3 id="alineamiento-por-sesiones">Alineamiento por sesiones</h3>
+    J --&gt; K[Defensa técnica]</code></pre>
+<h3 id="alineamiento-por-sesiones">Alineamiento por sesiones<a class="headerlink" href="#alineamiento-por-sesiones" title="Permanent link">&para;</a></h3>
 <p>Este alineamiento muestra cómo cada bloque de sesiones agrega una capacidad distribuida verificable al mismo sistema de microservicios.</p>
 <table>
 <thead>
@@ -1400,7 +1399,7 @@
 </tr>
 </tbody>
 </table>
-<h2 id="4-cronograma">4. Cronograma</h2>
+<h2 id="4-cronograma">4. Cronograma<a class="headerlink" href="#4-cronograma" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
@@ -1437,19 +1436,19 @@
 </tr>
 </tbody>
 </table>
-<h2 id="5-producto-final">5. Producto Final</h2>
-<h3 id="repositorio-academico-y-topics">Repositorio académico y topics</h3>
+<h2 id="5-producto-final">5. Producto Final<a class="headerlink" href="#5-producto-final" title="Permanent link">&para;</a></h2>
+<h3 id="repositorio-academico-y-topics">Repositorio académico y topics<a class="headerlink" href="#repositorio-academico-y-topics" title="Permanent link">&para;</a></h3>
 <p>Desde la primera presentación del proyecto, el repositorio debe estar creado y configurado con los topics académicos mínimos. Esta configuración es obligatoria porque permite identificar campus, semestre, línea, tipo de proyecto, curso, sección y grupo.</p>
 <p>El detalle oficial del estándar se encuentra en <a href="https://upeuoficial.github.io/planb/anexos/estandar-topics-repositorios/">Estándar transversal de topics para repositorios académicos</a>.</p>
 <p>Ejemplo base para Distribuidas:</p>
-<pre><code class="language-text">campus-juliaca
+<div class="highlight"><pre><span></span><code>campus-juliaca
 semestre-2026-2
 linea-software
 tipo-ps
 dist
 seccion-g1
 grupo-&lt;numero&gt;-&lt;nombre-proyecto&gt;
-</code></pre>
+</code></pre></div>
 <p>Componentes mínimos:</p>
 <ul>
 <li>Microservicios con responsabilidades claras.</li>
@@ -1466,7 +1465,7 @@ grupo-&lt;numero&gt;-&lt;nombre-proyecto&gt;
 <li>Docker o entorno reproducible.</li>
 <li>Documentación técnica y evidencias de ejecución.</li>
 </ul>
-<h2 id="6-evaluacion-por-competencias">6. Evaluación por competencias</h2>
+<h2 id="6-evaluacion-por-competencias">6. Evaluación por competencias<a class="headerlink" href="#6-evaluacion-por-competencias" title="Permanent link">&para;</a></h2>
 <p>Los criterios se organizan según una matriz común de evaluación de proyectos académicos: problema, arquitectura, implementación, datos o comunicación, integración y calidad, validación y sustentación. Cada criterio se adapta al enfoque de sistemas distribuidos y se verifica mediante evidencias del producto, el repositorio y la demostración.</p>
 <table>
 <thead>
@@ -1528,7 +1527,7 @@ grupo-&lt;numero&gt;-&lt;nombre-proyecto&gt;
 </tr>
 </tbody>
 </table>
-<h3 id="rubrica">Rúbrica</h3>
+<h3 id="rubrica">Rúbrica<a class="headerlink" href="#rubrica" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -1607,7 +1606,7 @@ grupo-&lt;numero&gt;-&lt;nombre-proyecto&gt;
 </tr>
 </tbody>
 </table>
-<h3 id="subaspectos-de-la-sustentacion-integral">Subaspectos de la sustentación integral</h3>
+<h3 id="subaspectos-de-la-sustentacion-integral">Subaspectos de la sustentación integral<a class="headerlink" href="#subaspectos-de-la-sustentacion-integral" title="Permanent link">&para;</a></h3>
 <p>La sustentación integral debe representar como mínimo el 30% de la evaluación del proyecto. Se revisa mediante los siguientes subaspectos:</p>
 <table>
 <thead>
@@ -1648,7 +1647,7 @@ grupo-&lt;numero&gt;-&lt;nombre-proyecto&gt;
 </tbody>
 </table>
 <p>La sustentación profesional forma parte de la evaluación porque el producto final no solo debe funcionar; también debe ser presentado, explicado y defendido con responsabilidad académica, ética, respeto, honestidad y coherencia con los valores y principios cristianos de la institución.</p>
-<h2 id="7-sustentacion">7. Sustentación</h2>
+<h2 id="7-sustentacion">7. Sustentación<a class="headerlink" href="#7-sustentacion" title="Permanent link">&para;</a></h2>
 <p>La sustentación inicia con un video pitch breve o introducción ejecutiva de 1 a 3 minutos para presentar el problema, la solución, el valor del producto y la participación del equipo o estudiante.</p>
 <table>
 <thead>
@@ -1672,11 +1671,11 @@ grupo-&lt;numero&gt;-&lt;nombre-proyecto&gt;
 </tbody>
 </table>
 <p>Cada integrante debe demostrar su aporte: servicio, configuración, seguridad, frontend, mensajería, observabilidad, documentación o pruebas. La defensa es grupal, pero la nota técnica exige aporte individual verificable.</p>
-<h2 id="8-resultado-esperado">8. Resultado Esperado</h2>
+<h2 id="8-resultado-esperado">8. Resultado Esperado<a class="headerlink" href="#8-resultado-esperado" title="Permanent link">&para;</a></h2>
 <p>Al finalizar el curso, el estudiante debe demostrar que puede construir y defender un sistema distribuido realista, reproducible y observable.</p>
-<pre><code class="language-text">Flujo de negocio -&gt; Microservicios -&gt; Infraestructura -&gt; Seguridad -&gt; Eventos -&gt; Observabilidad -&gt; Frontend -&gt; Defensa
-</code></pre>
-<h2 id="anexo-secuencia-sugerida-de-presentacion">Anexo. Secuencia sugerida de presentación</h2>
+<div class="highlight"><pre><span></span><code>Flujo de negocio -&gt; Microservicios -&gt; Infraestructura -&gt; Seguridad -&gt; Eventos -&gt; Observabilidad -&gt; Frontend -&gt; Defensa
+</code></pre></div>
+<h2 id="anexo-secuencia-sugerida-de-presentacion">Anexo. Secuencia sugerida de presentación<a class="headerlink" href="#anexo-secuencia-sugerida-de-presentacion" title="Permanent link">&para;</a></h2>
 <p>La presentación puede organizarse con una secuencia breve de apoyo visual. El video pitch o introducción ejecutiva abre la sustentación y no reemplaza la demo ni la defensa técnica.</p>
 <table>
 <thead>
@@ -1762,7 +1761,7 @@ grupo-&lt;numero&gt;-&lt;nombre-proyecto&gt;
 </tr>
 </tbody>
 </table>
-<h2 id="anexo-plantilla-minima-de-documentacion-mkdocs-o-equivalente">Anexo. Plantilla mínima de documentación MkDocs o equivalente</h2>
+<h2 id="anexo-plantilla-minima-de-documentacion-mkdocs-o-equivalente">Anexo. Plantilla mínima de documentación MkDocs o equivalente<a class="headerlink" href="#anexo-plantilla-minima-de-documentacion-mkdocs-o-equivalente" title="Permanent link">&para;</a></h2>
 <p>La documentación publicada no reemplaza al informe. Su función es permitir que otra persona comprenda, ejecute, revise y verifique el producto desde el repositorio.</p>
 <table>
 <thead>
@@ -1826,7 +1825,7 @@ grupo-&lt;numero&gt;-&lt;nombre-proyecto&gt;
 </tbody>
 </table>
 <p>La documentación debe estar disponible desde las primeras presentaciones y crecer con el proyecto. Para FP puede ser una documentación sencilla; para proyectos integradores y cursos avanzados debe ser más completa y técnica.</p>
-<h2 id="anexo-plantilla-sugerida-de-informe-del-proyecto">Anexo. Plantilla sugerida de informe del proyecto</h2>
+<h2 id="anexo-plantilla-sugerida-de-informe-del-proyecto">Anexo. Plantilla sugerida de informe del proyecto<a class="headerlink" href="#anexo-plantilla-sugerida-de-informe-del-proyecto" title="Permanent link">&para;</a></h2>
 <p>El informe debe documentar el producto de manera breve, verificable y alineada a las competencias evaluadas. No reemplaza la demo ni la sustentación; organiza las evidencias del proyecto.</p>
 <table>
 <thead>

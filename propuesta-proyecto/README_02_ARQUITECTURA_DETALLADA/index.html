@@ -1307,76 +1307,73 @@
   
 
 
-<h1 id="arquitectura-detallada-de-pagatu">Arquitectura Detallada de Pagatu</h1>
+<h1 id="arquitectura-detallada-de-pagatu">Arquitectura Detallada de Pagatu<a class="headerlink" href="#arquitectura-detallada-de-pagatu" title="Permanent link">&para;</a></h1>
 <p>Este documento contiene las vistas tecnicas de mayor detalle de Pagatu. Complementa a <a href="../README_01_ACERCA_DEL_PROYECTO/">README_01_ACERCA_DEL_PROYECTO.md</a>, que conserva la vision general, C4 nivel 1, C4 nivel 2, despliegue por ambientes y aspectos transversales del proyecto.</p>
-<h2 id="vistas-dinamicas">Vistas Dinamicas</h2>
-<h3 id="autenticacion-y-acceso">Autenticacion y Acceso</h3>
-<pre><code class="language-mermaid">flowchart LR
-    usuario[&quot;Person: Usuario institucional&quot;] --&gt; angular[&quot;Container: Angular App&quot;]
-    angular --&gt; gateway[&quot;Container: Gateway&quot;]
-    gateway --&gt; auth[&quot;Container: auth-ms&quot;]
+<h2 id="vistas-dinamicas">Vistas Dinamicas<a class="headerlink" href="#vistas-dinamicas" title="Permanent link">&para;</a></h2>
+<h3 id="autenticacion-y-acceso">Autenticacion y Acceso<a class="headerlink" href="#autenticacion-y-acceso" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>flowchart LR
+    usuario["Person: Usuario institucional"] --&gt; angular["Container: Angular App"]
+    angular --&gt; gateway["Container: Gateway"]
+    gateway --&gt; auth["Container: auth-ms"]
     auth --&gt; authDb[(Data Store: pagatu_auth_db)]
     auth -- emite token --&gt; angular
 
     angular -- request con JWT --&gt; gateway
-    gateway -- valida token en borde --&gt; ms[&quot;Container: Microservicios&quot;]
-    ms -- valida JWT y roles --&gt; recurso[&quot;Reglas de negocio protegidas&quot;]
-    ms -- usa subject/usuarioId del JWT --&gt; perfil[&quot;Perfil de cliente cuando aplica&quot;]
+    gateway -- valida token en borde --&gt; ms["Container: Microservicios"]
+    ms -- valida JWT y roles --&gt; recurso["Reglas de negocio protegidas"]
+    ms -- usa subject/usuarioId del JWT --&gt; perfil["Perfil de cliente cuando aplica"]
 
-    config[&quot;Container: Config Server&quot;] --&gt; configrepo[(Data Store: config-repo)]
+    config["Container: Config Server"] --&gt; configrepo[(Data Store: config-repo)]
     auth -. config .-&gt; config
     gateway -. config .-&gt; config
     ms -. config .-&gt; config
 
-    eureka[&quot;Container: Eureka&quot;] -. registro .- auth
+    eureka["Container: Eureka"] -. registro .- auth
     eureka -. registro .- gateway
-    eureka -. registro .- ms
-</code></pre>
+    eureka -. registro .- ms</code></pre>
 <p>Este flujo muestra la separacion de responsabilidades: <code>auth-ms</code> emite el token inicial con identificador de usuario y roles; Gateway valida en borde; cada microservicio vuelve a validar JWT y roles antes de ejecutar reglas de negocio. Cuando el flujo requiere datos de cliente, <code>cliente-ms</code> usa el <code>subject</code> o <code>usuarioId</code> del JWT como referencia, sin consultar directamente a <code>auth-ms</code>.</p>
-<h3 id="cliente-y-ubigeo">Cliente y Ubigeo</h3>
-<pre><code class="language-mermaid">flowchart LR
-    usuario[&quot;Person: Usuario institucional&quot;] --&gt; angular[&quot;Container: Angular App&quot;]
-    angular --&gt; gateway[&quot;Container: Gateway&quot;]
+<h3 id="cliente-y-ubigeo">Cliente y Ubigeo<a class="headerlink" href="#cliente-y-ubigeo" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>flowchart LR
+    usuario["Person: Usuario institucional"] --&gt; angular["Container: Angular App"]
+    angular --&gt; gateway["Container: Gateway"]
 
-    gateway --&gt; cliente[&quot;Container: cliente-ms&quot;]
-    gateway --&gt; ubigeo[&quot;Container: ubigeo-ms&quot;]
+    gateway --&gt; cliente["Container: cliente-ms"]
+    gateway --&gt; ubigeo["Container: ubigeo-ms"]
 
     cliente -- Feign + Circuit Breaker --&gt; ubigeo
 
-    config[&quot;Container: Config Server&quot;] --&gt; configrepo[(Data Store: config-repo)]
+    config["Container: Config Server"] --&gt; configrepo[(Data Store: config-repo)]
     cliente -. config .-&gt; config
     ubigeo -. config .-&gt; config
     gateway -. config .-&gt; config
 
-    eureka[&quot;Container: Eureka&quot;] -. registro .- cliente
+    eureka["Container: Eureka"] -. registro .- cliente
     eureka -. registro .- ubigeo
-    eureka -. registro .- gateway
-</code></pre>
-<h3 id="pago-y-orden">Pago y Orden</h3>
-<pre><code class="language-mermaid">flowchart LR
-    gateway[&quot;Container: Gateway&quot;] --&gt; orden[&quot;Container: orden-ms&quot;]
-    gateway --&gt; pago[&quot;Container: pago-ms&quot;]
+    eureka -. registro .- gateway</code></pre>
+<h3 id="pago-y-orden">Pago y Orden<a class="headerlink" href="#pago-y-orden" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>flowchart LR
+    gateway["Container: Gateway"] --&gt; orden["Container: orden-ms"]
+    gateway --&gt; pago["Container: pago-ms"]
 
-    orden -- publica orden.creada / orden.cancelada por falta de pago --&gt; kafka[&quot;External System: Kafka empresarial compartido&quot;]
+    orden -- publica orden.creada / orden.cancelada por falta de pago --&gt; kafka["External System: Kafka empresarial compartido"]
     kafka -- consume orden.creada --&gt; pago
-    pago -- autoriza/captura pago --&gt; pasarela[&quot;External System: Pasarela de pago (Niubiz/Culqi)&quot;]
+    pago -- autoriza/captura pago --&gt; pasarela["External System: Pasarela de pago (Niubiz/Culqi)"]
     pago -- publica pago.validado / pago.rechazado --&gt; kafka
-    kafka -. consume eventos de orden y pago .-&gt; notificacion[&quot;Container futuro: notificacion-ms&quot;]
+    kafka -. consume eventos de orden y pago .-&gt; notificacion["Container futuro: notificacion-ms"]
 
-    config[&quot;Container: Config Server&quot;] --&gt; configrepo[(Data Store: config-repo)]
+    config["Container: Config Server"] --&gt; configrepo[(Data Store: config-repo)]
     orden -. config .-&gt; config
     pago -. config .-&gt; config
     gateway -. config .-&gt; config
 
-    eureka[&quot;Container: Eureka&quot;] -. registro .- orden
+    eureka["Container: Eureka"] -. registro .- orden
     eureka -. registro .- pago
     eureka -. registro .- gateway
 
     classDef external fill:#fff3cd,stroke:#d97706,stroke-width:2px,color:#111827
-    class pasarela external
-</code></pre>
-<h3 id="estados-de-orden">Estados de Orden</h3>
-<pre><code class="language-mermaid">stateDiagram-v2
+    class pasarela external</code></pre>
+<h3 id="estados-de-orden">Estados de Orden<a class="headerlink" href="#estados-de-orden" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>stateDiagram-v2
     [*] --&gt; BORRADOR
 
     BORRADOR --&gt; [*]: cliente no continua / sin evento
@@ -1388,11 +1385,10 @@
     PENDIENTE_PAGO --&gt; CANCELADA: falta de pago / publica orden.cancelada
 
     CANCELADA --&gt; [*]
-    RECHAZADA --&gt; [*]
-</code></pre>
+    RECHAZADA --&gt; [*]</code></pre>
 <p><code>orden-ms</code> cambia de estado por decisiones propias del flujo de orden. Si el cliente no continua antes de confirmar, el flujo termina sin publicar eventos. Las validaciones con <code>cliente-ms</code> y <code>catalogo-ms</code> ocurren antes de crear la orden. Luego publica <code>orden.creada</code>. Si una orden ya creada queda sin pago hasta su vencimiento, <code>orden-ms</code> la marca como cancelada por falta de pago y publica <code>orden.cancelada</code>. No consume <code>pago.validado</code> ni <code>pago.rechazado</code> en Release 1. El resultado del pago vive en <code>pago-ms</code>; otros servicios como notificaciones pueden reaccionar a los eventos de orden y pago.</p>
-<h3 id="estados-de-pago">Estados de Pago</h3>
-<pre><code class="language-mermaid">stateDiagram-v2
+<h3 id="estados-de-pago">Estados de Pago<a class="headerlink" href="#estados-de-pago" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>stateDiagram-v2
     [*] --&gt; RECIBIDO
 
     RECIBIDO --&gt; REGISTRADO: consume orden.creada
@@ -1406,21 +1402,20 @@
 
     VALIDADO --&gt; NOTIFICADO: publica pago.validado
     RECHAZADO --&gt; NOTIFICADO: publica pago.rechazado
-    NOTIFICADO --&gt; [*]
-</code></pre>
+    NOTIFICADO --&gt; [*]</code></pre>
 <p><code>pago-ms</code> nace a partir del evento <code>orden.creada</code>. Registra el intento de pago, llama a la pasarela externa y publica el resultado. El estado <code>ERROR_PASARELA</code> permite diferenciar un rechazo de negocio de un problema tecnico o de comunicacion.</p>
 <p>En Release 1, <code>pago-ms</code> consume <code>orden.creada</code> y publica eventos de pago. <code>orden-ms</code> publica eventos de orden y no consume eventos de pago. En Release 2, <code>notificacion-ms</code> podra consumir <code>orden.cancelada</code>, <code>pago.validado</code> y <code>pago.rechazado</code> para avisar al usuario.</p>
-<h2 id="c4-nivel-3">C4 Nivel 3</h2>
-<h3 id="container-gateway-eureka-y-config">Container - gateway, eureka y config</h3>
+<h2 id="c4-nivel-3">C4 Nivel 3<a class="headerlink" href="#c4-nivel-3" title="Permanent link">&para;</a></h2>
+<h3 id="container-gateway-eureka-y-config">Container - gateway, eureka y config<a class="headerlink" href="#container-gateway-eureka-y-config" title="Permanent link">&para;</a></h3>
 <p>Componentes principales de la infraestructura propia de Pagatu.</p>
-<pre><code class="language-mermaid">flowchart LR
-    subgraph gateway[&quot;Container: gateway&quot;]
-        routeLocator[&quot;Component: RouteLocator&quot;]
-        authFilter[&quot;Component: AuthFilter&quot;]
-        traceFilter[&quot;Component: CorrelationIdFilter&quot;]
-        lbClient[&quot;Component: Spring Cloud LoadBalancer&quot;]
-        gatewayDiscoveryClient[&quot;Component: EurekaClient&quot;]
-        gatewayConfigClient[&quot;Component: ConfigClient&quot;]
+<pre class="mermaid"><code>flowchart LR
+    subgraph gateway["Container: gateway"]
+        routeLocator["Component: RouteLocator"]
+        authFilter["Component: AuthFilter"]
+        traceFilter["Component: CorrelationIdFilter"]
+        lbClient["Component: Spring Cloud LoadBalancer"]
+        gatewayDiscoveryClient["Component: EurekaClient"]
+        gatewayConfigClient["Component: ConfigClient"]
 
         routeLocator --&gt; authFilter
         authFilter --&gt; traceFilter
@@ -1428,27 +1423,27 @@
         lbClient -. elige instancia .-&gt; gatewayDiscoveryClient
     end
 
-    subgraph eureka[&quot;Container: eureka&quot;]
-        registry[&quot;Component: ServiceRegistry&quot;]
-        eurekaConfigClient[&quot;Component: ConfigClient&quot;]
+    subgraph eureka["Container: eureka"]
+        registry["Component: ServiceRegistry"]
+        eurekaConfigClient["Component: ConfigClient"]
     end
 
-    subgraph config[&quot;Container: config&quot;]
-        configController[&quot;Component: ConfigController&quot;]
-        nativeRepo[&quot;Component: NativeEnvironmentRepository&quot;]
+    subgraph config["Container: config"]
+        configController["Component: ConfigController"]
+        nativeRepo["Component: NativeEnvironmentRepository"]
         configRepo[(Data Store: config-repo)]
 
         configController --&gt; nativeRepo
         nativeRepo --&gt; configRepo
     end
 
-    subgraph ms[&quot;Container: Microservicios&quot;]
-        serviceApp[&quot;Component: Spring Boot App&quot;]
-        securityConfig[&quot;Component: SecurityConfig&quot;]
-        securityChain[&quot;Component: SecurityFilterChain&quot;]
-        roleConverter[&quot;Component: JwtRoleConverter&quot;]
-        eurekaClient[&quot;Component: EurekaClient&quot;]
-        configClient[&quot;Component: ConfigClient&quot;]
+    subgraph ms["Container: Microservicios"]
+        serviceApp["Component: Spring Boot App"]
+        securityConfig["Component: SecurityConfig"]
+        securityChain["Component: SecurityFilterChain"]
+        roleConverter["Component: JwtRoleConverter"]
+        eurekaClient["Component: EurekaClient"]
+        configClient["Component: ConfigClient"]
 
         serviceApp --&gt; securityConfig
         serviceApp --&gt; eurekaClient
@@ -1464,11 +1459,10 @@
     configClient -. solicita config .-&gt; configController
     eurekaClient -. registro .-&gt; registry
     gatewayConfigClient -. solicita config .-&gt; configController
-    eurekaConfigClient -. solicita config .-&gt; configController
-</code></pre>
+    eurekaConfigClient -. solicita config .-&gt; configController</code></pre>
 <p>Este nivel muestra la infraestructura propia del proyecto. <code>config</code> publica configuracion desde <code>config-repo</code>; <code>gateway</code>, <code>eureka</code> y los microservicios leen su configuracion como Config Client. <code>eureka</code> mantiene el registro de servicios; los microservicios y el Gateway se registran con <code>EurekaClient</code>. Gateway usa <code>EurekaClient</code> para obtener instancias registradas y usa Spring Cloud LoadBalancer para elegir una instancia. La seguridad se valida en dos capas: Gateway aplica una primera validacion de borde y cada microservicio conserva su propia validacion de autenticacion, autorizacion y roles.</p>
 <p>Resumen de seguridad:</p>
-<pre><code class="language-text">Gateway:
+<div class="highlight"><pre><span></span><code>Gateway:
 - Valida token en borde.
 - Enruta y balancea.
 
@@ -1483,19 +1477,19 @@ Config Server:
 Eureka:
 - Seguridad interna/operativa.
 - Protege registro y discovery.
-</code></pre>
-<h3 id="container-auth-ms">Container - auth-ms</h3>
+</code></pre></div>
+<h3 id="container-auth-ms">Container - auth-ms<a class="headerlink" href="#container-auth-ms" title="Permanent link">&para;</a></h3>
 <p>Componentes principales del servicio de autenticacion inicial.</p>
-<pre><code class="language-mermaid">flowchart LR
-    subgraph auth[&quot;Container: auth-ms&quot;]
-        authController[&quot;Component: AuthController&quot;]
-        usuarioController[&quot;Component: UsuarioController&quot;]
-        authService[&quot;Component: AuthService&quot;]
-        usuarioService[&quot;Component: UsuarioService&quot;]
-        tokenService[&quot;Component: TokenService&quot;]
-        passwordEncoder[&quot;Component: PasswordEncoder&quot;]
-        usuarioRepo[&quot;Component: UsuarioRepository&quot;]
-        rolRepo[&quot;Component: RolRepository&quot;]
+<pre class="mermaid"><code>flowchart LR
+    subgraph auth["Container: auth-ms"]
+        authController["Component: AuthController"]
+        usuarioController["Component: UsuarioController"]
+        authService["Component: AuthService"]
+        usuarioService["Component: UsuarioService"]
+        tokenService["Component: TokenService"]
+        passwordEncoder["Component: PasswordEncoder"]
+        usuarioRepo["Component: UsuarioRepository"]
+        rolRepo["Component: RolRepository"]
         authDb[(Data Store: pagatu_auth_db)]
 
         authController --&gt; authService
@@ -1509,20 +1503,19 @@ Eureka:
         rolRepo --&gt; authDb
     end
 
-    gateway[&quot;Container: gateway&quot;] --&gt; authController
-    tokenService -. emite JWT con usuarioId y roles .-&gt; gateway
-</code></pre>
+    gateway["Container: gateway"] --&gt; authController
+    tokenService -. emite JWT con usuarioId y roles .-&gt; gateway</code></pre>
 <p><code>auth-ms</code> se mantiene como autenticacion inicial de Release 1. Es duenio de usuarios, credenciales y roles. Mas adelante puede reemplazarse o integrarse con Keycloak, pero los demas servicios seguiran consumiendo tokens y roles bajo la misma idea arquitectonica.</p>
-<h3 id="container-cliente-ms-y-ubigeo-ms">Container - cliente-ms y ubigeo-ms</h3>
+<h3 id="container-cliente-ms-y-ubigeo-ms">Container - cliente-ms y ubigeo-ms<a class="headerlink" href="#container-cliente-ms-y-ubigeo-ms" title="Permanent link">&para;</a></h3>
 <p>Componentes principales del flujo de cliente y ubigeo.</p>
-<pre><code class="language-mermaid">flowchart LR
-    subgraph cliente[&quot;Container: cliente-ms&quot;]
-        clienteController[&quot;Component: ClienteController&quot;]
-        clienteService[&quot;Component: ClienteService&quot;]
-        usuarioContext[&quot;Component: UsuarioAutenticadoProvider&quot;]
-        ubigeoClient[&quot;Component: UbigeoClient Feign&quot;]
-        clienteRepo[&quot;Component: ClienteRepository&quot;]
-        clienteMapper[&quot;Component: ClienteMapper&quot;]
+<pre class="mermaid"><code>flowchart LR
+    subgraph cliente["Container: cliente-ms"]
+        clienteController["Component: ClienteController"]
+        clienteService["Component: ClienteService"]
+        usuarioContext["Component: UsuarioAutenticadoProvider"]
+        ubigeoClient["Component: UbigeoClient Feign"]
+        clienteRepo["Component: ClienteRepository"]
+        clienteMapper["Component: ClienteMapper"]
         clienteDb[(Data Store: pagatu_cliente_db)]
 
         clienteController --&gt; usuarioContext
@@ -1534,11 +1527,11 @@ Eureka:
         clienteRepo --&gt; clienteDb
     end
 
-    subgraph ubigeo[&quot;Container: ubigeo-ms&quot;]
-        ubigeoController[&quot;Component: UbigeoController&quot;]
-        ubigeoService[&quot;Component: UbigeoService&quot;]
-        ubigeoRepo[&quot;Component: UbigeoRepository&quot;]
-        ubigeoMapper[&quot;Component: UbigeoMapper&quot;]
+    subgraph ubigeo["Container: ubigeo-ms"]
+        ubigeoController["Component: UbigeoController"]
+        ubigeoService["Component: UbigeoService"]
+        ubigeoRepo["Component: UbigeoRepository"]
+        ubigeoMapper["Component: UbigeoMapper"]
         ubigeoDb[(Data Store: pagatu_ubigeo_db)]
 
         ubigeoController --&gt; ubigeoService
@@ -1547,18 +1540,17 @@ Eureka:
         ubigeoRepo --&gt; ubigeoDb
     end
 
-    ubigeoClient --&gt; ubigeoController
-</code></pre>
+    ubigeoClient --&gt; ubigeoController</code></pre>
 <p>Este nivel baja el zoom dentro de dos contenedores concretos del Release 1. <code>cliente-ms</code> gestiona los datos del cliente y consulta a <code>ubigeo-ms</code> por Feign cuando necesita completar o validar datos geograficos como nacimiento, residencia o direccion. La relacion con el usuario autenticado se toma desde el JWT mediante <code>UsuarioAutenticadoProvider</code>; no se consulta a <code>auth-ms</code> por Feign.</p>
-<h3 id="container-orden-ms-y-catalogo-ms">Container - orden-ms y catalogo-ms</h3>
+<h3 id="container-orden-ms-y-catalogo-ms">Container - orden-ms y catalogo-ms<a class="headerlink" href="#container-orden-ms-y-catalogo-ms" title="Permanent link">&para;</a></h3>
 <p>Componentes principales del flujo de orden y catalogo.</p>
-<pre><code class="language-mermaid">flowchart LR
-    subgraph orden[&quot;Container: orden-ms&quot;]
-        ordenController[&quot;Component: OrdenController&quot;]
-        ordenService[&quot;Component: OrdenService&quot;]
-        catalogoClient[&quot;Component: CatalogoClient Feign&quot;]
-        ordenRepo[&quot;Component: OrdenRepository&quot;]
-        ordenMapper[&quot;Component: OrdenMapper&quot;]
+<pre class="mermaid"><code>flowchart LR
+    subgraph orden["Container: orden-ms"]
+        ordenController["Component: OrdenController"]
+        ordenService["Component: OrdenService"]
+        catalogoClient["Component: CatalogoClient Feign"]
+        ordenRepo["Component: OrdenRepository"]
+        ordenMapper["Component: OrdenMapper"]
         ordenDb[(Data Store: pagatu_orden_db)]
 
         ordenController --&gt; ordenService
@@ -1568,12 +1560,12 @@ Eureka:
         ordenRepo --&gt; ordenDb
     end
 
-    subgraph catalogo[&quot;Container: catalogo-ms&quot;]
-        catalogoController[&quot;Component: CatalogoController&quot;]
-        catalogoService[&quot;Component: CatalogoService&quot;]
-        productoRepo[&quot;Component: ProductoRepository&quot;]
-        precioRepo[&quot;Component: PrecioRepository&quot;]
-        catalogoMapper[&quot;Component: CatalogoMapper&quot;]
+    subgraph catalogo["Container: catalogo-ms"]
+        catalogoController["Component: CatalogoController"]
+        catalogoService["Component: CatalogoService"]
+        productoRepo["Component: ProductoRepository"]
+        precioRepo["Component: PrecioRepository"]
+        catalogoMapper["Component: CatalogoMapper"]
         catalogoDb[(Data Store: pagatu_catalogo_db)]
 
         catalogoController --&gt; catalogoService
@@ -1584,19 +1576,18 @@ Eureka:
         precioRepo --&gt; catalogoDb
     end
 
-    catalogoClient --&gt; catalogoController
-</code></pre>
+    catalogoClient --&gt; catalogoController</code></pre>
 <p>Este nivel muestra la validacion sincrona de items antes de crear una orden. <code>orden-ms</code> consulta a <code>catalogo-ms</code> por Feign para validar productos, conceptos, familias, categorias, tipos, precios y estado activo.</p>
-<h3 id="container-pago-ms-y-orden-ms">Container - pago-ms y orden-ms</h3>
+<h3 id="container-pago-ms-y-orden-ms">Container - pago-ms y orden-ms<a class="headerlink" href="#container-pago-ms-y-orden-ms" title="Permanent link">&para;</a></h3>
 <p>Componentes principales del flujo de orden y pago.</p>
-<pre><code class="language-mermaid">flowchart LR
-    subgraph orden[&quot;Container: orden-ms&quot;]
-        ordenController[&quot;Component: OrdenController&quot;]
-        ordenService[&quot;Component: OrdenService&quot;]
-        clienteClient[&quot;Component: ClienteClient Feign&quot;]
-        catalogoClient[&quot;Component: CatalogoClient Feign&quot;]
-        ordenProducer[&quot;Component: OrdenEventProducer&quot;]
-        ordenRepo[&quot;Component: OrdenRepository&quot;]
+<pre class="mermaid"><code>flowchart LR
+    subgraph orden["Container: orden-ms"]
+        ordenController["Component: OrdenController"]
+        ordenService["Component: OrdenService"]
+        clienteClient["Component: ClienteClient Feign"]
+        catalogoClient["Component: CatalogoClient Feign"]
+        ordenProducer["Component: OrdenEventProducer"]
+        ordenRepo["Component: OrdenRepository"]
         ordenDb[(Data Store: pagatu_orden_db)]
 
         ordenController --&gt; ordenService
@@ -1607,12 +1598,12 @@ Eureka:
         ordenRepo --&gt; ordenDb
     end
 
-    subgraph pago[&quot;Container: pago-ms&quot;]
-        pagoConsumer[&quot;Component: OrdenCreadaConsumer&quot;]
-        pagoService[&quot;Component: PagoService&quot;]
-        pasarelaClient[&quot;Component: PasarelaPagoClient&quot;]
-        pagoProducer[&quot;Component: PagoEventProducer&quot;]
-        pagoRepo[&quot;Component: PagoRepository&quot;]
+    subgraph pago["Container: pago-ms"]
+        pagoConsumer["Component: OrdenCreadaConsumer"]
+        pagoService["Component: PagoService"]
+        pasarelaClient["Component: PasarelaPagoClient"]
+        pagoProducer["Component: PagoEventProducer"]
+        pagoRepo["Component: PagoRepository"]
         pagoDb[(Data Store: pagatu_pago_db)]
 
         pagoConsumer --&gt; pagoService
@@ -1622,21 +1613,20 @@ Eureka:
         pagoRepo --&gt; pagoDb
     end
 
-    clienteClient --&gt; cliente[&quot;Container: cliente-ms&quot;]
-    catalogoClient --&gt; catalogo[&quot;Container: catalogo-ms&quot;]
-    ordenProducer --&gt; kafka[&quot;External System: Kafka empresarial compartido&quot;]
+    clienteClient --&gt; cliente["Container: cliente-ms"]
+    catalogoClient --&gt; catalogo["Container: catalogo-ms"]
+    ordenProducer --&gt; kafka["External System: Kafka empresarial compartido"]
     kafka --&gt; pagoConsumer
     pagoProducer -- pago.validado / pago.rechazado --&gt; kafka
-    pasarelaClient --&gt; pasarela[&quot;External System: Pasarela de pago (Niubiz/Culqi)&quot;]
+    pasarelaClient --&gt; pasarela["External System: Pasarela de pago (Niubiz/Culqi)"]
 
     classDef external fill:#fff3cd,stroke:#d97706,stroke-width:2px,color:#111827
-    class pasarela external
-</code></pre>
+    class pasarela external</code></pre>
 <p>Este nivel baja el zoom dentro de dos contenedores concretos del Release 1. <code>orden-ms</code> conserva la decision sincrona por Feign para validar cliente y catalogo antes de crear la orden, y publica eventos propios de orden como <code>orden.creada</code> y <code>orden.cancelada</code> cuando corresponde por falta de pago. <code>pago-ms</code> consume <code>orden.creada</code>, encapsula la pasarela externa y publica <code>pago.validado</code> o <code>pago.rechazado</code> para consumidores posteriores, como <code>notificacion-ms</code> en Release 2.</p>
-<h2 id="c4-nivel-4">C4 Nivel 4</h2>
-<h3 id="component-authservice">Component - AuthService</h3>
+<h2 id="c4-nivel-4">C4 Nivel 4<a class="headerlink" href="#c4-nivel-4" title="Permanent link">&para;</a></h2>
+<h3 id="component-authservice">Component - AuthService<a class="headerlink" href="#component-authservice" title="Permanent link">&para;</a></h3>
 <p>Codigo de ejemplo en <code>auth-ms</code>.</p>
-<pre><code class="language-mermaid">classDiagram
+<pre class="mermaid"><code>classDiagram
     class AuthController {
         +login(LoginRequest) AuthResponse
         +refresh(RefreshTokenRequest) AuthResponse
@@ -1701,12 +1691,11 @@ Eureka:
     UsuarioService ..&gt; UsuarioRepository
     UsuarioService ..&gt; RolRepository
     UsuarioRepository --&gt; Usuario
-    RolRepository --&gt; Rol
-</code></pre>
+    RolRepository --&gt; Rol</code></pre>
 <p>Este ejemplo representa la autenticacion inicial del curso. No busca reemplazar a Keycloak en escenarios empresariales completos; sirve para entender tokens, roles y control de acceso antes de integrar un proveedor de identidad.</p>
-<h3 id="component-clienteservice">Component - ClienteService</h3>
+<h3 id="component-clienteservice">Component - ClienteService<a class="headerlink" href="#component-clienteservice" title="Permanent link">&para;</a></h3>
 <p>Codigo de ejemplo en <code>cliente-ms</code>.</p>
-<pre><code class="language-mermaid">classDiagram
+<pre class="mermaid"><code>classDiagram
     class SecurityConfig {
         +securityFilterChain(HttpSecurity) SecurityFilterChain
         +jwtAuthenticationConverter() Converter
@@ -1788,12 +1777,11 @@ Eureka:
     ClienteServiceImpl ..&gt; UsuarioAutenticadoProvider
     ClienteServiceImpl ..&gt; UbigeoClient
     ClienteServiceImpl ..&gt; ClienteMapper
-    ClienteRepository --&gt; Cliente
-</code></pre>
+    ClienteRepository --&gt; Cliente</code></pre>
 <p>La relacion entre usuario y cliente se muestra en <code>cliente-ms</code>, no como llamada directa a <code>auth-ms</code>. <code>auth-ms</code> es duenio de la identidad; <code>cliente-ms</code> solo guarda <code>usuarioIdAuth</code> como referencia al usuario autenticado y lo obtiene desde el JWT mediante <code>UsuarioAutenticadoProvider</code>. Asi se puede resolver el perfil del cliente actual sin acoplar ambos microservicios.</p>
-<h3 id="component-ubigeoservice">Component - UbigeoService</h3>
+<h3 id="component-ubigeoservice">Component - UbigeoService<a class="headerlink" href="#component-ubigeoservice" title="Permanent link">&para;</a></h3>
 <p>Codigo de ejemplo en <code>ubigeo-ms</code>.</p>
-<pre><code class="language-mermaid">classDiagram
+<pre class="mermaid"><code>classDiagram
     class UbigeoController {
         +listarPaises() List~PaisResponse~
         +listarDepartamentos(String) List~DepartamentoResponse~
@@ -1835,12 +1823,11 @@ Eureka:
     UbigeoService &lt;|.. UbigeoServiceImpl
     UbigeoServiceImpl ..&gt; DistritoRepository
     UbigeoServiceImpl ..&gt; UbigeoMapper
-    DistritoRepository --&gt; Distrito
-</code></pre>
+    DistritoRepository --&gt; Distrito</code></pre>
 <p><code>ubigeo-ms</code> queda como servicio sincrono estable y de consulta publica. Su responsabilidad es exponer datos territoriales conocidos, no proteger reglas de negocio ni evolucionar a mensajeria de eventos.</p>
-<h3 id="component-catalogoservice">Component - CatalogoService</h3>
+<h3 id="component-catalogoservice">Component - CatalogoService<a class="headerlink" href="#component-catalogoservice" title="Permanent link">&para;</a></h3>
 <p>Codigo de ejemplo en <code>catalogo-ms</code>.</p>
-<pre><code class="language-mermaid">classDiagram
+<pre class="mermaid"><code>classDiagram
     class SecurityConfig {
         +securityFilterChain(HttpSecurity) SecurityFilterChain
         +jwtAuthenticationConverter() Converter
@@ -2008,12 +1995,11 @@ Eureka:
     ConceptoRepository --&gt; Concepto
     CategoriaRepository --&gt; Categoria
     FamiliaRepository --&gt; Familia
-    PrecioRepository --&gt; Precio
-</code></pre>
+    PrecioRepository --&gt; Precio</code></pre>
 <p><code>catalogo-ms</code> es un solo microservicio, pero no significa un solo controller. Puede exponer controladores por recurso: productos, categorias, familias, conceptos y precios. Las consultas de catalogo pueden ser publicas porque muestran informacion comercial disponible para el usuario. La edicion del catalogo si queda protegida por JWT y roles. Cuando se crea una orden, la autenticacion ocurre en <code>orden-ms</code>; luego <code>orden-ms</code> consulta <code>catalogo-ms</code> por Feign para decidir si un item puede entrar en la orden.</p>
-<h3 id="component-ordenservice">Component - OrdenService</h3>
+<h3 id="component-ordenservice">Component - OrdenService<a class="headerlink" href="#component-ordenservice" title="Permanent link">&para;</a></h3>
 <p>Codigo de ejemplo en <code>orden-ms</code>.</p>
-<pre><code class="language-mermaid">classDiagram
+<pre class="mermaid"><code>classDiagram
     class SecurityConfig {
         +securityFilterChain(HttpSecurity) SecurityFilterChain
         +jwtAuthenticationConverter() Converter
@@ -2089,12 +2075,11 @@ Eureka:
     OrdenServiceImpl ..&gt; CatalogoClient
     OrdenServiceImpl ..&gt; OrdenRepository
     OrdenServiceImpl ..&gt; OrdenEventProducer
-    OrdenRepository --&gt; Orden
-</code></pre>
+    OrdenRepository --&gt; Orden</code></pre>
 <p>Este nivel se usa solo como ejemplo didactico. En C4, el nivel de codigo no deberia convertirse en un diagrama de todas las clases del proyecto; sirve para explicar una parte puntual cuando aporta claridad.</p>
-<h3 id="component-angular-ordenes">Component - Angular Ordenes</h3>
+<h3 id="component-angular-ordenes">Component - Angular Ordenes<a class="headerlink" href="#component-angular-ordenes" title="Permanent link">&para;</a></h3>
 <p>Codigo de ejemplo del frontend para el flujo de ordenes.</p>
-<pre><code class="language-mermaid">classDiagram
+<pre class="mermaid"><code>classDiagram
     class OrdenPageComponent {
         +ngOnInit() void
         +crearOrden() void
@@ -2175,12 +2160,11 @@ Eureka:
     CatalogoApiService --&gt; AuthInterceptor
     CatalogoApiService --&gt; TraceInterceptor
     AuthInterceptor --&gt; GatewayApi
-    TraceInterceptor --&gt; GatewayApi
-</code></pre>
+    TraceInterceptor --&gt; GatewayApi</code></pre>
 <p>Angular se muestra aparte porque vive en otro proyecto/contenedor. Este diagrama explica la pantalla de ordenes, sus componentes, servicios HTTP e interceptores, mientras el diagrama de <code>orden-ms</code> queda enfocado en el backend.</p>
-<h3 id="component-pagoservice">Component - PagoService</h3>
+<h3 id="component-pagoservice">Component - PagoService<a class="headerlink" href="#component-pagoservice" title="Permanent link">&para;</a></h3>
 <p>Codigo de ejemplo en <code>pago-ms</code>.</p>
-<pre><code class="language-mermaid">classDiagram
+<pre class="mermaid"><code>classDiagram
     class SecurityConfig {
         +securityFilterChain(HttpSecurity) SecurityFilterChain
         +jwtAuthenticationConverter() Converter
@@ -2257,8 +2241,7 @@ Eureka:
     PagoServiceImpl ..&gt; PasarelaPagoClient
     PagoServiceImpl ..&gt; PagoEventProducer
     PagoServiceImpl ..&gt; PagoMapper
-    PagoRepository --&gt; Pago
-</code></pre>
+    PagoRepository --&gt; Pago</code></pre>
 <p>Estos ejemplos de codigo muestran el estilo esperado dentro de cada microservicio: el acceso HTTP se valida antes del controller con <code>SecurityConfig</code>, <code>SecurityFilterChain</code> y conversion de roles JWT; el controller depende del contrato <code>Service</code>; la clase <code>Impl</code> encapsula la orquestacion interna y desde alli se usan repositories, mappers, clients Feign y producers/consumers Kafka cuando correspondan. En consumidores Kafka, la autorizacion no entra por endpoint HTTP, pero el servicio igual conserva trazabilidad y validaciones de negocio.</p>
 
 

@@ -1351,11 +1351,11 @@
   
 
 
-<h1 id="acerca-del-proyecto-pagatu">Acerca del Proyecto: pagatu</h1>
-<h2 id="objetivo">Objetivo</h2>
+<h1 id="acerca-del-proyecto-pagatu">Acerca del Proyecto: pagatu<a class="headerlink" href="#acerca-del-proyecto-pagatu" title="Permanent link">&para;</a></h1>
+<h2 id="objetivo">Objetivo<a class="headerlink" href="#objetivo" title="Permanent link">&para;</a></h2>
 <p><code>pagatu</code> es una arquitectura base de microservicios para un sistema de pagos y comercio institucional. El proyecto busca ser profesional, didactico y evolutivo: incluye CRUD, comunicacion sincrona con Feign, mensajeria asincrona con Kafka, configuracion centralizada, descubrimiento de servicios, gateway, seguridad JWT, Docker y Kubernetes, sin caer en una arquitectura innecesariamente compleja.</p>
 <p>La propuesta usa una arquitectura por capas simple, no hexagonal, pensada para mantener el codigo claro y facil de explicar.</p>
-<h2 id="stack-tecnico">Stack Tecnico</h2>
+<h2 id="stack-tecnico">Stack Tecnico<a class="headerlink" href="#stack-tecnico" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Java 17</li>
 <li>Spring Boot 3.5.x</li>
@@ -1376,7 +1376,7 @@
 <li>Docker y Docker Compose</li>
 <li>Kubernetes con manifiestos YAML</li>
 </ul>
-<h2 id="microservicios-del-proyecto">Microservicios del Proyecto</h2>
+<h2 id="microservicios-del-proyecto">Microservicios del Proyecto<a class="headerlink" href="#microservicios-del-proyecto" title="Permanent link">&para;</a></h2>
 <p>El proyecto se plantea en releases para mantener una evolucion ordenada. No todos los microservicios se implementan desde el inicio: primero se construye el flujo principal y luego se agregan capacidades complementarias.</p>
 <table>
 <thead>
@@ -1434,7 +1434,7 @@
 </tr>
 </tbody>
 </table>
-<h2 id="release-1-core-inicial">Release 1: Core Inicial</h2>
+<h2 id="release-1-core-inicial">Release 1: Core Inicial<a class="headerlink" href="#release-1-core-inicial" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
@@ -1476,7 +1476,7 @@
 </tr>
 </tbody>
 </table>
-<h2 id="infraestructura">Infraestructura</h2>
+<h2 id="infraestructura">Infraestructura<a class="headerlink" href="#infraestructura" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
@@ -1500,15 +1500,15 @@
 </tbody>
 </table>
 <p>Rutas principales del Gateway:</p>
-<pre><code class="language-text">/api/auth/**
+<div class="highlight"><pre><span></span><code>/api/auth/**
 /api/clientes/**
 /api/catalogo/**
 /api/ubigeo/**
 /api/ordenes/**
 /api/pagos/**
-</code></pre>
-<h2 id="flujo-principal">Flujo Principal</h2>
-<pre><code class="language-text">Usuario
+</code></pre></div>
+<h2 id="flujo-principal">Flujo Principal<a class="headerlink" href="#flujo-principal" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>Usuario
   -&gt; Gateway
   -&gt; pagatu-auth-ms
   -&gt; pagatu-orden-ms
@@ -1519,17 +1519,17 @@
   -&gt; pagatu-pago-ms
   -&gt; Pasarela externa: Niubiz / Culqi
   -&gt; Kafka: pago.validado
-</code></pre>
+</code></pre></div>
 <p><code>pagatu-orden-ms</code> consulta de forma sincrona a cliente y catalogo porque necesita respuestas inmediatas antes de crear una orden. <code>pagatu-cliente-ms</code> puede consultar a <code>pagatu-ubigeo-ms</code> para completar detalles de nacimiento, residencia o direccion. Si el cliente no es valido o el producto/concepto no existe, esta inactivo o no tiene precio valido, la orden no se crea. Una vez creada, publica el evento <code>orden.creada</code> para que <code>pagatu-pago-ms</code> continue el proceso de pago de forma asincrona e integre una pasarela externa como Niubiz, Culqi u otro proveedor.</p>
-<h2 id="regla-de-comunicacion">Regla de Comunicacion</h2>
+<h2 id="regla-de-comunicacion">Regla de Comunicacion<a class="headerlink" href="#regla-de-comunicacion" title="Permanent link">&para;</a></h2>
 <p>Feign y Kafka se usan para problemas distintos:</p>
 <ul>
 <li>Feign se usa cuando el servicio necesita una respuesta inmediata para tomar una decision.</li>
 <li>Kafka se usa cuando algo ya ocurrio y otros servicios deben reaccionar.</li>
 </ul>
 <p>En Release 1, Feign se usa para decisiones inmediatas: <code>pagatu-cliente-ms</code> consulta <code>pagatu-ubigeo-ms</code>, y <code>pagatu-orden-ms</code> consulta <code>pagatu-cliente-ms</code> y <code>pagatu-catalogo-ms</code>. <code>pagatu-ubigeo-ms</code> queda como servicio sincrono estable; no necesita evolucionar a Kafka. Kafka se usa entre <code>pagatu-orden-ms</code> y <code>pagatu-pago-ms</code>.</p>
-<h2 id="estructura-general">Estructura General</h2>
-<pre><code class="language-text">pagatu/
+<h2 id="estructura-general">Estructura General<a class="headerlink" href="#estructura-general" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>pagatu/
 |-- infra/
 |   |-- config/
 |   |   |-- config-repo/
@@ -1593,8 +1593,8 @@
     |-- docker-compose.yml
     |-- k8s-local/
     `-- k8s/
-</code></pre>
-<h2 id="convencion-de-nombres">Convencion de Nombres</h2>
+</code></pre></div>
+<h2 id="convencion-de-nombres">Convencion de Nombres<a class="headerlink" href="#convencion-de-nombres" title="Permanent link">&para;</a></h2>
 <p>Las carpetas del repositorio usan nombres cortos para facilitar el trabajo diario. Los artefactos operativos usan el prefijo <code>pagatu-</code> para evitar colisiones en Docker, Eureka, Config Server y Kubernetes.</p>
 <table>
 <thead>
@@ -1650,9 +1650,9 @@
 </tr>
 </tbody>
 </table>
-<h2 id="estructura-interna-por-microservicio">Estructura Interna por Microservicio</h2>
+<h2 id="estructura-interna-por-microservicio">Estructura Interna por Microservicio<a class="headerlink" href="#estructura-interna-por-microservicio" title="Permanent link">&para;</a></h2>
 <p>Cada microservicio core debe seguir una estructura por capas simple:</p>
-<pre><code class="language-text">com.pagatu.&lt;contexto&gt;
+<div class="highlight"><pre><span></span><code>com.pagatu.&lt;contexto&gt;
 |-- config
 |-- controller
 |-- dto
@@ -1668,7 +1668,7 @@
 |-- client
 |-- event
 `-- &lt;Contexto&gt;Application.java
-</code></pre>
+</code></pre></div>
 <p>Las carpetas <code>client</code> y <code>event</code> solo se crean cuando el microservicio las necesita:</p>
 <table>
 <thead>
@@ -1711,7 +1711,7 @@
 </tr>
 </tbody>
 </table>
-<h2 id="configuracion-comun">Configuracion Comun</h2>
+<h2 id="configuracion-comun">Configuracion Comun<a class="headerlink" href="#configuracion-comun" title="Permanent link">&para;</a></h2>
 <p>En los microservicios se considera la siguiente configuracion base:</p>
 <ul>
 <li><code>SecurityConfig.java</code> para proteger endpoints con JWT.</li>
@@ -1723,7 +1723,7 @@
 <li><code>logback-spring.xml</code> con <code>traceId=%X{X-Trace-ID}</code> para trazabilidad en logs.</li>
 </ul>
 <p>No se crea carpeta <code>security</code>; la configuracion de seguridad vive dentro de <code>config</code>.</p>
-<h2 id="bases-de-datos">Bases de Datos</h2>
+<h2 id="bases-de-datos">Bases de Datos<a class="headerlink" href="#bases-de-datos" title="Permanent link">&para;</a></h2>
 <p>Cada microservicio core tiene su propia base de datos:</p>
 <table>
 <thead>
@@ -1760,9 +1760,9 @@
 </tbody>
 </table>
 <p>Las migraciones se gestionan con Flyway mediante <code>V1__init.sql</code>.</p>
-<h2 id="seguridad">Seguridad</h2>
+<h2 id="seguridad">Seguridad<a class="headerlink" href="#seguridad" title="Permanent link">&para;</a></h2>
 <p>Release 1 usa <code>auth-ms</code> para autenticacion y control de acceso inicial. Los endpoints deben validar autenticacion y roles segun la responsabilidad de cada microservicio. Keycloak queda como modulo opcional futuro para reemplazar o complementar la emision de tokens.</p>
-<h2 id="docker-y-kubernetes">Docker y Kubernetes</h2>
+<h2 id="docker-y-kubernetes">Docker y Kubernetes<a class="headerlink" href="#docker-y-kubernetes" title="Permanent link">&para;</a></h2>
 <p>El proyecto contempla:</p>
 <ul>
 <li><code>Dockerfile</code> por microservicio y componente de infraestructura.</li>
@@ -1775,7 +1775,7 @@
 </ul>
 <p>El Gateway es la entrada externa; los microservicios no deben consumirse directamente por puertos publicos.</p>
 <p>En Minikube se permite levantar MySQL por microservicio y plataformas compartidas de laboratorio, como Kafka u observabilidad, para practicar despliegue completo. En nube real, MySQL debe ser una base administrada o externa, Kafka debe ser corporativo/administrado y observabilidad debe venir de una plataforma compartida o proveedor cloud.</p>
-<h2 id="alcance-de-release-1">Alcance de Release 1</h2>
+<h2 id="alcance-de-release-1">Alcance de Release 1<a class="headerlink" href="#alcance-de-release-1" title="Permanent link">&para;</a></h2>
 <p>Release 1 incluye los 6 microservicios core necesarios para explicar y validar el flujo principal:</p>
 <ul>
 <li>Autenticacion inicial, usuarios, roles y tokens con <code>auth-ms</code>.</li>
@@ -1790,7 +1790,7 @@
 <li>Publicacion de <code>pago.validado</code>.</li>
 <li>Configuracion centralizada, Eureka, Gateway, seguridad con <code>auth-ms</code>, trazabilidad, Docker y Kubernetes.</li>
 </ul>
-<h2 id="aspectos-transversales-pendientes">Aspectos Transversales Pendientes</h2>
+<h2 id="aspectos-transversales-pendientes">Aspectos Transversales Pendientes<a class="headerlink" href="#aspectos-transversales-pendientes" title="Permanent link">&para;</a></h2>
 <p>Estos puntos no pertenecen a un solo microservicio. Deben mantenerse visibles durante el curso para que la arquitectura avance de forma consistente.</p>
 <table>
 <thead>
@@ -1838,7 +1838,7 @@
 </tr>
 </tbody>
 </table>
-<h2 id="arquitectura">Arquitectura</h2>
+<h2 id="arquitectura">Arquitectura<a class="headerlink" href="#arquitectura" title="Permanent link">&para;</a></h2>
 <p>Pagatu se organiza como una arquitectura de microservicios con entrada unica por Gateway, configuracion centralizada, descubrimiento de servicios, comunicacion sincrona con Feign, comunicacion asincrona con Kafka y observabilidad con Prometheus, Loki y Grafana.</p>
 <p>En Release 1, el flujo principal se apoya en estos servicios:</p>
 <ul>
@@ -1861,25 +1861,25 @@
 <li>Prometheus recolecta metricas, Loki centraliza logs y Grafana visualiza ambos.</li>
 <li>Angular consume el sistema siempre por Gateway.</li>
 </ul>
-<h2 id="activos-de-software-de-pagatu">Activos de Software de Pagatu</h2>
+<h2 id="activos-de-software-de-pagatu">Activos de Software de Pagatu<a class="headerlink" href="#activos-de-software-de-pagatu" title="Permanent link">&para;</a></h2>
 <p>Este mapa no es un nivel C4. Representa solo las aplicaciones y activos de alto nivel relacionados con Pagatu, agrupados por capa de alojamiento o servicio: SaaS, Cloud/IaaS y Local/Laboratorio.</p>
-<pre><code class="language-mermaid">flowchart TB
-    subgraph pagatuAssets[&quot;Activos del proyecto Pagatu&quot;]
-        subgraph saas[&quot;SaaS&quot;]
-            pasarela[&quot;Pasarela de pago&lt;br/&gt;Niubiz / Culqi&quot;]
+<pre class="mermaid"><code>flowchart TB
+    subgraph pagatuAssets["Activos del proyecto Pagatu"]
+        subgraph saas["SaaS"]
+            pasarela["Pasarela de pago&lt;br/&gt;Niubiz / Culqi"]
         end
 
-        subgraph cloud[&quot;Cloud / IaaS&quot;]
-            pagatuPlatform[&quot;Pagatu Platform&lt;br/&gt;pagos y comercio institucional&quot;]
-            kafkaEmp[&quot;Kafka empresarial compartido&quot;]
-            authApp[&quot;Auth institucional&lt;br/&gt;auth-ms, luego Keycloak&quot;]
-            obsInst[&quot;Observabilidad institucional&quot;]
+        subgraph cloud["Cloud / IaaS"]
+            pagatuPlatform["Pagatu Platform&lt;br/&gt;pagos y comercio institucional"]
+            kafkaEmp["Kafka empresarial compartido"]
+            authApp["Auth institucional&lt;br/&gt;auth-ms, luego Keycloak"]
+            obsInst["Observabilidad institucional"]
         end
 
-        subgraph local[&quot;Local / Laboratorio&quot;]
-            devLocal[&quot;DEV local&quot;]
-            prodLocal[&quot;PROD local Docker Compose&quot;]
-            minikube[&quot;Minikube&quot;]
+        subgraph local["Local / Laboratorio"]
+            devLocal["DEV local"]
+            prodLocal["PROD local Docker Compose"]
+            minikube["Minikube"]
         end
     end
 
@@ -1892,17 +1892,16 @@
     minikube -. simula k8s .-&gt; pagatuPlatform
 
     classDef external fill:#fff3cd,stroke:#d97706,stroke-width:2px,color:#111827
-    class pasarela external
-</code></pre>
+    class pasarela external</code></pre>
 <p>Este mapa ayuda a explicar donde vive cada activo. Pagatu se presenta como una sola aplicacion del portafolio institucional y su destino natural es Cloud/IaaS; los entornos locales sirven para desarrollo, validacion y simulacion. Los detalles como Angular, Gateway, Config Server, Eureka y microservicios aparecen despues en los diagramas C4.</p>
-<h2 id="arquitectura-c4-de-pagatu">Arquitectura C4 de Pagatu</h2>
-<h3 id="c4-nivel-1-contexto-del-sistema">C4 Nivel 1: Contexto del Sistema</h3>
-<pre><code class="language-mermaid">flowchart LR
-    auth[&quot;Software System: Auth institucional (auth-ms, luego Keycloak)&quot;]
-    usuario[&quot;Person: Usuario institucional&quot;]
-    pagatu[&quot;Software System: Pagatu Platform&quot;]
-    kafkaCorp[&quot;External System: Kafka empresarial compartido&quot;]
-    pasarela[&quot;External System: Pasarela de pago (Niubiz/Culqi)&quot;]
+<h2 id="arquitectura-c4-de-pagatu">Arquitectura C4 de Pagatu<a class="headerlink" href="#arquitectura-c4-de-pagatu" title="Permanent link">&para;</a></h2>
+<h3 id="c4-nivel-1-contexto-del-sistema">C4 Nivel 1: Contexto del Sistema<a class="headerlink" href="#c4-nivel-1-contexto-del-sistema" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>flowchart LR
+    auth["Software System: Auth institucional (auth-ms, luego Keycloak)"]
+    usuario["Person: Usuario institucional"]
+    pagatu["Software System: Pagatu Platform"]
+    kafkaCorp["External System: Kafka empresarial compartido"]
+    pasarela["External System: Pasarela de pago (Niubiz/Culqi)"]
 
     usuario --&gt;|se identifica| auth
     usuario --&gt;|usa| pagatu
@@ -1911,32 +1910,31 @@
     pagatu --&gt;|procesa pago| pasarela
 
     classDef external fill:#fff3cd,stroke:#d97706,stroke-width:2px,color:#111827
-    class pasarela external
-</code></pre>
+    class pasarela external</code></pre>
 <p>Este nivel muestra Pagatu como una caja principal frente a su actor institucional y sistemas compartidos. <code>auth-ms</code> aparece aqui porque representa la identidad institucional transversal: el mismo punto de autenticacion puede servir a Pagatu y tambien a otros modulos de la empresa, como planes de estudios, carga academica, matricula, contabilidad o LMS. En Release 1 se implementa como <code>auth-ms</code>; luego puede evolucionar a Keycloak sin cambiar la idea arquitectonica. Los detalles internos de Pagatu, como Angular, Gateway, microservicios, Config Server y Eureka, aparecen recien en el nivel de contenedores. Kafka se trata como plataforma empresarial compartida, no como componente exclusivo del proyecto.</p>
-<h3 id="c4-nivel-2-software-system-pagatu-platform">C4 Nivel 2: Software System - Pagatu Platform</h3>
+<h3 id="c4-nivel-2-software-system-pagatu-platform">C4 Nivel 2: Software System - Pagatu Platform<a class="headerlink" href="#c4-nivel-2-software-system-pagatu-platform" title="Permanent link">&para;</a></h3>
 <p>Contenedores de Release 1.</p>
-<pre><code class="language-mermaid">flowchart LR
-    usuario[&quot;Person: Usuario institucional&quot;] --&gt; angular[&quot;Container: Angular App&quot;]
-    angular --&gt; gateway[&quot;Container: Gateway&quot;]
+<pre class="mermaid"><code>flowchart LR
+    usuario["Person: Usuario institucional"] --&gt; angular["Container: Angular App"]
+    angular --&gt; gateway["Container: Gateway"]
 
-    gateway --&gt; cliente[&quot;Container: cliente-ms&quot;]
-    gateway --&gt; ubigeo[&quot;Container: ubigeo-ms&quot;]
-    gateway --&gt; catalogo[&quot;Container: catalogo-ms&quot;]
-    gateway --&gt; orden[&quot;Container: orden-ms&quot;]
-    gateway --&gt; pago[&quot;Container: pago-ms&quot;]
-    gateway --&gt; auth[&quot;Container: auth-ms&quot;]
+    gateway --&gt; cliente["Container: cliente-ms"]
+    gateway --&gt; ubigeo["Container: ubigeo-ms"]
+    gateway --&gt; catalogo["Container: catalogo-ms"]
+    gateway --&gt; orden["Container: orden-ms"]
+    gateway --&gt; pago["Container: pago-ms"]
+    gateway --&gt; auth["Container: auth-ms"]
 
     cliente -- Feign + Circuit Breaker --&gt; ubigeo
     orden -- Feign + Circuit Breaker --&gt; cliente
     orden -- Feign + Circuit Breaker --&gt; catalogo
 
-    orden -- publica orden.creada --&gt; kafka[&quot;External System: Kafka empresarial compartido&quot;]
+    orden -- publica orden.creada --&gt; kafka["External System: Kafka empresarial compartido"]
     kafka -- consume orden.creada --&gt; pago
     pago -- publica pago.validado --&gt; kafka
-    pago -- autoriza/captura pago --&gt; pasarela[&quot;External System: Pasarela de pago (Niubiz/Culqi)&quot;]
+    pago -- autoriza/captura pago --&gt; pasarela["External System: Pasarela de pago (Niubiz/Culqi)"]
 
-    config[&quot;Container: Config Server&quot;] --&gt; configrepo[(Data Store: config-repo)]
+    config["Container: Config Server"] --&gt; configrepo[(Data Store: config-repo)]
     auth -. config .-&gt; config
     cliente -. config .-&gt; config
     ubigeo -. config .-&gt; config
@@ -1945,7 +1943,7 @@
     pago -. config .-&gt; config
     gateway -. config .-&gt; config
 
-    eureka[&quot;Container: Eureka&quot;] -. registro .- auth
+    eureka["Container: Eureka"] -. registro .- auth
     eureka -. registro .- cliente
     eureka -. registro .- ubigeo
     eureka -. registro .- catalogo
@@ -1953,7 +1951,7 @@
     eureka -. registro .- pago
     eureka -. registro .- gateway
 
-    prometheus[&quot;External System: Prometheus compartido&quot;] -. metrics .-&gt; auth
+    prometheus["External System: Prometheus compartido"] -. metrics .-&gt; auth
     prometheus -. metrics .-&gt; gateway
     prometheus -. metrics .-&gt; cliente
     prometheus -. metrics .-&gt; ubigeo
@@ -1961,7 +1959,7 @@
     prometheus -. metrics .-&gt; orden
     prometheus -. metrics .-&gt; pago
 
-    loki[&quot;External System: Loki compartido&quot;] -. logs .-&gt; auth
+    loki["External System: Loki compartido"] -. logs .-&gt; auth
     loki -. logs .-&gt; gateway
     loki -. logs .-&gt; cliente
     loki -. logs .-&gt; ubigeo
@@ -1969,16 +1967,15 @@
     loki -. logs .-&gt; orden
     loki -. logs .-&gt; pago
 
-    grafana[&quot;External System: Grafana compartido&quot;] --&gt; prometheus
+    grafana["External System: Grafana compartido"] --&gt; prometheus
     grafana --&gt; loki
 
     classDef external fill:#fff3cd,stroke:#d97706,stroke-width:2px,color:#111827
-    class pasarela external
-</code></pre>
+    class pasarela external</code></pre>
 <p>Este nivel ya puede mostrar tecnologia y responsabilidades internas: Angular, Gateway, microservicios, bases de configuracion, servicios de soporte y sistemas externos consumidos por los contenedores.</p>
 <p>Las vistas dinamicas, C4 nivel 3 y C4 nivel 4 viven en <a href="../README_02_ARQUITECTURA_DETALLADA/">README_02_ARQUITECTURA_DETALLADA.md</a> para mantener este documento enfocado en la vision general.</p>
-<h3 id="c4-despliegue-por-ambientes">C4: Despliegue por Ambientes</h3>
-<pre><code class="language-mermaid">flowchart TB
+<h3 id="c4-despliegue-por-ambientes">C4: Despliegue por Ambientes<a class="headerlink" href="#c4-despliegue-por-ambientes" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>flowchart TB
     subgraph dev[DEV local]
         subgraph devMessagingBox[1. Mensajeria compartida]
             devkafkacompose[platform/kafka-compose.yml]
@@ -1989,7 +1986,7 @@
         subgraph devInfraBox[2. Infra compartida]
             devgateway[Gateway]
             deveureka[Eureka]
-            devconfig[&quot;Config&lt;br/&gt;(+config-repo)&quot;]
+            devconfig["Config&lt;br/&gt;(+config-repo)"]
             deveureka -. solicita config .-&gt; devconfig
             devgateway -. solicita config .-&gt; devconfig
             devgateway -. discovery .-&gt; deveureka
@@ -2078,10 +2075,9 @@
         cloudk8s --&gt; managedobs
     end
 
-    dev --&gt; compose --&gt; k8slocal --&gt; cloud
-</code></pre>
+    dev --&gt; compose --&gt; k8slocal --&gt; cloud</code></pre>
 <p>DEV local y PROD local representan el mismo sistema corriendo en paralelo, pero con distinto modo de ejecucion. En DEV local, los microservicios y la infraestructura (<code>config</code>, <code>eureka</code>, <code>gateway</code>) corren con Java 17 en la maquina del desarrollador para facilitar cambios rapidos; Docker se usa para dependencias como MySQL por MS, Kafka y observabilidad compartida. En PROD local, los mismos componentes se validan como imagenes y contenedores: la infraestructura propia se levanta con <code>infra/docker-compose.yml</code>, Kafka y observabilidad con <code>platform/</code>, y cada microservicio con su propio <code>&lt;ms&gt;/docker-compose.yml</code>. En Kubernetes local se usan manifiestos <code>k8s-local/</code>: los MS van como <code>Deployment</code>, los servicios internos como <code>ClusterIP</code>, MySQL puede ir como <code>StatefulSet</code> con PVC y el acceso externo pasa por Gateway o Ingress. En nube se usan imagenes desde registry, manifiestos <code>k8s/</code> para los MS, bases de datos administradas, Kafka corporativo/administrado y observabilidad de plataforma.</p>
-<h2 id="pendiente-para-release-2">Pendiente para Release 2</h2>
+<h2 id="pendiente-para-release-2">Pendiente para Release 2<a class="headerlink" href="#pendiente-para-release-2" title="Permanent link">&para;</a></h2>
 <p>No se incluyen por ahora:</p>
 <ul>
 <li><code>pagatu-notificacion-ms</code></li>

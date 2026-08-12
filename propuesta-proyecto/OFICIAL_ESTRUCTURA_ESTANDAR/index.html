@@ -1031,10 +1031,10 @@
   
 
 
-<h1 id="estructura-estandar-del-proyecto">Estructura Estandar del Proyecto</h1>
+<h1 id="estructura-estandar-del-proyecto">Estructura Estandar del Proyecto<a class="headerlink" href="#estructura-estandar-del-proyecto" title="Permanent link">&para;</a></h1>
 <p>Este documento define un patron de organizacion para proyectos de microservicios. La idea es separar con claridad la infraestructura compartida, los microservicios de negocio y los manifiestos de despliegue por ambiente.</p>
-<h2 id="estructura-general-generica">Estructura General Generica</h2>
-<pre><code class="language-text">&lt;proyecto&gt;/
+<h2 id="estructura-general-generica">Estructura General Generica<a class="headerlink" href="#estructura-general-generica" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>&lt;proyecto&gt;/
 |-- infra/
 |   |-- &lt;config&gt;/
 |   |   |-- config-repo/
@@ -1074,8 +1074,8 @@
     |-- docker-compose.yml
     |-- k8s-local/
     `-- k8s/
-</code></pre>
-<h2 id="fundamento">Fundamento</h2>
+</code></pre></div>
+<h2 id="fundamento">Fundamento<a class="headerlink" href="#fundamento" title="Permanent link">&para;</a></h2>
 <ul>
 <li><code>infra/</code> contiene infraestructura propia del sistema: Config Server, Eureka, Gateway, Docker Compose y manifiestos Kubernetes de infraestructura.</li>
 <li><code>platform/</code> contiene dependencias compartidas de laboratorio, como Kafka u observabilidad. No representa componentes exclusivos del proyecto.</li>
@@ -1090,7 +1090,7 @@
 <li><code>k8s-local/</code> representa Minikube o Kubernetes local, donde se pueden incluir dependencias como MySQL.</li>
 <li><code>k8s/</code> representa nube o produccion real, donde las dependencias criticas suelen ser servicios administrados o externos.</li>
 </ul>
-<h2 id="convencion-de-nombres">Convencion de Nombres</h2>
+<h2 id="convencion-de-nombres">Convencion de Nombres<a class="headerlink" href="#convencion-de-nombres" title="Permanent link">&para;</a></h2>
 <p>Se recomienda usar carpetas cortas en el repositorio y nombres con prefijo del proyecto para artefactos desplegables.</p>
 <table>
 <thead>
@@ -1138,26 +1138,26 @@
 </tr>
 </tbody>
 </table>
-<h2 id="config-server-y-config-repo">Config Server y Config Repo</h2>
+<h2 id="config-server-y-config-repo">Config Server y Config Repo<a class="headerlink" href="#config-server-y-config-repo" title="Permanent link">&para;</a></h2>
 <p><code>config-repo</code> no se compila con el Config Server; solo contiene archivos <code>.yml</code> que el Config Server publica. Al estar dentro de <code>infra/&lt;config&gt;/</code>, se evita depender de rutas absolutas como <code>C:/...</code> y se facilita el uso de rutas relativas o variables de entorno.</p>
 <p>Ejemplo recomendado para ejecucion local:</p>
-<pre><code class="language-yaml">spring:
-  cloud:
-    config:
-      server:
-        native:
-          search-locations: ${CONFIG_REPO_LOCATION:file:./config-repo}
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nt">spring</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">cloud</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">config</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">server</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">native</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">search-locations</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${CONFIG_REPO_LOCATION:file:./config-repo}</span>
+</code></pre></div>
 <p>Ejemplo recomendado para Docker:</p>
-<pre><code class="language-yaml">volumes:
-  - ./&lt;config&gt;/config-repo:/config-repo
-environment:
-  SPRING_PROFILES_ACTIVE: native
-  CONFIG_REPO_LOCATION: file:/config-repo
-</code></pre>
-<h2 id="kubernetes-de-infraestructura">Kubernetes de Infraestructura</h2>
+<div class="highlight"><pre><span></span><code><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./&lt;config&gt;/config-repo:/config-repo</span>
+<span class="nt">environment</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">SPRING_PROFILES_ACTIVE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">native</span>
+<span class="w">  </span><span class="nt">CONFIG_REPO_LOCATION</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">file:/config-repo</span>
+</code></pre></div>
+<h2 id="kubernetes-de-infraestructura">Kubernetes de Infraestructura<a class="headerlink" href="#kubernetes-de-infraestructura" title="Permanent link">&para;</a></h2>
 <p>Para infraestructura se recomienda un bloque Kubernetes compartido, porque estos componentes forman la base propia del sistema: Config Server, Eureka y Gateway. Kafka y observabilidad no van aqui, porque son plataforma compartida.</p>
-<pre><code class="language-text">infra/
+<div class="highlight"><pre><span></span><code>infra/
 |-- k8s-local/
 |   |-- 00-namespace.yml
 |   |-- config/
@@ -1177,11 +1177,11 @@ environment:
     |-- config/
     |-- eureka/
     `-- gateway/
-</code></pre>
+</code></pre></div>
 <p>En <code>infra/k8s-local/</code> se levantan solo los componentes propios del sistema. En <code>infra/k8s/</code>, para nube real, se mantienen los manifiestos de Config Server, Eureka y Gateway si la empresa decide operarlos en Kubernetes; Kafka, bases de datos y observabilidad deben tratarse como servicios administrados, proveedores externos o plataformas compartidas operadas por separado.</p>
-<h2 id="kubernetes-de-plataforma-local">Kubernetes de Plataforma Local</h2>
+<h2 id="kubernetes-de-plataforma-local">Kubernetes de Plataforma Local<a class="headerlink" href="#kubernetes-de-plataforma-local" title="Permanent link">&para;</a></h2>
 <p>Para el curso o laboratorio se puede tener un bloque separado para dependencias compartidas. Esto evita dar a entender que cada proyecto de la empresa trae su propio Kafka o su propio stack de observabilidad.</p>
-<pre><code class="language-text">platform/
+<div class="highlight"><pre><span></span><code>platform/
 `-- k8s-local/
     |-- messaging/
     |   |-- 01-zookeeper.yml
@@ -1191,11 +1191,11 @@ environment:
         |-- 01-prometheus.yml
         |-- 02-loki.yml
         `-- 03-grafana.yml
-</code></pre>
+</code></pre></div>
 <p>No se recomienda crear <code>platform/k8s/</code> para produccion real dentro de este repositorio, salvo que el curso quiera simular una plataforma completa. En una empresa, Kafka y observabilidad suelen administrarse con otro ciclo de vida, otro repositorio o servicios cloud.</p>
-<h2 id="microservicio-core">Microservicio Core</h2>
+<h2 id="microservicio-core">Microservicio Core<a class="headerlink" href="#microservicio-core" title="Permanent link">&para;</a></h2>
 <p>Cada microservicio de negocio mantiene su codigo, Dockerfile y manifiestos cerca de su propio contexto.</p>
-<pre><code class="language-text">&lt;microservicio&gt;/
+<div class="highlight"><pre><span></span><code>&lt;microservicio&gt;/
 |-- src/
 |-- pom.xml
 |-- Dockerfile
@@ -1203,7 +1203,7 @@ environment:
 |-- docker-compose.yml
 |-- k8s-local/
 `-- k8s/
-</code></pre>
+</code></pre></div>
 <p>En cada microservicio:</p>
 <ul>
 <li><code>docker-compose-dev.yml</code> levanta dependencias del MS para desarrollo, por ejemplo su MySQL. La aplicacion corre con Java local.</li>
@@ -1211,7 +1211,7 @@ environment:
 <li>El compose de <code>infra/</code> sirve para levantar infraestructura compartida o escenarios integrados.</li>
 </ul>
 <p>La estructura interna Java debe ser simple y por capas:</p>
-<pre><code class="language-text">com.&lt;organizacion&gt;.&lt;contexto&gt;
+<div class="highlight"><pre><span></span><code>com.&lt;organizacion&gt;.&lt;contexto&gt;
 |-- config
 |-- controller
 |-- dto
@@ -1227,7 +1227,7 @@ environment:
 |-- client
 |-- event
 `-- &lt;Contexto&gt;Application.java
-</code></pre>
+</code></pre></div>
 <p>Las carpetas <code>client</code> y <code>event</code> solo se crean si el microservicio las necesita.</p>
 <table>
 <thead>
@@ -1260,9 +1260,9 @@ environment:
 </tr>
 </tbody>
 </table>
-<h2 id="kubernetes-por-microservicio">Kubernetes por Microservicio</h2>
+<h2 id="kubernetes-por-microservicio">Kubernetes por Microservicio<a class="headerlink" href="#kubernetes-por-microservicio" title="Permanent link">&para;</a></h2>
 <p>Para Kubernetes local:</p>
-<pre><code class="language-text">&lt;microservicio&gt;/
+<div class="highlight"><pre><span></span><code>&lt;microservicio&gt;/
 `-- k8s-local/
     |-- 01-configmap.yml
     |-- 02-secret.yml
@@ -1270,25 +1270,25 @@ environment:
     |-- 04-mysql-service.yml
     |-- 05-deployment.yml
     `-- 06-service.yml
-</code></pre>
+</code></pre></div>
 <p><code>k8s-local</code> incluye MySQL porque busca levantar el microservicio completo en Minikube o un cluster local. Para laboratorio se puede compactar MySQL en un solo <code>03-mysql.yml</code>, pero el nombre <code>statefulset</code> deja claro que la base de datos es estado, no una aplicacion stateless.</p>
 <p>Para Kubernetes en nube o produccion real:</p>
-<pre><code class="language-text">&lt;microservicio&gt;/
+<div class="highlight"><pre><span></span><code>&lt;microservicio&gt;/
 `-- k8s/
     |-- 01-configmap.yml
     |-- 02-secret.yml
     |-- 03-deployment.yml
     |-- 04-service.yml
     `-- 05-hpa.yml
-</code></pre>
+</code></pre></div>
 <p><code>k8s</code> no incluye MySQL del microservicio como pod propio. En produccion, la base de datos debe ser administrada o externa al ciclo de vida del microservicio. El <code>Secret</code> debe guardar referencias o credenciales hacia esa base administrada, no crear la base dentro del cluster.</p>
-<h2 id="regla-practica">Regla Practica</h2>
-<pre><code class="language-text">infra/k8s-local/       -&gt; infraestructura propia para Minikube
+<h2 id="regla-practica">Regla Practica<a class="headerlink" href="#regla-practica" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>infra/k8s-local/       -&gt; infraestructura propia para Minikube
 infra/k8s/             -&gt; infraestructura propia para nube o produccion
 platform/k8s-local/    -&gt; Kafka/observabilidad solo para laboratorio
 &lt;ms&gt;/k8s-local/        -&gt; despliegue local del MS con dependencias
 &lt;ms&gt;/k8s/              -&gt; despliegue productivo del MS
-</code></pre>
+</code></pre></div>
 <p>Esta separacion evita mezclar escenarios locales con produccion real y reduce el riesgo de llevar manifiestos de prueba a un cluster productivo.</p>
 
 

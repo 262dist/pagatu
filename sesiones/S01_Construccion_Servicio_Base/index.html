@@ -2375,26 +2375,26 @@
   
 
 
-<h1 id="s1-construccion-de-un-servicio-base-para-un-sistema-distribuido">S1 - Construcción de un servicio base para un sistema distribuido</h1>
-<h2 id="1-introduccion">1. Introducción</h2>
+<h1 id="s1-construccion-de-un-servicio-base-para-un-sistema-distribuido">S1 - Construcción de un servicio base para un sistema distribuido<a class="headerlink" href="#s1-construccion-de-un-servicio-base-para-un-sistema-distribuido" title="Permanent link">&para;</a></h1>
+<h2 id="1-introduccion">1. Introducción<a class="headerlink" href="#1-introduccion" title="Permanent link">&para;</a></h2>
 <p>Tiempo: 20 min.</p>
-<h3 id="11-contexto">1.1 Contexto</h3>
+<h3 id="11-contexto">1.1 Contexto<a class="headerlink" href="#11-contexto" title="Permanent link">&para;</a></h3>
 <p>Un sistema distribuido de comercio electrónico no nace como microservicios completos desde el primer día: nace de un primer servicio de negocio, bien delimitado, persistente y observable, que sirve como patrón para los siguientes. Esta sesión construye ese primer servicio, <code>catalogo-ms</code>, y deja establecidas las convenciones (estructura de capas, ejecución DEV/PROD local, trazabilidad) que se repetirán en cada microservicio del proyecto <code>pagatu</code>.</p>
-<h3 id="12-indice">1.2 Índice</h3>
+<h3 id="12-indice">1.2 Índice<a class="headerlink" href="#12-indice" title="Permanent link">&para;</a></h3>
 <ol>
 <li>Arquitectura de microservicios y responsabilidad única.</li>
 <li>Entornos de ejecución: DEV con Maven y PROD local con Docker.</li>
 <li>Observabilidad y diagnóstico básico del servicio.</li>
 <li>Construcción guiada de <code>catalogo-ms</code>.</li>
 </ol>
-<h3 id="13-proposito-de-aprendizaje">1.3 Propósito de aprendizaje</h3>
+<h3 id="13-proposito-de-aprendizaje">1.3 Propósito de aprendizaje<a class="headerlink" href="#13-proposito-de-aprendizaje" title="Permanent link">&para;</a></h3>
 <p>Al concluir la clase, estarás en condiciones de:</p>
 <ul>
 <li><strong>Construir e implementar</strong> un microservicio stateless con API REST, persistencia en PostgreSQL, validación de entradas, documentación de endpoints con Swagger, verificación de salud con Actuator y ejecución reproducible en desarrollo y en producción local con Docker.</li>
 </ul>
-<h3 id="14-producto-de-sesion">1.4 Producto de sesión</h3>
+<h3 id="14-producto-de-sesion">1.4 Producto de sesión<a class="headerlink" href="#14-producto-de-sesion" title="Permanent link">&para;</a></h3>
 <p><code>catalogo-ms</code> funcional con CRUD de categorías, PostgreSQL en Docker, Swagger, Actuator, README operativo y pruebas por shell.</p>
-<h3 id="15-metodologia">1.5 Metodología</h3>
+<h3 id="15-metodologia">1.5 Metodología<a class="headerlink" href="#15-metodologia" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -2425,8 +2425,8 @@
 </tr>
 </tbody>
 </table>
-<h3 id="16-motivacion-de-la-sesion">1.6 Motivación de la sesión</h3>
-<h4 id="161-caso-plataforma-de-comercio-electronico">1.6.1 Caso: plataforma de comercio electrónico</h4>
+<h3 id="16-motivacion-de-la-sesion">1.6 Motivación de la sesión<a class="headerlink" href="#16-motivacion-de-la-sesion" title="Permanent link">&para;</a></h3>
+<h4 id="161-caso-plataforma-de-comercio-electronico">1.6.1 Caso: plataforma de comercio electrónico<a class="headerlink" href="#161-caso-plataforma-de-comercio-electronico" title="Permanent link">&para;</a></h4>
 <p>Una empresa desarrolla un sistema de comercio electrónico. Inicialmente, todo el sistema fue construido como una sola aplicación monolítica.</p>
 <p>Con el crecimiento del negocio comienzan a aparecer problemas:</p>
 <ul>
@@ -2443,7 +2443,7 @@
 <li>¿Qué ventajas ofrece dividir el sistema en servicios?</li>
 </ol>
 <p>En esta sesión se inicia ese rediseño construyendo el primer componente del sistema <code>pagatu</code>: <code>catalogo-ms</code>.</p>
-<h3 id="17-ubicacion-en-el-curso">1.7 Ubicación en el curso</h3>
+<h3 id="17-ubicacion-en-el-curso">1.7 Ubicación en el curso<a class="headerlink" href="#17-ubicacion-en-el-curso" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Unidad: U1 - Sistema distribuido base orientado a producción.</li>
 <li>Producto de unidad: sistema distribuido base funcional, configurable y preparado para múltiples instancias, ejecutable en desarrollo y producción local en paralelo.</li>
@@ -2451,14 +2451,14 @@
 <li>Avance del producto en esta sesión: primer microservicio REST funcional, persistente, observable y ejecutable fuera del IDE.</li>
 </ul>
 <p>Roadmap para elaborar el producto de la unidad:</p>
-<pre><code class="language-mermaid">flowchart TB
-    Cliente[&quot;Cliente de prueba - PowerShell / bash / Swagger&quot;]
-    Gateway[&quot;Gateway - punto único de acceso - balanceo de carga&quot;]
-    Catalogo[&quot;catalogo-ms - HOY - REST + BD + health&quot;]
-    Orden[&quot;orden-ms - trabajo aplicado&quot;]
-    Eureka[&quot;Registro de servicios - Eureka&quot;]
-    Config[&quot;Servidor de configuración - Config Server&quot;]
-    Repo[&quot;Repositorio de configuración - catalogo-ms.yml, orden-ms.yml&quot;]
+<pre class="mermaid"><code>flowchart TB
+    Cliente["Cliente de prueba - PowerShell / bash / Swagger"]
+    Gateway["Gateway - punto único de acceso - balanceo de carga"]
+    Catalogo["catalogo-ms - HOY - REST + BD + health"]
+    Orden["orden-ms - trabajo aplicado"]
+    Eureka["Registro de servicios - Eureka"]
+    Config["Servidor de configuración - Config Server"]
+    Repo["Repositorio de configuración - catalogo-ms.yml, orden-ms.yml"]
 
     Cliente --&gt; Gateway
     Gateway --&gt; Catalogo
@@ -2471,59 +2471,56 @@
     Config --&gt; Repo
 
     classDef today fill:#ffe08a,stroke:#9a6b00,stroke-width:2px,color:#111;
-    class Catalogo today;
-</code></pre>
+    class Catalogo today;</code></pre>
 <p>Hoy se construye el primer componente real de la U1: <code>catalogo-ms</code>. En las siguientes sesiones se agregan configuración centralizada, registro de servicios, múltiples instancias, Gateway y balanceo. La evaluación U1 valida el sistema base integrado construido con esos componentes.</p>
-<h2 id="2-explica">2. Explica</h2>
+<h2 id="2-explica">2. Explica<a class="headerlink" href="#2-explica" title="Permanent link">&para;</a></h2>
 <p>Tiempo: 25 min.</p>
-<h3 id="21-conceptos-clave">2.1 Conceptos clave</h3>
+<h3 id="21-conceptos-clave">2.1 Conceptos clave<a class="headerlink" href="#21-conceptos-clave" title="Permanent link">&para;</a></h3>
 <p>Un microservicio debe tener responsabilidad clara, persistencia propia, configuración por ambiente y capacidad de ejecutarse de forma independiente.</p>
 <p>Ejemplo: <code>catalogo-ms</code> se encarga de gestionar categorías, conceptos de pago y sus precios, con su propia base de datos. No debería guardar clientes, órdenes ni pagos. Si más adelante <code>orden-ms</code> necesita saber si un concepto de pago existe y cuál es su precio, consulta a <code>catalogo-ms</code> por red en lugar de leer directamente su base de datos.</p>
-<h3 id="22-arquitectura-del-producto-en-pagatu">2.2 Arquitectura del producto en <code>pagatu</code></h3>
-<h4 id="221-dev-aplicacion-fuera-de-docker">2.2.1 DEV: aplicación fuera de Docker</h4>
-<pre><code class="language-mermaid">flowchart TB
-    DevClient[&quot;Cliente - PowerShell / bash / Swagger&quot;]
-    DevApp1[&quot;catalogo-ms - Java 21 + Maven - puerto dinámico&quot;]
-    DevApp2[&quot;catalogo-ms - segunda instancia - puerto dinámico&quot;]
-    subgraph DevDocker[&quot;Docker: solo base de datos&quot;]
-        DevDb[(&quot;pagatu_catalogo_db - PostgreSQL - localhost:15432 -&gt; 5432&quot;)]
+<h3 id="22-arquitectura-del-producto-en-pagatu">2.2 Arquitectura del producto en <code>pagatu</code><a class="headerlink" href="#22-arquitectura-del-producto-en-pagatu" title="Permanent link">&para;</a></h3>
+<h4 id="221-dev-aplicacion-fuera-de-docker">2.2.1 DEV: aplicación fuera de Docker<a class="headerlink" href="#221-dev-aplicacion-fuera-de-docker" title="Permanent link">&para;</a></h4>
+<pre class="mermaid"><code>flowchart TB
+    DevClient["Cliente - PowerShell / bash / Swagger"]
+    DevApp1["catalogo-ms - Java 21 + Maven - puerto dinámico"]
+    DevApp2["catalogo-ms - segunda instancia - puerto dinámico"]
+    subgraph DevDocker["Docker: solo base de datos"]
+        DevDb[("pagatu_catalogo_db - PostgreSQL - localhost:15432 -&gt; 5432")]
     end
 
-    DevClient --&gt;|&quot;localhost:&lt;puerto-asignado&gt;&quot;| DevApp1
-    DevClient --&gt;|&quot;localhost:&lt;otro-puerto&gt;&quot;| DevApp2
-    DevApp1 --&gt;|&quot;localhost:15432&quot;| DevDb
-    DevApp2 --&gt;|&quot;localhost:15432&quot;| DevDb
+    DevClient --&gt;|"localhost:&lt;puerto-asignado&gt;"| DevApp1
+    DevClient --&gt;|"localhost:&lt;otro-puerto&gt;"| DevApp2
+    DevApp1 --&gt;|"localhost:15432"| DevDb
+    DevApp2 --&gt;|"localhost:15432"| DevDb
 
     classDef app fill:#eef6ff,stroke:#2b6cb0,color:#111;
     classDef db fill:#fff4de,stroke:#b7791f,color:#111;
     class DevApp1,DevApp2 app;
-    class DevDb db;
-</code></pre>
-<h4 id="222-prod-local-aplicacion-dentro-de-docker">2.2.2 PROD local: aplicación dentro de Docker</h4>
-<pre><code class="language-mermaid">flowchart TB
-    ProdClient[&quot;Cliente interno - curl container&quot;]
-    subgraph ProdDocker[&quot;Docker Network: pagatu-catalogo-int&quot;]
-        ProdApp1[&quot;catalogo-ms - jar - 8080 interno&quot;]
-        ProdApp2[&quot;catalogo-ms - jar - 8080 interno&quot;]
-        ProdDb[(&quot;pagatu_catalogo_db - PostgreSQL - pagatu-postgres-catalogo:5432&quot;)]
+    class DevDb db;</code></pre>
+<h4 id="222-prod-local-aplicacion-dentro-de-docker">2.2.2 PROD local: aplicación dentro de Docker<a class="headerlink" href="#222-prod-local-aplicacion-dentro-de-docker" title="Permanent link">&para;</a></h4>
+<pre class="mermaid"><code>flowchart TB
+    ProdClient["Cliente interno - curl container"]
+    subgraph ProdDocker["Docker Network: pagatu-catalogo-int"]
+        ProdApp1["catalogo-ms - jar - 8080 interno"]
+        ProdApp2["catalogo-ms - jar - 8080 interno"]
+        ProdDb[("pagatu_catalogo_db - PostgreSQL - pagatu-postgres-catalogo:5432")]
     end
 
-    ProdClient --&gt;|&quot;catalogo-ms:8080&quot;| ProdApp1
-    ProdClient --&gt;|&quot;catalogo-ms:8080&quot;| ProdApp2
-    ProdApp1 --&gt;|&quot;pagatu-postgres-catalogo:5432&quot;| ProdDb
-    ProdApp2 --&gt;|&quot;pagatu-postgres-catalogo:5432&quot;| ProdDb
+    ProdClient --&gt;|"catalogo-ms:8080"| ProdApp1
+    ProdClient --&gt;|"catalogo-ms:8080"| ProdApp2
+    ProdApp1 --&gt;|"pagatu-postgres-catalogo:5432"| ProdDb
+    ProdApp2 --&gt;|"pagatu-postgres-catalogo:5432"| ProdDb
 
     classDef app fill:#eef6ff,stroke:#2b6cb0,color:#111;
     classDef db fill:#fff4de,stroke:#b7791f,color:#111;
     class ProdApp1,ProdApp2 app;
-    class ProdDb db;
-</code></pre>
+    class ProdDb db;</code></pre>
 <p>Regla práctica:</p>
 <ul>
 <li>Si la aplicación corre fuera de Docker, usa <code>localhost</code> con el puerto expuesto por Docker.</li>
 <li>Si la aplicación corre dentro de Docker, usa el nombre del servicio y el puerto interno.</li>
 </ul>
-<h4 id="223-flujo-de-trabajo">2.2.3 Flujo de trabajo</h4>
+<h4 id="223-flujo-de-trabajo">2.2.3 Flujo de trabajo<a class="headerlink" href="#223-flujo-de-trabajo" title="Permanent link">&para;</a></h4>
 <ol>
 <li>Preparar ambiente.</li>
 <li>Crear proyecto Spring Boot y levantar PostgreSQL DEV.</li>
@@ -2533,9 +2530,9 @@
 <li>Ejecutar y probar en Docker.</li>
 <li>Registrar evidencias y defender el resultado.</li>
 </ol>
-<h3 id="23-observabilidad-y-diagnostico">2.3 Observabilidad y diagnóstico</h3>
+<h3 id="23-observabilidad-y-diagnostico">2.3 Observabilidad y diagnóstico<a class="headerlink" href="#23-observabilidad-y-diagnostico" title="Permanent link">&para;</a></h3>
 <p>La observabilidad inicia desde S1 como hábito transversal. En esta sesión todavía no hay stack completo de métricas y paneles, pero el estudiante ya debe revisar señales básicas del servicio y usar los errores como insumo de diagnóstico.</p>
-<h4 id="231-senales-basicas-a-revisar">2.3.1 Señales básicas a revisar</h4>
+<h4 id="231-senales-basicas-a-revisar">2.3.1 Señales básicas a revisar<a class="headerlink" href="#231-senales-basicas-a-revisar" title="Permanent link">&para;</a></h4>
 <ul>
 <li>Logs de arranque.</li>
 <li>Puerto dinámico asignado.</li>
@@ -2546,7 +2543,7 @@
 <li>Errores de validación HTTP 400.</li>
 <li>Logs de contenedores con <code>docker compose logs</code>.</li>
 </ul>
-<h4 id="232-errores-frecuentes-y-diagnostico">2.3.2 Errores frecuentes y diagnóstico</h4>
+<h4 id="232-errores-frecuentes-y-diagnostico">2.3.2 Errores frecuentes y diagnóstico<a class="headerlink" href="#232-errores-frecuentes-y-diagnostico" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
@@ -2583,7 +2580,7 @@
 </tr>
 </tbody>
 </table>
-<h2 id="3-aplica-actividad-practica-guiada">3. Aplica: actividad práctica guiada</h2>
+<h2 id="3-aplica-actividad-practica-guiada">3. Aplica: actividad práctica guiada<a class="headerlink" href="#3-aplica-actividad-practica-guiada" title="Permanent link">&para;</a></h2>
 <p>Tiempo: 2h.</p>
 <p>En el laboratorio, el docente guía la construcción de <code>catalogo-ms</code> y los estudiantes verifican el resultado con comandos de consola. En <code>pagatu</code>, el docente guía <code>catalogo-ms</code> y el estudiante replica el patrón en <code>orden-ms</code> como trabajo aplicado. La versión actual usa monorepo, nombres con sufijo <code>-ms</code>, PostgreSQL y puertos dinámicos para los microservicios.</p>
 <p>Hoja de ruta de la sesión práctica:</p>
@@ -2594,7 +2591,7 @@
 <li><strong>3.4</strong> Ejecutar y probar el microservicio en DEV.</li>
 <li><strong>3.5</strong> Simular escalamiento horizontal (múltiples instancias).</li>
 </ul>
-<h3 id="31-preparar-ambiente-local-java-21-docker-y-vs-code">3.1 Preparar ambiente local: Java 21, Docker y VS Code</h3>
+<h3 id="31-preparar-ambiente-local-java-21-docker-y-vs-code">3.1 Preparar ambiente local: Java 21, Docker y VS Code<a class="headerlink" href="#31-preparar-ambiente-local-java-21-docker-y-vs-code" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> ambiente local con Java 21, Docker, Docker Compose y VS Code verificados, listo para crear y ejecutar el microservicio.</p>
 <p>Antes de crear el microservicio, el estudiante debe preparar el entorno DEV. En esta sesión Java se ejecuta en el host; Maven no se instala aparte (el proyecto trae Maven Wrapper desde que se crea en 3.2.1, ver 3.1.2); PostgreSQL no se instala en el host, se levanta con Docker desde el paso 3.2.</p>
 <p><strong>Herramientas necesarias</strong></p>
@@ -2606,69 +2603,69 @@
 <li>Spring Boot Extension Pack.</li>
 </ul>
 <p>En las clases se trabajará con <strong>VS Code</strong> para mantener una guía común. Puedes usar otro IDE si ya lo dominas — por ejemplo <strong>IntelliJ IDEA</strong> —, pero entonces sigue tú mismo la equivalencia de cada paso, ya que las capturas y comandos de esta guía están pensados para VS Code. Aún usando otro IDE, la ejecución recomendada del microservicio será desde la consola de comandos, al estilo de un servidor Linux.</p>
-<h4 id="311-instalar-o-verificar-java-21">3.1.1 Instalar o verificar Java 21</h4>
+<h4 id="311-instalar-o-verificar-java-21">3.1.1 Instalar o verificar Java 21<a class="headerlink" href="#311-instalar-o-verificar-java-21" title="Permanent link">&para;</a></h4>
 <p>Se recomienda Eclipse Temurin 21, una distribución OpenJDK de soporte prolongado (LTS), instalada con el gestor de paquetes nativo de cada sistema operativo. Este workspace estandariza Java 21 LTS para todos los cursos y microservicios.</p>
 <p><strong>Windows</strong> — PowerShell como usuario normal:</p>
-<pre><code class="language-powershell">winget install --id EclipseAdoptium.Temurin.21.JDK --exact
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">winget</span> <span class="n">install</span> <span class="p">-</span><span class="n">-id</span> <span class="n">EclipseAdoptium</span><span class="p">.</span><span class="n">Temurin</span><span class="p">.</span><span class="n">21</span><span class="p">.</span><span class="n">JDK</span> <span class="p">-</span><span class="o">-exact</span>
+</code></pre></div>
 <p><strong>macOS</strong> (con Homebrew ya instalado):</p>
-<pre><code class="language-bash">brew install --cask temurin@21
-</code></pre>
+<div class="highlight"><pre><span></span><code>brew<span class="w"> </span>install<span class="w"> </span>--cask<span class="w"> </span>temurin@21
+</code></pre></div>
 <p><strong>Linux (Ubuntu/Debian)</strong>:</p>
-<pre><code class="language-bash">sudo apt update
-sudo apt install -y wget apt-transport-https gpg
-wget -qO - https://packages.adoptium.net/artifactory/api/gpg/key/public | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/adoptium.gpg &gt; /dev/null
-echo &quot;deb https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main&quot; | sudo tee /etc/apt/sources.list.d/adoptium.list
-sudo apt update
-sudo apt install -y temurin-21-jdk
-</code></pre>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>update
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>wget<span class="w"> </span>apt-transport-https<span class="w"> </span>gpg
+wget<span class="w"> </span>-qO<span class="w"> </span>-<span class="w"> </span>https://packages.adoptium.net/artifactory/api/gpg/key/public<span class="w"> </span><span class="p">|</span><span class="w"> </span>gpg<span class="w"> </span>--dearmor<span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/apt/trusted.gpg.d/adoptium.gpg<span class="w"> </span>&gt;<span class="w"> </span>/dev/null
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;deb https://packages.adoptium.net/artifactory/deb </span><span class="k">$(</span>awk<span class="w"> </span>-F<span class="o">=</span><span class="w"> </span><span class="s1">&#39;/^VERSION_CODENAME/{print$2}&#39;</span><span class="w"> </span>/etc/os-release<span class="k">)</span><span class="s2"> main&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/apt/sources.list.d/adoptium.list
+sudo<span class="w"> </span>apt<span class="w"> </span>update
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>temurin-21-jdk
+</code></pre></div>
 <p>Al finalizar, cierra y vuelve a abrir la terminal. Verifica la instalación:</p>
-<pre><code class="language-bash">java -version
-</code></pre>
+<div class="highlight"><pre><span></span><code>java<span class="w"> </span>-version
+</code></pre></div>
 <p>Resultado esperado:</p>
-<pre><code class="language-text">openjdk version &quot;21&quot;
-</code></pre>
-<h4 id="312-maven-no-se-instala-aparte-se-usa-el-maven-wrapper">3.1.2 Maven: no se instala aparte, se usa el Maven Wrapper</h4>
+<div class="highlight"><pre><span></span><code>openjdk version &quot;21&quot;
+</code></pre></div>
+<h4 id="312-maven-no-se-instala-aparte-se-usa-el-maven-wrapper">3.1.2 Maven: no se instala aparte, se usa el Maven Wrapper<a class="headerlink" href="#312-maven-no-se-instala-aparte-se-usa-el-maven-wrapper" title="Permanent link">&para;</a></h4>
 <p>No instales Maven en el host. Cuando crees el proyecto con Spring Initializr (3.2.1), Spring genera automáticamente el <strong>Maven Wrapper</strong> (<code>mvnw</code> para macOS/Linux, <code>mvnw.cmd</code> para Windows) dentro de <code>services/catalogo-ms</code>: un script que descarga y cachea la versión exacta de Maven que el proyecto necesita, sin que tengas que instalarla ni gestionarla tú.</p>
 <p>A partir de ese momento, cualquier comando Maven de esta guía se ejecuta con el wrapper, nunca con <code>mvn</code> a secas:</p>
 <p>PowerShell:</p>
-<pre><code class="language-powershell">.\mvnw.cmd spring-boot:run
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="p">.\</span><span class="n">mvnw</span><span class="p">.</span><span class="n">cmd</span> <span class="n">spring-boot</span><span class="p">:</span><span class="n">run</span>
+</code></pre></div>
 <p>bash macOS/Linux:</p>
-<pre><code class="language-bash">./mvnw spring-boot:run
-</code></pre>
+<div class="highlight"><pre><span></span><code>./mvnw<span class="w"> </span>spring-boot:run
+</code></pre></div>
 <p>Esto evita el problema clásico de "en mi máquina compila con una versión de Maven y en la del compañero falla con otra" — todo el equipo usa la misma versión, la que define el propio proyecto.</p>
-<h4 id="313-instalar-o-verificar-docker-desktop-y-docker-compose">3.1.3 Instalar o verificar Docker Desktop y Docker Compose</h4>
+<h4 id="313-instalar-o-verificar-docker-desktop-y-docker-compose">3.1.3 Instalar o verificar Docker Desktop y Docker Compose<a class="headerlink" href="#313-instalar-o-verificar-docker-desktop-y-docker-compose" title="Permanent link">&para;</a></h4>
 <p>Opcional recomendado: antes de iniciar el laboratorio, crea una cuenta gratuita en Docker Hub:</p>
-<pre><code class="language-text">https://hub.docker.com/signup
-</code></pre>
+<div class="highlight"><pre><span></span><code>https://hub.docker.com/signup
+</code></pre></div>
 <p>Docker funciona sin iniciar sesión, pero Docker Hub puede aplicar límites de descarga de imágenes. En equipos de laboratorio o redes compartidas, iniciar sesión ayuda a evitar bloqueos durante la descarga de imágenes como PostgreSQL.</p>
 <p>PowerShell / bash macOS/Linux:</p>
-<pre><code class="language-bash">docker login
-</code></pre>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>login
+</code></pre></div>
 <p>En Windows y macOS, Docker Compose se instala junto con Docker Desktop:</p>
-<pre><code class="language-text">https://www.docker.com/products/docker-desktop
-</code></pre>
+<div class="highlight"><pre><span></span><code>https://www.docker.com/products/docker-desktop
+</code></pre></div>
 <p>En Linux puedes usar Docker Engine con el plugin Compose siguiendo la documentación oficial de Docker:</p>
-<pre><code class="language-text">https://docs.docker.com/engine/install/
+<div class="highlight"><pre><span></span><code>https://docs.docker.com/engine/install/
 https://docs.docker.com/compose/install/linux/
-</code></pre>
+</code></pre></div>
 <p>Verificar Docker:</p>
 <p>PowerShell / bash macOS/Linux:</p>
-<pre><code class="language-bash">docker version
-docker compose version
-docker ps
-</code></pre>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>version
+docker<span class="w"> </span>compose<span class="w"> </span>version
+docker<span class="w"> </span>ps
+</code></pre></div>
 <p>Resultado esperado:</p>
-<pre><code class="language-text">Docker versión
+<div class="highlight"><pre><span></span><code>Docker versión
 Docker Compose versión
-</code></pre>
-<h4 id="314-abrir-el-proyecto-en-vs-code">3.1.4 Abrir el proyecto en VS Code</h4>
+</code></pre></div>
+<h4 id="314-abrir-el-proyecto-en-vs-code">3.1.4 Abrir el proyecto en VS Code<a class="headerlink" href="#314-abrir-el-proyecto-en-vs-code" title="Permanent link">&para;</a></h4>
 <p>Ubícate en la raíz del monorepo <code>pagatu</code>, no dentro de un microservicio específico. VS Code soporta trabajar con múltiples proyectos/carpetas dentro del mismo workspace; abrir la raíz evita tener una ventana distinta por cada microservicio.</p>
 <p>PowerShell / bash macOS/Linux:</p>
-<pre><code class="language-bash">cd c:/262/2625dist/pagatu
-code .
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>c:/262/2625dist/pagatu
+code<span class="w"> </span>.
+</code></pre></div>
 <p>Desde VS Code, confirma que se reconoce el proyecto Java y que las extensiones de Spring Boot están disponibles.</p>
 <p><strong>Evidencia de cierre del paso 3.1</strong></p>
 <ul>
@@ -2677,14 +2674,14 @@ code .
 <li>Salida de <code>docker compose version</code>.</li>
 <li>VS Code abierto en la raíz del repositorio <code>pagatu</code>.</li>
 </ul>
-<h3 id="32-crear-el-proyecto-spring-boot-desde-vs-code-con-dependencias-base">3.2 Crear el proyecto Spring Boot desde VS Code con dependencias base</h3>
+<h3 id="32-crear-el-proyecto-spring-boot-desde-vs-code-con-dependencias-base">3.2 Crear el proyecto Spring Boot desde VS Code con dependencias base<a class="headerlink" href="#32-crear-el-proyecto-spring-boot-desde-vs-code-con-dependencias-base" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> proyecto Spring Boot creado en <code>services/catalogo-ms</code>, con <code>artifactId</code> <code>pagatu-catalogo-ms</code>, paquete <code>pe.edu.upeu.catalogo</code>, dependencias base instaladas, PostgreSQL DEV levantado en Docker y un endpoint web simple respondiendo desde el navegador o shell.</p>
 <p>En este paso no basta con crear el proyecto. Como se agregan <code>Spring Data JPA</code>, <code>PostgreSQL Driver</code> y <code>Flyway</code>, Spring Boot intentará configurar una conexión a base de datos al arrancar. Por eso, si ejecutas el microservicio sin configurar y levantar PostgreSQL, el arranque fallará.</p>
 <p>Ese fallo es útil para aprender: un microservicio con persistencia necesita una dependencia de infraestructura disponible. En el curso no usaremos H2 para ocultar el problema ni desactivaremos la conexión a BD; levantaremos PostgreSQL con Docker desde el inicio.</p>
-<h4 id="321-crear-el-proyecto-con-spring-initializr-desde-vs-code">3.2.1 Crear el proyecto con Spring Initializr desde VS Code</h4>
+<h4 id="321-crear-el-proyecto-con-spring-initializr-desde-vs-code">3.2.1 Crear el proyecto con Spring Initializr desde VS Code<a class="headerlink" href="#321-crear-el-proyecto-con-spring-initializr-desde-vs-code" title="Permanent link">&para;</a></h4>
 <p>Desde la raíz del monorepo <code>pagatu</code>, abre VS Code y ejecuta el comando:</p>
-<pre><code class="language-text">Spring Initializr: Create a Maven Project
-</code></pre>
+<div class="highlight"><pre><span></span><code>Spring Initializr: Create a Maven Project
+</code></pre></div>
 <p>Usa la siguiente configuración:</p>
 <table>
 <thead>
@@ -2768,171 +2765,171 @@ code .
 <p>Nota sobre motor de base de datos: en DIST se trabaja con <strong>PostgreSQL</strong> (no Oracle — Oracle es el motor de LP2/BD2, fuera del alcance de este curso). Si el equipo prefiere <strong>MySQL</strong>, es una alternativa válida: cambia <code>PostgreSQL Driver</code> por <code>MySQL Driver</code> en el Initializr y <code>flyway-database-postgresql</code> por <code>flyway-mysql</code> en el <code>pom.xml</code> — el resto de la guía (Flyway, JPA, <code>ddl-auto: validate</code>) aplica igual, solo cambia el driver y la URL de conexión.</p>
 <p>Nota: SpringDoc/Swagger documenta los endpoints del microservicio; no es infraestructura distribuida. La infraestructura distribuida inicia desde S2 con configuración centralizada.</p>
 <p>Nota: el directorio del microservicio en el monorepo es <code>services/catalogo-ms</code>, pero el <code>artifactId</code> Maven usado por el proyecto actual es <code>pagatu-catalogo-ms</code>.</p>
-<h4 id="322-revisar-dependencias-postgresql-y-flyway">3.2.2 Revisar dependencias PostgreSQL y Flyway</h4>
+<h4 id="322-revisar-dependencias-postgresql-y-flyway">3.2.2 Revisar dependencias PostgreSQL y Flyway<a class="headerlink" href="#322-revisar-dependencias-postgresql-y-flyway" title="Permanent link">&para;</a></h4>
 <p>Abre <code>services/catalogo-ms/pom.xml</code> y verifica que existan las dependencias de persistencia para PostgreSQL:</p>
-<pre><code class="language-xml">&lt;dependency&gt;
-    &lt;groupId&gt;org.flywaydb&lt;/groupId&gt;
-    &lt;artifactId&gt;flyway-core&lt;/artifactId&gt;
-&lt;/dependency&gt;
-&lt;dependency&gt;
-    &lt;groupId&gt;org.flywaydb&lt;/groupId&gt;
-    &lt;artifactId&gt;flyway-database-postgresql&lt;/artifactId&gt;
-&lt;/dependency&gt;
-&lt;dependency&gt;
-    &lt;groupId&gt;org.postgresql&lt;/groupId&gt;
-    &lt;artifactId&gt;postgresql&lt;/artifactId&gt;
-    &lt;scope&gt;runtime&lt;/scope&gt;
-&lt;/dependency&gt;
-</code></pre>
-<h4 id="323-ejecutar-una-primera-vez-y-reconocer-el-fallo-esperado">3.2.3 Ejecutar una primera vez y reconocer el fallo esperado</h4>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.flywaydb<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>flyway-core<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.flywaydb<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>flyway-database-postgresql<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.postgresql<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>postgresql<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;scope&gt;</span>runtime<span class="nt">&lt;/scope&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div>
+<h4 id="323-ejecutar-una-primera-vez-y-reconocer-el-fallo-esperado">3.2.3 Ejecutar una primera vez y reconocer el fallo esperado<a class="headerlink" href="#323-ejecutar-una-primera-vez-y-reconocer-el-fallo-esperado" title="Permanent link">&para;</a></h4>
 <p>Ubícate en la carpeta del microservicio:</p>
-<pre><code class="language-powershell"># Windows (PowerShell o cmd)
-cd services/catalogo-ms
-.\mvnw.cmd spring-boot:run
-</code></pre>
-<pre><code class="language-bash"># macOS / Linux
-cd services/catalogo-ms
-./mvnw spring-boot:run
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="c"># Windows (PowerShell o cmd)</span>
+<span class="nb">cd </span><span class="n">services</span><span class="p">/</span><span class="n">catalogo-ms</span>
+<span class="p">.\</span><span class="n">mvnw</span><span class="p">.</span><span class="n">cmd</span> <span class="n">spring-boot</span><span class="p">:</span><span class="n">run</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># macOS / Linux</span>
+<span class="nb">cd</span><span class="w"> </span>services/catalogo-ms
+./mvnw<span class="w"> </span>spring-boot:run
+</code></pre></div>
 <p>Si todavía no existe configuración de base de datos, el error esperado será parecido a:</p>
-<pre><code class="language-text">APPLICATION FAILED TO START
-Failed to configure a DataSource: 'url' attribute is not specified and no embedded datasource could be configured.
+<div class="highlight"><pre><span></span><code>APPLICATION FAILED TO START
+Failed to configure a DataSource: &#39;url&#39; attribute is not specified and no embedded datasource could be configured.
 Reason: Failed to determine a suitable driver class
-</code></pre>
+</code></pre></div>
 <p>No se corrige quitando JPA ni usando H2. Se corrige declarando PostgreSQL DEV y levantando la base de datos con Docker.</p>
-<h4 id="324-crear-compose-devyml-para-postgresql-dev">3.2.4 Crear <code>compose-dev.yml</code> para PostgreSQL DEV</h4>
+<h4 id="324-crear-compose-devyml-para-postgresql-dev">3.2.4 Crear <code>compose-dev.yml</code> para PostgreSQL DEV<a class="headerlink" href="#324-crear-compose-devyml-para-postgresql-dev" title="Permanent link">&para;</a></h4>
 <p>En <code>services/catalogo-ms</code>, crea el archivo <code>compose-dev.yml</code>:</p>
-<pre><code class="language-yaml">name: pagatu-catalogo-dev
+<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-catalogo-dev</span>
 
-services:
-  postgres-catalogo-dev:
-    image: postgres:16-alpine
-    container_name: pagatu-postgres-catalogo-dev
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: pagatu_catalogo_db
-      POSTGRES_USER: pagatu
-      POSTGRES_PASSWORD: pagatu
-    ports:
-      - &quot;15432:5432&quot;
-    volumes:
-      - pagatu_catalogo_dev_data:/var/lib/postgresql/data
+<span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">postgres-catalogo-dev</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres:16-alpine</span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-postgres-catalogo-dev</span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">POSTGRES_DB</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu_catalogo_db</span>
+<span class="w">      </span><span class="nt">POSTGRES_USER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
+<span class="w">      </span><span class="nt">POSTGRES_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;15432:5432&quot;</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu_catalogo_dev_data:/var/lib/postgresql/data</span>
 
-volumes:
-  pagatu_catalogo_dev_data:
-</code></pre>
+<span class="nt">volumes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pagatu_catalogo_dev_data</span><span class="p">:</span>
+</code></pre></div>
 <p>Levanta la base de datos:</p>
 <p>PowerShell / bash macOS/Linux:</p>
-<pre><code class="language-bash">docker compose -f compose-dev.yml up -d
-docker ps
-</code></pre>
-<h4 id="325-configurar-applicationyml-y-application-devyml">3.2.5 Configurar <code>application.yml</code> y <code>application-dev.yml</code></h4>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-dev.yml<span class="w"> </span>up<span class="w"> </span>-d
+docker<span class="w"> </span>ps
+</code></pre></div>
+<h4 id="325-configurar-applicationyml-y-application-devyml">3.2.5 Configurar <code>application.yml</code> y <code>application-dev.yml</code><a class="headerlink" href="#325-configurar-applicationyml-y-application-devyml" title="Permanent link">&para;</a></h4>
 <p>En S1 la aplicación <code>catalogo-ms</code> se ejecuta en DEV con Maven desde el host. Solo PostgreSQL se ejecuta en Docker. Por eso la configuración debe apuntar a <code>localhost:15432</code>, que es el puerto publicado por el contenedor de base de datos.</p>
 <p>En <code>src/main/resources</code>, crea o ajusta <code>application.yml</code> como configuración base:</p>
-<pre><code class="language-yaml">spring:
-  application:
-    name: catalogo-ms
-  profiles:
-    active: dev
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nt">spring</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">application</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">catalogo-ms</span>
+<span class="w">  </span><span class="nt">profiles</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">active</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dev</span>
+</code></pre></div>
 <p>Luego crea <code>application-dev.yml</code> para la configuración de desarrollo:</p>
-<pre><code class="language-yaml">server:
-  port: 0
+<div class="highlight"><pre><span></span><code><span class="nt">server</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:15432/pagatu_catalogo_db
-    username: pagatu
-    password: pagatu
-    driver-class-name: org.postgresql.Driver
-  flyway:
-    enabled: true
-    locations: classpath:db/migration
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-  devtools:
-    restart:
-      enabled: true
-    livereload:
-      enabled: true
+<span class="nt">spring</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">datasource</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jdbc:postgresql://localhost:15432/pagatu_catalogo_db</span>
+<span class="w">    </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
+<span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
+<span class="w">    </span><span class="nt">driver-class-name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">org.postgresql.Driver</span>
+<span class="w">  </span><span class="nt">flyway</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">locations</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">classpath:db/migration</span>
+<span class="w">  </span><span class="nt">jpa</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">hibernate</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">ddl-auto</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">validate</span>
+<span class="w">    </span><span class="nt">show-sql</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">properties</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">hibernate</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">format_sql</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">devtools</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">livereload</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
+<span class="nt">springdoc</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">swagger-ui</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/swagger-ui.html</span>
 
-logging:
-  level:
-    pe.edu.upeu.catalogo: DEBUG
+<span class="nt">logging</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">level</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">pe.edu.upeu.catalogo</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DEBUG</span>
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics
-  endpoint:
-    health:
-      show-details: always
-</code></pre>
+<span class="nt">management</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">endpoints</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">web</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">exposure</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health,info,metrics</span>
+<span class="w">  </span><span class="nt">endpoint</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">health</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">show-details</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always</span>
+</code></pre></div>
 <p>Con <code>server.port: 0</code>, Spring Boot asigna un puerto libre automáticamente. Esto permite levantar varias instancias del mismo microservicio en paralelo sin cambiar el archivo de configuración.</p>
 <p>En DEV, Flyway queda activo y ejecuta automáticamente <code>V1__create_categorias_table.sql</code> al arrancar la aplicación. JPA/Hibernate no crea tablas; solo valida que la entidad coincida con la estructura de la base de datos mediante <code>ddl-auto: validate</code>.</p>
 <p>En S2 esta configuración se moverá progresivamente al Config Server. En S1 se mantiene local para que el alumno entienda primero qué necesita el microservicio para arrancar.</p>
-<h4 id="326-crear-un-endpoint-temporal-de-saludo">3.2.6 Crear un endpoint temporal de saludo</h4>
+<h4 id="326-crear-un-endpoint-temporal-de-saludo">3.2.6 Crear un endpoint temporal de saludo<a class="headerlink" href="#326-crear-un-endpoint-temporal-de-saludo" title="Permanent link">&para;</a></h4>
 <p>Antes del CRUD, crea un controlador mínimo para comprobar que la aplicación web responde.</p>
 <p>Archivo: <code>src/main/java/com/upeu/catalogo/controller/SaludoController.java</code></p>
-<pre><code class="language-java">package pe.edu.upeu.catalogo.controller;
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.controller</span><span class="p">;</span>
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.web.bind.annotation.GetMapping</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="p">;</span>
 
-@RestController
-public class SaludoController {
+<span class="nd">@RestController</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SaludoController</span><span class="w"> </span><span class="p">{</span>
 
-    @GetMapping(&quot;/saludo&quot;)
-    public String saludo() {
-        return &quot;catalogo-ms activo&quot;;
-    }
-}
-</code></pre>
+<span class="w">    </span><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">&quot;/saludo&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">saludo</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;catalogo-ms activo&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
 <p>Este endpoint es temporal para validar el arranque web. Luego el foco pasará al CRUD de categorías.</p>
-<h4 id="327-ejecutar-y-comprobar-que-ya-no-falla">3.2.7 Ejecutar y comprobar que ya no falla</h4>
+<h4 id="327-ejecutar-y-comprobar-que-ya-no-falla">3.2.7 Ejecutar y comprobar que ya no falla<a class="headerlink" href="#327-ejecutar-y-comprobar-que-ya-no-falla" title="Permanent link">&para;</a></h4>
 <p>Antes de ejecutar la aplicación, comprueba desde la consola que PostgreSQL DEV está listo y que la base de datos existe.</p>
 <p>PowerShell / bash macOS/Linux:</p>
-<pre><code class="language-bash">docker exec -it pagatu-postgres-catalogo-dev psql -U pagatu -d pagatu_catalogo_db -c &quot;SELECT current_database();&quot;
-docker exec -it pagatu-postgres-catalogo-dev psql -U pagatu -d pagatu_catalogo_db -c &quot;\dt&quot;
-</code></pre>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-catalogo-dev<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_catalogo_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;SELECT current_database();&quot;</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-catalogo-dev<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_catalogo_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;\dt&quot;</span>
+</code></pre></div>
 <p>Resultado esperado:</p>
-<pre><code class="language-text">current_database
+<div class="highlight"><pre><span></span><code>current_database
 ------------------
 pagatu_catalogo_db
-</code></pre>
+</code></pre></div>
 <p>Si <code>\dt</code> muestra <code>Did not find any relations</code>, está bien en este momento: aún no se ha creado la tabla <code>categorias</code>.</p>
 <p>Con PostgreSQL DEV levantado y verificado, ejecuta la aplicación:</p>
-<pre><code class="language-powershell"># Windows (PowerShell o cmd)
-.\mvnw.cmd spring-boot:run
-</code></pre>
-<pre><code class="language-bash"># macOS / Linux
-./mvnw spring-boot:run
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="c"># Windows (PowerShell o cmd)</span>
+<span class="p">.\</span><span class="n">mvnw</span><span class="p">.</span><span class="n">cmd</span> <span class="n">spring-boot</span><span class="p">:</span><span class="n">run</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># macOS / Linux</span>
+./mvnw<span class="w"> </span>spring-boot:run
+</code></pre></div>
 <p>Prueba el endpoint:</p>
 <p>PowerShell:</p>
-<pre><code class="language-powershell">Invoke-RestMethod `
-  -Method Get `
-  -Uri &quot;http://localhost:&lt;puerto-asignado&gt;/saludo&quot;
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
+  <span class="n">-Method</span> <span class="n">Get</span> <span class="p">`</span>
+  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:&lt;puerto-asignado&gt;/saludo&quot;</span>
+</code></pre></div>
 <p>bash macOS/Linux:</p>
-<pre><code class="language-bash">curl http://localhost:&lt;puerto-asignado&gt;/saludo
-</code></pre>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:&lt;puerto-asignado&gt;/saludo
+</code></pre></div>
 <p>Resultado esperado:</p>
-<pre><code class="language-text">catalogo-ms activo
-</code></pre>
+<div class="highlight"><pre><span></span><code>catalogo-ms activo
+</code></pre></div>
 <p>También puedes revisar Swagger usando el puerto que aparezca en la consola de arranque:</p>
-<pre><code class="language-text">http://localhost:&lt;puerto-asignado&gt;/swagger-ui/index.html
-</code></pre>
+<div class="highlight"><pre><span></span><code>http://localhost:&lt;puerto-asignado&gt;/swagger-ui/index.html
+</code></pre></div>
 <p><strong>Evidencia de cierre del paso 3.2</strong></p>
 <ul>
 <li>Proyecto creado en <code>services/catalogo-ms</code>.</li>
@@ -2942,10 +2939,10 @@ pagatu_catalogo_db
 <li><code>application-dev.yml</code> con puerto dinámico y conexión a PostgreSQL DEV.</li>
 <li>Endpoint <code>/saludo</code> respondiendo.</li>
 </ul>
-<h3 id="33-construir-el-crud-de-categoria">3.3 Construir el CRUD de <code>Categoria</code></h3>
+<h3 id="33-construir-el-crud-de-categoria">3.3 Construir el CRUD de <code>Categoria</code><a class="headerlink" href="#33-construir-el-crud-de-categoria" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> CRUD de <code>Categoria</code> incorporado en <code>catalogo-ms</code>, incluyendo entidad, capas de aplicación, validaciones, filtro de trazabilidad y migración de base de datos, escritos directamente por el estudiante (sin depender de un repositorio externo).</p>
 <p>En esta sesión se trabajará con la entidad <code>Categoria</code> como primer recurso del microservicio <code>catalogo-ms</code>. La entidad representa la tabla <code>categorias</code> y será la base para construir el CRUD. Cada archivo de este paso se crea directamente dentro de <code>services/catalogo-ms/src/main/java/com/upeu/catalogo</code> (o en <code>src/main/resources</code> cuando corresponda), siguiendo la misma estructura de carpetas usada en todo el curso:</p>
-<pre><code class="language-text">config
+<div class="highlight"><pre><span></span><code>config
 controller
 dto
 entity
@@ -2954,351 +2951,351 @@ filter
 mapper
 repository
 service
-</code></pre>
-<h4 id="331-crear-la-entidad-categoria">3.3.1 Crear la entidad <code>Categoria</code></h4>
+</code></pre></div>
+<h4 id="331-crear-la-entidad-categoria">3.3.1 Crear la entidad <code>Categoria</code><a class="headerlink" href="#331-crear-la-entidad-categoria" title="Permanent link">&para;</a></h4>
 <p>Archivo: <code>entity/Categoria.java</code></p>
-<pre><code class="language-java">package pe.edu.upeu.catalogo.entity;
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.entity</span><span class="p">;</span>
 
-import jakarta.persistence.*;
-import lombok.*;
+<span class="kn">import</span><span class="w"> </span><span class="nn">jakarta.persistence.*</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lombok.*</span><span class="p">;</span>
 
-@Entity
-@Table(name = &quot;categorias&quot;)
-@Getter
-@Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class Categoria {
+<span class="nd">@Entity</span>
+<span class="nd">@Table</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;categorias&quot;</span><span class="p">)</span>
+<span class="nd">@Getter</span>
+<span class="nd">@Setter</span>
+<span class="nd">@Builder</span>
+<span class="nd">@NoArgsConstructor</span>
+<span class="nd">@AllArgsConstructor</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Categoria</span><span class="w"> </span><span class="p">{</span>
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+<span class="w">    </span><span class="nd">@Id</span>
+<span class="w">    </span><span class="nd">@GeneratedValue</span><span class="p">(</span><span class="n">strategy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GenerationType</span><span class="p">.</span><span class="na">IDENTITY</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">;</span>
 
-    @Column(name = &quot;nombre&quot;, nullable = false, length = 100)
-    private String nombre;
+<span class="w">    </span><span class="nd">@Column</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;nombre&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">nullable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">nombre</span><span class="p">;</span>
 
-    @Column(name = &quot;descripcion&quot;, length = 255)
-    private String descripcion;
-}
-</code></pre>
-<h4 id="332-crear-el-repositorio-los-dto-y-el-mapper">3.3.2 Crear el repositorio, los DTO y el mapper</h4>
+<span class="w">    </span><span class="nd">@Column</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;descripcion&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">255</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">descripcion</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<h4 id="332-crear-el-repositorio-los-dto-y-el-mapper">3.3.2 Crear el repositorio, los DTO y el mapper<a class="headerlink" href="#332-crear-el-repositorio-los-dto-y-el-mapper" title="Permanent link">&para;</a></h4>
 <p>Archivo: <code>repository/CategoriaRepository.java</code></p>
-<pre><code class="language-java">package pe.edu.upeu.catalogo.repository;
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.repository</span><span class="p">;</span>
 
-import pe.edu.upeu.catalogo.entity.Categoria;
-import org.springframework.data.jpa.repository.JpaRepository;
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.entity.Categoria</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.data.jpa.repository.JpaRepository</span><span class="p">;</span>
 
-public interface CategoriaRepository extends JpaRepository&lt;Categoria, Long&gt; {
-}
-</code></pre>
+<span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">CategoriaRepository</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">JpaRepository</span><span class="o">&lt;</span><span class="n">Categoria</span><span class="p">,</span><span class="w"> </span><span class="n">Long</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="p">}</span>
+</code></pre></div>
 <p>Archivo: <code>dto/CategoriaRequest.java</code></p>
-<pre><code class="language-java">package pe.edu.upeu.catalogo.dto;
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.dto</span><span class="p">;</span>
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+<span class="kn">import</span><span class="w"> </span><span class="nn">jakarta.validation.constraints.NotBlank</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jakarta.validation.constraints.Size</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lombok.Getter</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lombok.Setter</span><span class="p">;</span>
 
-@Getter
-@Setter
-public class CategoriaRequest {
+<span class="nd">@Getter</span>
+<span class="nd">@Setter</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CategoriaRequest</span><span class="w"> </span><span class="p">{</span>
 
-    @NotBlank
-    @Size(max = 100)
-    private String nombre;
+<span class="w">    </span><span class="nd">@NotBlank</span>
+<span class="w">    </span><span class="nd">@Size</span><span class="p">(</span><span class="n">max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">nombre</span><span class="p">;</span>
 
-    @Size(max = 255)
-    private String descripcion;
-}
-</code></pre>
+<span class="w">    </span><span class="nd">@Size</span><span class="p">(</span><span class="n">max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">255</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">descripcion</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
 <p>Archivo: <code>dto/CategoriaResponse.java</code></p>
-<pre><code class="language-java">package pe.edu.upeu.catalogo.dto;
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.dto</span><span class="p">;</span>
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+<span class="kn">import</span><span class="w"> </span><span class="nn">lombok.AllArgsConstructor</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lombok.Builder</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lombok.Getter</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lombok.NoArgsConstructor</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lombok.Setter</span><span class="p">;</span>
 
-@Getter
-@Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class CategoriaResponse {
-    private Long id;
-    private String nombre;
-    private String descripcion;
-}
-</code></pre>
+<span class="nd">@Getter</span>
+<span class="nd">@Setter</span>
+<span class="nd">@Builder</span>
+<span class="nd">@NoArgsConstructor</span>
+<span class="nd">@AllArgsConstructor</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CategoriaResponse</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">nombre</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">descripcion</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
 <p>Archivo: <code>mapper/CategoriaMapper.java</code></p>
-<pre><code class="language-java">package pe.edu.upeu.catalogo.mapper;
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.mapper</span><span class="p">;</span>
 
-import pe.edu.upeu.catalogo.dto.CategoriaRequest;
-import pe.edu.upeu.catalogo.dto.CategoriaResponse;
-import pe.edu.upeu.catalogo.entity.Categoria;
-import org.springframework.stereotype.Component;
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.dto.CategoriaRequest</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.dto.CategoriaResponse</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.entity.Categoria</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.stereotype.Component</span><span class="p">;</span>
 
-@Component
-public class CategoriaMapper {
+<span class="nd">@Component</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CategoriaMapper</span><span class="w"> </span><span class="p">{</span>
 
-    public Categoria toEntity(CategoriaRequest request) {
-        return Categoria.builder()
-                .nombre(request.getNombre())
-                .descripcion(request.getDescripcion())
-                .build();
-    }
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Categoria</span><span class="w"> </span><span class="nf">toEntity</span><span class="p">(</span><span class="n">CategoriaRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Categoria</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">                </span><span class="p">.</span><span class="na">nombre</span><span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="na">getNombre</span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="na">descripcion</span><span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="na">getDescripcion</span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
 
-    public CategoriaResponse toResponse(Categoria categoria) {
-        return CategoriaResponse.builder()
-                .id(categoria.getId())
-                .nombre(categoria.getNombre())
-                .descripcion(categoria.getDescripcion())
-                .build();
-    }
-}
-</code></pre>
-<h4 id="333-crear-las-excepciones-y-el-manejador-global-de-errores">3.3.3 Crear las excepciones y el manejador global de errores</h4>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">CategoriaResponse</span><span class="w"> </span><span class="nf">toResponse</span><span class="p">(</span><span class="n">Categoria</span><span class="w"> </span><span class="n">categoria</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">CategoriaResponse</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">                </span><span class="p">.</span><span class="na">id</span><span class="p">(</span><span class="n">categoria</span><span class="p">.</span><span class="na">getId</span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="na">nombre</span><span class="p">(</span><span class="n">categoria</span><span class="p">.</span><span class="na">getNombre</span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="na">descripcion</span><span class="p">(</span><span class="n">categoria</span><span class="p">.</span><span class="na">getDescripcion</span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h4 id="333-crear-las-excepciones-y-el-manejador-global-de-errores">3.3.3 Crear las excepciones y el manejador global de errores<a class="headerlink" href="#333-crear-las-excepciones-y-el-manejador-global-de-errores" title="Permanent link">&para;</a></h4>
 <p>Archivo: <code>exception/ResourceNotFoundException.java</code></p>
-<pre><code class="language-java">package pe.edu.upeu.catalogo.exception;
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.exception</span><span class="p">;</span>
 
-public class ResourceNotFoundException extends RuntimeException {
-    public ResourceNotFoundException(String mensaje) {
-        super(mensaje);
-    }
-}
-</code></pre>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ResourceNotFoundException</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">RuntimeException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">ResourceNotFoundException</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">mensaje</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">super</span><span class="p">(</span><span class="n">mensaje</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
 <p>Archivo: <code>exception/GlobalExceptionHandler.java</code></p>
-<pre><code class="language-java">package pe.edu.upeu.catalogo.exception;
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.exception</span><span class="p">;</span>
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.http.HttpStatus</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.http.ResponseEntity</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.web.bind.MethodArgumentNotValidException</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.web.bind.annotation.ExceptionHandler</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.web.bind.annotation.RestControllerAdvice</span><span class="p">;</span>
 
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.time.Instant</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.HashMap</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.Map</span><span class="p">;</span>
 
-@RestControllerAdvice
-public class GlobalExceptionHandler {
+<span class="nd">@RestControllerAdvice</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">GlobalExceptionHandler</span><span class="w"> </span><span class="p">{</span>
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; handleNotFound(ResourceNotFoundException ex) {
-        Map&lt;String, Object&gt; body = new HashMap&lt;&gt;();
-        body.put(&quot;timestamp&quot;, Instant.now().toString());
-        body.put(&quot;status&quot;, HttpStatus.NOT_FOUND.value());
-        body.put(&quot;error&quot;, &quot;Not Found&quot;);
-        body.put(&quot;message&quot;, ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
-    }
+<span class="w">    </span><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">ResourceNotFoundException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="nf">handleNotFound</span><span class="p">(</span><span class="n">ResourceNotFoundException</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;timestamp&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">());</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;status&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">NOT_FOUND</span><span class="p">.</span><span class="na">value</span><span class="p">());</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;error&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Not Found&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;message&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ex</span><span class="p">.</span><span class="na">getMessage</span><span class="p">());</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">NOT_FOUND</span><span class="p">).</span><span class="na">body</span><span class="p">(</span><span class="n">body</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; handleValidation(MethodArgumentNotValidException ex) {
-        Map&lt;String, Object&gt; body = new HashMap&lt;&gt;();
-        body.put(&quot;timestamp&quot;, Instant.now().toString());
-        body.put(&quot;status&quot;, HttpStatus.BAD_REQUEST.value());
-        body.put(&quot;error&quot;, &quot;Bad Request&quot;);
-        body.put(&quot;message&quot;, &quot;Error de validación en los datos enviados&quot;);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
-    }
-}
-</code></pre>
-<h4 id="334-crear-el-servicio-de-aplicacion">3.3.4 Crear el servicio de aplicación</h4>
+<span class="w">    </span><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">MethodArgumentNotValidException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="nf">handleValidation</span><span class="p">(</span><span class="n">MethodArgumentNotValidException</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;timestamp&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">());</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;status&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">BAD_REQUEST</span><span class="p">.</span><span class="na">value</span><span class="p">());</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;error&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Bad Request&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;message&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Error de validación en los datos enviados&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">BAD_REQUEST</span><span class="p">).</span><span class="na">body</span><span class="p">(</span><span class="n">body</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h4 id="334-crear-el-servicio-de-aplicacion">3.3.4 Crear el servicio de aplicación<a class="headerlink" href="#334-crear-el-servicio-de-aplicacion" title="Permanent link">&para;</a></h4>
 <p>Archivo: <code>service/CategoriaService.java</code></p>
-<pre><code class="language-java">package pe.edu.upeu.catalogo.service;
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.service</span><span class="p">;</span>
 
-import pe.edu.upeu.catalogo.dto.CategoriaRequest;
-import pe.edu.upeu.catalogo.dto.CategoriaResponse;
-import pe.edu.upeu.catalogo.entity.Categoria;
-import pe.edu.upeu.catalogo.exception.ResourceNotFoundException;
-import pe.edu.upeu.catalogo.mapper.CategoriaMapper;
-import pe.edu.upeu.catalogo.repository.CategoriaRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.dto.CategoriaRequest</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.dto.CategoriaResponse</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.entity.Categoria</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.exception.ResourceNotFoundException</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.mapper.CategoriaMapper</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.repository.CategoriaRepository</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lombok.RequiredArgsConstructor</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.stereotype.Service</span><span class="p">;</span>
 
-import java.util.List;
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.List</span><span class="p">;</span>
 
-@Service
-@RequiredArgsConstructor
-public class CategoriaService {
+<span class="nd">@Service</span>
+<span class="nd">@RequiredArgsConstructor</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CategoriaService</span><span class="w"> </span><span class="p">{</span>
 
-    private final CategoriaRepository categoriaRepository;
-    private final CategoriaMapper categoriaMapper;
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">CategoriaRepository</span><span class="w"> </span><span class="n">categoriaRepository</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">CategoriaMapper</span><span class="w"> </span><span class="n">categoriaMapper</span><span class="p">;</span>
 
-    public List&lt;CategoriaResponse&gt; listar() {
-        return categoriaRepository.findAll().stream()
-                .map(categoriaMapper::toResponse)
-                .toList();
-    }
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">CategoriaResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">listar</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">categoriaRepository</span><span class="p">.</span><span class="na">findAll</span><span class="p">().</span><span class="na">stream</span><span class="p">()</span>
+<span class="w">                </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">categoriaMapper</span><span class="p">::</span><span class="n">toResponse</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">toList</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
 
-    public CategoriaResponse obtener(Long id) {
-        return categoriaMapper.toResponse(buscarOFallar(id));
-    }
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">CategoriaResponse</span><span class="w"> </span><span class="nf">obtener</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">categoriaMapper</span><span class="p">.</span><span class="na">toResponse</span><span class="p">(</span><span class="n">buscarOFallar</span><span class="p">(</span><span class="n">id</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
 
-    public CategoriaResponse crear(CategoriaRequest request) {
-        Categoria categoria = categoriaMapper.toEntity(request);
-        return categoriaMapper.toResponse(categoriaRepository.save(categoria));
-    }
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">CategoriaResponse</span><span class="w"> </span><span class="nf">crear</span><span class="p">(</span><span class="n">CategoriaRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Categoria</span><span class="w"> </span><span class="n">categoria</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">categoriaMapper</span><span class="p">.</span><span class="na">toEntity</span><span class="p">(</span><span class="n">request</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">categoriaMapper</span><span class="p">.</span><span class="na">toResponse</span><span class="p">(</span><span class="n">categoriaRepository</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">categoria</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
 
-    public CategoriaResponse actualizar(Long id, CategoriaRequest request) {
-        Categoria categoria = buscarOFallar(id);
-        categoria.setNombre(request.getNombre());
-        categoria.setDescripcion(request.getDescripcion());
-        return categoriaMapper.toResponse(categoriaRepository.save(categoria));
-    }
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">CategoriaResponse</span><span class="w"> </span><span class="nf">actualizar</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">CategoriaRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Categoria</span><span class="w"> </span><span class="n">categoria</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">buscarOFallar</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+<span class="w">        </span><span class="n">categoria</span><span class="p">.</span><span class="na">setNombre</span><span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="na">getNombre</span><span class="p">());</span>
+<span class="w">        </span><span class="n">categoria</span><span class="p">.</span><span class="na">setDescripcion</span><span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="na">getDescripcion</span><span class="p">());</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">categoriaMapper</span><span class="p">.</span><span class="na">toResponse</span><span class="p">(</span><span class="n">categoriaRepository</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">categoria</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
 
-    public void eliminar(Long id) {
-        categoriaRepository.delete(buscarOFallar(id));
-    }
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">eliminar</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">categoriaRepository</span><span class="p">.</span><span class="na">delete</span><span class="p">(</span><span class="n">buscarOFallar</span><span class="p">(</span><span class="n">id</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
 
-    private Categoria buscarOFallar(Long id) {
-        return categoriaRepository.findById(id)
-                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Categoria no encontrada: &quot; + id));
-    }
-}
-</code></pre>
-<h4 id="335-crear-el-controlador-rest">3.3.5 Crear el controlador REST</h4>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Categoria</span><span class="w"> </span><span class="nf">buscarOFallar</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">categoriaRepository</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">orElseThrow</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ResourceNotFoundException</span><span class="p">(</span><span class="s">&quot;Categoria no encontrada: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">id</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h4 id="335-crear-el-controlador-rest">3.3.5 Crear el controlador REST<a class="headerlink" href="#335-crear-el-controlador-rest" title="Permanent link">&para;</a></h4>
 <p>Archivo: <code>controller/CategoriaController.java</code></p>
-<pre><code class="language-java">package pe.edu.upeu.catalogo.controller;
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.controller</span><span class="p">;</span>
 
-import pe.edu.upeu.catalogo.dto.CategoriaRequest;
-import pe.edu.upeu.catalogo.dto.CategoriaResponse;
-import pe.edu.upeu.catalogo.service.CategoriaService;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.dto.CategoriaRequest</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.dto.CategoriaResponse</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.service.CategoriaService</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jakarta.validation.Valid</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lombok.RequiredArgsConstructor</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.http.HttpStatus</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.web.bind.annotation.*</span><span class="p">;</span>
 
-import java.util.List;
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.List</span><span class="p">;</span>
 
-@RestController
-@RequestMapping(&quot;/api/categorias&quot;)
-@RequiredArgsConstructor
-public class CategoriaController {
+<span class="nd">@RestController</span>
+<span class="nd">@RequestMapping</span><span class="p">(</span><span class="s">&quot;/api/categorias&quot;</span><span class="p">)</span>
+<span class="nd">@RequiredArgsConstructor</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CategoriaController</span><span class="w"> </span><span class="p">{</span>
 
-    private final CategoriaService categoriaService;
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">CategoriaService</span><span class="w"> </span><span class="n">categoriaService</span><span class="p">;</span>
 
-    @GetMapping
-    public List&lt;CategoriaResponse&gt; listar() {
-        return categoriaService.listar();
-    }
+<span class="w">    </span><span class="nd">@GetMapping</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">CategoriaResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">listar</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">categoriaService</span><span class="p">.</span><span class="na">listar</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
 
-    @GetMapping(&quot;/{id}&quot;)
-    public CategoriaResponse obtener(@PathVariable Long id) {
-        return categoriaService.obtener(id);
-    }
+<span class="w">    </span><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">&quot;/{id}&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">CategoriaResponse</span><span class="w"> </span><span class="nf">obtener</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">categoriaService</span><span class="p">.</span><span class="na">obtener</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public CategoriaResponse crear(@Valid @RequestBody CategoriaRequest request) {
-        return categoriaService.crear(request);
-    }
+<span class="w">    </span><span class="nd">@PostMapping</span>
+<span class="w">    </span><span class="nd">@ResponseStatus</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">CREATED</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">CategoriaResponse</span><span class="w"> </span><span class="nf">crear</span><span class="p">(</span><span class="nd">@Valid</span><span class="w"> </span><span class="nd">@RequestBody</span><span class="w"> </span><span class="n">CategoriaRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">categoriaService</span><span class="p">.</span><span class="na">crear</span><span class="p">(</span><span class="n">request</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
 
-    @PutMapping(&quot;/{id}&quot;)
-    public CategoriaResponse actualizar(@PathVariable Long id, @Valid @RequestBody CategoriaRequest request) {
-        return categoriaService.actualizar(id, request);
-    }
+<span class="w">    </span><span class="nd">@PutMapping</span><span class="p">(</span><span class="s">&quot;/{id}&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">CategoriaResponse</span><span class="w"> </span><span class="nf">actualizar</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="nd">@Valid</span><span class="w"> </span><span class="nd">@RequestBody</span><span class="w"> </span><span class="n">CategoriaRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">categoriaService</span><span class="p">.</span><span class="na">actualizar</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
 
-    @DeleteMapping(&quot;/{id}&quot;)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void eliminar(@PathVariable Long id) {
-        categoriaService.eliminar(id);
-    }
-}
-</code></pre>
+<span class="w">    </span><span class="nd">@DeleteMapping</span><span class="p">(</span><span class="s">&quot;/{id}&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="nd">@ResponseStatus</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">NO_CONTENT</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">eliminar</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">categoriaService</span><span class="p">.</span><span class="na">eliminar</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
 <p>La validación evita que el microservicio acepte datos incompletos antes de llegar a la base de datos: <code>@NotBlank</code> y <code>@Size(max = 100)</code> en <code>nombre</code> (dto/CategoriaRequest.java) junto con <code>@Valid</code> en el controlador rechazan con HTTP 400 cualquier solicitud sin nombre o con un nombre demasiado largo.</p>
-<h4 id="336-crear-el-filtro-de-trazabilidad-correlationidfilter-y-configurar-logs">3.3.6 Crear el filtro de trazabilidad <code>CorrelationIdFilter</code> y configurar logs</h4>
+<h4 id="336-crear-el-filtro-de-trazabilidad-correlationidfilter-y-configurar-logs">3.3.6 Crear el filtro de trazabilidad <code>CorrelationIdFilter</code> y configurar logs<a class="headerlink" href="#336-crear-el-filtro-de-trazabilidad-correlationidfilter-y-configurar-logs" title="Permanent link">&para;</a></h4>
 <p>Este filtro agrega un identificador de trazabilidad a cada request usando el header <code>X-Trace-ID</code>. Si el cliente no lo envía, el filtro genera un UUID.</p>
 <p>En S1 la trazabilidad es interna al microservicio:</p>
-<pre><code class="language-text">Cliente shell / Swagger -&gt; Controller -&gt; Service -&gt; Repository -&gt; BD
-</code></pre>
+<div class="highlight"><pre><span></span><code>Cliente shell / Swagger -&gt; Controller -&gt; Service -&gt; Repository -&gt; BD
+</code></pre></div>
 <p>Todos los logs producidos durante esa petición pueden compartir el mismo <code>traceId</code>.</p>
 <p>Archivo: <code>filter/CorrelationIdFilter.java</code></p>
-<pre><code class="language-java">package pe.edu.upeu.catalogo.filter;
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.filter</span><span class="p">;</span>
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.MDC;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
+<span class="kn">import</span><span class="w"> </span><span class="nn">jakarta.servlet.FilterChain</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jakarta.servlet.ServletException</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jakarta.servlet.http.HttpServletRequest</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jakarta.servlet.http.HttpServletResponse</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.slf4j.MDC</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.stereotype.Component</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.web.filter.OncePerRequestFilter</span><span class="p">;</span>
 
-import java.io.IOException;
-import java.util.UUID;
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.io.IOException</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.UUID</span><span class="p">;</span>
 
-@Component
-public class CorrelationIdFilter extends OncePerRequestFilter {
+<span class="nd">@Component</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CorrelationIdFilter</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">OncePerRequestFilter</span><span class="w"> </span><span class="p">{</span>
 
-    public static final String TRACE_ID_HEADER = &quot;X-Trace-ID&quot;;
-    public static final String MDC_KEY = &quot;traceId&quot;;
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">TRACE_ID_HEADER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;X-Trace-ID&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">MDC_KEY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;traceId&quot;</span><span class="p">;</span>
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                     HttpServletResponse response,
-                                     FilterChain filterChain) throws ServletException, IOException {
-        String traceId = request.getHeader(TRACE_ID_HEADER);
-        if (traceId == null || traceId.isBlank()) {
-            traceId = UUID.randomUUID().toString();
-        }
-        try {
-            MDC.put(MDC_KEY, traceId);
-            response.setHeader(TRACE_ID_HEADER, traceId);
-            filterChain.doFilter(request, response);
-        } finally {
-            MDC.remove(MDC_KEY);
-        }
-    }
-}
-</code></pre>
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">doFilterInternal</span><span class="p">(</span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">,</span>
+<span class="w">                                     </span><span class="n">HttpServletResponse</span><span class="w"> </span><span class="n">response</span><span class="p">,</span>
+<span class="w">                                     </span><span class="n">FilterChain</span><span class="w"> </span><span class="n">filterChain</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">ServletException</span><span class="p">,</span><span class="w"> </span><span class="n">IOException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">traceId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">getHeader</span><span class="p">(</span><span class="n">TRACE_ID_HEADER</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">traceId</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">traceId</span><span class="p">.</span><span class="na">isBlank</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">traceId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UUID</span><span class="p">.</span><span class="na">randomUUID</span><span class="p">().</span><span class="na">toString</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">MDC</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">MDC_KEY</span><span class="p">,</span><span class="w"> </span><span class="n">traceId</span><span class="p">);</span>
+<span class="w">            </span><span class="n">response</span><span class="p">.</span><span class="na">setHeader</span><span class="p">(</span><span class="n">TRACE_ID_HEADER</span><span class="p">,</span><span class="w"> </span><span class="n">traceId</span><span class="p">);</span>
+<span class="w">            </span><span class="n">filterChain</span><span class="p">.</span><span class="na">doFilter</span><span class="p">(</span><span class="n">request</span><span class="p">,</span><span class="w"> </span><span class="n">response</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">MDC</span><span class="p">.</span><span class="na">remove</span><span class="p">(</span><span class="n">MDC_KEY</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
 <p>Crea también <code>src/main/resources/logback-spring.xml</code>. Este archivo define el formato de logs e incluye el <code>traceId</code> en cada línea (<code>[%X{traceId}]</code>), con salida por consola y por archivo en <code>logs/catalogo.log</code>:</p>
-<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;configuration&gt;
-    &lt;include resource=&quot;org/springframework/boot/logging/logback/defaults.xml&quot;/&gt;
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;configuration&gt;</span>
+<span class="w">    </span><span class="nt">&lt;include</span><span class="w"> </span><span class="na">resource=</span><span class="s">&quot;org/springframework/boot/logging/logback/defaults.xml&quot;</span><span class="nt">/&gt;</span>
 
-    &lt;property name=&quot;LOG_PATTERN&quot;
-              value=&quot;%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId}] %-5level %logger{36} - %msg%n&quot;/&gt;
+<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;LOG_PATTERN&quot;</span>
+<span class="w">              </span><span class="na">value=</span><span class="s">&quot;%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId}] %-5level %logger{36} - %msg%n&quot;</span><span class="nt">/&gt;</span>
 
-    &lt;appender name=&quot;CONSOLE&quot; class=&quot;ch.qos.logback.core.ConsoleAppender&quot;&gt;
-        &lt;encoder&gt;
-            &lt;pattern&gt;${LOG_PATTERN}&lt;/pattern&gt;
-        &lt;/encoder&gt;
-    &lt;/appender&gt;
+<span class="w">    </span><span class="nt">&lt;appender</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;CONSOLE&quot;</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;ch.qos.logback.core.ConsoleAppender&quot;</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="nt">&lt;encoder&gt;</span>
+<span class="w">            </span><span class="nt">&lt;pattern&gt;</span>${LOG_PATTERN}<span class="nt">&lt;/pattern&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/encoder&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/appender&gt;</span>
 
-    &lt;appender name=&quot;FILE&quot; class=&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;&gt;
-        &lt;file&gt;logs/catalogo.log&lt;/file&gt;
-        &lt;encoder&gt;
-            &lt;pattern&gt;${LOG_PATTERN}&lt;/pattern&gt;
-        &lt;/encoder&gt;
-        &lt;rollingPolicy class=&quot;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&quot;&gt;
-            &lt;fileNamePattern&gt;logs/catalogo-%d{yyyy-MM-dd}.log&lt;/fileNamePattern&gt;
-            &lt;maxHistory&gt;7&lt;/maxHistory&gt;
-        &lt;/rollingPolicy&gt;
-    &lt;/appender&gt;
+<span class="w">    </span><span class="nt">&lt;appender</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;FILE&quot;</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="nt">&lt;file&gt;</span>logs/catalogo.log<span class="nt">&lt;/file&gt;</span>
+<span class="w">        </span><span class="nt">&lt;encoder&gt;</span>
+<span class="w">            </span><span class="nt">&lt;pattern&gt;</span>${LOG_PATTERN}<span class="nt">&lt;/pattern&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/encoder&gt;</span>
+<span class="w">        </span><span class="nt">&lt;rollingPolicy</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&quot;</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="nt">&lt;fileNamePattern&gt;</span>logs/catalogo-%d{yyyy-MM-dd}.log<span class="nt">&lt;/fileNamePattern&gt;</span>
+<span class="w">            </span><span class="nt">&lt;maxHistory&gt;</span>7<span class="nt">&lt;/maxHistory&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/rollingPolicy&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/appender&gt;</span>
 
-    &lt;root level=&quot;INFO&quot;&gt;
-        &lt;appender-ref ref=&quot;CONSOLE&quot;/&gt;
-        &lt;appender-ref ref=&quot;FILE&quot;/&gt;
-    &lt;/root&gt;
-&lt;/configuration&gt;
-</code></pre>
+<span class="w">    </span><span class="nt">&lt;root</span><span class="w"> </span><span class="na">level=</span><span class="s">&quot;INFO&quot;</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="nt">&lt;appender-ref</span><span class="w"> </span><span class="na">ref=</span><span class="s">&quot;CONSOLE&quot;</span><span class="nt">/&gt;</span>
+<span class="w">        </span><span class="nt">&lt;appender-ref</span><span class="w"> </span><span class="na">ref=</span><span class="s">&quot;FILE&quot;</span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/root&gt;</span>
+<span class="nt">&lt;/configuration&gt;</span>
+</code></pre></div>
 <p>Más adelante, cuando se agreguen Gateway, Feign o frontend, el mismo header <code>X-Trace-ID</code> podrá propagarse entre componentes para trazabilidad distribuida.</p>
-<h4 id="337-revisar-la-migracion-flyway">3.3.7 Revisar la migración Flyway</h4>
+<h4 id="337-revisar-la-migracion-flyway">3.3.7 Revisar la migración Flyway<a class="headerlink" href="#337-revisar-la-migracion-flyway" title="Permanent link">&para;</a></h4>
 <p>Crea la migración en <code>src/main/resources/db/migration/V1__create_categorias_table.sql</code>:</p>
-<pre><code class="language-sql">CREATE TABLE IF NOT EXISTS categorias (
-    id BIGINT GENERATED BY DEFAULT AS IDENTITY,
-    nombre VARCHAR(100) NOT NULL,
-    descripcion VARCHAR(255),
-    PRIMARY KEY (id)
-);
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">categorias</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="nb">BIGINT</span><span class="w"> </span><span class="k">GENERATED</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">IDENTITY</span><span class="p">,</span>
+<span class="w">    </span><span class="n">nombre</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">descripcion</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span>
+<span class="w">    </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<span class="p">);</span>
+</code></pre></div>
 <p>En DEV y PROD local, Flyway ejecuta esta migración automáticamente al arrancar la aplicación. Luego Hibernate valida que la entidad <code>Categoria</code> coincida con la tabla mediante <code>ddl-auto: validate</code>.</p>
-<h4 id="338-revisar-estructura-resultante">3.3.8 Revisar estructura resultante</h4>
+<h4 id="338-revisar-estructura-resultante">3.3.8 Revisar estructura resultante<a class="headerlink" href="#338-revisar-estructura-resultante" title="Permanent link">&para;</a></h4>
 <p>Después de crear los archivos anteriores, revisa que la estructura de <code>catalogo-ms</code> quede similar a:</p>
-<pre><code class="language-text">src/main/java/com/upeu/catalogo
+<div class="highlight"><pre><span></span><code>src/main/java/com/upeu/catalogo
   config/
   controller/
     CategoriaController.java
@@ -3324,9 +3321,9 @@ src/main/resources/db/migration
   V1__create_categorias_table.sql
 src/main/resources
   logback-spring.xml
-</code></pre>
+</code></pre></div>
 <p><code>config/</code> queda disponible para configuraciones locales del servicio (por ejemplo, un bean de OpenAPI); en S1 puede quedar vacío.</p>
-<h4 id="339-preguntas-de-verificacion-antes-de-ejecutar">3.3.9 Preguntas de verificación antes de ejecutar</h4>
+<h4 id="339-preguntas-de-verificacion-antes-de-ejecutar">3.3.9 Preguntas de verificación antes de ejecutar<a class="headerlink" href="#339-preguntas-de-verificacion-antes-de-ejecutar" title="Permanent link">&para;</a></h4>
 <p>Antes de ejecutar, la lectura del CRUD debe responder:</p>
 <ol>
 <li>¿Qué clase representa la tabla <code>categorias</code>?</li>
@@ -3338,142 +3335,142 @@ src/main/resources
 <li>¿Para qué sirve <code>CorrelationIdFilter</code>?</li>
 <li>¿Cómo aparece el <code>traceId</code> en los logs?</li>
 </ol>
-<h3 id="34-ejecutar-y-probar-el-microservicio-en-dev">3.4 Ejecutar y probar el microservicio en DEV</h3>
+<h3 id="34-ejecutar-y-probar-el-microservicio-en-dev">3.4 Ejecutar y probar el microservicio en DEV<a class="headerlink" href="#34-ejecutar-y-probar-el-microservicio-en-dev" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> microservicio ejecutando en desarrollo fuera del IDE, tabla <code>categorias</code> creada por Flyway, Swagger disponible, health activo y CRUD verificado por shell.</p>
-<h4 id="341-verificar-postgresql-dev">3.4.1 Verificar PostgreSQL DEV</h4>
+<h4 id="341-verificar-postgresql-dev">3.4.1 Verificar PostgreSQL DEV<a class="headerlink" href="#341-verificar-postgresql-dev" title="Permanent link">&para;</a></h4>
 <p>Verifica que PostgreSQL DEV siga activo:</p>
 <p>PowerShell / bash macOS/Linux:</p>
-<pre><code class="language-bash">docker ps
-</code></pre>
-<h4 id="342-ejecutar-con-maven-wrapper">3.4.2 Ejecutar con Maven Wrapper</h4>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>ps
+</code></pre></div>
+<h4 id="342-ejecutar-con-maven-wrapper">3.4.2 Ejecutar con Maven Wrapper<a class="headerlink" href="#342-ejecutar-con-maven-wrapper" title="Permanent link">&para;</a></h4>
 <p>Ejecuta el microservicio:</p>
-<pre><code class="language-powershell"># Windows (PowerShell o cmd)
-cd services/catalogo-ms
-.\mvnw.cmd spring-boot:run
-</code></pre>
-<pre><code class="language-bash"># macOS / Linux
-cd services/catalogo-ms
-./mvnw spring-boot:run
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="c"># Windows (PowerShell o cmd)</span>
+<span class="nb">cd </span><span class="n">services</span><span class="p">/</span><span class="n">catalogo-ms</span>
+<span class="p">.\</span><span class="n">mvnw</span><span class="p">.</span><span class="n">cmd</span> <span class="n">spring-boot</span><span class="p">:</span><span class="n">run</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># macOS / Linux</span>
+<span class="nb">cd</span><span class="w"> </span>services/catalogo-ms
+./mvnw<span class="w"> </span>spring-boot:run
+</code></pre></div>
 <p>En la consola identifica el puerto asignado por Spring Boot. Debes ver una línea similar a:</p>
-<pre><code class="language-text">Tomcat started on port XXXXX
-</code></pre>
-<h4 id="343-verificar-tabla-creada-por-flyway">3.4.3 Verificar tabla creada por Flyway</h4>
+<div class="highlight"><pre><span></span><code>Tomcat started on port XXXXX
+</code></pre></div>
+<h4 id="343-verificar-tabla-creada-por-flyway">3.4.3 Verificar tabla creada por Flyway<a class="headerlink" href="#343-verificar-tabla-creada-por-flyway" title="Permanent link">&para;</a></h4>
 <p>Luego verifica que Flyway haya creado la tabla en DEV:</p>
 <p>PowerShell / bash macOS/Linux:</p>
-<pre><code class="language-bash">docker exec -it pagatu-postgres-catalogo-dev psql -U pagatu -d pagatu_catalogo_db -c &quot;\dt&quot;
-docker exec -it pagatu-postgres-catalogo-dev psql -U pagatu -d pagatu_catalogo_db -c &quot;\d categorias&quot;
-</code></pre>
-<h4 id="344-revisar-swagger">3.4.4 Revisar Swagger</h4>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-catalogo-dev<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_catalogo_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;\dt&quot;</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-catalogo-dev<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_catalogo_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;\d categorias&quot;</span>
+</code></pre></div>
+<h4 id="344-revisar-swagger">3.4.4 Revisar Swagger<a class="headerlink" href="#344-revisar-swagger" title="Permanent link">&para;</a></h4>
 <p>Abre Swagger usando el puerto que aparece en la consola:</p>
-<pre><code class="language-text">http://localhost:&lt;puerto-asignado&gt;/swagger-ui/index.html
-</code></pre>
+<div class="highlight"><pre><span></span><code>http://localhost:&lt;puerto-asignado&gt;/swagger-ui/index.html
+</code></pre></div>
 <p>Verifica que aparezcan las operaciones del controlador de categorías.</p>
-<h4 id="345-verificar-health-y-metrics">3.4.5 Verificar health y metrics</h4>
+<h4 id="345-verificar-health-y-metrics">3.4.5 Verificar health y metrics<a class="headerlink" href="#345-verificar-health-y-metrics" title="Permanent link">&para;</a></h4>
 <p>Verifica <code>/actuator/health</code>:</p>
 <p>PowerShell:</p>
-<pre><code class="language-powershell">Invoke-RestMethod `
-  -Method Get `
-  -Uri &quot;http://localhost:&lt;puerto-asignado&gt;/actuator/health&quot;
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
+  <span class="n">-Method</span> <span class="n">Get</span> <span class="p">`</span>
+  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:&lt;puerto-asignado&gt;/actuator/health&quot;</span>
+</code></pre></div>
 <p>bash macOS/Linux:</p>
-<pre><code class="language-bash">curl http://localhost:&lt;puerto-asignado&gt;/actuator/health
-</code></pre>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:&lt;puerto-asignado&gt;/actuator/health
+</code></pre></div>
 <p>Verifica <code>/actuator/metrics</code>. Este endpoint solo requiere <code>spring-boot-starter-actuator</code>; no necesita una librería adicional.</p>
 <p>PowerShell:</p>
-<pre><code class="language-powershell">Invoke-RestMethod `
-  -Method Get `
-  -Uri &quot;http://localhost:&lt;puerto-asignado&gt;/actuator/metrics&quot;
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
+  <span class="n">-Method</span> <span class="n">Get</span> <span class="p">`</span>
+  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:&lt;puerto-asignado&gt;/actuator/metrics&quot;</span>
+</code></pre></div>
 <p>bash macOS/Linux:</p>
-<pre><code class="language-bash">curl http://localhost:&lt;puerto-asignado&gt;/actuator/metrics
-</code></pre>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:&lt;puerto-asignado&gt;/actuator/metrics
+</code></pre></div>
 <p>También puedes consultar una métrica específica:</p>
 <p>PowerShell:</p>
-<pre><code class="language-powershell">Invoke-RestMethod `
-  -Method Get `
-  -Uri &quot;http://localhost:&lt;puerto-asignado&gt;/actuator/metrics/jvm.memory.used&quot;
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
+  <span class="n">-Method</span> <span class="n">Get</span> <span class="p">`</span>
+  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:&lt;puerto-asignado&gt;/actuator/metrics/jvm.memory.used&quot;</span>
+</code></pre></div>
 <p>bash macOS/Linux:</p>
-<pre><code class="language-bash">curl http://localhost:&lt;puerto-asignado&gt;/actuator/metrics/jvm.memory.used
-</code></pre>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:&lt;puerto-asignado&gt;/actuator/metrics/jvm.memory.used
+</code></pre></div>
 <p>Nota: para exponer <code>/actuator/prometheus</code> se requiere agregar <code>micrometer-registry-prometheus</code>.</p>
-<h4 id="346-probar-crud-por-shell">3.4.6 Probar CRUD por shell</h4>
+<h4 id="346-probar-crud-por-shell">3.4.6 Probar CRUD por shell<a class="headerlink" href="#346-probar-crud-por-shell" title="Permanent link">&para;</a></h4>
 <p>Crea una categoría:</p>
 <p>PowerShell:</p>
-<pre><code class="language-powershell">Invoke-RestMethod `
-  -Method Post `
-  -Uri &quot;http://localhost:&lt;puerto-asignado&gt;/api/categorias&quot; `
-  -ContentType &quot;application/json&quot; `
-  -Body '{&quot;nombre&quot;:&quot;Electrodomesticos&quot;,&quot;descripcion&quot;:&quot;Linea blanca y pequenos electrodomesticos&quot;}'
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
+  <span class="n">-Method</span> <span class="n">Post</span> <span class="p">`</span>
+  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:&lt;puerto-asignado&gt;/api/categorias&quot;</span> <span class="p">`</span>
+  <span class="n">-ContentType</span> <span class="s2">&quot;application/json&quot;</span> <span class="p">`</span>
+  <span class="n">-Body</span> <span class="s1">&#39;{&quot;nombre&quot;:&quot;Electrodomesticos&quot;,&quot;descripcion&quot;:&quot;Linea blanca y pequenos electrodomesticos&quot;}&#39;</span>
+</code></pre></div>
 <p>bash macOS/Linux:</p>
-<pre><code class="language-bash">curl -X POST http://localhost:&lt;puerto-asignado&gt;/api/categorias \
-  -H &quot;Content-Type: application/json&quot; \
-  -d '{&quot;nombre&quot;:&quot;Electrodomesticos&quot;,&quot;descripcion&quot;:&quot;Linea blanca y pequenos electrodomesticos&quot;}'
-</code></pre>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:&lt;puerto-asignado&gt;/api/categorias<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;nombre&quot;:&quot;Electrodomesticos&quot;,&quot;descripcion&quot;:&quot;Linea blanca y pequenos electrodomesticos&quot;}&#39;</span>
+</code></pre></div>
 <p>Lista todas las categorías:</p>
-<pre><code class="language-bash">curl http://localhost:&lt;puerto-asignado&gt;/api/categorias
-</code></pre>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:&lt;puerto-asignado&gt;/api/categorias
+</code></pre></div>
 <p>Obtiene una categoría por id:</p>
-<pre><code class="language-bash">curl http://localhost:&lt;puerto-asignado&gt;/api/categorias/1
-</code></pre>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:&lt;puerto-asignado&gt;/api/categorias/1
+</code></pre></div>
 <p>Actualiza una categoría:</p>
-<pre><code class="language-bash">curl -X PUT http://localhost:&lt;puerto-asignado&gt;/api/categorias/1 \
-  -H &quot;Content-Type: application/json&quot; \
-  -d '{&quot;nombre&quot;:&quot;Electrodomesticos&quot;,&quot;descripcion&quot;:&quot;Linea blanca, pequenos y grandes electrodomesticos&quot;}'
-</code></pre>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>http://localhost:&lt;puerto-asignado&gt;/api/categorias/1<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;nombre&quot;:&quot;Electrodomesticos&quot;,&quot;descripcion&quot;:&quot;Linea blanca, pequenos y grandes electrodomesticos&quot;}&#39;</span>
+</code></pre></div>
 <p>Elimina una categoría:</p>
-<pre><code class="language-bash">curl -X DELETE http://localhost:&lt;puerto-asignado&gt;/api/categorias/1
-</code></pre>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>DELETE<span class="w"> </span>http://localhost:&lt;puerto-asignado&gt;/api/categorias/1
+</code></pre></div>
 <p>Prueba también un caso de validación fallida (sin <code>nombre</code>) y confirma que responde HTTP 400, y una consulta a un <code>id</code> inexistente y confirma que responde HTTP 404.</p>
-<h3 id="35-simular-escalamiento-horizontal-multiples-instancias">3.5 Simular escalamiento horizontal (múltiples instancias)</h3>
+<h3 id="35-simular-escalamiento-horizontal-multiples-instancias">3.5 Simular escalamiento horizontal (múltiples instancias)<a class="headerlink" href="#35-simular-escalamiento-horizontal-multiples-instancias" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> dos instancias de <code>catalogo-ms</code> corriendo al mismo tiempo, cada una en un puerto distinto, ambas conectadas a la misma PostgreSQL DEV.</p>
 <p>Un microservicio distribuido debe poder escalar horizontalmente: correr varias copias idénticas a la vez, cada una en su propio puerto, sin configuración fija que las haga chocar. Como <code>application-dev.yml</code> ya usa <code>server.port: 0</code>, Spring Boot le pide al sistema operativo un puerto libre cualquiera cada vez que arranca, en vez de uno fijo — por eso puedes levantar una segunda instancia sin tocar la configuración.</p>
 <p>En dos terminales distintas, desde <code>services/catalogo-ms</code>:</p>
-<pre><code class="language-powershell"># Windows (PowerShell o cmd) - Terminal 1
-.\mvnw.cmd spring-boot:run
-</code></pre>
-<pre><code class="language-powershell"># Windows (PowerShell o cmd) - Terminal 2 (simultánea, con Postgres y la Terminal 1 ya corriendo)
-.\mvnw.cmd spring-boot:run
-</code></pre>
-<pre><code class="language-bash"># macOS / Linux - Terminal 1
-./mvnw spring-boot:run
-</code></pre>
-<pre><code class="language-bash"># macOS / Linux - Terminal 2 (simultánea, con Postgres y la Terminal 1 ya corriendo)
-./mvnw spring-boot:run
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="c"># Windows (PowerShell o cmd) - Terminal 1</span>
+<span class="p">.\</span><span class="n">mvnw</span><span class="p">.</span><span class="n">cmd</span> <span class="n">spring-boot</span><span class="p">:</span><span class="n">run</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c"># Windows (PowerShell o cmd) - Terminal 2 (simultánea, con Postgres y la Terminal 1 ya corriendo)</span>
+<span class="p">.\</span><span class="n">mvnw</span><span class="p">.</span><span class="n">cmd</span> <span class="n">spring-boot</span><span class="p">:</span><span class="n">run</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># macOS / Linux - Terminal 1</span>
+./mvnw<span class="w"> </span>spring-boot:run
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># macOS / Linux - Terminal 2 (simultánea, con Postgres y la Terminal 1 ya corriendo)</span>
+./mvnw<span class="w"> </span>spring-boot:run
+</code></pre></div>
 <p>Cada terminal imprime su propio puerto al arrancar:</p>
-<pre><code class="language-text">Tomcat started on port 54211 (http) with context path '/'
-</code></pre>
+<div class="highlight"><pre><span></span><code>Tomcat started on port 54211 (http) with context path &#39;/&#39;
+</code></pre></div>
 <p>Verifica que ambas instancias responden por separado, con el endpoint de saludo y con <code>/actuator/health</code>:</p>
 <p>PowerShell:</p>
-<pre><code class="language-powershell">Invoke-RestMethod -Method Get -Uri &quot;http://localhost:&lt;puerto-1&gt;/saludo&quot;
-Invoke-RestMethod -Method Get -Uri &quot;http://localhost:&lt;puerto-2&gt;/saludo&quot;
-Invoke-RestMethod -Method Get -Uri &quot;http://localhost:&lt;puerto-1&gt;/actuator/health&quot;
-Invoke-RestMethod -Method Get -Uri &quot;http://localhost:&lt;puerto-2&gt;/actuator/health&quot;
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:&lt;puerto-1&gt;/saludo&quot;</span>
+<span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:&lt;puerto-2&gt;/saludo&quot;</span>
+<span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:&lt;puerto-1&gt;/actuator/health&quot;</span>
+<span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:&lt;puerto-2&gt;/actuator/health&quot;</span>
+</code></pre></div>
 <p>bash macOS/Linux:</p>
-<pre><code class="language-bash">curl http://localhost:&lt;puerto-1&gt;/saludo
-curl http://localhost:&lt;puerto-2&gt;/saludo
-curl http://localhost:&lt;puerto-1&gt;/actuator/health
-curl http://localhost:&lt;puerto-2&gt;/actuator/health
-</code></pre>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:&lt;puerto-1&gt;/saludo
+curl<span class="w"> </span>http://localhost:&lt;puerto-2&gt;/saludo
+curl<span class="w"> </span>http://localhost:&lt;puerto-1&gt;/actuator/health
+curl<span class="w"> </span>http://localhost:&lt;puerto-2&gt;/actuator/health
+</code></pre></div>
 <p>Resultado esperado: ambas responden <code>catalogo-ms activo</code> y <code>{"status":"UP"}</code>, cada una en su propio puerto, conectadas de forma independiente a la misma PostgreSQL DEV.</p>
 <p><strong>Por qué importa esto en S1.</strong> Todavía no hay Gateway ni balanceador de carga — eso llega en S4 ("Punto único de acceso y distribución de tráfico"). Pero la capacidad de correr múltiples instancias sin puerto fijo es la base técnica que un balanceador necesita para repartir tráfico entre copias del mismo servicio; practicarla desde S1 deja esa evidencia lista para cuando el Gateway integre esta pieza.</p>
-<h2 id="4-crea-actividad-autonoma">4. Crea: actividad autónoma</h2>
+<h2 id="4-crea-actividad-autonoma">4. Crea: actividad autónoma<a class="headerlink" href="#4-crea-actividad-autonoma" title="Permanent link">&para;</a></h2>
 <p>Tiempo: 4h fuera del aula.</p>
 <p>Esta actividad autónoma se desarrolla sobre el proyecto de fin de curso del equipo. El producto de la unidad se construye por acumulación de los avances de cada sesión; por eso, la evidencia de esta sesión debe incorporarse a la documentación del proyecto y quedar trazable en GitHub.</p>
-<h3 id="41-plantilla-de-evidencia-individual">4.1 Plantilla de evidencia individual</h3>
+<h3 id="41-plantilla-de-evidencia-individual">4.1 Plantilla de evidencia individual<a class="headerlink" href="#41-plantilla-de-evidencia-individual" title="Permanent link">&para;</a></h3>
 <p>Entrega un PDF con el siguiente nombre:</p>
 <p>El PDF de esta sesión debe generarse como impresión o exportación de la sección correspondiente en MkDocs o una herramienta equivalente. No se acepta un PDF armado manualmente fuera de la documentación del proyecto.</p>
-<pre><code class="language-text">S01_Equipo##_ApellidoNombre.pdf
-</code></pre>
+<div class="highlight"><pre><span></span><code>S01_Equipo##_ApellidoNombre.pdf
+</code></pre></div>
 <p>Ejemplo:</p>
-<pre><code class="language-text">S01_Equipo03_QuispeAna.pdf
-</code></pre>
+<div class="highlight"><pre><span></span><code>S01_Equipo03_QuispeAna.pdf
+</code></pre></div>
 <p>El PDF debe usar esta estructura. La primera sección define el trabajo autónomo; completa las demás con tus evidencias.</p>
-<h4 id="411-datos-del-estudiante">4.1.1 Datos del estudiante</h4>
+<h4 id="411-datos-del-estudiante">4.1.1 Datos del estudiante<a class="headerlink" href="#411-datos-del-estudiante" title="Permanent link">&para;</a></h4>
 <ul>
 <li>Nombre:</li>
 <li>Equipo:</li>
@@ -3481,7 +3478,7 @@ curl http://localhost:&lt;puerto-2&gt;/actuator/health
 <li>Rol o aporte realizado:</li>
 <li>Link de GitHub:</li>
 </ul>
-<h4 id="412-trabajo-autonomo-realizado">4.1.2 Trabajo autónomo realizado</h4>
+<h4 id="412-trabajo-autonomo-realizado">4.1.2 Trabajo autónomo realizado<a class="headerlink" href="#412-trabajo-autonomo-realizado" title="Permanent link">&para;</a></h4>
 <p>Completa y evidencia estas tareas:</p>
 <ol>
 <li>Replicar el patrón de <code>catalogo-ms</code> en otro servicio del dominio, por ejemplo <code>orden-ms</code>.</li>
@@ -3492,7 +3489,7 @@ curl http://localhost:&lt;puerto-2&gt;/actuator/health
 <li>Ejecutar dos instancias del microservicio en paralelo (<code>server.port: 0</code>) y verificar que responden por separado.</li>
 <li>Explicar por qué un microservicio debe poder escalar horizontalmente sin puerto fijo.</li>
 </ol>
-<h4 id="413-evidencia-tecnica">4.1.3 Evidencia técnica</h4>
+<h4 id="413-evidencia-tecnica">4.1.3 Evidencia técnica<a class="headerlink" href="#413-evidencia-tecnica" title="Permanent link">&para;</a></h4>
 <p>Incluye capturas o salidas de consola con una breve explicación debajo de cada una:</p>
 <ul>
 <li>Ejecución con <code>mvnw spring-boot:run</code> (Maven Wrapper).</li>
@@ -3503,18 +3500,18 @@ curl http://localhost:&lt;puerto-2&gt;/actuator/health
 <li>Consulta de tabla y registros con <code>psql</code>.</li>
 <li>Evidencia de las dos instancias corriendo en paralelo, con sus puertos y respuestas.</li>
 </ul>
-<h4 id="414-error-o-hallazgo">4.1.4 Error o hallazgo</h4>
+<h4 id="414-error-o-hallazgo">4.1.4 Error o hallazgo<a class="headerlink" href="#414-error-o-hallazgo" title="Permanent link">&para;</a></h4>
 <p>Describe al menos un error, diferencia o hallazgo técnico:</p>
 <ul>
 <li>Qué ocurrió.</li>
 <li>Cómo lo diagnosticaste.</li>
 <li>Cómo lo corregiste o qué aprendiste.</li>
 </ul>
-<h4 id="415-reflexion-tecnica-breve">4.1.5 Reflexión técnica breve</h4>
+<h4 id="415-reflexion-tecnica-breve">4.1.5 Reflexión técnica breve<a class="headerlink" href="#415-reflexion-tecnica-breve" title="Permanent link">&para;</a></h4>
 <p>Responde en 5 a 8 líneas:</p>
-<pre><code class="language-text">¿Por qué un microservicio debe poder ejecutarse en desarrollo de forma reproducible y escalar horizontalmente sin puerto fijo?
-</code></pre>
-<h3 id="42-criterios-minimos-de-aceptacion">4.2 Criterios mínimos de aceptación</h3>
+<div class="highlight"><pre><span></span><code>¿Por qué un microservicio debe poder ejecutarse en desarrollo de forma reproducible y escalar horizontalmente sin puerto fijo?
+</code></pre></div>
+<h3 id="42-criterios-minimos-de-aceptacion">4.2 Criterios mínimos de aceptación<a class="headerlink" href="#42-criterios-minimos-de-aceptacion" title="Permanent link">&para;</a></h3>
 <p>La evidencia individual se considera completa si:</p>
 <ul>
 <li>El archivo respeta el nombre <code>S01_Equipo##_ApellidoNombre.pdf</code>.</li>
@@ -3525,10 +3522,10 @@ curl http://localhost:&lt;puerto-2&gt;/actuator/health
 <li>Explica un aporte individual verificable.</li>
 <li>No contiene solo pantallazos: cada evidencia tiene una descripción breve.</li>
 </ul>
-<h2 id="5-cierre-evaluativo">5. Cierre evaluativo</h2>
+<h2 id="5-cierre-evaluativo">5. Cierre evaluativo<a class="headerlink" href="#5-cierre-evaluativo" title="Permanent link">&para;</a></h2>
 <p>Tiempo: 20 min.</p>
 <p>Esta sección conecta el resultado de aprendizaje de la sesión con el producto que debe evidenciar cada estudiante.</p>
-<h3 id="51-resultados-esperados">5.1 Resultados esperados</h3>
+<h3 id="51-resultados-esperados">5.1 Resultados esperados<a class="headerlink" href="#51-resultados-esperados" title="Permanent link">&para;</a></h3>
 <p>Al finalizar la sesión, el estudiante debe demostrar que:</p>
 <ul>
 <li>El microservicio ejecuta en DEV con Maven Wrapper.</li>
@@ -3539,11 +3536,11 @@ curl http://localhost:&lt;puerto-2&gt;/actuator/health
 <li>El microservicio puede levantar múltiples instancias en paralelo, sin puerto fijo.</li>
 <li>Puede explicar por qué escalar horizontalmente sin puerto fijo importa en un sistema distribuido.</li>
 </ul>
-<h3 id="52-evidencia-del-producto-de-sesion">5.2 Evidencia del producto de sesión</h3>
+<h3 id="52-evidencia-del-producto-de-sesion">5.2 Evidencia del producto de sesión<a class="headerlink" href="#52-evidencia-del-producto-de-sesion" title="Permanent link">&para;</a></h3>
 <p>Cada estudiante entrega un PDF individual siguiendo la plantilla de la sección 4.1.</p>
 <p>Nombre del archivo:</p>
-<pre><code class="language-text">S01_Equipo##_ApellidoNombre.pdf
-</code></pre>
+<div class="highlight"><pre><span></span><code>S01_Equipo##_ApellidoNombre.pdf
+</code></pre></div>
 <p>La evidencia debe demostrar:</p>
 <ul>
 <li>Producto de sesión construido.</li>
@@ -3584,7 +3581,7 @@ curl http://localhost:&lt;puerto-2&gt;/actuator/health
 </tr>
 </tbody>
 </table>
-<h3 id="53-preguntas-de-defensa-y-reflexion">5.3 Preguntas de defensa y reflexión</h3>
+<h3 id="53-preguntas-de-defensa-y-reflexion">5.3 Preguntas de defensa y reflexión<a class="headerlink" href="#53-preguntas-de-defensa-y-reflexion" title="Permanent link">&para;</a></h3>
 <ol>
 <li>¿Por qué un microservicio debe ser stateless?</li>
 <li>¿Qué responsabilidad tiene <code>catalogo-ms</code>?</li>
@@ -3594,7 +3591,7 @@ curl http://localhost:&lt;puerto-2&gt;/actuator/health
 <li>¿Qué componente hará falta más adelante para repartir tráfico entre esas instancias?</li>
 <li>¿Qué parte implementaste o replicaste individualmente?</li>
 </ol>
-<h3 id="54-rubrica-de-evaluacion">5.4 Rúbrica de evaluación</h3>
+<h3 id="54-rubrica-de-evaluacion">5.4 Rúbrica de evaluación<a class="headerlink" href="#54-rubrica-de-evaluacion" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -3667,13 +3664,13 @@ curl http://localhost:&lt;puerto-2&gt;/actuator/health
 <p>Puntuación acumulada = suma de (<code>Peso</code> * <code>Puntuación obtenida</code>) = ____.</p>
 <p>Nota final = (<code>Puntuación acumulada</code> / 30) * 20 = ____.</p>
 <p>Para usar la rúbrica con IA, solicita:</p>
-<pre><code class="language-text">Evalúa el PDF usando la rúbrica de la sesión.
+<div class="highlight"><pre><span></span><code>Evalúa el PDF usando la rúbrica de la sesión.
 Para cada dimensión selecciona la puntuación obtenida usando la escala Inicio=0, Proceso=1, Logro=2, Logro destacado=3.
 Justifica brevemente cada puntuación.
 Calcula la puntuación acumulada con la fórmula: suma de (Peso * Puntuación obtenida).
 Calcula la nota final sobre 20 con la fórmula: (Puntuación acumulada / 30) * 20.
 Indica 2 fortalezas y 2 recomendaciones.
-</code></pre>
+</code></pre></div>
 
 
 

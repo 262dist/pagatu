@@ -1377,11 +1377,11 @@
   
 
 
-<h1 id="propuesta-de-migracion-proyectosms2026-a-arquitectura-pagatu">Propuesta de Migración: ProyectosMS2026 a Arquitectura Pagatu</h1>
+<h1 id="propuesta-de-migracion-proyectosms2026-a-arquitectura-pagatu">Propuesta de Migración: ProyectosMS2026 a Arquitectura Pagatu<a class="headerlink" href="#propuesta-de-migracion-proyectosms2026-a-arquitectura-pagatu" title="Permanent link">&para;</a></h1>
 <p>Este documento detalla el análisis de la arquitectura anterior (<code>ProyectosMS2026</code>) y establece la estrategia técnica para migrar los componentes útiles hacia el nuevo estándar unificado de <strong>Pagatu</strong>.</p>
 <hr />
-<h2 id="1-diagnostico-de-la-arquitectura-anterior-proyectosms2026">1. DIAGNÓSTICO DE LA ARQUITECTURA ANTERIOR (<code>ProyectosMS2026</code>)</h2>
-<h3 id="11-patrones-reutilizables">1.1. Patrones Reutilizables</h3>
+<h2 id="1-diagnostico-de-la-arquitectura-anterior-proyectosms2026">1. DIAGNÓSTICO DE LA ARQUITECTURA ANTERIOR (<code>ProyectosMS2026</code>)<a class="headerlink" href="#1-diagnostico-de-la-arquitectura-anterior-proyectosms2026" title="Permanent link">&para;</a></h2>
+<h3 id="11-patrones-reutilizables">1.1. Patrones Reutilizables<a class="headerlink" href="#11-patrones-reutilizables" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Trazabilidad Distribuida (Correlación)</strong>:<ul>
 <li><code>TraceIdGlobalFilter</code> (en el API Gateway) que genera e inyecta la cabecera HTTP <code>X-Trace-ID</code>.</li>
@@ -1398,7 +1398,7 @@
 </ul>
 </li>
 </ul>
-<h3 id="12-codigo-obsoleto">1.2. Código Obsoleto</h3>
+<h3 id="12-codigo-obsoleto">1.2. Código Obsoleto<a class="headerlink" href="#12-codigo-obsoleto" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Microservicio <code>producto</code> independiente</strong>:<ul>
 <li>En la nueva arquitectura de Pagatu, el microservicio <code>producto</code> queda obsoleto como módulo separado. Sus responsabilidades de inventario e ítems se fusionarán directamente con <code>catalogo-ms</code> para simplificar la topología y evitar comunicaciones de red innecesarias para obtener categorías.</li>
@@ -1413,7 +1413,7 @@
 </ul>
 </li>
 </ul>
-<h3 id="13-puertos-fijos-detectados">1.3. Puertos Fijos Detectados</h3>
+<h3 id="13-puertos-fijos-detectados">1.3. Puertos Fijos Detectados<a class="headerlink" href="#13-puertos-fijos-detectados" title="Permanent link">&para;</a></h3>
 <p>Puertos configurados de forma rígida en la arquitectura anterior:</p>
 <table>
 <thead>
@@ -1505,40 +1505,40 @@
 </tr>
 </tbody>
 </table>
-<h3 id="14-inconsistencias-de-nomenclatura-naming">1.4. Inconsistencias de Nomenclatura (Naming)</h3>
+<h3 id="14-inconsistencias-de-nomenclatura-naming">1.4. Inconsistencias de Nomenclatura (Naming)<a class="headerlink" href="#14-inconsistencias-de-nomenclatura-naming" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Carpetas de microservicios</strong>: Mezcla de nombres cortos (<code>auth</code>, <code>catalogo</code>) con nombres que llevan sufijo (<code>orden-ms</code>, <code>pago-ms</code>).</li>
 <li><strong>Service Name en Eureka y Artifacts</strong>: Registros bajo nombres simples como <code>auth</code> o <code>catalogo</code>. El estándar de Pagatu define el uso del prefijo corporativo: <code>pagatu-auth-ms</code>, <code>pagatu-catalogo-ms</code>, etc.</li>
 <li><strong>Paquetes Base Java</strong>: Inconsistencia en nombres compuestos (<code>com.upeu.ordenms</code> vs <code>com.upeu.pagoms</code>).</li>
 <li><strong>Idioma Técnico</strong>: <code>orden-ms</code> y <code>pago-ms</code> utilizan paquetes y clases en español (<code>controlador</code>, <code>servicio</code>, <code>repositorio</code>, <code>entidad</code>, <code>OrdenControlador</code>, <code>PagoControlador</code>), mientras que el resto usa estándares en inglés (<code>controller</code>, <code>service</code>, <code>repository</code>, <code>entity</code>).</li>
 </ul>
-<h3 id="15-configuraciones-utiles-a-migrar">1.5. Configuraciones Útiles a Migrar</h3>
+<h3 id="15-configuraciones-utiles-a-migrar">1.5. Configuraciones Útiles a Migrar<a class="headerlink" href="#15-configuraciones-utiles-a-migrar" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Resilience4j CB</strong>: Configuración centralizada de ventanas y tasas de fallos para llamadas a servicios externos en los archivos <code>.yml</code>.</li>
 <li><strong>Flyway Diferenciado</strong>: Estrategia de desactivación de Flyway en desarrollo local (<code>ddl-auto: update</code>) y activación obligatoria con validación en producción (<code>ddl-auto: validate</code>).</li>
 </ul>
 <hr />
-<h2 id="2-estrategia-de-migracion-y-modernizacion">2. ESTRATEGIA DE MIGRACIÓN Y MODERNIZACIÓN</h2>
-<h3 id="21-que-migrar">2.1. Qué Migrar</h3>
+<h2 id="2-estrategia-de-migracion-y-modernizacion">2. ESTRATEGIA DE MIGRACIÓN Y MODERNIZACIÓN<a class="headerlink" href="#2-estrategia-de-migracion-y-modernizacion" title="Permanent link">&para;</a></h2>
+<h3 id="21-que-migrar">2.1. Qué Migrar<a class="headerlink" href="#21-que-migrar" title="Permanent link">&para;</a></h3>
 <ol>
 <li><strong>Código del API Gateway</strong>: Reubicar bajo <code>infra/gateway/</code> conservando filtros de CORS y enrutamiento dinámico <code>lb://</code>.</li>
 <li><strong>Lógica del Servidor de Autenticación</strong>: Reubicar bajo <code>auth-ms/</code> conservando el cifrado de datos y tokenización local de Spring Security.</li>
 <li><strong>Mecanismos de Correlación</strong>: Copiar <code>CorrelationIdFilter</code> y <code>FeignTraceConfig</code> a todos los microservicios core.</li>
 </ol>
-<h3 id="22-que-reescribir-refactorizar">2.2. Qué Reescribir (Refactorizar)</h3>
+<h3 id="22-que-reescribir-refactorizar">2.2. Qué Reescribir (Refactorizar)<a class="headerlink" href="#22-que-reescribir-refactorizar" title="Permanent link">&para;</a></h3>
 <ol>
 <li><strong>Estandarización al Inglés</strong>: Traducir nombres de clases, métodos y paquetes en <code>orden-ms</code> y <code>pago-ms</code> (ej. cambiar paquete <code>controlador</code> a <code>controller</code> y clase <code>OrdenControlador</code> a <code>OrdenController</code>).</li>
 <li><strong>Consolidación de Catálogo y Producto</strong>: Fusionar entidades, repositorios y lógica de categorías y productos en el microservicio unificado <strong><code>catalogo-ms</code></strong>.</li>
 <li><strong>Naming de Eureka y Maven</strong>: Actualizar todos los archivos <code>pom.xml</code> y propiedades <code>spring.application.name</code> para adoptar la sintaxis <code>&lt;proyecto&gt;-&lt;contexto&gt;-ms</code> (ej: <code>pagatu-orden-ms</code>).</li>
 </ol>
-<h3 id="23-que-eliminar">2.3. Qué Eliminar</h3>
+<h3 id="23-que-eliminar">2.3. Qué Eliminar<a class="headerlink" href="#23-que-eliminar" title="Permanent link">&para;</a></h3>
 <ol>
 <li><strong>Microservicio <code>producto</code> independiente</strong> (su funcionalidad es absorbida por <code>catalogo-ms</code>).</li>
 <li><strong>Controlador <code>GatewayInstanciasController.java</code></strong> de depuración.</li>
 <li><strong>Rutas absolutas fijas</strong> (ej: <code>file:///C:/ms1/...</code>) en la configuración nativa de <code>config-server</code>.</li>
 <li><strong>Excepciones de seguridad temporales</strong> que saltan la validación del JWT en producción.</li>
 </ol>
-<h3 id="24-que-modernizar-cloud-ready">2.4. Qué Modernizar (Cloud-Ready)</h3>
+<h3 id="24-que-modernizar-cloud-ready">2.4. Qué Modernizar (Cloud-Ready)<a class="headerlink" href="#24-que-modernizar-cloud-ready" title="Permanent link">&para;</a></h3>
 <ol>
 <li><strong>Valores por Defecto Inteligentes (Single-Profile)</strong>: Configurar propiedades con fallbacks dinámicos (ej: <code>server.port: ${PORT:8080}</code>). Si no se inyectan variables, usa <code>localhost</code> y puertos estándar por defecto para desarrollo ágil en IDE; si se corre en Docker/Kubernetes, se inyectan variables del entorno de red.</li>
 <li><strong>Health Checks Nativos de Kubernetes</strong>: Mapear probes de Kubernetes directamente a los endpoints <code>/actuator/health/liveness</code> y <code>/actuator/health/readiness</code> expuestos por Spring Actuator.</li>
@@ -1555,8 +1555,8 @@
 </li>
 </ol>
 <hr />
-<h2 id="3-convencion-de-puertos-del-ecosistema-pagatu">3. CONVENCIÓN DE PUERTOS DEL ECOSISTEMA PAGATU</h2>
-<h3 id="31-puertos-fijos-infraestructura-y-soporte">3.1. Puertos Fijos (Infraestructura y Soporte)</h3>
+<h2 id="3-convencion-de-puertos-del-ecosistema-pagatu">3. CONVENCIÓN DE PUERTOS DEL ECOSISTEMA PAGATU<a class="headerlink" href="#3-convencion-de-puertos-del-ecosistema-pagatu" title="Permanent link">&para;</a></h2>
+<h3 id="31-puertos-fijos-infraestructura-y-soporte">3.1. Puertos Fijos (Infraestructura y Soporte)<a class="headerlink" href="#31-puertos-fijos-infraestructura-y-soporte" title="Permanent link">&para;</a></h3>
 <p>Los componentes de infraestructura que actúan como punto de entrada único o como base de autoconfiguración del sistema deben conservar puertos estáticos y predecibles. Son los únicos servicios cuyo puerto debe ser conocido de antemano por el resto del ecosistema:</p>
 <table>
 <thead>
@@ -1627,20 +1627,20 @@
 <blockquote>
 <p><strong>Nota sobre Gateway DEV vs PROD en paralelo:</strong> Si el estudiante necesita levantar simultáneamente la versión DEV (IDE en <code>8080</code>) y la versión PROD (Docker Compose), el <code>compose.yml</code> expone el Gateway en el puerto <code>8090</code> del host (<code>-p 8090:8080</code>). De esta forma ambas versiones coexisten sin conflicto de sockets en el mismo host.</p>
 </blockquote>
-<h3 id="32-puertos-dinamicos-microservicios-de-negocio">3.2. Puertos Dinámicos (Microservicios de Negocio)</h3>
+<h3 id="32-puertos-dinamicos-microservicios-de-negocio">3.2. Puertos Dinámicos (Microservicios de Negocio)<a class="headerlink" href="#32-puertos-dinamicos-microservicios-de-negocio" title="Permanent link">&para;</a></h3>
 <p>Los microservicios de negocio registrados en Eureka no requieren un puerto fijo en el host:</p>
 <ul>
 <li><strong>En DEV (IDE):</strong> Se configura <code>server.port=0</code> para que el sistema operativo asigne un puerto libre aleatorio. Eureka registra automáticamente la IP y el puerto asignado.</li>
 <li><strong>En PROD (Docker / Kubernetes):</strong> Todos los contenedores de un mismo microservicio usan internamente el mismo puerto estático (ej. <code>8080</code>) sin colisión gracias al aislamiento de red por namespace de contenedor. El Gateway balancea la carga entre las instancias resolviendo sus IPs internas mediante el Service Registry.</li>
 </ul>
 <hr />
-<h2 id="4-migracion-de-motor-de-base-de-datos-mysql-postgresql">4. MIGRACIÓN DE MOTOR DE BASE DE DATOS: MySQL → PostgreSQL</h2>
-<h3 id="41-decision-tecnica">4.1. Decisión Técnica</h3>
+<h2 id="4-migracion-de-motor-de-base-de-datos-mysql-postgresql">4. MIGRACIÓN DE MOTOR DE BASE DE DATOS: MySQL → PostgreSQL<a class="headerlink" href="#4-migracion-de-motor-de-base-de-datos-mysql-postgresql" title="Permanent link">&para;</a></h2>
+<h3 id="41-decision-tecnica">4.1. Decisión Técnica<a class="headerlink" href="#41-decision-tecnica" title="Permanent link">&para;</a></h3>
 <p>Se decide migrar de <strong>MySQL 8</strong> a <strong>PostgreSQL 16</strong> como motor de persistencia para todos los microservicios de negocio de la arquitectura Pagatu.</p>
 <p><strong>Justificación:</strong>
 *   La imagen <code>postgres:16-alpine</code> ocupa aproximadamente <strong>79 MB</strong>, frente a los <strong>631 MB</strong> de <code>mysql:8.4</code>. Reducción del 87% en tamaño de imagen base. Crítico en entornos de laboratorio donde el estudiante puede correr 6 o más contenedores de base de datos simultáneamente.
 *   PostgreSQL consume significativamente menos RAM por conexión activa en comparación con MySQL 8, reduciendo el riesgo de saturar la memoria del equipo del estudiante durante las prácticas.</p>
-<h3 id="42-convencion-de-puertos-de-bases-de-datos">4.2. Convención de Puertos de Bases de Datos</h3>
+<h3 id="42-convencion-de-puertos-de-bases-de-datos">4.2. Convención de Puertos de Bases de Datos<a class="headerlink" href="#42-convencion-de-puertos-de-bases-de-datos" title="Permanent link">&para;</a></h3>
 <p>El puerto interno en todos los contenedores PostgreSQL es el estándar <strong><code>5432</code></strong>. Los puertos expuestos al host en DEV son únicos por microservicio para permitir conexiones simultáneas desde herramientas de administración (DBeaver, pgAdmin, DataGrip):</p>
 <table>
 <thead>
@@ -1700,70 +1700,70 @@
 <blockquote>
 <p><strong>Motivo de no exponer puertos de BD en PROD:</strong> En el entorno contenerizado, el microservicio accede a su base de datos a través de la red interna de Docker usando el nombre del servicio como hostname (ej. <code>postgres-orden:5432</code>). Exponer el puerto al host en producción representa un riesgo de seguridad innecesario.</p>
 </blockquote>
-<h3 id="43-cambios-tecnicos-requeridos-en-los-proyectos-spring-boot">4.3. Cambios Técnicos Requeridos en los Proyectos Spring Boot</h3>
-<h4 id="dependencia-maven-pomxml">Dependencia Maven (<code>pom.xml</code>):</h4>
-<pre><code class="language-xml">&lt;!-- ELIMINAR --&gt;
-&lt;dependency&gt;
-    &lt;groupId&gt;com.mysql&lt;/groupId&gt;
-    &lt;artifactId&gt;mysql-connector-j&lt;/artifactId&gt;
-    &lt;scope&gt;runtime&lt;/scope&gt;
-&lt;/dependency&gt;
-&lt;!-- ELIMINAR si existe --&gt;
-&lt;dependency&gt;
-    &lt;groupId&gt;org.flywaydb&lt;/groupId&gt;
-    &lt;artifactId&gt;flyway-mysql&lt;/artifactId&gt;
-&lt;/dependency&gt;
+<h3 id="43-cambios-tecnicos-requeridos-en-los-proyectos-spring-boot">4.3. Cambios Técnicos Requeridos en los Proyectos Spring Boot<a class="headerlink" href="#43-cambios-tecnicos-requeridos-en-los-proyectos-spring-boot" title="Permanent link">&para;</a></h3>
+<h4 id="dependencia-maven-pomxml">Dependencia Maven (<code>pom.xml</code>):<a class="headerlink" href="#dependencia-maven-pomxml" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="cm">&lt;!-- ELIMINAR --&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;groupId&gt;</span>com.mysql<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>mysql-connector-j<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;scope&gt;</span>runtime<span class="nt">&lt;/scope&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="cm">&lt;!-- ELIMINAR si existe --&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.flywaydb<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>flyway-mysql<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
 
-&lt;!-- AGREGAR --&gt;
-&lt;dependency&gt;
-    &lt;groupId&gt;org.postgresql&lt;/groupId&gt;
-    &lt;artifactId&gt;postgresql&lt;/artifactId&gt;
-    &lt;scope&gt;runtime&lt;/scope&gt;
-&lt;/dependency&gt;
-</code></pre>
-<h4 id="url-de-conexion-jdbc-en-config-repo">URL de Conexión JDBC en <code>config-repo</code>:</h4>
-<pre><code class="language-yaml">spring:
-  datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:pagatu_orden_db}
-    username: ${DB_USER:pagatu}
-    password: ${DB_PASS:pagatu}
-    driver-class-name: org.postgresql.Driver
-</code></pre>
-<h4 id="compose-devyml-con-puerto-expuesto-al-host-para-herramientas-de-administracion"><code>compose-dev.yml</code> (con puerto expuesto al host para herramientas de administración):</h4>
-<pre><code class="language-yaml">services:
-  postgres-orden:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_DB: pagatu_orden_db
-      POSTGRES_USER: pagatu
-      POSTGRES_PASSWORD: pagatu
-    ports:
-      - &quot;5405:5432&quot;
-    volumes:
-      - postgres_orden_dev_data:/var/lib/postgresql/data
-</code></pre>
-<h4 id="composeyml-sin-puerto-expuesto-al-host-solo-acceso-interno"><code>compose.yml</code> (sin puerto expuesto al host — solo acceso interno):</h4>
-<pre><code class="language-yaml">services:
-  postgres-orden:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_DB: ${ORDEN_DB_NAME}
-      POSTGRES_USER: ${ORDEN_DB_USER}
-      POSTGRES_PASSWORD: ${ORDEN_DB_PASSWORD}
-    volumes:
-      - postgres_orden_data:/var/lib/postgresql/data
-    networks:
-      - orden-internal-net
+<span class="cm">&lt;!-- AGREGAR --&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.postgresql<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>postgresql<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;scope&gt;</span>runtime<span class="nt">&lt;/scope&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div>
+<h4 id="url-de-conexion-jdbc-en-config-repo">URL de Conexión JDBC en <code>config-repo</code>:<a class="headerlink" href="#url-de-conexion-jdbc-en-config-repo" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nt">spring</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">datasource</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:pagatu_orden_db}</span>
+<span class="w">    </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${DB_USER:pagatu}</span>
+<span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${DB_PASS:pagatu}</span>
+<span class="w">    </span><span class="nt">driver-class-name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">org.postgresql.Driver</span>
+</code></pre></div>
+<h4 id="compose-devyml-con-puerto-expuesto-al-host-para-herramientas-de-administracion"><code>compose-dev.yml</code> (con puerto expuesto al host para herramientas de administración):<a class="headerlink" href="#compose-devyml-con-puerto-expuesto-al-host-para-herramientas-de-administracion" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">postgres-orden</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres:16-alpine</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">POSTGRES_DB</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu_orden_db</span>
+<span class="w">      </span><span class="nt">POSTGRES_USER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
+<span class="w">      </span><span class="nt">POSTGRES_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;5405:5432&quot;</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres_orden_dev_data:/var/lib/postgresql/data</span>
+</code></pre></div>
+<h4 id="composeyml-sin-puerto-expuesto-al-host-solo-acceso-interno"><code>compose.yml</code> (sin puerto expuesto al host — solo acceso interno):<a class="headerlink" href="#composeyml-sin-puerto-expuesto-al-host-solo-acceso-interno" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">postgres-orden</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres:16-alpine</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">POSTGRES_DB</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${ORDEN_DB_NAME}</span>
+<span class="w">      </span><span class="nt">POSTGRES_USER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${ORDEN_DB_USER}</span>
+<span class="w">      </span><span class="nt">POSTGRES_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${ORDEN_DB_PASSWORD}</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres_orden_data:/var/lib/postgresql/data</span>
+<span class="w">    </span><span class="nt">networks</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">orden-internal-net</span>
 
-  pagatu-orden-ms:
-    build: .
-    environment:
-      DB_HOST: postgres-orden
-      DB_PORT: 5432
-    networks:
-      - orden-internal-net
-      - ms-net
-</code></pre>
+<span class="w">  </span><span class="nt">pagatu-orden-ms</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">DB_HOST</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres-orden</span>
+<span class="w">      </span><span class="nt">DB_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5432</span>
+<span class="w">    </span><span class="nt">networks</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">orden-internal-net</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ms-net</span>
+</code></pre></div>
 <blockquote>
 <p><strong>Nota sobre Flyway:</strong> No se requiere cambio en <code>flyway-core</code>. Flyway detecta automáticamente el dialecto de PostgreSQL a través del driver JDBC activo en el classpath.</p>
 </blockquote>
