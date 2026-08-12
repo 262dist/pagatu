@@ -29,9 +29,9 @@ Al concluir la clase, estarás en condiciones de:
 
 | Fase | Actividades | Orientaciones | Material |
 |---|---|---|---|
-| Revisión previa individual | Leer el sílabo de la Unidad 1 y el caso de la plataforma de comercio electrónico (ver 1.6). | Trabajo individual, antes de clase; preparar el entorno local (Java 21, Maven, Docker) si aún no está listo. | Sílabo DIST U1. |
-| Clase presencial | Construcción guiada de `catalogo-ms`: entidad, CRUD, PostgreSQL, Flyway, Swagger, Actuator y filtro de trazabilidad. | Trabajo individual, siguiendo al docente paso a paso; consulta inmediata ante errores de arranque o de conexión a base de datos. | Pasos 3.1 a 3.7 de esta guía. |
-| Evaluación formativa | Revisión en clase del servicio ejecutando en DEV y en producción local con Docker. | La evidencia se completa y sustenta de forma individual, fuera del aula, según los criterios mínimos de la sección 4.2. | Plantilla de evidencia individual (4.1), rúbrica de evaluación (5.4). |
+| Revisión previa individual | Leer el sílabo de la Unidad 1 y el caso de la plataforma de comercio electrónico (ver 1.6). | Trabajo individual, antes de clase; preparar el entorno local (Java 21, Docker) si aún no está listo. | Sílabo DIST U1. |
+| Clase presencial | Construcción guiada de `catalogo-ms`: entidad, CRUD, PostgreSQL, Flyway, Swagger, Actuator y filtro de trazabilidad. | Trabajo individual, siguiendo al docente paso a paso; consulta inmediata ante errores de arranque o de conexión a base de datos. | Pasos 3.1 a 3.5 de esta guía. |
+| Evaluación formativa | Revisión en clase del servicio ejecutando en DEV, con múltiples instancias corriendo en paralelo. | La evidencia se completa y sustenta de forma individual, fuera del aula, según los criterios mínimos de la sección 4.2. | Plantilla de evidencia individual (4.1), rúbrica de evaluación (5.4). |
 
 ### 1.6 Motivación de la sesión
 
@@ -67,22 +67,22 @@ Roadmap para elaborar el producto de la unidad:
 
 ```mermaid
 flowchart TB
-    Cliente["Cliente de prueba<br/>PowerShell / bash / Swagger"]
-    Gateway["Gateway<br/>punto único de acceso<br/>balanceo de carga"]
-    Catalogo["catalogo-ms<br/>HOY<br/>REST + BD + health"]
-    Producto["producto-ms<br/>trabajo aplicado"]
-    Eureka["Registro de servicios<br/>Eureka"]
-    Config["Servidor de configuración<br/>Config Server"]
-    Repo["Repositorio de configuración<br/>catalogo-ms.yml<br/>producto-ms.yml"]
+    Cliente["Cliente de prueba - PowerShell / bash / Swagger"]
+    Gateway["Gateway - punto único de acceso - balanceo de carga"]
+    Catalogo["catalogo-ms - HOY - REST + BD + health"]
+    Orden["orden-ms - trabajo aplicado"]
+    Eureka["Registro de servicios - Eureka"]
+    Config["Servidor de configuración - Config Server"]
+    Repo["Repositorio de configuración - catalogo-ms.yml, orden-ms.yml"]
 
     Cliente --> Gateway
     Gateway --> Catalogo
-    Gateway --> Producto
+    Gateway --> Orden
     Gateway -. descubre servicios .-> Eureka
     Catalogo -. registra instancia .-> Eureka
-    Producto -. registra instancia .-> Eureka
+    Orden -. registra instancia .-> Eureka
     Catalogo -. carga configuración .-> Config
-    Producto -. carga configuración .-> Config
+    Orden -. carga configuración .-> Config
     Config --> Repo
 
     classDef today fill:#ffe08a,stroke:#9a6b00,stroke-width:2px,color:#111;
@@ -99,7 +99,7 @@ Tiempo: 25 min.
 
 Un microservicio debe tener responsabilidad clara, persistencia propia, configuración por ambiente y capacidad de ejecutarse de forma independiente.
 
-Ejemplo: `catalogo-ms` se encarga de gestionar categorías y su propia base de datos. No debería guardar productos, órdenes ni pagos. Si más adelante `producto-ms` necesita saber a qué categoría pertenece un producto, consulta a `catalogo-ms` por red en lugar de leer directamente su base de datos.
+Ejemplo: `catalogo-ms` se encarga de gestionar categorías, conceptos de pago y sus precios, con su propia base de datos. No debería guardar clientes, órdenes ni pagos. Si más adelante `orden-ms` necesita saber si un concepto de pago existe y cuál es su precio, consulta a `catalogo-ms` por red en lugar de leer directamente su base de datos.
 
 ### 2.2 Arquitectura del producto en `pagatu`
 
@@ -107,11 +107,11 @@ Ejemplo: `catalogo-ms` se encarga de gestionar categorías y su propia base de d
 
 ```mermaid
 flowchart TB
-    DevClient["Cliente<br/>PowerShell / bash / Swagger"]
-    DevApp1["catalogo-ms<br/>Java 21 + Maven<br/>puerto dinámico"]
-    DevApp2["catalogo-ms<br/>segunda instancia<br/>puerto dinámico"]
+    DevClient["Cliente - PowerShell / bash / Swagger"]
+    DevApp1["catalogo-ms - Java 21 + Maven - puerto dinámico"]
+    DevApp2["catalogo-ms - segunda instancia - puerto dinámico"]
     subgraph DevDocker["Docker: solo base de datos"]
-        DevDb[("pagatu_catalogo_db<br/>PostgreSQL<br/>localhost:15432 -> 5432")]
+        DevDb[("pagatu_catalogo_db - PostgreSQL - localhost:15432 -> 5432")]
     end
 
     DevClient -->|"localhost:<puerto-asignado>"| DevApp1
@@ -129,11 +129,11 @@ flowchart TB
 
 ```mermaid
 flowchart TB
-    ProdClient["Cliente interno<br/>curl container"]
+    ProdClient["Cliente interno - curl container"]
     subgraph ProdDocker["Docker Network: pagatu-catalogo-int"]
-        ProdApp1["catalogo-ms<br/>jar<br/>8080 interno"]
-        ProdApp2["catalogo-ms<br/>jar<br/>8080 interno"]
-        ProdDb[("pagatu_catalogo_db<br/>PostgreSQL<br/>pagatu-postgres-catalogo:5432")]
+        ProdApp1["catalogo-ms - jar - 8080 interno"]
+        ProdApp2["catalogo-ms - jar - 8080 interno"]
+        ProdDb[("pagatu_catalogo_db - PostgreSQL - pagatu-postgres-catalogo:5432")]
     end
 
     ProdClient -->|"catalogo-ms:8080"| ProdApp1
@@ -191,34 +191,31 @@ La observabilidad inicia desde S1 como hábito transversal. En esta sesión toda
 
 Tiempo: 2h.
 
-En el laboratorio, el docente guía la construcción de `catalogo-ms` y los estudiantes verifican el resultado con comandos de consola. En `pagatu`, el docente guía `catalogo-ms` y el estudiante replica el patrón en `producto-ms` como trabajo aplicado. La versión actual usa monorepo, nombres con sufijo `-ms`, PostgreSQL y puertos dinámicos para los microservicios.
+En el laboratorio, el docente guía la construcción de `catalogo-ms` y los estudiantes verifican el resultado con comandos de consola. En `pagatu`, el docente guía `catalogo-ms` y el estudiante replica el patrón en `orden-ms` como trabajo aplicado. La versión actual usa monorepo, nombres con sufijo `-ms`, PostgreSQL y puertos dinámicos para los microservicios.
 
 Hoja de ruta de la sesión práctica:
 
-- **3.1** Preparar el ambiente local: Java 21, Maven, Docker y VS Code.
+- **3.1** Preparar el ambiente local: Java 21, Docker y VS Code.
 - **3.2** Crear el proyecto Spring Boot con las dependencias base.
 - **3.3** Construir el CRUD de `Categoria`.
 - **3.4** Ejecutar y probar el microservicio en DEV.
-- **3.5** Configurar producción local con Docker.
-- **3.6** Probar producción local con Docker.
-- **3.7** Ruta alternativa: partir del tag de cierre de la sesión.
+- **3.5** Simular escalamiento horizontal (múltiples instancias).
 
-### 3.1 Preparar ambiente local: Java 21, Maven, Docker y VS Code
+### 3.1 Preparar ambiente local: Java 21, Docker y VS Code
 
-**Producto del paso:** ambiente local con Java 21, Maven, Docker, Docker Compose y VS Code verificados, listo para crear y ejecutar el microservicio.
+**Producto del paso:** ambiente local con Java 21, Docker, Docker Compose y VS Code verificados, listo para crear y ejecutar el microservicio.
 
-Antes de crear el microservicio, el estudiante debe preparar el entorno DEV. En esta sesión Java y Maven se ejecutan en el host; PostgreSQL no se instala en el host, se levanta con Docker desde el paso 3.2.
+Antes de crear el microservicio, el estudiante debe preparar el entorno DEV. En esta sesión Java se ejecuta en el host; Maven no se instala aparte (el proyecto trae Maven Wrapper desde que se crea en 3.2.1, ver 3.1.2); PostgreSQL no se instala en el host, se levanta con Docker desde el paso 3.2.
 
 **Herramientas necesarias**
 
 - Java 21 (Eclipse Temurin 21).
-- Maven 3.x.
 - Docker Desktop.
 - VS Code.
 - Extension Pack for Java.
 - Spring Boot Extension Pack.
 
-Puedes usar otro IDE si ya lo dominas, pero en este curso se trabajará con VS Code para mantener una guía común. Aún usando IDE, la ejecución recomendada del microservicio será desde la consola de comandos, al estilo de un servidor Linux.
+En las clases se trabajará con **VS Code** para mantener una guía común. Puedes usar otro IDE si ya lo dominas — por ejemplo **IntelliJ IDEA** —, pero entonces sigue tú mismo la equivalencia de cada paso, ya que las capturas y comandos de esta guía están pensados para VS Code. Aún usando otro IDE, la ejecución recomendada del microservicio será desde la consola de comandos, al estilo de un servidor Linux.
 
 #### 3.1.1 Instalar o verificar Java 21
 
@@ -259,53 +256,25 @@ Resultado esperado:
 openjdk version "21"
 ```
 
-#### 3.1.2 Instalar o verificar Maven 3.x
+#### 3.1.2 Maven: no se instala aparte, se usa el Maven Wrapper
 
-En Windows, si no tienes Chocolatey, abre PowerShell como administrador y ejecútalo:
+No instales Maven en el host. Cuando crees el proyecto con Spring Initializr (3.2.1), Spring genera automáticamente el **Maven Wrapper** (`mvnw` para macOS/Linux, `mvnw.cmd` para Windows) dentro de `services/catalogo-ms`: un script que descarga y cachea la versión exacta de Maven que el proyecto necesita, sin que tengas que instalarla ni gestionarla tú.
 
-```powershell
-Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-```
+A partir de ese momento, cualquier comando Maven de esta guía se ejecuta con el wrapper, nunca con `mvn` a secas:
 
-Luego cierra y vuelve a abrir PowerShell e instala Maven:
+PowerShell:
 
 ```powershell
-choco install maven -y
+.\mvnw.cmd spring-boot:run
 ```
 
-En macOS con Homebrew:
+bash macOS/Linux:
 
 ```bash
-brew install maven
+./mvnw spring-boot:run
 ```
 
-En Linux Debian/Ubuntu:
-
-```bash
-sudo apt update
-sudo apt install -y maven
-```
-
-Verificar instalación:
-
-PowerShell / bash macOS/Linux:
-
-```bash
-mvn -version
-```
-
-Resultado esperado:
-
-```text
-Apache Maven
-Java versión: 21
-```
-
-Uso esperado de Maven: ubicarse en la carpeta donde está el `pom.xml` del microservicio y ejecutar:
-
-```bash
-mvn spring-boot:run
-```
+Esto evita el problema clásico de "en mi máquina compila con una versión de Maven y en la del compañero falla con otra" — todo el equipo usa la misma versión, la que define el propio proyecto.
 
 #### 3.1.3 Instalar o verificar Docker Desktop y Docker Compose
 
@@ -369,14 +338,13 @@ Desde VS Code, confirma que se reconoce el proyecto Java y que las extensiones d
 **Evidencia de cierre del paso 3.1**
 
 - Salida de `java -version`.
-- Salida de `mvn -version`.
 - Salida de `docker version`.
 - Salida de `docker compose version`.
 - VS Code abierto en la raíz del repositorio `pagatu`.
 
 ### 3.2 Crear el proyecto Spring Boot desde VS Code con dependencias base
 
-**Producto del paso:** proyecto Spring Boot creado en `services/catalogo-ms`, con `artifactId` `pagatu-catalogo-ms`, paquete `com.upeu.catalogo`, dependencias base instaladas, PostgreSQL DEV levantado en Docker y un endpoint web simple respondiendo desde el navegador o shell.
+**Producto del paso:** proyecto Spring Boot creado en `services/catalogo-ms`, con `artifactId` `pagatu-catalogo-ms`, paquete `pe.edu.upeu.catalogo`, dependencias base instaladas, PostgreSQL DEV levantado en Docker y un endpoint web simple respondiendo desde el navegador o shell.
 
 En este paso no basta con crear el proyecto. Como se agregan `Spring Data JPA`, `PostgreSQL Driver` y `Flyway`, Spring Boot intentará configurar una conexión a base de datos al arrancar. Por eso, si ejecutas el microservicio sin configurar y levantar PostgreSQL, el arranque fallará.
 
@@ -395,14 +363,16 @@ Usa la siguiente configuración:
 | Campo | Valor |
 |---|---|
 | Project | Maven Project |
-| Spring Boot | 3.5.x |
+| Spring Boot | **4.0.7** |
 | Language | Java |
 | Java | 21 |
-| Group Id | `com.upeu` |
+| Group Id | `pe.edu.upeu` |
 | Artifact Id | `pagatu-catalogo-ms` |
-| Package name | `com.upeu.catalogo` |
+| Package name | `pe.edu.upeu.catalogo` |
 | Packaging | Jar |
 | Ubicación | `services/catalogo-ms` |
+
+Nota sobre la versión: el generador de Spring Initializr ya no ofrece ninguna versión 3.x — las únicas opciones son líneas 4.x. Se fija **4.0.7** por el mismo motivo verificado en LP2 (ver `docs/lp2/adr/ADR-003-spring-boot-4.md` del repo `bomerp`): dentro de la línea 4.x, SpringDoc OpenAPI declara compatibilidad solo hasta `4.1.0-M1`, así que 4.0.7 es la versión estable dentro de ese rango. Si al generar el proyecto ves `spring-boot-starter-web` reemplazado por `spring-boot-starter-webmvc`, o starters de prueba granulares en vez de uno solo, es esperado en esta línea de Boot — no lo corrijas.
 
 Dependencias a seleccionar:
 
@@ -412,6 +382,8 @@ Dependencias a seleccionar:
 | Productividad | Lombok, Spring Boot DevTools | Reducir código repetitivo y facilitar ejecución en desarrollo |
 | Documentación y operación | SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator | Documentar la API con Swagger y verificar health |
 | Persistencia | Spring Data JPA, PostgreSQL Driver, Flyway | Acceso a datos, conexión a PostgreSQL y migraciones de BD |
+
+Nota sobre motor de base de datos: en DIST se trabaja con **PostgreSQL** (no Oracle — Oracle es el motor de LP2/BD2, fuera del alcance de este curso). Si el equipo prefiere **MySQL**, es una alternativa válida: cambia `PostgreSQL Driver` por `MySQL Driver` en el Initializr y `flyway-database-postgresql` por `flyway-mysql` en el `pom.xml` — el resto de la guía (Flyway, JPA, `ddl-auto: validate`) aplica igual, solo cambia el driver y la URL de conexión.
 
 Nota: SpringDoc/Swagger documenta los endpoints del microservicio; no es infraestructura distribuida. La infraestructura distribuida inicia desde S2 con configuración centralizada.
 
@@ -437,17 +409,20 @@ Abre `services/catalogo-ms/pom.xml` y verifica que existan las dependencias de p
 </dependency>
 ```
 
-Si vienes de material anterior con MySQL, reemplaza la idea de `flyway-mysql` y `mysql-connector` por PostgreSQL.
-
 #### 3.2.3 Ejecutar una primera vez y reconocer el fallo esperado
 
 Ubícate en la carpeta del microservicio:
 
-PowerShell / bash macOS/Linux:
+```powershell
+# Windows (PowerShell o cmd)
+cd services/catalogo-ms
+.\mvnw.cmd spring-boot:run
+```
 
 ```bash
+# macOS / Linux
 cd services/catalogo-ms
-mvn spring-boot:run
+./mvnw spring-boot:run
 ```
 
 Si todavía no existe configuración de base de datos, el error esperado será parecido a:
@@ -542,7 +517,7 @@ springdoc:
 
 logging:
   level:
-    com.upeu.catalogo: DEBUG
+    pe.edu.upeu.catalogo: DEBUG
 
 management:
   endpoints:
@@ -567,7 +542,7 @@ Antes del CRUD, crea un controlador mínimo para comprobar que la aplicación we
 Archivo: `src/main/java/com/upeu/catalogo/controller/SaludoController.java`
 
 ```java
-package com.upeu.catalogo.controller;
+package pe.edu.upeu.catalogo.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -607,10 +582,14 @@ Si `\dt` muestra `Did not find any relations`, está bien en este momento: aún 
 
 Con PostgreSQL DEV levantado y verificado, ejecuta la aplicación:
 
-PowerShell / bash macOS/Linux:
+```powershell
+# Windows (PowerShell o cmd)
+.\mvnw.cmd spring-boot:run
+```
 
 ```bash
-mvn spring-boot:run
+# macOS / Linux
+./mvnw spring-boot:run
 ```
 
 Prueba el endpoint:
@@ -673,7 +652,7 @@ service
 Archivo: `entity/Categoria.java`
 
 ```java
-package com.upeu.catalogo.entity;
+package pe.edu.upeu.catalogo.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -704,9 +683,9 @@ public class Categoria {
 Archivo: `repository/CategoriaRepository.java`
 
 ```java
-package com.upeu.catalogo.repository;
+package pe.edu.upeu.catalogo.repository;
 
-import com.upeu.catalogo.entity.Categoria;
+import pe.edu.upeu.catalogo.entity.Categoria;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
@@ -716,7 +695,7 @@ public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
 Archivo: `dto/CategoriaRequest.java`
 
 ```java
-package com.upeu.catalogo.dto;
+package pe.edu.upeu.catalogo.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -739,7 +718,7 @@ public class CategoriaRequest {
 Archivo: `dto/CategoriaResponse.java`
 
 ```java
-package com.upeu.catalogo.dto;
+package pe.edu.upeu.catalogo.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -762,11 +741,11 @@ public class CategoriaResponse {
 Archivo: `mapper/CategoriaMapper.java`
 
 ```java
-package com.upeu.catalogo.mapper;
+package pe.edu.upeu.catalogo.mapper;
 
-import com.upeu.catalogo.dto.CategoriaRequest;
-import com.upeu.catalogo.dto.CategoriaResponse;
-import com.upeu.catalogo.entity.Categoria;
+import pe.edu.upeu.catalogo.dto.CategoriaRequest;
+import pe.edu.upeu.catalogo.dto.CategoriaResponse;
+import pe.edu.upeu.catalogo.entity.Categoria;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -794,7 +773,7 @@ public class CategoriaMapper {
 Archivo: `exception/ResourceNotFoundException.java`
 
 ```java
-package com.upeu.catalogo.exception;
+package pe.edu.upeu.catalogo.exception;
 
 public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException(String mensaje) {
@@ -806,7 +785,7 @@ public class ResourceNotFoundException extends RuntimeException {
 Archivo: `exception/GlobalExceptionHandler.java`
 
 ```java
-package com.upeu.catalogo.exception;
+package pe.edu.upeu.catalogo.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -848,14 +827,14 @@ public class GlobalExceptionHandler {
 Archivo: `service/CategoriaService.java`
 
 ```java
-package com.upeu.catalogo.service;
+package pe.edu.upeu.catalogo.service;
 
-import com.upeu.catalogo.dto.CategoriaRequest;
-import com.upeu.catalogo.dto.CategoriaResponse;
-import com.upeu.catalogo.entity.Categoria;
-import com.upeu.catalogo.exception.ResourceNotFoundException;
-import com.upeu.catalogo.mapper.CategoriaMapper;
-import com.upeu.catalogo.repository.CategoriaRepository;
+import pe.edu.upeu.catalogo.dto.CategoriaRequest;
+import pe.edu.upeu.catalogo.dto.CategoriaResponse;
+import pe.edu.upeu.catalogo.entity.Categoria;
+import pe.edu.upeu.catalogo.exception.ResourceNotFoundException;
+import pe.edu.upeu.catalogo.mapper.CategoriaMapper;
+import pe.edu.upeu.catalogo.repository.CategoriaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -906,11 +885,11 @@ public class CategoriaService {
 Archivo: `controller/CategoriaController.java`
 
 ```java
-package com.upeu.catalogo.controller;
+package pe.edu.upeu.catalogo.controller;
 
-import com.upeu.catalogo.dto.CategoriaRequest;
-import com.upeu.catalogo.dto.CategoriaResponse;
-import com.upeu.catalogo.service.CategoriaService;
+import pe.edu.upeu.catalogo.dto.CategoriaRequest;
+import pe.edu.upeu.catalogo.dto.CategoriaResponse;
+import pe.edu.upeu.catalogo.service.CategoriaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -971,7 +950,7 @@ Todos los logs producidos durante esa petición pueden compartir el mismo `trace
 Archivo: `filter/CorrelationIdFilter.java`
 
 ```java
-package com.upeu.catalogo.filter;
+package pe.edu.upeu.catalogo.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -1122,15 +1101,20 @@ PowerShell / bash macOS/Linux:
 docker ps
 ```
 
-#### 3.4.2 Ejecutar con Maven
+#### 3.4.2 Ejecutar con Maven Wrapper
 
 Ejecuta el microservicio:
 
-PowerShell / bash macOS/Linux:
+```powershell
+# Windows (PowerShell o cmd)
+cd services/catalogo-ms
+.\mvnw.cmd spring-boot:run
+```
 
 ```bash
+# macOS / Linux
 cd services/catalogo-ms
-mvn spring-boot:run
+./mvnw spring-boot:run
 ```
 
 En la consola identifica el puerto asignado por Spring Boot. Debes ver una línea similar a:
@@ -1262,326 +1246,63 @@ curl -X DELETE http://localhost:<puerto-asignado>/api/categorias/1
 
 Prueba también un caso de validación fallida (sin `nombre`) y confirma que responde HTTP 400, y una consulta a un `id` inexistente y confirma que responde HTTP 404.
 
-#### 3.4.7 Ejecutar una segunda instancia en DEV
+### 3.5 Simular escalamiento horizontal (múltiples instancias)
 
-Para cerrar el paso, ejecuta una segunda instancia del microservicio en otra terminal. Como `application-dev.yml` usa `server.port: 0`, Spring Boot asignará otro puerto libre automáticamente.
+**Producto del paso:** dos instancias de `catalogo-ms` corriendo al mismo tiempo, cada una en un puerto distinto, ambas conectadas a la misma PostgreSQL DEV.
 
-PowerShell / bash macOS/Linux:
+Un microservicio distribuido debe poder escalar horizontalmente: correr varias copias idénticas a la vez, cada una en su propio puerto, sin configuración fija que las haga chocar. Como `application-dev.yml` ya usa `server.port: 0`, Spring Boot le pide al sistema operativo un puerto libre cualquiera cada vez que arranca, en vez de uno fijo — por eso puedes levantar una segunda instancia sin tocar la configuración.
 
-```bash
-cd services/catalogo-ms
-mvn spring-boot:run
+En dos terminales distintas, desde `services/catalogo-ms`:
+
+```powershell
+# Windows (PowerShell o cmd) - Terminal 1
+.\mvnw.cmd spring-boot:run
 ```
 
-Verifica en cada terminal que los puertos sean diferentes. Esta prueba demuestra que el microservicio puede ejecutarse en múltiples instancias en DEV sin cambiar la configuración.
+```powershell
+# Windows (PowerShell o cmd) - Terminal 2 (simultánea, con Postgres y la Terminal 1 ya corriendo)
+.\mvnw.cmd spring-boot:run
+```
 
-### 3.5 Configurar producción local con Docker
+```bash
+# macOS / Linux - Terminal 1
+./mvnw spring-boot:run
+```
 
-**Producto del paso:** archivos de producción local preparados: `Dockerfile`, `.env`, `.env.example`, `compose.yml` y `application-prod.yml`.
+```bash
+# macOS / Linux - Terminal 2 (simultánea, con Postgres y la Terminal 1 ya corriendo)
+./mvnw spring-boot:run
+```
 
-En DEV la aplicación se ejecuta con Maven desde el host y solo PostgreSQL corre en Docker. En PROD local, la aplicación también se ejecutará como contenedor. Por eso se agregan archivos separados para construir la imagen, pasar variables de entorno y conectar el contenedor de la aplicación con su PostgreSQL dockerizado.
-
-Agrega o revisa estos archivos en `services/catalogo-ms`:
+Cada terminal imprime su propio puerto al arrancar:
 
 ```text
-.env
-.env.example
-Dockerfile
-compose.yml
+Tomcat started on port 54211 (http) with context path '/'
 ```
 
-Y este archivo en `services/catalogo-ms/src/main/resources`:
+Verifica que ambas instancias responden por separado, con el endpoint de saludo y con `/actuator/health`:
 
-```text
-application-prod.yml
+PowerShell:
+
+```powershell
+Invoke-RestMethod -Method Get -Uri "http://localhost:<puerto-1>/saludo"
+Invoke-RestMethod -Method Get -Uri "http://localhost:<puerto-2>/saludo"
+Invoke-RestMethod -Method Get -Uri "http://localhost:<puerto-1>/actuator/health"
+Invoke-RestMethod -Method Get -Uri "http://localhost:<puerto-2>/actuator/health"
 ```
 
-#### 3.5.1 Crear `Dockerfile`
-
-El `Dockerfile` construye el JAR con Maven y luego ejecuta la aplicación con Java 21:
-
-```dockerfile
-FROM maven:3.9.9-eclipse-temurin-21 AS build
-WORKDIR /app
-
-COPY pom.xml .
-RUN mvn -q -DskipTests dependency:go-offline
-
-COPY src ./src
-RUN mvn -q clean package -DskipTests
-
-FROM eclipse-temurin:21-jre
-WORKDIR /app
-
-COPY --from=build /app/target/*.jar app.jar
-
-EXPOSE 8080
-
-ENTRYPOINT ["java", "-jar", "app.jar"]
-```
-
-#### 3.5.2 Crear `.env` y `.env.example`
-
-`.env` contiene variables para producción local. `.env.example` debe tener la misma estructura para que otro estudiante pueda reproducir el entorno sin adivinar nombres.
-
-```env
-SPRING_PROFILES_ACTIVE=prod
-
-DB_NAME=pagatu_catalogo_db
-DB_USER=pagatu
-DB_PASS=pagatu
-```
-
-En S2 se agregará la URL del Config Server. En S1 el objetivo es que el microservicio pueda ejecutar en producción local con configuración propia.
-
-#### 3.5.3 Crear `application-prod.yml`
-
-`application-prod.yml` define cómo se comporta la aplicación dentro de Docker. La base de datos no se busca en `localhost`, sino por el nombre del servicio PostgreSQL declarado en `compose.yml`.
-
-```yaml
-server:
-  port: 8080
-
-spring:
-  datasource:
-    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
-    username: ${DB_USER}
-    password: ${DB_PASS}
-    driver-class-name: org.postgresql.Driver
-  flyway:
-    enabled: true
-    locations: classpath:db/migration
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    show-sql: false
-    properties:
-      hibernate:
-        format_sql: false
-
-springdoc:
-  swagger-ui:
-    enabled: false
-  api-docs:
-    enabled: false
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
-  endpoint:
-    health:
-      show-details: never
-```
-
-La regla es la misma para DEV y PROD local: Flyway crea la estructura y JPA solo valida. Si vienes del material anterior con MySQL, el patrón es el mismo, pero en `pagatu` se adapta a PostgreSQL:
-
-```text
-DEV  -> flyway.enabled=true + ddl-auto=validate
-PROD -> flyway.enabled=true + ddl-auto=validate
-```
-
-#### 3.5.4 Crear `compose.yml`
-
-`compose.yml` levanta PostgreSQL y el microservicio en contenedores. La base de datos queda en una red interna del microservicio y la aplicación queda preparada para conectarse después a una red compartida del sistema.
-
-```yaml
-name: pagatu-catalogo-prod
-
-services:
-  postgres-catalogo:
-    image: postgres:16-alpine
-    container_name: pagatu-postgres-catalogo
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASS}
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 20s
-    volumes:
-      - pagatu_catalogo_data:/var/lib/postgresql/data
-    ports:
-      - "25432:5432"
-    networks:
-      - pagatu-catalogo-int
-
-  catalogo-ms:
-    build: .
-    restart: unless-stopped
-    depends_on:
-      postgres-catalogo:
-        condition: service_healthy
-    environment:
-      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
-      DB_HOST: pagatu-postgres-catalogo
-      DB_PORT: 5432
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASS: ${DB_PASS}
-    volumes:
-      - ./logs:/app/logs
-    networks:
-      - pagatu-catalogo-int
-
-volumes:
-  pagatu_catalogo_data:
-
-networks:
-  pagatu-catalogo-int:
-    name: pagatu-catalogo-int
-```
-
-En S1 basta con la red interna del microservicio. Más adelante, cuando aparezcan Gateway, Eureka y Config Server, la aplicación se conectará también a la red compartida del sistema.
-
-### 3.6 Probar producción local con Docker
-
-**Producto del paso:** microservicio ejecutando en producción local con Docker, PostgreSQL PROD disponible y escalado controlado a dos instancias.
-
-#### 3.6.1 Levantar producción local
-
-PowerShell / bash macOS/Linux:
+bash macOS/Linux:
 
 ```bash
-cd services/catalogo-ms
-docker compose up -d --build --scale catalogo-ms=2
-docker compose ps
+curl http://localhost:<puerto-1>/saludo
+curl http://localhost:<puerto-2>/saludo
+curl http://localhost:<puerto-1>/actuator/health
+curl http://localhost:<puerto-2>/actuator/health
 ```
 
-#### 3.6.2 Verificar la base de datos PROD
+Resultado esperado: ambas responden `catalogo-ms activo` y `{"status":"UP"}`, cada una en su propio puerto, conectadas de forma independiente a la misma PostgreSQL DEV.
 
-PowerShell / bash macOS/Linux:
-
-```bash
-docker exec -it pagatu-postgres-catalogo psql -U pagatu -d pagatu_catalogo_db -c "\dt"
-docker exec -it pagatu-postgres-catalogo psql -U pagatu -d pagatu_catalogo_db -c "\d categorias"
-```
-
-#### 3.6.3 Verificar health desde la red Docker
-
-En S1 el microservicio en PROD local no publica puerto host directo. Se valida desde la red Docker interna; en sesiones posteriores el acceso externo se hará por Gateway.
-
-PowerShell / bash macOS/Linux:
-
-```bash
-docker run --rm --network pagatu-catalogo-int curlimages/curl:8.10.1 -s http://catalogo-ms:8080/actuator/health
-```
-
-Resultado esperado:
-
-```json
-{"status":"UP"}
-```
-
-#### 3.6.4 Revisar logs y bajar el entorno
-
-La producción local se levantó con dos instancias usando `--scale catalogo-ms=2`. No uses más de dos en laboratorio porque cada instancia consume CPU y memoria.
-
-PowerShell / bash macOS/Linux:
-
-```bash
-docker compose ps
-```
-
-Revisa logs de ambas instancias:
-
-```bash
-docker compose logs --tail=80 catalogo-ms
-```
-
-Al terminar la evidencia, baja el entorno para liberar CPU, memoria, red y contenedores:
-
-```bash
-docker compose down
-```
-
-### 3.7 Ruta alternativa: partir del tag de cierre de la sesión
-
-Esta sección sirve si tu equipo ya cerró la sesión con un tag de git en su propio repositorio del proyecto (por ejemplo `s01`) y quieres solo levantar, probar y revisar evidencias sin repetir toda la construcción paso a paso.
-
-| Necesidad | Referencia |
-|---|---|
-| Levantar y probar en DEV | [Ver paso 3.4](#34-ejecutar-y-probar-el-microservicio-en-dev) |
-| Revisar Swagger | [Ver paso 3.4.4](#344-revisar-swagger) |
-| Revisar health y metrics | [Ver paso 3.4.5](#345-verificar-health-y-metrics) |
-| Probar CRUD por shell | [Ver paso 3.4.6](#346-probar-crud-por-shell) |
-| Levantar y escalar PROD local | [Ver paso 3.6](#36-probar-produccion-local-con-docker) |
-
-Comandos mínimos DEV:
-
-PowerShell / bash macOS/Linux:
-
-```bash
-cd services/catalogo-ms
-docker compose -f compose-dev.yml up -d
-mvn spring-boot:run
-```
-
-Comandos mínimos PROD local:
-
-```bash
-cd services/catalogo-ms
-docker compose up -d --build --scale catalogo-ms=2
-docker compose ps
-```
-
-#### 3.7.1 Archivos clave por modo de ejecución
-
-DEV:
-
-| Archivo | Propósito |
-|---|---|
-| `services/catalogo-ms/compose-dev.yml` | PostgreSQL DEV |
-| `services/catalogo-ms/src/main/resources/application.yml` | Configuración base y perfil activo |
-| `services/catalogo-ms/src/main/resources/application-dev.yml` | Configuración DEV con puerto dinámico y BD DEV |
-
-PROD local:
-
-| Archivo | Propósito |
-|---|---|
-| `services/catalogo-ms/Dockerfile` | Imagen de aplicación |
-| `services/catalogo-ms/compose.yml` | Producción local con Docker |
-| `services/catalogo-ms/.env.example` | Variables esperadas para PROD local |
-| `services/catalogo-ms/.env` | Variables locales de ejecución PROD |
-| `services/catalogo-ms/src/main/resources/application-prod.yml` | Configuración PROD local |
-
-Comunes:
-
-| Archivo | Propósito |
-|---|---|
-| `services/catalogo-ms/pom.xml` | Dependencias del microservicio |
-| `services/catalogo-ms/src/main/java/...` | Código del servicio |
-| `services/catalogo-ms/src/main/resources/db/migration` | Migraciones Flyway |
-| `services/catalogo-ms/README.md` | Operación y evidencias |
-
-#### 3.7.2 Verificación rápida de base de datos
-
-DEV:
-
-```bash
-docker exec -it pagatu-postgres-catalogo-dev psql -U pagatu -d pagatu_catalogo_db
-```
-
-Dentro de `psql`:
-
-```sql
-\dt
-\d categorias
-SELECT * FROM categorias;
-\q
-```
-
-PROD local:
-
-```bash
-docker exec -it pagatu-postgres-catalogo psql -U pagatu -d pagatu_catalogo_db -c "\dt"
-docker exec -it pagatu-postgres-catalogo psql -U pagatu -d pagatu_catalogo_db -c "SELECT * FROM categorias;"
-```
+**Por qué importa esto en S1.** Todavía no hay Gateway ni balanceador de carga — eso llega en S4 ("Punto único de acceso y distribución de tráfico"). Pero la capacidad de correr múltiples instancias sin puerto fijo es la base técnica que un balanceador necesita para repartir tráfico entre copias del mismo servicio; practicarla desde S1 deja esa evidencia lista para cuando el Gateway integre esta pieza.
 
 ## 4. Crea: actividad autónoma
 
@@ -1619,26 +1340,25 @@ El PDF debe usar esta estructura. La primera sección define el trabajo autónom
 
 Completa y evidencia estas tareas:
 
-1. Replicar el patrón de `catalogo-ms` en otro servicio del dominio, por ejemplo `producto-ms`.
-2. Ejecutar el microservicio en DEV con Maven.
+1. Replicar el patrón de `catalogo-ms` en otro servicio del dominio, por ejemplo `orden-ms`.
+2. Ejecutar el microservicio en DEV con Maven Wrapper.
 3. Probar el CRUD por PowerShell o bash.
 4. Verificar Swagger, `/actuator/health` y `/actuator/metrics` en DEV.
 5. Revisar la base de datos con comandos `psql`.
-6. Ejecutar una prueba breve en PROD local con Docker.
-7. Explicar la diferencia entre DEV Maven y PROD Docker.
+6. Ejecutar dos instancias del microservicio en paralelo (`server.port: 0`) y verificar que responden por separado.
+7. Explicar por qué un microservicio debe poder escalar horizontalmente sin puerto fijo.
 
 #### 4.1.3 Evidencia técnica
 
 Incluye capturas o salidas de consola con una breve explicación debajo de cada una:
 
-- Ejecución con `mvn spring-boot:run`.
+- Ejecución con `mvnw spring-boot:run` (Maven Wrapper).
 - Prueba CRUD por shell.
 - Swagger o lista de endpoints disponible.
 - Respuesta de `/actuator/health`.
 - Respuesta de `/actuator/metrics`.
 - Consulta de tabla y registros con `psql`.
-- Ejecución en PROD local con Docker.
-- Evidencia de máximo dos instancias, si corresponde.
+- Evidencia de las dos instancias corriendo en paralelo, con sus puertos y respuestas.
 
 #### 4.1.4 Error o hallazgo
 
@@ -1653,7 +1373,7 @@ Describe al menos un error, diferencia o hallazgo técnico:
 Responde en 5 a 8 líneas:
 
 ```text
-¿Por qué un microservicio debe poder ejecutarse en DEV y PROD local de forma reproducible?
+¿Por qué un microservicio debe poder ejecutarse en desarrollo de forma reproducible y escalar horizontalmente sin puerto fijo?
 ```
 
 ### 4.2 Criterios mínimos de aceptación
@@ -1664,7 +1384,7 @@ La evidencia individual se considera completa si:
 - Incluye evidencias técnicas legibles.
 - Muestra el microservicio funcionando en DEV.
 - Muestra prueba de CRUD y base de datos.
-- Muestra una ejecución breve en PROD local.
+- Muestra dos instancias corriendo en paralelo.
 - Explica un aporte individual verificable.
 - No contiene solo pantallazos: cada evidencia tiene una descripción breve.
 
@@ -1678,14 +1398,13 @@ Esta sección conecta el resultado de aprendizaje de la sesión con el producto 
 
 Al finalizar la sesión, el estudiante debe demostrar que:
 
-- El microservicio ejecuta en DEV con Maven.
-- El microservicio ejecuta en PROD local con Docker.
-- PostgreSQL funciona en DEV y PROD local.
+- El microservicio ejecuta en DEV con Maven Wrapper.
+- PostgreSQL funciona en DEV.
 - El CRUD de `Categoria` responde por shell.
 - Swagger y `/actuator/health` funcionan en DEV.
 - Flyway crea la tabla `categorias`.
-- El microservicio puede levantar múltiples instancias, máximo dos en laboratorio.
-- Puede explicar la diferencia entre DEV Maven y PROD Docker.
+- El microservicio puede levantar múltiples instancias en paralelo, sin puerto fijo.
+- Puede explicar por qué escalar horizontalmente sin puerto fijo importa en un sistema distribuido.
 
 ### 5.2 Evidencia del producto de sesión
 
@@ -1706,15 +1425,14 @@ La evidencia debe demostrar:
 
 La revisión se realiza con los criterios mínimos de aceptación de la sección 4.2 y la rúbrica de la sección 5.4.
 
-Comparación mínima que debe defender:
+Evidencia mínima que debe defender sobre el escalamiento horizontal:
 
-| Aspecto | DEV Maven | PROD Docker |
+| Aspecto | Instancia 1 | Instancia 2 |
 |---|---|---|
-| Aplicación | Ejecuta en host con `mvn spring-boot:run` | Ejecuta dentro de contenedor |
-| Base de datos | PostgreSQL en Docker DEV | PostgreSQL en Docker PROD |
-| Puerto del microservicio | Dinámico con `server.port: 0` | Interno `8080` dentro de Docker |
-| Acceso externo | Directo al puerto asignado | Por red Docker; luego por Gateway |
-| Propósito | Desarrollo, depuración y cambios rápidos | Ejecución reproducible y cercana a producción |
+| Puerto | Asignado por el SO (`server.port: 0`) | Asignado por el SO, distinto al de la Instancia 1 |
+| Base de datos | Misma PostgreSQL DEV | Misma PostgreSQL DEV |
+| Endpoint de saludo | `UP` en su propio puerto | `UP` en su propio puerto |
+| `/actuator/health` | `UP`, conexión a BD independiente | `UP`, conexión a BD independiente |
 
 ### 5.3 Preguntas de defensa y reflexión
 
@@ -1722,8 +1440,8 @@ Comparación mínima que debe defender:
 2. ¿Qué responsabilidad tiene `catalogo-ms`?
 3. ¿Cómo se prueba el servicio sin usar Postman?
 4. ¿Qué evidencia demuestra que la BD fue usada?
-5. ¿Qué diferencia hay entre DEV Maven y PROD Docker?
-6. ¿Por qué en PROD local no se publica directamente el puerto del microservicio?
+5. ¿Por qué `server.port: 0` permite correr dos instancias sin que choquen?
+6. ¿Qué componente hará falta más adelante para repartir tráfico entre esas instancias?
 7. ¿Qué parte implementaste o replicaste individualmente?
 
 ### 5.4 Rúbrica de evaluación
@@ -1731,8 +1449,8 @@ Comparación mínima que debe defender:
 | Dimensión | Peso | 3 - Logro destacado | 2 - Logro | 1 - Proceso | 0 - Inicio | Puntuación obtenida |
 |---|---:|---|---|---|---|---:|
 | 1. Microservicio funcional | 2 | Evidencia microservicio ejecutando, CRUD funcionando, health/metrics y Swagger en DEV. | Evidencia microservicio ejecutando y al menos una prueba funcional. | Evidencia arranque parcial o sin pruebas suficientes. | No evidencia el microservicio funcionando. | |
-| 2. Persistencia y base de datos | 2 | Evidencia PostgreSQL DEV/PROD, Flyway y registros consultados con `psql`. | Evidencia tabla `categorias` y consultas básicas con `psql`. | Evidencia parcial de conexión a BD. | No evidencia uso de PostgreSQL ni tabla creada. | |
-| 3. Ejecución DEV y PROD local | 2 | Explica y evidencia DEV Maven, PROD Docker y escalado máximo a dos instancias. | Evidencia DEV con Maven y PROD local con Docker. | Muestra solo DEV o solo PROD local. | No diferencia DEV y PROD local. | |
+| 2. Persistencia y base de datos | 2 | Evidencia PostgreSQL DEV, Flyway y registros consultados con `psql`. | Evidencia tabla `categorias` y consultas básicas con `psql`. | Evidencia parcial de conexión a BD. | No evidencia uso de PostgreSQL ni tabla creada. | |
+| 3. Escalamiento horizontal | 2 | Explica y evidencia dos instancias corriendo en paralelo, cada una respondiendo por su cuenta. | Evidencia dos instancias corriendo, sin verificar ambas por separado. | Evidencia solo una instancia. | No evidencia múltiples instancias. | |
 | 4. Aporte individual verificable | 2 | Aporte claro, verificable y conectado al producto del equipo. | Aporte claro con archivo, comando o prueba realizada. | Aporte mencionado de forma general. | No se identifica aporte individual. | |
 | 5. Diagnóstico de error o hallazgo | 1 | Analiza error/hallazgo, causa, solución y aprendizaje técnico. | Explica causa probable y solución parcial. | Menciona un problema sin explicarlo. | No presenta error ni hallazgo. | |
 | 6. Reflexión técnica y orden | 1 | Reflexión técnica precisa, PDF ordenado, capturas legibles y explicaciones breves. | Reflexión clara y evidencias entendibles. | Reflexión superficial o evidencias poco legibles. | PDF desordenado o sin reflexión. | |

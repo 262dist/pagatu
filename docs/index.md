@@ -26,13 +26,13 @@ Producto U1: sistema distribuido base funcional, configurable y preparado para m
 
 Resultado esperado U1: el estudiante construye un primer servicio REST funcional, externaliza configuración por ambientes, registra servicios dinámicamente, accede al sistema mediante un punto único de entrada y demuestra distribución de tráfico entre instancias.
 
-| Sesión | Tema | Producto de sesión |
-|---|---|---|
-| S1 | Construcción de un servicio base para un sistema distribuido | Servicio REST funcional, persistente, observable y preparado para ejecución reproducible |
-| S2 | Gestión centralizada de configuración y ambientes | Configuración externa por ambiente y evidencia inicial de observabilidad |
-| S3 | Registro, descubrimiento y ejecución concurrente de servicios | Servicios descubiertos dinámicamente y múltiples instancias operativas |
-| S4 | Punto único de acceso y distribución de tráfico | Acceso centralizado con rutas y balanceo de carga |
-| S5 | Evaluación U1 | Sistema base integrado funcionando como un todo |
+| Sesión | Tema (sílabo) | MS que se toca | Trabajo principal |
+|---|---|---|---|
+| S1 | Construcción de un servicio base para un sistema distribuido. | `catalogo-ms` | Servicio REST base, PostgreSQL, Swagger, Actuator. |
+| S2 | Gestión centralizada de configuración y ambientes. | `catalogo-ms` + `orden-ms` (nuevo, esqueleto) | Config Server + config-repo; se crea `orden-ms` mínimo (CRUD simple) para tener un segundo servicio que también lea del Config Server. |
+| S3 | Registro, descubrimiento y ejecución concurrente de servicios. | `catalogo-ms`, `orden-ms` | Eureka; ambos servicios se registran; múltiples instancias de `catalogo-ms` visibles en el dashboard de Eureka. Se levantan Prometheus y Loki para empezar a recolectar métricas y logs de esas instancias. |
+| S4 | Punto único de acceso y distribución de tráfico. | `catalogo-ms`, `orden-ms` | Gateway enruta a ambos; balanceo de carga entre instancias. Se agrega Grafana con paneles básicos sobre las métricas y logs que ya recolectan Prometheus y Loki desde S3. |
+| S5 | Integración del sistema distribuido base: servicios, configuración centralizada, descubrimiento, ejecución concurrente, Gateway y balanceo de carga. | — | Sustentación del sistema base, con evidencia de operación de los MS en los paneles de Grafana: instancias registradas en Eureka, balanceo de carga entre ellas y métricas/logs en vivo. |
 
 ### U2: Sistema distribuido robusto
 
@@ -40,15 +40,15 @@ Producto U2: sistema distribuido seguro, resiliente, consistente, observable e i
 
 Resultado esperado U2: el estudiante implementa comunicación síncrona resiliente, seguridad distribuida, mensajería asíncrona, consistencia eventual en procesos de negocio, observabilidad operacional e integración frontend mediante el punto único de acceso.
 
-| Sesión | Tema | Producto de sesión |
-|---|---|---|
-| S6 | Comunicación síncrona resiliente entre servicios | Operación distribuida con respuesta controlada ante fallos |
-| S7 | Seguridad distribuida y control de acceso | Autenticación, autorización y protección de rutas del sistema |
-| S8 | Mensajería asíncrona entre servicios | Comunicación por eventos entre servicios desacoplados |
-| S9 | Consistencia distribuida en procesos de negocio | Proceso distribuido con consistencia eventual, compensacion e idempotencia |
-| S10 | Observabilidad y diagnóstico de sistemas distribuidos | Logs, health, métricas y paneles de diagnóstico |
-| S11 | Integración con cliente frontend | Cliente integrado al sistema distribuido mediante Gateway |
-| S12 | Evaluación U2 | Sistema robusto validado en condiciones reales |
+| Sesión | Tema (sílabo) | MS que se toca | Trabajo principal |
+|---|---|---|---|
+| S6 | Comunicación síncrona resiliente entre servicios. | `orden-ms` → `catalogo-ms` | Feign + Circuit Breaker: `orden-ms` valida catálogo antes de crear la orden. |
+| S7 | Seguridad distribuida y control de acceso. | `auth-ms` (nuevo) | JWT propio, roles, Gateway como Resource Server. |
+| S8 | Mensajería asíncrona entre servicios. | `orden-ms` → `pago-ms` (nuevo) | `orden-ms` publica `orden.creada`; `pago-ms` consume y publica `pago.validado`. |
+| S9 | Consistencia distribuida en procesos de negocio. | `orden-ms`, `pago-ms` | Idempotencia, compensación, manejo de eventos duplicados. |
+| S10 | Observabilidad y diagnóstico de sistemas distribuidos. | todos | Extiende Prometheus/Loki/Grafana (ya en pie desde S3-S4) a `auth-ms`, `orden-ms` y `pago-ms`; agrega paneles de diagnóstico y alertas sobre todo el sistema, no solo `catalogo-ms`. |
+| S11 | Integración con cliente frontend. | Angular 21 | Cliente consumiendo por Gateway: catálogo, crear orden, ver pago. |
+| S12 | Integración del sistema distribuido robusto: comunicación resiliente, seguridad, mensajería, consistencia eventual, observabilidad e integración frontend. | — | Sustentación del sistema robusto. |
 
 ### U3: Validación y consolidación del producto del curso
 
@@ -56,12 +56,12 @@ Producto U3 / producto del curso: sistema distribuido de microservicios end-to-e
 
 Resultado esperado U3: el estudiante integra los componentes desarrollados en las unidades anteriores, valida flujos completos, estabiliza documentación y despliegue local, prepara evidencias técnicas y sustenta el producto final. La defensa es grupal, pero la nota es individual.
 
-| Sesión | Tema | Producto de sesión |
-|---|---|---|
-| S13 | Validación end-to-end del producto del curso | Producto del curso probado integralmente |
-| S14 | Revisión técnica y estabilización del producto | Documentación, evidencias y estabilización |
-| S15 | Defensa técnica | Sustentación grupal del producto |
-| S16 | Evaluación final | Demostración individual de competencias pendientes |
+| Sesión | Tema (sílabo) | MS que se toca | Trabajo principal |
+|---|---|---|---|
+| S13 | Validación end-to-end del producto del curso. | todos | Pruebas end-to-end del flujo completo: catálogo, orden, pago, seguridad, mensajería. |
+| S14 | Revisión técnica y estabilización del producto. | todos | Documentación, evidencias, configuración y despliegue local estabilizados. |
+| S15 | Integración y validación del sistema distribuido: arquitectura, seguridad, mensajería, consistencia, observabilidad, frontend y despliegue reproducible. | todos | Sustentación grupal del sistema completo. |
+| S16 | Integración de sistemas distribuidos: servicios, configuración, comunicación, resiliencia, seguridad, consistencia, observabilidad, pruebas y despliegue. | todos | Evaluación individual final: demostración y preguntas técnicas pendientes. |
 
 ## Arquitectura pagatu v2026
 
@@ -69,56 +69,52 @@ Resultado esperado U3: el estudiante integra los componentes desarrollados en la
 %%{init: {"flowchart": {"nodeSpacing": 18, "rankSpacing": 28, "curve": "basis"}} }%%
 flowchart LR
     subgraph Infra["infra"]
-        Config["Config<br/>D 18888<br/>P 28888"]
-        Eureka["Eureka<br/>D 18761<br/>P 28761"]
-        Gateway["Gateway<br/>D 18080<br/>P 28082"]
+        Config["Config - D 18888 - P 28888"]
+        Eureka["Eureka - D 18761 - P 28761"]
+        Gateway["Gateway - D 18080 - P 28082"]
     end
 
     subgraph Runtime["microservicios"]
         subgraph Identity["identidad"]
-            Auth["auth-ms<br/>(Keycloak u otro)<br/>dinamico"]
-            AuthDB["auth_db<br/>D 15431<br/>P 25431"]
+            Auth["auth-ms (Keycloak u otro) - dinamico"]
+            AuthDB["auth_db - D 15431 - P 25431"]
             Auth --> AuthDB
         end
 
         subgraph Services["services"]
-            Catalogo["catalogo-ms<br/>dinamico"]
-            CatalogoDB["catálogo_db<br/>D 15432<br/>P 25432"]
-            Producto["producto-ms<br/>dinamico"]
-            ProductoDB["producto_db<br/>D 15433<br/>P 25433"]
-            Orden["orden-ms<br/>dinamico"]
-            OrdenDB["orden_db<br/>D 15434<br/>P 25434"]
-            Pago["pago-ms<br/>dinamico"]
-            PagoDB["pago_db<br/>D 15435<br/>P 25435"]
+            Catalogo["catalogo-ms - dinamico"]
+            CatalogoDB["catálogo_db - D 15432 - P 25432"]
+            Orden["orden-ms - dinamico"]
+            OrdenDB["orden_db - D 15434 - P 25434"]
+            Pago["pago-ms - dinamico"]
+            PagoDB["pago_db - D 15435 - P 25435"]
 
             Catalogo --> CatalogoDB
-            Producto --> ProductoDB
             Orden --> OrdenDB
             Pago --> PagoDB
-            Producto -->|"consulta categoría"| Catalogo
+            Orden -->|"Feign: valida catálogo"| Catalogo
         end
     end
 
     subgraph Messaging["kafka"]
-        Broker["Kafka broker<br/>D 41092<br/>P 29092"]
-        KafkaUI["Kafka UI<br/>D 41085<br/>P 28085"]
+        Broker["Kafka broker - D 41092 - P 29092"]
+        KafkaUI["Kafka UI - D 41085 - P 28085"]
         KafkaUI --> Broker
     end
 
     subgraph External["sistema externo"]
-        PaymentGateway["Pasarela<br/>pagos externa"]
+        PaymentGateway["Pasarela de pagos externa"]
     end
 
     Angular --> Gateway
     Gateway --> Auth
     Gateway --> Catalogo
-    Gateway --> Producto
     Gateway --> Orden
     Gateway --> Pago
 
     Config -. "carga configuración" .-> Eureka
     Config -. "carga configuración" .-> Gateway
-    Config -. "carga configuración<br/>configserver" .-> Runtime
+    Config -. "carga configuración - configserver" .-> Runtime
     Runtime -. "registra instancias" .-> Eureka
     Gateway -. "descubre servicios" .-> Eureka
 
@@ -131,13 +127,13 @@ flowchart LR
     class PaymentGateway external;
 
     subgraph Client["clients"]
-        Angular["pagatu-ng<br/>D 4200"]
+        Angular["pagatu-ng (Angular 21) - D 4200"]
     end
 
     subgraph Obs["observabilidad"]
-        Prometheus["Prometheus<br/>D 19090<br/>P 29090"]
-        Loki["Loki<br/>D 13100<br/>P 23100"]
-        Grafana["Grafana<br/>D 13000<br/>P 23000"]
+        Prometheus["Prometheus - D 19090 - P 29090"]
+        Loki["Loki - D 13100 - P 23100"]
+        Grafana["Grafana - D 13000 - P 23000"]
         Grafana --> Prometheus
         Grafana --> Loki
     end
@@ -155,8 +151,8 @@ Convención del diagrama: las flechas continuas representan interacciones de neg
 3. Los microservicios se ejecutan en DEV con Maven y bases de datos en Docker; al cierre de cada sesión se valida producción local con Docker.
 4. Las pruebas de API se realizan con PowerShell o bash/curl, sin depender de Postman.
 5. Los flujos asincronos usan mensajería para coordinar ordenes y pagos.
-6. La observabilidad acompaña el curso desde S2 y se consolida en S10.
-7. El frontend `clients/pagatu-ng` consume el sistema mediante Gateway.
+6. `/actuator/health` existe desde S1. El stack de observabilidad (Prometheus, Loki, Grafana) se levanta ya en S3-S4 sobre `catalogo-ms`/`orden-ms`, para tener evidencia visual de operación desde la sustentación de S5; en S10 se extiende a `auth-ms`, `orden-ms` y `pago-ms` con paneles de diagnóstico y alertas sobre todo el sistema.
+7. El frontend `clients/pagatu-ng` (Angular 21) consume el sistema mediante Gateway.
 8. El producto final se valida end-to-end, se estabiliza y se defiende técnicamente.
 
 ## Enlaces

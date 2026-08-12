@@ -6,7 +6,6 @@ docs_dir: docs
 
 nav:
   - Inicio: index.md
-  - Plan de trabajo: plan-trabajo.md
   - Guía de Proyecto Sello:
       - Guía del proyecto: proyecto-sello/index.md
   - Silabos:
