@@ -157,10 +157,6 @@ Convención del diagrama: las flechas continuas representan interacciones de neg
 
 ## Enlaces
 
-- [Sílabo detallado](silabo.md)
-- [Guía del curso](guia-curso.md)
-- [Puertos y accesos](referencias/puertos.md)
-- [Comandos PowerShell](referencias/comandos-powershell.md)
-- [Comandos bash macOS/Linux](referencias/comandos-bash.md)
-- [Troubleshooting](referencias/troubleshooting.md)
-- [Rúbrica](referencias/rubrica.md)
+- [Sílabo 2026-2](silabo_dist_2026_2.md)
+- [S1 - Construcción de un servicio base](sesiones/S01_Construccion_Servicio_Base.md)
+- [Guía de Proyecto Sello](proyecto-sello/index.md)
