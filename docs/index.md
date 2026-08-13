@@ -98,17 +98,17 @@ flowchart LR
     subgraph Runtime["microservicios"]
         subgraph Identity["identidad"]
             Auth["auth-ms (Keycloak u otro) - dinamico"]
-            AuthDB["auth_db - D 15431 - P 25431"]
+            AuthDB[("auth_db - D 15431 - P 25431")]
             Auth --> AuthDB
         end
 
         subgraph Services["services"]
             Catalogo["catalogo-ms - dinamico"]
-            CatalogoDB["catálogo_db - D 15432 - P 25432"]
+            CatalogoDB[("catálogo_db - D 15432 - P 25432")]
             Orden["orden-ms - dinamico"]
-            OrdenDB["orden_db - D 15434 - P 25434"]
+            OrdenDB[("orden_db - D 15434 - P 25434")]
             Pago["pago-ms - dinamico"]
-            PagoDB["pago_db - D 15435 - P 25435"]
+            PagoDB[("pago_db - D 15435 - P 25435")]
 
             Catalogo --> CatalogoDB
             Orden --> OrdenDB

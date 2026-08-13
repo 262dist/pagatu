@@ -190,8 +190,8 @@ Esta parte sí se practica en S1 (ver 3.6-3.7) — muestra, por contraste con 2.
 flowchart TB
     ProdClient["Cliente interno - curl container"]
     subgraph ProdDocker["Docker Network: pagatu-catalogo-int"]
-        ProdApp1["catalogo-ms - jar - 8080 interno"]
-        ProdApp2["catalogo-ms - jar - 8080 interno"]
+        ProdApp1["catalogo-ms - instancia 1 - jar - 8080 interno"]
+        ProdApp2["catalogo-ms - instancia 2 - jar - 8080 interno"]
         ProdDb[("pagatu_catalogo_db - PostgreSQL - pagatu-postgres-catalogo:5432")]
     end
 
@@ -205,6 +205,8 @@ flowchart TB
     class ProdApp1,ProdApp2 app;
     class ProdDb db;
 ```
+
+Las dos flechas del cliente muestran el **mismo** destino, `catalogo-ms:8080` — eso es intencional, no un error: dentro de la red Docker, ambas instancias comparten ese mismo nombre de servicio y puerto interno, y es el DNS embebido de Docker el que reparte cada petición entre una u otra instancia por turno. Lo que cambia entre una petición y otra es **qué instancia responde por detrás**, no lo que el cliente pide — a diferencia de DEV (2.4.1), donde el cliente sí elige explícitamente `8080` u `8081`.
 
 Regla práctica:
 
