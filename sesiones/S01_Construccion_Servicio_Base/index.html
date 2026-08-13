@@ -2833,8 +2833,8 @@
 <pre class="mermaid"><code>flowchart TB
     ProdClient["Cliente interno - curl container"]
     subgraph ProdDocker["Docker Network: pagatu-catalogo-int"]
-        ProdApp1["catalogo-ms - jar - 8080 interno"]
-        ProdApp2["catalogo-ms - jar - 8080 interno"]
+        ProdApp1["catalogo-ms - instancia 1 - jar - 8080 interno"]
+        ProdApp2["catalogo-ms - instancia 2 - jar - 8080 interno"]
         ProdDb[("pagatu_catalogo_db - PostgreSQL - pagatu-postgres-catalogo:5432")]
     end
 
@@ -2847,6 +2847,7 @@
     classDef db fill:#fff4de,stroke:#b7791f,color:#111;
     class ProdApp1,ProdApp2 app;
     class ProdDb db;</code></pre>
+<p>Las dos flechas del cliente muestran el <strong>mismo</strong> destino, <code>catalogo-ms:8080</code> — eso es intencional, no un error: dentro de la red Docker, ambas instancias comparten ese mismo nombre de servicio y puerto interno, y es el DNS embebido de Docker el que reparte cada petición entre una u otra instancia por turno. Lo que cambia entre una petición y otra es <strong>qué instancia responde por detrás</strong>, no lo que el cliente pide — a diferencia de DEV (2.4.1), donde el cliente sí elige explícitamente <code>8080</code> u <code>8081</code>.</p>
 <p>Regla práctica:</p>
 <ul>
 <li>Si la aplicación corre fuera de Docker, usa <code>localhost</code> con el puerto expuesto por Docker.</li>
