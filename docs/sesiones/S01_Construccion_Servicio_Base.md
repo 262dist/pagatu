@@ -1,5 +1,7 @@
 # S1 - Construcción de un servicio base para un sistema distribuido
 
+*Por: Angel Sullon Macalupu @asullom - 2026*
+
 ## 1. Introducción
 
 Tiempo: 20 min.
