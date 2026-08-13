@@ -4,9 +4,9 @@
 
 Tiempo: 20 min.
 
-### 1.1 Contexto
+### 1.1 Presentación de la sesión
 
-Un sistema distribuido de comercio electrónico no nace como microservicios completos desde el primer día: nace de un primer servicio de negocio, bien delimitado, persistente y observable, que sirve como patrón para los siguientes. Esta sesión construye ese primer servicio, `catalogo-ms`, y deja establecidas las convenciones (estructura de capas, ejecución DEV/PROD local, trazabilidad) que se repetirán en cada microservicio del proyecto `pagatu`.
+Esta sesión abre la Unidad 1 del proyecto del curso: construye el primer microservicio del sistema, bien delimitado, persistente, observable y escalable. Con él quedan establecidas las convenciones (estructura de capas, ejecución DEV/PROD local, trazabilidad) que se repetirán en cada microservicio posterior del proyecto. El porqué de migrar hacia microservicios se explica en 1.6, a partir del caso de la plataforma de comercio electrónico — esta sesión construye solo el primer paso de ese camino, no el sistema completo.
 
 ### 1.2 Índice
 
@@ -26,11 +26,13 @@ Al concluir la clase, estarás en condiciones de:
 
 ### 1.5 Metodología
 
-| Fase | Actividades | Orientaciones | Material |
-|---|---|---|---|
-| Revisión previa individual | Leer el sílabo de la Unidad 1 y el caso de la plataforma de comercio electrónico (ver 1.6). | Trabajo individual, antes de clase; preparar el entorno local (Java 21, Docker) si aún no está listo. | Sílabo DIST U1. |
-| Clase presencial | Construcción guiada de `catalogo-ms`: entidad, CRUD, PostgreSQL, Flyway, Swagger, Actuator y filtro de trazabilidad. | Trabajo individual, siguiendo al docente paso a paso; consulta inmediata ante errores de arranque o de conexión a base de datos. Producción local con Docker (3.6-3.7) es alcance opcional: no es necesario completarla para cerrar la sesión. | Pasos 3.1 a 3.8 de esta guía. |
-| Evaluación formativa | Revisión en clase del servicio ejecutando en DEV, con múltiples instancias corriendo en paralelo. | La evidencia se completa y sustenta de forma individual, fuera del aula, según los criterios mínimos de la sección 4.2. | Plantilla de evidencia individual (4.1), rúbrica de evaluación (5.4). |
+**Tabla 1. Metodología de la sesión**
+
+| Actividades a Realizar en el Periodo | Orientaciones generales (Orientaciones Metodológicas) | Material de estudio recomendado |
+|---|---|---|
+| Revisión previa individual | Leer el sílabo de la Unidad 1 y el caso de la plataforma de comercio electrónico (ver 1.6). Trabajo individual, antes de clase; preparar el entorno local (Java 21, Docker) si aún no está listo. | Sílabo del curso Unidad 1, guía de sesión (MkDocs), plataforma UPeU. |
+| Clase presencial | Construcción guiada de `catalogo-ms`: entidad, CRUD, PostgreSQL, Flyway, Swagger, Actuator y filtro de trazabilidad. Trabajo individual, siguiendo al docente paso a paso; consulta inmediata ante errores de arranque o de conexión a base de datos. Producción local con Docker (3.6-3.7) es alcance opcional: no es necesario completarla para cerrar la sesión. | Pasos 3.1 a 3.8 de esta guía, VS Code, Docker Desktop, repositorio GitHub `pagatu`. |
+| Evaluación formativa | Revisión en clase del servicio ejecutando en DEV, con múltiples instancias corriendo en paralelo. La evidencia se completa y sustenta de forma individual, fuera del aula, según los criterios mínimos de la sección 4.4. | Indicaciones de entrega (4.3), rúbrica de evaluación (4.6), repositorio GitHub `pagatu` (tag de cierre de sesión), plataforma UPeU (entrega del PDF). |
 
 ### 1.6 Motivación de la sesión
 
@@ -47,12 +49,17 @@ Con el crecimiento del negocio comienzan a aparecer problemas:
 
 El equipo de ingeniería decide rediseñar la arquitectura del sistema utilizando microservicios.
 
-Preguntas para los estudiantes:
+**Preguntas de análisis**
+
+**Activación de conocimientos previos**
 
 1. ¿Qué problemas tiene la arquitectura monolítica en este caso?
 2. ¿Por qué una empresa migraría a microservicios?
-3. ¿Qué ventajas ofrece dividir el sistema en servicios?
-4. ¿Qué desventajas trae dividir el sistema en servicios, más allá del costo (por ejemplo: complejidad operativa, consistencia de datos entre servicios, latencia de red, dificultad para depurar un flujo que cruza varios servicios)?
+
+**Comprensión arquitectónica**
+
+1. ¿Qué ventajas ofrece dividir el sistema en servicios?
+2. ¿Qué desventajas trae dividir el sistema en servicios, más allá del costo (por ejemplo: complejidad operativa, consistencia de datos entre servicios, latencia de red, dificultad para depurar un flujo que cruza varios servicios)?
 
 En esta sesión se inicia ese rediseño construyendo el primer componente del sistema `pagatu`: `catalogo-ms`.
 
@@ -97,6 +104,8 @@ Tiempo: 25 min.
 
 ### 2.1 Arquitectura de la sesión
 
+**Figura 1. Arquitectura de capas de `catalogo-ms` en la sesión S1**
+
 ```mermaid
 flowchart TB
     Cliente["Cliente de prueba - PowerShell / bash / Swagger"] -->|"HTTP + JSON"| Filter["CorrelationIdFilter - agrega traceId, transparente"]
@@ -132,6 +141,8 @@ Ejemplo: `catalogo-ms` se encarga de gestionar categorías, conceptos de pago y 
 
 El microservicio no crea sus propias tablas al arrancar: **Flyway** ejecuta el script de migración (`V1__create_catalogo_tables.sql`, ver 3.3.1) una sola vez, y deja un registro de que ya se aplicó. Luego Hibernate/JPA solo **valida** que las entidades `Categoria` y `Producto` coincidan con las tablas creadas (`ddl-auto: validate`) — no crea ni modifica estructura.
 
+**Figura 2. Modelo entidad-relación de `categorias` y `productos`**
+
 ```mermaid
 erDiagram
     CATEGORIAS ||--o{ PRODUCTOS : contiene
@@ -160,6 +171,8 @@ Esta separación importa: si Hibernate pudiera crear o alterar tablas solo (`ddl
 
 #### 2.4.1 DEV: aplicación fuera de Docker
 
+**Figura 3. Ejecución del microservicio en DEV, fuera de Docker**
+
 ```mermaid
 flowchart TB
     DevClient["Cliente - PowerShell / bash / Swagger"]
@@ -185,6 +198,8 @@ En DEV, la aplicación corre en el host con Maven Wrapper, en el puerto fijo `80
 #### 2.4.2 PROD local: aplicación dentro de Docker
 
 Esta parte sí se practica en S1 (ver 3.6-3.7) — muestra, por contraste con 2.4.1, qué cambia cuando la aplicación misma corre dentro de Docker, no solo la base de datos.
+
+**Figura 4. Ejecución del microservicio en PROD local, dentro de Docker**
 
 ```mermaid
 flowchart TB
@@ -219,9 +234,13 @@ Regla práctica:
 
 Tiempo: 2h.
 
-En el laboratorio, el docente guía la construcción de `catalogo-ms` y los estudiantes verifican el resultado con comandos de consola. En `pagatu`, el docente guía `catalogo-ms` y el estudiante replica el patrón en `orden-ms` como trabajo aplicado. La versión actual usa monorepo, nombres con sufijo `-ms` y PostgreSQL para los microservicios.
+**Actividad:** construcción guiada de `catalogo-ms`, el primer microservicio REST del proyecto, con CRUD completo de `Categoria` y `Producto` (Producto de la sesión en 1.4).
 
-Hoja de ruta de la sesión práctica:
+**Propósito de la actividad:** construir `catalogo-ms` de punta a punta — desde el proyecto vacío hasta el CRUD completo de `Categoria` y `Producto` ejecutando en DEV, con persistencia, validación y trazabilidad — verificando cada incremento antes de continuar al siguiente.
+
+**Orientaciones metodológicas:** en el laboratorio, el docente guía la construcción de `catalogo-ms` paso a paso frente a la clase, y los estudiantes replican cada paso en su propio equipo, verificando el resultado con comandos de consola antes de avanzar al siguiente. La versión actual usa monorepo, nombres con sufijo `-ms` y PostgreSQL para los microservicios; el patrón completo se replica luego en `orden-ms` como trabajo aplicado (sección 4).
+
+**Actividades para realizar:**
 
 - **3.1** Instalar y verificar Java 21, VS Code y sus extensiones.
 - **3.2** Crear el proyecto Spring Boot con las dependencias base.
@@ -331,6 +350,8 @@ code --install-extension vmware.vscode-boot-dev-pack
 code --install-extension cweijan.vscode-database-client2
 ```
 
+**Tabla 2. Extensiones de VS Code requeridas**
+
 | Extensión | ID | Para qué sirve |
 |---|---|---|
 | Extension Pack for Java | `vscjava.vscode-java-pack` | Soporte base de Java (autocompletado, debug, Maven); incluye Spring Initializr Java Support, usado en 3.2.1. |
@@ -360,6 +381,8 @@ Spring Initializr: Create a Maven Project
 
 Usa la siguiente configuración:
 
+**Tabla 3. Configuración del proyecto en Spring Initializr**
+
 | Campo | Valor |
 |---|---|
 | Project | Maven Project |
@@ -375,6 +398,8 @@ Usa la siguiente configuración:
 Nota sobre la versión: el generador de Spring Initializr ya no ofrece ninguna versión 3.x — las únicas opciones son líneas 4.x. Se fija **4.0.7** por el mismo motivo verificado en LP2 (ver `docs/lp2/adr/ADR-003-spring-boot-4.md` del repo `bomerp`): dentro de la línea 4.x, SpringDoc OpenAPI declara compatibilidad solo hasta `4.1.0-M1`, así que 4.0.7 es la versión estable dentro de ese rango. Si al generar el proyecto ves `spring-boot-starter-web` reemplazado por `spring-boot-starter-webmvc`, o starters de prueba granulares en vez de uno solo, es esperado en esta línea de Boot — no lo corrijas.
 
 Dependencias a seleccionar:
+
+**Tabla 4. Dependencias del proyecto**
 
 | Grupo | Dependencias | Propósito |
 |---|---|---|
@@ -1553,17 +1578,49 @@ curl -X POST http://localhost:8080/api/categorias \
 
 Lista todas las categorías:
 
+PowerShell:
+
+```powershell
+Invoke-RestMethod `
+  -Method Get `
+  -Uri "http://localhost:8080/api/categorias"
+```
+
+bash macOS/Linux:
+
 ```bash
 curl http://localhost:8080/api/categorias
 ```
 
 Obtiene una categoría por id:
 
+PowerShell:
+
+```powershell
+Invoke-RestMethod `
+  -Method Get `
+  -Uri "http://localhost:8080/api/categorias/1"
+```
+
+bash macOS/Linux:
+
 ```bash
 curl http://localhost:8080/api/categorias/1
 ```
 
 Actualiza una categoría:
+
+PowerShell:
+
+```powershell
+Invoke-RestMethod `
+  -Method Put `
+  -Uri "http://localhost:8080/api/categorias/1" `
+  -ContentType "application/json" `
+  -Body '{"nombre":"Electrodomesticos","descripcion":"Linea blanca, pequenos y grandes electrodomesticos"}'
+```
+
+bash macOS/Linux:
 
 ```bash
 curl -X PUT http://localhost:8080/api/categorias/1 \
@@ -1572,6 +1629,16 @@ curl -X PUT http://localhost:8080/api/categorias/1 \
 ```
 
 Elimina una categoría:
+
+PowerShell:
+
+```powershell
+Invoke-RestMethod `
+  -Method Delete `
+  -Uri "http://localhost:8080/api/categorias/1"
+```
+
+bash macOS/Linux:
 
 ```bash
 curl -X DELETE http://localhost:8080/api/categorias/1
@@ -1603,17 +1670,49 @@ curl -X POST http://localhost:8080/api/productos \
 
 Lista todos los productos:
 
+PowerShell:
+
+```powershell
+Invoke-RestMethod `
+  -Method Get `
+  -Uri "http://localhost:8080/api/productos"
+```
+
+bash macOS/Linux:
+
 ```bash
 curl http://localhost:8080/api/productos
 ```
 
 Obtiene un producto por id:
 
+PowerShell:
+
+```powershell
+Invoke-RestMethod `
+  -Method Get `
+  -Uri "http://localhost:8080/api/productos/1"
+```
+
+bash macOS/Linux:
+
 ```bash
 curl http://localhost:8080/api/productos/1
 ```
 
 Actualiza un producto:
+
+PowerShell:
+
+```powershell
+Invoke-RestMethod `
+  -Method Put `
+  -Uri "http://localhost:8080/api/productos/1" `
+  -ContentType "application/json" `
+  -Body '{"nombre":"Matricula","descripcion":"Matricula del ciclo, promocion","precio":300.00,"activo":true,"categoriaId":1}'
+```
+
+bash macOS/Linux:
 
 ```bash
 curl -X PUT http://localhost:8080/api/productos/1 \
@@ -1622,6 +1721,16 @@ curl -X PUT http://localhost:8080/api/productos/1 \
 ```
 
 Elimina un producto:
+
+PowerShell:
+
+```powershell
+Invoke-RestMethod `
+  -Method Delete `
+  -Uri "http://localhost:8080/api/productos/1"
+```
+
+bash macOS/Linux:
 
 ```bash
 curl -X DELETE http://localhost:8080/api/productos/1
@@ -1927,6 +2036,8 @@ docker compose down
 
 Esta sección sirve si tu equipo ya cerró la sesión con un tag de git en su propio repositorio del proyecto (por ejemplo `s01`) y quieres solo levantar, probar y revisar evidencias sin repetir toda la construcción paso a paso.
 
+**Tabla 5. Referencias de la ruta alternativa**
+
 | Necesidad | Referencia |
 |---|---|
 | Levantar y probar en DEV | [Ver paso 3.4](#34-ejecutar-y-probar-el-microservicio-en-dev) |
@@ -1964,6 +2075,8 @@ docker compose ps
 
 DEV:
 
+**Tabla 6. Archivos clave en DEV**
+
 | Archivo | Propósito |
 |---|---|
 | `services/catalogo-ms/compose-dev.yml` | PostgreSQL DEV |
@@ -1971,6 +2084,8 @@ DEV:
 | `services/catalogo-ms/src/main/resources/application-dev.yml` | Configuración DEV con puerto `8080` y BD DEV |
 
 PROD local:
+
+**Tabla 7. Archivos clave en PROD local**
 
 | Archivo | Propósito |
 |---|---|
@@ -1981,6 +2096,8 @@ PROD local:
 | `services/catalogo-ms/src/main/resources/application-prod.yml` | Configuración PROD local |
 
 Comunes:
+
+**Tabla 8. Archivos comunes**
 
 | Archivo | Propósito |
 |---|---|
@@ -2017,35 +2134,9 @@ docker exec -it pagatu-postgres-catalogo psql -U pagatu -d pagatu_catalogo_db -c
 
 Tiempo: 4h fuera del aula.
 
-Esta actividad autónoma se desarrolla sobre el proyecto de fin de curso del equipo. El producto de la unidad se construye por acumulación de los avances de cada sesión; por eso, la evidencia de esta sesión debe incorporarse a la documentación del proyecto y quedar trazable en GitHub.
+### 4.1 Actividad
 
-### 4.1 Plantilla de evidencia individual
-
-El PDF de esta sesión debe generarse como impresión o exportación de la sección correspondiente en MkDocs o una herramienta equivalente. No se acepta un PDF armado manualmente fuera de la documentación del proyecto.
-
-Entrega un PDF con el siguiente nombre:
-
-```text
-S01_Equipo##_ApellidoNombre.pdf
-```
-
-Ejemplo:
-
-```text
-S01_Equipo03_QuispeAna.pdf
-```
-
-El PDF debe usar esta estructura. La primera sección define el trabajo autónomo; completa las demás con tus evidencias.
-
-#### 4.1.1 Datos del estudiante
-
-- Nombre:
-- Equipo:
-- Sesión: S01 - Construcción de un servicio base para un sistema distribuido
-- Rol o aporte realizado:
-- Link de GitHub:
-
-#### 4.1.2 Trabajo autónomo realizado
+Replicación autónoma del patrón de `catalogo-ms` en otro microservicio del dominio (`orden-ms`), documentada en evidencia individual.
 
 Completa y evidencia estas tareas:
 
@@ -2058,20 +2149,58 @@ Completa y evidencia estas tareas:
 7. (Opcional) Ejecutar una prueba breve en PROD local con Docker.
 8. Explicar por qué un microservicio debe poder escalar horizontalmente sin puerto fijo (y, si completaste el punto 7, la diferencia entre DEV Maven Wrapper y PROD Docker).
 
-#### 4.1.3 Evidencia técnica
+### 4.2 Propósito
 
-Incluye capturas o salidas de consola con una breve explicación debajo de cada una:
+Que cada estudiante demuestre, de forma individual y fuera del aula, que puede reproducir el patrón construido en clase sin el acompañamiento del docente.
 
-- Ejecución con `mvnw spring-boot:run` (Maven Wrapper).
-- Prueba CRUD por shell.
-- Swagger o lista de endpoints disponible.
-- Respuesta de `/actuator/health`.
-- Respuesta de `/actuator/metrics`.
-- Consulta de tabla y registros con `psql`.
-- Evidencia de las dos instancias corriendo en paralelo, con sus puertos y respuestas.
-- (Opcional) Ejecución en PROD local con Docker.
+Esta actividad autónoma se desarrolla sobre el proyecto de fin de curso del equipo. El producto de la unidad se construye por acumulación de los avances de cada sesión; por eso, la evidencia de esta sesión debe incorporarse a la documentación del proyecto y quedar trazable en GitHub.
 
-#### 4.1.4 Error o hallazgo
+### 4.3 Indicaciones
+
+El PDF de esta sesión debe generarse como impresión o exportación de la sección correspondiente en MkDocs o una herramienta equivalente. No se acepta un PDF armado manualmente fuera de la documentación del proyecto.
+
+Entrega un PDF con el siguiente nombre:
+
+```text
+S01_Equipo##_ApellidoNombre.pdf
+```
+
+Cada captura de pantalla del informe debe mostrar, sin recortar, el reloj del sistema (fecha y hora) y tu usuario o foto de perfil (Windows, VS Code o navegador) visibles en pantalla — es lo que permite verificar que la evidencia es tuya y que corresponde al momento real de tu trabajo.
+
+El PDF debe usar esta estructura, completando cada sección con tus evidencias.
+
+#### 4.3.1 Estructura del informe
+
+**Datos del estudiante**
+
+- Nombre:
+- Equipo:
+- Sesión: S01 - Construcción de un servicio base para un sistema distribuido
+- Rol o aporte realizado:
+- Link de GitHub:
+
+**Evidencia técnica**
+
+Incluye capturas o salidas de consola con una breve explicación debajo de cada una, organizadas en los mismos 5 bloques de la rúbrica (4.6) — así queda claro qué evidencia corresponde a cada criterio evaluado:
+
+1. *Microservicios correctamente delimitados según el dominio*
+    - Explica en 2-3 líneas qué entidades gestiona `orden-ms` y por qué pertenecen a ese dominio y no al de `catalogo-ms`.
+2. *Persistencia de datos con PostgreSQL y Flyway*
+    - Migraciones Flyway aplicadas (carpeta `db/migration` y logs de arranque).
+    - Consulta de tabla y registros con `psql`.
+3. *Endpoints REST funcionales y documentados*
+    - Ejecución con `mvnw spring-boot:run` (Maven Wrapper).
+    - Prueba CRUD por shell.
+    - Swagger o lista de endpoints disponible.
+4. *Ejecución y escalamiento horizontal*
+    - Respuesta de `/actuator/health`.
+    - Respuesta de `/actuator/metrics`.
+    - Evidencia de las dos instancias corriendo en paralelo, con sus puertos y respuestas.
+5. *Documentación técnica clara y reproducible*
+    - Pasos de instalación y ejecución documentados de forma que otra persona pueda reproducirlos sin ayuda adicional.
+    - (Opcional) Ejecución en PROD local con Docker.
+
+**Error o hallazgo**
 
 Describe al menos un error, diferencia o hallazgo técnico:
 
@@ -2079,7 +2208,7 @@ Describe al menos un error, diferencia o hallazgo técnico:
 - Cómo lo diagnosticaste.
 - Cómo lo corregiste o qué aprendiste.
 
-#### 4.1.5 Reflexión técnica breve
+**Reflexión técnica breve**
 
 Responde en 5 a 8 líneas:
 
@@ -2087,7 +2216,7 @@ Responde en 5 a 8 líneas:
 ¿Por qué un microservicio debe poder ejecutarse en DEV y PROD local de forma reproducible, y escalar horizontalmente sin puerto fijo?
 ```
 
-#### Anexo: Feedback de la sesión
+**Anexo: Feedback de la sesión**
 
 Pega esta página como la última hoja del PDF, con tus respuestas.
 
@@ -2105,60 +2234,33 @@ Pega esta página como la última hoja del PDF, con tus respuestas.
     - Poco Comprometido/a: Hoy no di mi mejor esfuerzo.
 7. Mi satisfacción con la clase fue... (califica del 1 al 10, donde 1 es insatisfecho y 10 es muy satisfecho).
 
-### 4.2 Criterios mínimos de aceptación
+### 4.4 Criterios mínimos de aceptación
 
 La evidencia individual se considera completa si:
 
 - El archivo respeta el nombre `S01_Equipo##_ApellidoNombre.pdf`.
-- Incluye evidencias técnicas legibles.
-- Muestra el microservicio funcionando en DEV.
-- Muestra prueba de CRUD y base de datos.
-- Muestra dos instancias corriendo en paralelo.
+- El microservicio replicado (p. ej. `orden-ms`) ejecuta en DEV con Maven Wrapper.
+- PostgreSQL funciona en DEV para el microservicio replicado.
+- El CRUD del recurso principal del microservicio replicado responde por shell.
+- Swagger y `/actuator/health` funcionan en DEV para el microservicio replicado.
+- Flyway crea las tablas del microservicio replicado.
+- El microservicio replicado puede levantar múltiples instancias en paralelo, sin puerto fijo, y explica por qué eso importa en un sistema distribuido.
+- (Opcional) El microservicio ejecuta en PROD local con Docker, y puede explicar la diferencia frente a DEV Maven Wrapper.
 - Explica un aporte individual verificable.
 - No contiene solo pantallazos: cada evidencia tiene una descripción breve.
+- Cada captura de la evidencia técnica muestra el reloj del sistema y el usuario/perfil visible, sin recortar.
+- Las fechas y horas de las capturas son coherentes con el historial de commits de su repositorio en GitHub.
+- Incluye un error o hallazgo técnico diagnosticado (qué ocurrió, cómo lo detectó, cómo lo resolvió).
+- Incluye la reflexión técnica breve solicitada.
 - Incluye el Anexo de feedback de la sesión respondido, como última página del PDF.
 
 PROD local con Docker (3.6-3.7) es opcional: si se incluye, suma como evidencia adicional, pero su ausencia no hace que la entrega se considere incompleta.
 
-## 5. Cierre evaluativo
+### 4.5 Preguntas de defensa
 
-Tiempo: 20 min.
+Evidencia mínima que debes poder defender sobre el escalamiento horizontal:
 
-Esta sección conecta el resultado de aprendizaje de la sesión con el producto que debe evidenciar cada estudiante.
-
-### 5.1 Resultados esperados
-
-Al finalizar la sesión, el estudiante debe demostrar que:
-
-- El microservicio ejecuta en DEV con Maven Wrapper.
-- PostgreSQL funciona en DEV.
-- El CRUD de `Categoria` y de `Producto` responde por shell.
-- Swagger y `/actuator/health` funcionan en DEV.
-- Flyway crea las tablas `categorias` y `productos`.
-- El microservicio puede levantar múltiples instancias en paralelo, sin puerto fijo.
-- Puede explicar por qué escalar horizontalmente sin puerto fijo importa en un sistema distribuido.
-- (Opcional) El microservicio ejecuta en PROD local con Docker, y puede explicar la diferencia frente a DEV Maven Wrapper.
-
-### 5.2 Evidencia del producto de sesión
-
-Cada estudiante entrega un PDF individual siguiendo la plantilla de la sección 4.1.
-
-Nombre del archivo:
-
-```text
-S01_Equipo##_ApellidoNombre.pdf
-```
-
-La evidencia debe demostrar:
-
-- Producto de sesión construido.
-- Aporte individual verificable.
-- Pruebas técnicas realizadas.
-- Reflexión técnica breve.
-
-La revisión se realiza con los criterios mínimos de aceptación de la sección 4.2 y la rúbrica de la sección 5.4.
-
-Evidencia mínima que debe defender sobre el escalamiento horizontal:
+**Tabla 9. Comparación entre instancias del escalamiento horizontal**
 
 | Aspecto | Instancia 1 | Instancia 2 |
 |---|---|---|
@@ -2169,6 +2271,8 @@ Evidencia mínima que debe defender sobre el escalamiento horizontal:
 
 Comparación entre DEV y PROD local (aplica solo si completaste la parte opcional de 3.6-3.7):
 
+**Tabla 10. Comparación entre DEV y PROD local**
+
 | Aspecto | DEV Maven Wrapper | PROD Docker |
 |---|---|---|
 | Aplicación | Ejecuta en host con `mvnw spring-boot:run` | Ejecuta dentro de contenedor |
@@ -2176,8 +2280,6 @@ Comparación entre DEV y PROD local (aplica solo si completaste la parte opciona
 | Puerto del microservicio | Fijo `8080` (o `8081` con una segunda instancia, ver 3.5) | Interno `8080` dentro de Docker |
 | Acceso externo | Directo por `localhost` | Por red Docker; luego por Gateway |
 | Propósito | Desarrollo, depuración y cambios rápidos | Ejecución reproducible y cercana a producción |
-
-### 5.3 Preguntas de defensa y reflexión
 
 1. ¿Por qué un microservicio debe ser stateless?
 2. ¿Qué responsabilidad tiene `catalogo-ms`?
@@ -2192,30 +2294,53 @@ Si completaste la parte opcional de 3.6-3.7:
 8. ¿Qué diferencia hay entre DEV Maven Wrapper y PROD Docker?
 9. ¿Por qué en PROD local no se publica directamente el puerto del microservicio?
 
-### 5.4 Rúbrica de evaluación
+### 4.6 Rúbrica de evaluación
 
-| Dimensión | Peso | 3 - Logro destacado | 2 - Logro | 1 - Proceso | 0 - Inicio | Puntuación obtenida |
+**Tabla 11. Rúbrica de evaluación**
+
+| Criterio | Peso (%) | A (20 pts) | B (15 pts) | C (10 pts) | D (5 pts) | Nivel obtenido |
 |---|---:|---|---|---|---|---:|
-| 1. Microservicio funcional | 2 | Evidencia microservicio ejecutando, CRUD de `Categoria` y `Producto` funcionando, health/metrics y Swagger en DEV. | Evidencia microservicio ejecutando y CRUD de al menos un recurso funcional. | Evidencia arranque parcial o sin pruebas suficientes. | No evidencia el microservicio funcionando. | |
-| 2. Persistencia y base de datos | 2 | Evidencia PostgreSQL DEV, Flyway y registros de ambas tablas consultados con `psql`. | Evidencia al menos una tabla y consultas básicas con `psql`. | Evidencia parcial de conexión a BD. | No evidencia uso de PostgreSQL ni tablas creadas. | |
-| 3. Ejecución DEV y escalamiento horizontal | 2 | Explica y evidencia DEV Maven Wrapper con dos instancias corriendo en paralelo, cada una respondiendo por su cuenta. | Evidencia DEV con dos instancias, sin explicar bien el escalamiento. | Muestra solo DEV con una instancia. | No evidencia el microservicio ejecutando ni múltiples instancias. | |
-| 4. Aporte individual verificable | 2 | Aporte claro, verificable y conectado al producto del equipo. | Aporte claro con archivo, comando o prueba realizada. | Aporte mencionado de forma general. | No se identifica aporte individual. | |
-| 5. Diagnóstico de error o hallazgo | 1 | Analiza error/hallazgo, causa, solución y aprendizaje técnico. | Explica causa probable y solución parcial. | Menciona un problema sin explicarlo. | No presenta error ni hallazgo. | |
-| 6. Reflexión técnica y orden | 1 | Reflexión técnica precisa, PDF ordenado, capturas legibles y explicaciones breves. | Reflexión clara y evidencias entendibles. | Reflexión superficial o evidencias poco legibles. | PDF desordenado o sin reflexión. | |
+| 1. Microservicios correctamente delimitados según el dominio* | 20 | El microservicio replicado (p. ej. `orden-ms`) gestiona únicamente las entidades de su propio dominio, sin mezclar responsabilidades de `catalogo-ms` u otro microservicio. | Respeta su dominio, aunque con límites imprecisos en algún punto. | El microservicio mezcla responsabilidades de otro dominio o la delimitación no es clara. | No se evidencia separación de responsabilidades por dominio. | |
+| 2. Persistencia de datos con PostgreSQL y Flyway* | 20 | Migraciones Flyway versionadas y aplicadas sin errores en el microservicio replicado; sus tablas verificadas con `psql`, con datos consistentes. | Flyway aplica las migraciones y las tablas existen, pero la verificación con `psql` es parcial o no está documentada. | Usa PostgreSQL sin Flyway (migraciones manuales) o con errores menores en el versionado. | No hay evidencia de conexión a PostgreSQL ni de tablas creadas correctamente. | |
+| 3. Endpoints REST funcionales y documentados* | 20 | CRUD completo del recurso principal del microservicio replicado funciona y está documentado en Swagger, incluida la validación (HTTP 400) y el manejo de recursos inexistentes (HTTP 404). | CRUD funcional para al menos una operación del microservicio replicado, documentado en Swagger. | Endpoints parcialmente funcionales o sin documentación. | No hay endpoints funcionales. | |
+| 4. Ejecución y escalamiento horizontal* | 20 | Evidencia dos instancias del microservicio replicado corriendo en paralelo (`8080` y `8081`) respondiendo por separado, y explica por qué no debe depender de un puerto fijo. | Evidencia dos instancias corriendo, pero la explicación del escalamiento es incompleta. | Solo evidencia una instancia en DEV, sin explicar el escalamiento. | No evidencia el microservicio en ejecución. | |
+| 5. Documentación técnica clara y reproducible* | 20 | Swagger documenta todos los endpoints del microservicio replicado con ejemplos claros; el proceso de instalación y ejecución (DEV, y PROD si se completó) es reproducible por otra persona sin ayuda adicional. | Swagger documenta los endpoints principales; el proceso de ejecución en DEV es reproducible con algunos vacíos menores. | Documentación parcial o pasos de ejecución incompletos. | No hay documentación funcional ni evidencia de reproducibilidad. | |
 
-PROD local con Docker (3.6-3.7) es opcional y no es necesario para alcanzar el puntaje máximo en ninguna dimensión. Si el estudiante lo evidencia, el docente puede considerarlo un plus dentro de la dimensión 3 o de la dimensión 4 (aporte individual), a su criterio.
+\* Agregado manual.
 
-Puntuación acumulada = suma de (`Peso` * `Puntuación obtenida`) = ____.
+PROD local con Docker (3.6-3.7) es opcional y no es necesario para alcanzar el nivel A en ningún criterio. Si el estudiante lo evidencia, el docente puede considerarlo un plus dentro del criterio 5 (documentación reproducible), a su criterio.
 
-Nota final = (`Puntuación acumulada` / 30) * 20 = ____.
+Nota final = suma de (`Peso` / 100 × `Puntos del nivel obtenido`) = ____ / 20.
 
 Para usar la rúbrica con IA, solicita:
 
 ```text
 Evalúa el PDF usando la rúbrica de la sesión.
-Para cada dimensión selecciona la puntuación obtenida usando la escala Inicio=0, Proceso=1, Logro=2, Logro destacado=3.
-Justifica brevemente cada puntuación.
-Calcula la puntuación acumulada con la fórmula: suma de (Peso * Puntuación obtenida).
-Calcula la nota final sobre 20 con la fórmula: (Puntuación acumulada / 30) * 20.
+Para cada criterio selecciona el nivel obtenido usando la escala A=20, B=15, C=10, D=5 puntos.
+Justifica brevemente cada nivel asignado.
+Verifica que cada captura muestre reloj del sistema y usuario/perfil visible, y que las fechas sean coherentes con el historial de commits de GitHub. Si falta esta evidencia o hay inconsistencias, indícalo explícitamente antes de calificar.
+Calcula la nota final con la fórmula: suma de (Peso/100 × Puntos del nivel obtenido), directamente sobre 20.
 Indica 2 fortalezas y 2 recomendaciones.
 ```
+
+## 5. Cierre
+
+Tiempo: 5 min.
+
+**Resumen breve:** hoy `catalogo-ms` pasó de proyecto vacío a microservicio con CRUD completo de `Categoria` y `Producto`, conectado a PostgreSQL con Flyway, documentado con Swagger y corriendo con dos instancias en paralelo — el patrón que se repetirá en cada microservicio del proyecto.
+
+**Dinámica participativa:** en una ronda rápida (o con una herramienta digital tipo formulario o encuesta en vivo), cada estudiante comparte en una frase qué dejó corriendo al cerrar la sesión (por ejemplo, en qué puerto quedó su segunda instancia).
+
+**Metacognición:** cada estudiante responde el Anexo de feedback de la sesión, incluido en su evidencia individual (ver 4.3.1). El docente analiza esas respuestas con IA para identificar temas recurrentes o dudas comunes del equipo, y con esos indicadores construye el cierre real de la sesión — que se entrega al inicio de S2, no al final de esta clase. Que esté documentado aquí, en la sección 5 de esta guía, es solo un arreglo interno: no implica que se ejecute en los últimos minutos de esta sesión.
+
+**Proyección:** la estructura de capas y el manejo de PostgreSQL con Flyway de hoy se repiten en S2 (Config Server) y en cada microservicio nuevo que el equipo construya — incluido cualquier proyecto profesional fuera del curso.
+
+## Bibliografía
+
+1. Docker Inc. (2024). *Docker Compose overview*. Docker Docs. https://docs.docker.com/compose/
+2. Eclipse Adoptium. (2024). *Temurin releases*. Eclipse Foundation. https://adoptium.net/
+3. Flyway. (2024). *Flyway documentation*. Redgate. https://documentation.red-gate.com/fd
+4. PostgreSQL Global Development Group. (2024). *PostgreSQL 16 documentation*. https://www.postgresql.org/docs/16/
+5. Spring. (2024). *Spring Boot reference documentation* (versión 4.0.7). VMware. https://docs.spring.io/spring-boot/
+6. Spring. (2024). *Spring Data JPA reference documentation*. VMware. https://docs.spring.io/spring-data/jpa/reference/
+7. Springdoc. (2024). *SpringDoc OpenAPI documentation*. https://springdoc.org/
