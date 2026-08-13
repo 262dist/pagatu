@@ -24,10 +24,10 @@
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
-      
-        <title>S1 - Construcción de un servicio base para un sistema distribuido - Pagatu DIST - Desarrollo de Aplicaciones Distribuidas</title>
-      
-    
+  
+    <title>Pagatu - S1 - Construcción de un servicio base para un sistema distribuido</title>
+  
+
     
       <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
@@ -82,7 +82,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" class="md-header__button md-logo" aria-label="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" data-md-component="logo">
+    <a href="../.." title="Pagatu" class="md-header__button md-logo" aria-label="Pagatu" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -96,7 +96,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Pagatu DIST - Desarrollo de Aplicaciones Distribuidas
+            Pagatu
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -192,13 +192,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" class="md-nav__button md-logo" aria-label="Pagatu DIST - Desarrollo de Aplicaciones Distribuidas" data-md-component="logo">
+    <a href="../.." title="Pagatu" class="md-nav__button md-logo" aria-label="Pagatu" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    Pagatu DIST - Desarrollo de Aplicaciones Distribuidas
+    Pagatu
   </label>
   
     <div class="md-nav__source">
@@ -2641,6 +2641,7 @@
 <li>Avance del producto en esta sesión: primer microservicio REST funcional, persistente, observable y ejecutable fuera del IDE.</li>
 </ul>
 <p>Roadmap para elaborar el producto de la unidad (Container diagram C4 nivel 2):</p>
+<p><strong>Figura 1. Roadmap del producto de la unidad</strong></p>
 <pre class="mermaid"><code>flowchart TB
     Cliente["Cliente de prueba - PowerShell / bash / Swagger"]
     Gateway["Gateway - punto único de acceso - balanceo de carga"]
@@ -2666,7 +2667,7 @@
 <h2 id="2-explica">2. Explica<a class="headerlink" href="#2-explica" title="Permanent link">&para;</a></h2>
 <p>Tiempo: 25 min.</p>
 <h3 id="21-arquitectura-de-la-sesion">2.1 Arquitectura de la sesión<a class="headerlink" href="#21-arquitectura-de-la-sesion" title="Permanent link">&para;</a></h3>
-<p><strong>Figura 1. Arquitectura de capas de <code>catalogo-ms</code> en la sesión S1</strong></p>
+<p><strong>Figura 2. Arquitectura de capas de <code>catalogo-ms</code> en la sesión S1</strong></p>
 <pre class="mermaid"><code>flowchart TB
     Cliente["Cliente de prueba - PowerShell / bash / Swagger"] --&gt;|"HTTP + JSON"| Filter["CorrelationIdFilter - agrega traceId, transparente"]
     Filter --&gt; Controller["CategoriaController"]
@@ -2693,7 +2694,7 @@
 <p>Ejemplo: <code>catalogo-ms</code> se encarga de gestionar categorías, conceptos de pago y sus precios, con su propia base de datos. No debería guardar clientes, órdenes ni pagos. Si más adelante <code>orden-ms</code> necesita saber si un concepto de pago existe y cuál es su precio, consulta a <code>catalogo-ms</code> por red en lugar de leer directamente su base de datos.</p>
 <h3 id="23-persistencia-postgresql-y-migraciones-con-flyway">2.3 Persistencia: PostgreSQL y migraciones con Flyway<a class="headerlink" href="#23-persistencia-postgresql-y-migraciones-con-flyway" title="Permanent link">&para;</a></h3>
 <p>El microservicio no crea sus propias tablas al arrancar: <strong>Flyway</strong> ejecuta el script de migración (<code>V1__create_catalogo_tables.sql</code>, ver 3.3.1) una sola vez, y deja un registro de que ya se aplicó. Luego Hibernate/JPA solo <strong>valida</strong> que las entidades <code>Categoria</code> y <code>Producto</code> coincidan con las tablas creadas (<code>ddl-auto: validate</code>) — no crea ni modifica estructura.</p>
-<p><strong>Figura 2. Modelo entidad-relación de <code>categorias</code> y <code>productos</code></strong></p>
+<p><strong>Figura 3. Modelo entidad-relación de <code>categorias</code> y <code>productos</code></strong></p>
 <pre class="mermaid"><code>erDiagram
     CATEGORIAS ||--o{ PRODUCTOS : contiene
     CATEGORIAS {
@@ -2714,7 +2715,7 @@
 <p><strong>Error frecuente</strong>: si PostgreSQL está apagado o el contenedor de <code>compose-dev.yml</code> (ver 3.2.4) no levantó, la aplicación no arranca — Flyway no logra conectarse para aplicar la migración. Antes de asumir un error de código, revisa que el contenedor esté corriendo y que las variables de conexión coincidan.</p>
 <h3 id="24-ejecucion-reproducible-en-dev-y-escalamiento-horizontal">2.4 Ejecución reproducible en DEV y escalamiento horizontal<a class="headerlink" href="#24-ejecucion-reproducible-en-dev-y-escalamiento-horizontal" title="Permanent link">&para;</a></h3>
 <h4 id="241-dev-aplicacion-fuera-de-docker">2.4.1 DEV: aplicación fuera de Docker<a class="headerlink" href="#241-dev-aplicacion-fuera-de-docker" title="Permanent link">&para;</a></h4>
-<p><strong>Figura 3. Ejecución del microservicio en DEV, fuera de Docker</strong></p>
+<p><strong>Figura 4. Ejecución del microservicio en DEV, fuera de Docker</strong></p>
 <pre class="mermaid"><code>flowchart TB
     DevClient["Cliente - PowerShell / bash / Swagger"]
     DevApp1["catalogo-ms - Java 21 + Maven Wrapper - puerto 8080"]
@@ -2735,7 +2736,7 @@
 <p>En DEV, la aplicación corre en el host con Maven Wrapper, en el puerto fijo <code>8080</code>; solo PostgreSQL corre en Docker. La segunda instancia (línea punteada, puerto <code>8081</code>) es el caso secundario que se practica más adelante, en 3.5 — el resto de esta guía trabaja solo con la primera instancia, en <code>8080</code>.</p>
 <h4 id="242-prod-local-aplicacion-dentro-de-docker">2.4.2 PROD local: aplicación dentro de Docker<a class="headerlink" href="#242-prod-local-aplicacion-dentro-de-docker" title="Permanent link">&para;</a></h4>
 <p>Esta parte sí se practica en S1 (ver 3.6-3.7) — muestra, por contraste con 2.4.1, qué cambia cuando la aplicación misma corre dentro de Docker, no solo la base de datos.</p>
-<p><strong>Figura 4. Ejecución del microservicio en PROD local, dentro de Docker</strong></p>
+<p><strong>Figura 5. Ejecución del microservicio en PROD local, dentro de Docker</strong></p>
 <pre class="mermaid"><code>flowchart TB
     ProdClient["Cliente interno - curl container"]
     subgraph ProdDocker["Docker Network: pagatu-catalogo-int"]
@@ -3996,6 +3997,7 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <p>Prueba también un producto con <code>precio</code> negativo y confirma que responde HTTP 400, y un <code>categoriaId</code> inexistente (por ejemplo <code>9999</code>) y confirma que responde HTTP 404.</p>
 <h3 id="35-simular-escalamiento-horizontal-multiples-instancias">3.5 Simular escalamiento horizontal (múltiples instancias)<a class="headerlink" href="#35-simular-escalamiento-horizontal-multiples-instancias" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> dos instancias de <code>catalogo-ms</code> corriendo al mismo tiempo, cada una en un puerto distinto, ambas conectadas a la misma PostgreSQL DEV.</p>
+<p><strong>Figura 6. Escalamiento horizontal de <code>catalogo-ms</code> con dos instancias en paralelo</strong></p>
 <pre class="mermaid"><code>flowchart TB
     DevClient["Cliente - PowerShell / bash / Swagger"]
     DevApp1["catalogo-ms - instancia 1 - puerto 8080"]
