@@ -349,6 +349,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Arquitectura pagatu v2026">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nivel-1-contexto-del-sistema-system-context-c4-nivel-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nivel 1: Contexto del sistema (System Context - C4 nivel 1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nivel-2-contenedores-container-diagram-c4-nivel-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nivel 2: Contenedores (Container diagram - C4 nivel 2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -973,6 +1001,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Arquitectura pagatu v2026">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nivel-1-contexto-del-sistema-system-context-c4-nivel-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nivel 1: Contexto del sistema (System Context - C4 nivel 1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nivel-2-contenedores-container-diagram-c4-nivel-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nivel 2: Contenedores (Container diagram - C4 nivel 2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1171,6 +1227,21 @@ técnicamente.
 </tbody>
 </table>
 <h2 id="arquitectura-pagatu-v2026">Arquitectura pagatu v2026<a class="headerlink" href="#arquitectura-pagatu-v2026" title="Permanent link">&para;</a></h2>
+<h3 id="nivel-1-contexto-del-sistema-system-context-c4-nivel-1">Nivel 1: Contexto del sistema (System Context - C4 nivel 1)<a class="headerlink" href="#nivel-1-contexto-del-sistema-system-context-c4-nivel-1" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>flowchart LR
+    Usuario(["Usuario - estudiante o administrador"])
+    Pagatu["pagatu - sistema distribuido de comercio electrónico"]
+    PaymentGateway["Pasarela de pagos externa"]
+
+    Usuario --&gt;|"usa"| Pagatu
+    Pagatu --&gt;|"autoriza / confirma pago"| PaymentGateway
+
+    classDef system fill:#eef6ff,stroke:#2b6cb0,stroke-width:2px,color:#111;
+    classDef external fill:#fff3cd,stroke:#b7791f,stroke-width:2px,color:#5f370e;
+    class Pagatu system;
+    class PaymentGateway external;</code></pre>
+<p><code>pagatu</code> se ve como una sola caja negra: sin microservicios, sin Gateway, sin Kafka por dentro. Solo importa quién lo usa (el usuario) y con qué sistema externo conversa (la pasarela de pagos). El detalle interno aparece recién en el nivel 2.</p>
+<h3 id="nivel-2-contenedores-container-diagram-c4-nivel-2">Nivel 2: Contenedores (Container diagram - C4 nivel 2)<a class="headerlink" href="#nivel-2-contenedores-container-diagram-c4-nivel-2" title="Permanent link">&para;</a></h3>
 <pre class="mermaid"><code>%%{init: {"flowchart": {"nodeSpacing": 18, "rankSpacing": 28, "curve": "basis"}} }%%
 flowchart LR
     subgraph Infra["infra"]
