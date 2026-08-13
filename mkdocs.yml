@@ -1,4 +1,4 @@
-site_name: Pagatu DIST - Desarrollo de Aplicaciones Distribuidas
+site_name: Pagatu
 site_url: https://262dist.github.io/pagatu/
 repo_url: https://github.com/262dist/pagatu
 repo_name: 262dist/pagatu
@@ -23,6 +23,7 @@ nav:
 
 theme:
   name: material
+  custom_dir: overrides
   features:
     - navigation.instant
     - navigation.tracking

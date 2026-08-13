@@ -74,6 +74,8 @@ En esta sesión se inicia ese rediseño construyendo el primer componente del si
 
 Roadmap para elaborar el producto de la unidad (Container diagram C4 nivel 2):
 
+**Figura 1. Roadmap del producto de la unidad**
+
 ```mermaid
 flowchart TB
     Cliente["Cliente de prueba - PowerShell / bash / Swagger"]
@@ -106,7 +108,7 @@ Tiempo: 25 min.
 
 ### 2.1 Arquitectura de la sesión
 
-**Figura 1. Arquitectura de capas de `catalogo-ms` en la sesión S1**
+**Figura 2. Arquitectura de capas de `catalogo-ms` en la sesión S1**
 
 ```mermaid
 flowchart TB
@@ -143,7 +145,7 @@ Ejemplo: `catalogo-ms` se encarga de gestionar categorías, conceptos de pago y 
 
 El microservicio no crea sus propias tablas al arrancar: **Flyway** ejecuta el script de migración (`V1__create_catalogo_tables.sql`, ver 3.3.1) una sola vez, y deja un registro de que ya se aplicó. Luego Hibernate/JPA solo **valida** que las entidades `Categoria` y `Producto` coincidan con las tablas creadas (`ddl-auto: validate`) — no crea ni modifica estructura.
 
-**Figura 2. Modelo entidad-relación de `categorias` y `productos`**
+**Figura 3. Modelo entidad-relación de `categorias` y `productos`**
 
 ```mermaid
 erDiagram
@@ -173,7 +175,7 @@ Esta separación importa: si Hibernate pudiera crear o alterar tablas solo (`ddl
 
 #### 2.4.1 DEV: aplicación fuera de Docker
 
-**Figura 3. Ejecución del microservicio en DEV, fuera de Docker**
+**Figura 4. Ejecución del microservicio en DEV, fuera de Docker**
 
 ```mermaid
 flowchart TB
@@ -201,7 +203,7 @@ En DEV, la aplicación corre en el host con Maven Wrapper, en el puerto fijo `80
 
 Esta parte sí se practica en S1 (ver 3.6-3.7) — muestra, por contraste con 2.4.1, qué cambia cuando la aplicación misma corre dentro de Docker, no solo la base de datos.
 
-**Figura 4. Ejecución del microservicio en PROD local, dentro de Docker**
+**Figura 5. Ejecución del microservicio en PROD local, dentro de Docker**
 
 ```mermaid
 flowchart TB
@@ -1743,6 +1745,8 @@ Prueba también un producto con `precio` negativo y confirma que responde HTTP 4
 ### 3.5 Simular escalamiento horizontal (múltiples instancias)
 
 **Producto del paso:** dos instancias de `catalogo-ms` corriendo al mismo tiempo, cada una en un puerto distinto, ambas conectadas a la misma PostgreSQL DEV.
+
+**Figura 6. Escalamiento horizontal de `catalogo-ms` con dos instancias en paralelo**
 
 ```mermaid
 flowchart TB
