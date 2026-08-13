@@ -63,7 +63,7 @@ En esta sesión se inicia ese rediseño construyendo el primer componente del si
 - Producto de unidad: sistema distribuido base funcional, configurable y preparado para múltiples instancias, ejecutable en desarrollo y producción local en paralelo.
 - Avance del producto en esta sesión: primer microservicio REST funcional, persistente, observable y ejecutable fuera del IDE.
 
-Roadmap para elaborar el producto de la unidad:
+Roadmap para elaborar el producto de la unidad (Container diagram C4 nivel 2):
 
 ```mermaid
 flowchart TB
@@ -73,7 +73,7 @@ flowchart TB
     Orden["orden-ms - trabajo aplicado"]
     Eureka["Registro de servicios - Eureka"]
     Config["Servidor de configuración - Config Server"]
-    Repo["Repositorio de configuración - catalogo-ms.yml, orden-ms.yml"]
+    Repo["Repositorio de configuración - pagatu-catalogo-ms.yml, pagatu-orden-ms.yml"]
 
     Cliente --> Gateway
     Gateway --> Catalogo
@@ -117,7 +117,7 @@ Lectura del diagrama:
 - **En S1 el `traceId` lo genera el propio filtro**, porque todavía no hay frontend: el cliente de prueba es PowerShell/bash/Swagger, no Angular. Desde S11 (integración con el cliente frontend), Angular podrá enviar su propio `X-Trace-ID` y el filtro lo respeta en vez de generar uno nuevo — pero eso es fuera del alcance de U1.
 - El controller recibe y devuelve **DTO** (`CategoriaRequest`/`CategoriaResponse`), nunca la entidad JPA directamente. El service delega en `CategoriaMapper` la conversión entre el DTO y la **entidad** `Categoria` antes de pasarla al repository (y de vuelta a DTO para la respuesta).
 - El controller nunca habla directo con el repository ni con la base de datos: siempre pasa por el service.
-- `GlobalExceptionHandler` recibe excepciones de **más de una capa**, no solo del controller: la validación `@Valid` falla en el borde del controller (antes de que su método se ejecute), pero `ResourceNotFoundException` la lanza la propia `CategoriaService`/`ProductoService` (en `buscarOFallar()`, ver 3.3.7 y 3.3.8) cuando el `id` no existe. Spring intercepta la excepción venga de donde venga y la enruta al handler — ninguna capa "llama" al handler explícitamente.
+- `GlobalExceptionHandler` recibe excepciones de **más de una capa**, no solo del controller: la validación `@Valid` falla en el borde del controller (antes de que su método se ejecute), pero `ResourceNotFoundException` la lanza la propia `CategoriaService`/`ProductoService` (en `buscarOFallar()`, ver 3.3.6 y 3.3.10) cuando el `id` no existe. Spring intercepta la excepción venga de donde venga y la enruta al handler — ninguna capa "llama" al handler explícitamente.
 - Si algo falla en cualquier capa, `GlobalExceptionHandler` intercepta el error y responde con un formato consistente, en vez de dejar que el error crudo de Spring llegue al cliente.
 
 Este diagrama es el mapa que guía el resto de la explicación: cada apartado siguiente desarrolla uno de sus componentes, en el mismo orden del Índice (1.2).
@@ -132,6 +132,26 @@ Ejemplo: `catalogo-ms` se encarga de gestionar categorías, conceptos de pago y 
 
 El microservicio no crea sus propias tablas al arrancar: **Flyway** ejecuta el script de migración (`V1__create_catalogo_tables.sql`, ver 3.3.1) una sola vez, y deja un registro de que ya se aplicó. Luego Hibernate/JPA solo **valida** que las entidades `Categoria` y `Producto` coincidan con las tablas creadas (`ddl-auto: validate`) — no crea ni modifica estructura.
 
+```mermaid
+erDiagram
+    CATEGORIAS ||--o{ PRODUCTOS : contiene
+    CATEGORIAS {
+        bigint id PK
+        varchar nombre
+        varchar descripcion
+    }
+    PRODUCTOS {
+        bigint id PK
+        varchar nombre
+        varchar descripcion
+        numeric precio
+        boolean activo
+        bigint id_categoria FK
+    }
+```
+
+`id_categoria` es una llave foránea normal de PostgreSQL (`REFERENCES categorias(id)`), no una integración entre microservicios: ambas tablas viven en la misma base de datos de `catalogo-ms`. Una `Categoria` puede existir sin `Producto`s asociados, pero todo `Producto` exige una `Categoria` válida (`NOT NULL`).
+
 Esta separación importa: si Hibernate pudiera crear o alterar tablas solo (`ddl-auto: update`), el esquema real de producción quedaría a merced de cómo esté escrita la entidad Java en cada momento, sin historial ni control de versiones del cambio. Con Flyway, cada cambio de esquema es un script versionado y revisable, igual en DEV que en cualquier otro ambiente.
 
 **Error frecuente**: si PostgreSQL está apagado o el contenedor de `compose-dev.yml` (ver 3.2.4) no levantó, la aplicación no arranca — Flyway no logra conectarse para aplicar la migración. Antes de asumir un error de código, revisa que el contenedor esté corriendo y que las variables de conexión coincidan.
@@ -139,7 +159,7 @@ Esta separación importa: si Hibernate pudiera crear o alterar tablas solo (`ddl
 ### 2.4 Ejecución reproducible en DEV y escalamiento horizontal
 
 #### 2.4.1 DEV: aplicación fuera de Docker
- 
+
 ```mermaid
 flowchart TB
     DevClient["Cliente - PowerShell / bash / Swagger"]
@@ -191,13 +211,13 @@ Regla práctica:
 - Si la aplicación corre fuera de Docker, usa `localhost` con el puerto expuesto por Docker.
 - Si la aplicación corre dentro de Docker, usa el nombre del servicio y el puerto interno.
 
-**Error frecuente**: levantar más de dos instancias en el laboratorio. Cada instancia adicional consume CPU y memoria del equipo del estudiante sin aportar valor pedagógico extra en S1 — dos instancias bastan para demostrar el patrón (ver 3.5 y 3.6.4).
+**Error frecuente**: levantar más de dos instancias en el laboratorio. Cada instancia adicional consume CPU y memoria del equipo del estudiante sin aportar valor pedagógico extra en S1 — dos instancias bastan para demostrar el patrón (ver 3.5 y 3.7.4).
 
 ## 3. Aplica: actividad práctica guiada
 
 Tiempo: 2h.
 
-En el laboratorio, el docente guía la construcción de `catalogo-ms` y los estudiantes verifican el resultado con comandos de consola. En `pagatu`, el docente guía `catalogo-ms` y el estudiante replica el patrón en `orden-ms` como trabajo aplicado. La versión actual usa monorepo, nombres con sufijo `-ms`, PostgreSQL y puertos dinámicos para los microservicios.
+En el laboratorio, el docente guía la construcción de `catalogo-ms` y los estudiantes verifican el resultado con comandos de consola. En `pagatu`, el docente guía `catalogo-ms` y el estudiante replica el patrón en `orden-ms` como trabajo aplicado. La versión actual usa monorepo, nombres con sufijo `-ms` y PostgreSQL para los microservicios.
 
 Hoja de ruta de la sesión práctica:
 
@@ -330,7 +350,7 @@ Ese fallo es útil para aprender: un microservicio con persistencia necesita una
 
 #### 3.2.1 Crear el proyecto con Spring Initializr desde VS Code
 
-Desde la raíz del monorepo `pagatu`, abre VS Code y ejecuta el comando:
+Desde la raíz del monorepo `pagatu`, abre VS Code, `Ctrl+Shift+P` y ejecuta el comando:
 
 ```text
 Spring Initializr: Create a Maven Project
@@ -348,7 +368,7 @@ Usa la siguiente configuración:
 | Artifact Id | `pagatu-catalogo-ms` |
 | Package name | `pe.edu.upeu.catalogo` |
 | Packaging | Jar |
-| Ubicación | `services/catalogo-ms` |
+| Ubicación sugerente | `services/catalogo-ms` puedes poner en cualquier lugar |
 
 Nota sobre la versión: el generador de Spring Initializr ya no ofrece ninguna versión 3.x — las únicas opciones son líneas 4.x. Se fija **4.0.7** por el mismo motivo verificado en LP2 (ver `docs/lp2/adr/ADR-003-spring-boot-4.md` del repo `bomerp`): dentro de la línea 4.x, SpringDoc OpenAPI declara compatibilidad solo hasta `4.1.0-M1`, así que 4.0.7 es la versión estable dentro de ese rango. Si al generar el proyecto ves `spring-boot-starter-web` reemplazado por `spring-boot-starter-webmvc`, o starters de prueba granulares en vez de uno solo, es esperado en esta línea de Boot — no lo corrijas.
 
@@ -365,7 +385,7 @@ Nota sobre motor de base de datos: en DIST se trabaja con **PostgreSQL** (no Ora
 
 Nota: SpringDoc/Swagger documenta los endpoints del microservicio; no es infraestructura distribuida. La infraestructura distribuida inicia desde S2 con configuración centralizada.
 
-Nota: el directorio del microservicio en el monorepo es `services/catalogo-ms`, pero el `artifactId` Maven usado por el proyecto actual es `pagatu-catalogo-ms`.
+Nota: el directorio del microservicio en el monorepo es `services/catalogo-ms`, pero el `artifactId` Maven usado por el proyecto actual es `pagatu-catalogo-ms` — el mismo nombre que luego se usa en `spring.application.name` (ver 3.2.4).
 
 #### 3.2.2 Revisar dependencias PostgreSQL y Flyway
 
@@ -415,7 +435,13 @@ Reason: Failed to determine a suitable driver class
 
 No se corrige quitando JPA ni usando H2. Se corrige declarando PostgreSQL DEV y levantando la base de datos con Docker.
 
-#### 3.2.4 Crear `compose-dev.yml` para PostgreSQL DEV
+#### 3.2.4 Configurar el ambiente de desarrollo
+
+**Producto del paso:** ambiente DEV completo — PostgreSQL en Docker y la aplicación configurada para conectarse a él.
+
+El ambiente de desarrollo de `catalogo-ms` tiene dos partes: PostgreSQL corriendo en Docker (`compose-dev.yml`) y la propia aplicación configurada para encontrarlo (`application.yml`/`application-dev.yml`). En S1 la aplicación se ejecuta en DEV con Maven Wrapper desde el host — solo la base de datos vive en Docker.
+
+**Docker: PostgreSQL DEV**
 
 En `services/catalogo-ms`, crea el archivo `compose-dev.yml`:
 
@@ -449,16 +475,16 @@ docker compose -f compose-dev.yml up -d
 docker ps
 ```
 
-#### 3.2.5 Configurar `application.yml` y `application-dev.yml`
+**Aplicación: `application.yml` y `application-dev.yml`**
 
-En S1 la aplicación `catalogo-ms` se ejecuta en DEV con Maven desde el host. Solo PostgreSQL se ejecuta en Docker. Por eso la configuración debe apuntar a `localhost:15432`, que es el puerto publicado por el contenedor de base de datos.
+Como la aplicación corre fuera de Docker y solo PostgreSQL corre dentro, la configuración debe apuntar a `localhost:15432`, que es el puerto publicado por el contenedor de base de datos.
 
 En `src/main/resources`, crea o ajusta `application.yml` como configuración base:
 
 ```yaml
 spring:
   application:
-    name: catalogo-ms
+    name: pagatu-catalogo-ms
   profiles:
     active: dev
 ```
@@ -513,9 +539,9 @@ El puerto queda fijo en `8080` para todo el resto de esta guía — más simple 
 
 En DEV, Flyway queda activo y ejecuta automáticamente `V1__create_catalogo_tables.sql` al arrancar la aplicación (se crea en 3.3.1). JPA/Hibernate no crea tablas; solo valida que las entidades coincidan con la estructura de la base de datos mediante `ddl-auto: validate`.
 
-En S2 esta configuración se moverá progresivamente al Config Server. En S1 se mantiene local para que el alumno entienda primero qué necesita el microservicio para arrancar.
+En S2 esta configuración se moverá progresivamente al Config Server, que busca el archivo de configuración por `spring.application.name` (`pagatu-catalogo-ms.yml` en el config-repo) — por eso ese nombre lleva el mismo prefijo `pagatu-` que el `artifactId`, y no queda como `catalogo-ms` a secas: evita ambigüedad si en algún momento hay otro proyecto con un servicio del mismo nombre corriendo contra un registro compartido. En S1 la configuración se mantiene local para que el alumno entienda primero qué necesita el microservicio para arrancar.
 
-#### 3.2.6 Crear un endpoint temporal de saludo
+#### 3.2.5 Crear un endpoint temporal de saludo
 
 Antes del CRUD, crea un controlador mínimo para comprobar que la aplicación web responde.
 
@@ -539,7 +565,7 @@ public class SaludoController {
 
 Este endpoint es temporal para validar el arranque web. Luego el foco pasará al CRUD de categorías y productos.
 
-#### 3.2.7 Ejecutar y comprobar que ya no falla
+#### 3.2.6 Ejecutar y comprobar que ya no falla
 
 Antes de ejecutar la aplicación, comprueba desde la consola que PostgreSQL DEV está listo y que la base de datos existe.
 
@@ -594,7 +620,7 @@ Resultado esperado:
 catalogo-ms activo
 ```
 
-También puedes revisar Swagger usando el puerto que aparezca en la consola de arranque:
+También puedes revisar Swagger en el puerto `8080`:
 
 ```text
 http://localhost:8080/swagger-ui/index.html
@@ -651,13 +677,165 @@ CREATE TABLE IF NOT EXISTS productos (
     descripcion VARCHAR(255),
     precio NUMERIC(10,2) NOT NULL,
     activo BOOLEAN NOT NULL DEFAULT true,
+    id_categoria BIGINT NOT NULL REFERENCES categorias(id),
     PRIMARY KEY (id)
 );
 ```
 
-En DEV y PROD local, Flyway ejecuta esta migración automáticamente al arrancar la aplicación — no antes, y no porque el estudiante la ejecute a mano. Lo que sí queda definido desde ahora es la estructura exacta que las entidades `Categoria` y `Producto` (siguiente paso) tienen que respetar: mismos nombres de columna, mismo `NOT NULL`, mismo tipo. Si alguna entidad no coincide, `ddl-auto: validate` hará fallar el arranque en 3.4 con un error claro señalando la diferencia.
+`productos` sí lleva la relación con `categorias` desde esta primera versión: `id_categoria` es una llave foránea (`REFERENCES categorias(id)`) porque ambas tablas viven en la misma base de datos del mismo microservicio — es una relación relacional normal, no una llamada entre microservicios. Feign (o cualquier cliente HTTP) solo haría falta si `Categoria` y `Producto` vivieran en microservicios distintos; no es el caso aquí.
 
-#### 3.3.2 Crear la entidad `Categoria`
+En DEV y PROD local, Flyway ejecuta esta migración automáticamente al arrancar la aplicación — no antes, y no porque el estudiante la ejecute a mano. Lo que sí queda definido desde ahora es la estructura exacta que las entidades `Categoria` y `Producto` (siguiente paso) tienen que respetar: mismos nombres de columna, mismo `NOT NULL`, mismo tipo, y la misma llave foránea. Si alguna entidad no coincide, `ddl-auto: validate` hará fallar el arranque en 3.4 con un error claro señalando la diferencia.
+
+Antes de construir `Categoria` y `Producto`, se crean dos piezas compartidas que usan ambos recursos: el manejo de errores y el filtro de trazabilidad. Así, cuando llegue el turno del servicio de cada recurso, `ResourceNotFoundException` ya existe y puede usarse directamente.
+
+#### 3.3.2 Crear las excepciones y el manejador global de errores
+
+Estas clases son **compartidas**: no son específicas de `Categoria` ni de `Producto`, cualquier módulo de `catalogo-ms` las reutiliza tal cual.
+
+**`exception/ResourceNotFoundException.java`**
+
+```java
+package pe.edu.upeu.catalogo.exception;
+
+public class ResourceNotFoundException extends RuntimeException {
+    public ResourceNotFoundException(String mensaje) {
+        super(mensaje);
+    }
+}
+```
+
+**`exception/GlobalExceptionHandler.java`**
+
+```java
+package pe.edu.upeu.catalogo.exception;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
+
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNotFound(ResourceNotFoundException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", Instant.now().toString());
+        body.put("status", HttpStatus.NOT_FOUND.value());
+        body.put("error", "Not Found");
+        body.put("message", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, Object>> handleValidation(MethodArgumentNotValidException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", Instant.now().toString());
+        body.put("status", HttpStatus.BAD_REQUEST.value());
+        body.put("error", "Bad Request");
+        body.put("message", "Error de validación en los datos enviados");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+}
+```
+
+#### 3.3.3 Crear el filtro de trazabilidad `CorrelationIdFilter` y configurar logs
+
+Este filtro agrega un identificador de trazabilidad a cada request usando el header `X-Trace-ID`. Si el cliente no lo envía, el filtro genera un UUID.
+
+En S1 la trazabilidad es interna al microservicio:
+
+```text
+Cliente shell / Swagger -> Controller -> Service -> Repository -> BD
+```
+
+Todos los logs producidos durante esa petición pueden compartir el mismo `traceId`.
+
+**`filter/CorrelationIdFilter.java`**
+
+```java
+package pe.edu.upeu.catalogo.filter;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.MDC;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.UUID;
+
+@Component
+public class CorrelationIdFilter extends OncePerRequestFilter {
+
+    public static final String TRACE_ID_HEADER = "X-Trace-ID";
+    public static final String MDC_KEY = "traceId";
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                     HttpServletResponse response,
+                                     FilterChain filterChain) throws ServletException, IOException {
+        String traceId = request.getHeader(TRACE_ID_HEADER);
+        if (traceId == null || traceId.isBlank()) {
+            traceId = UUID.randomUUID().toString();
+        }
+        try {
+            MDC.put(MDC_KEY, traceId);
+            response.setHeader(TRACE_ID_HEADER, traceId);
+            filterChain.doFilter(request, response);
+        } finally {
+            MDC.remove(MDC_KEY);
+        }
+    }
+}
+```
+
+Crea también `src/main/resources/logback-spring.xml`. Este archivo define el formato de logs e incluye el `traceId` en cada línea (`[%X{traceId}]`), con salida por consola y por archivo en `logs/catalogo.log`:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <property name="LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId}] %-5level %logger{36} - %msg%n"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/catalogo.log</file>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/catalogo-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>
+```
+
+Más adelante, cuando se agreguen Gateway, Feign o frontend, el mismo header `X-Trace-ID` podrá propagarse entre componentes para trazabilidad distribuida.
+
+Con la infraestructura compartida lista, ahora se construye `Categoria` completo: entidad, repositorio, DTO, mapper, servicio y controlador, en ese orden — antes de tocar `Producto`.
+
+#### 3.3.4 Crear la entidad `Categoria`
 
 **`entity/Categoria.java`**
 
@@ -688,7 +866,7 @@ public class Categoria {
 }
 ```
 
-#### 3.3.3 Crear el repositorio, los DTO y el mapper de `Categoria`
+#### 3.3.5 Crear el repositorio, los DTO y el mapper de `Categoria`
 
 **`repository/CategoriaRepository.java`**
 
@@ -778,210 +956,7 @@ public class CategoriaMapper {
 }
 ```
 
-#### 3.3.4 Crear la entidad `Producto`
-
-**`entity/Producto.java`**
-
-```java
-package pe.edu.upeu.catalogo.entity;
-
-import jakarta.persistence.*;
-import lombok.*;
-import java.math.BigDecimal;
-
-@Entity
-@Table(name = "productos")
-@Getter
-@Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class Producto {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(name = "nombre", nullable = false, length = 100)
-    private String nombre;
-
-    @Column(name = "descripcion", length = 255)
-    private String descripcion;
-
-    @Column(name = "precio", nullable = false, precision = 10, scale = 2)
-    private BigDecimal precio;
-
-    @Column(name = "activo", nullable = false)
-    private Boolean activo;
-}
-```
-
-En S1, `Producto` todavía no lleva relación con `Categoria` (sin `@ManyToOne`) — es una entidad independiente, del mismo modo que LP2 tampoco la incluye en su S1. Vincularlas queda para una sesión posterior, cuando el foco sea justamente objetos relacionados.
-
-#### 3.3.5 Crear el repositorio, los DTO y el mapper de `Producto`
-
-**`repository/ProductoRepository.java`**
-
-```java
-package pe.edu.upeu.catalogo.repository;
-
-import pe.edu.upeu.catalogo.entity.Producto;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-public interface ProductoRepository extends JpaRepository<Producto, Long> {
-}
-```
-
-**`dto/ProductoRequest.java`**
-
-```java
-package pe.edu.upeu.catalogo.dto;
-
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
-import java.math.BigDecimal;
-
-@Getter
-@Setter
-public class ProductoRequest {
-
-    @NotBlank
-    @Size(max = 100)
-    private String nombre;
-
-    @Size(max = 255)
-    private String descripcion;
-
-    @NotNull
-    @DecimalMin(value = "0.0", inclusive = true)
-    private BigDecimal precio;
-
-    @NotNull
-    private Boolean activo;
-}
-```
-
-**`dto/ProductoResponse.java`**
-
-```java
-package pe.edu.upeu.catalogo.dto;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import java.math.BigDecimal;
-
-@Getter
-@Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class ProductoResponse {
-    private Long id;
-    private String nombre;
-    private String descripcion;
-    private BigDecimal precio;
-    private Boolean activo;
-}
-```
-
-**`mapper/ProductoMapper.java`**
-
-```java
-package pe.edu.upeu.catalogo.mapper;
-
-import pe.edu.upeu.catalogo.dto.ProductoRequest;
-import pe.edu.upeu.catalogo.dto.ProductoResponse;
-import pe.edu.upeu.catalogo.entity.Producto;
-import org.springframework.stereotype.Component;
-
-@Component
-public class ProductoMapper {
-
-    public Producto toEntity(ProductoRequest request) {
-        return Producto.builder()
-                .nombre(request.getNombre())
-                .descripcion(request.getDescripcion())
-                .precio(request.getPrecio())
-                .activo(request.getActivo())
-                .build();
-    }
-
-    public ProductoResponse toResponse(Producto producto) {
-        return ProductoResponse.builder()
-                .id(producto.getId())
-                .nombre(producto.getNombre())
-                .descripcion(producto.getDescripcion())
-                .precio(producto.getPrecio())
-                .activo(producto.getActivo())
-                .build();
-    }
-}
-```
-
-#### 3.3.6 Crear las excepciones y el manejador global de errores
-
-Estas clases son **compartidas**: no son específicas de `Categoria` ni de `Producto`, cualquier módulo de `catalogo-ms` las reutiliza tal cual.
-
-**`exception/ResourceNotFoundException.java`**
-
-```java
-package pe.edu.upeu.catalogo.exception;
-
-public class ResourceNotFoundException extends RuntimeException {
-    public ResourceNotFoundException(String mensaje) {
-        super(mensaje);
-    }
-}
-```
-
-**`exception/GlobalExceptionHandler.java`**
-
-```java
-package pe.edu.upeu.catalogo.exception;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
-
-@RestControllerAdvice
-public class GlobalExceptionHandler {
-
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleNotFound(ResourceNotFoundException ex) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", Instant.now().toString());
-        body.put("status", HttpStatus.NOT_FOUND.value());
-        body.put("error", "Not Found");
-        body.put("message", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> handleValidation(MethodArgumentNotValidException ex) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", Instant.now().toString());
-        body.put("status", HttpStatus.BAD_REQUEST.value());
-        body.put("error", "Bad Request");
-        body.put("message", "Error de validación en los datos enviados");
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
-    }
-}
-```
-
-#### 3.3.7 Crear el servicio de aplicación de `Categoria`
+#### 3.3.6 Crear el servicio de aplicación de `Categoria`
 
 **`service/CategoriaService.java`**
 
@@ -1039,67 +1014,7 @@ public class CategoriaService {
 }
 ```
 
-#### 3.3.8 Crear el servicio de aplicación de `Producto`
-
-**`service/ProductoService.java`**
-
-```java
-package pe.edu.upeu.catalogo.service;
-
-import pe.edu.upeu.catalogo.dto.ProductoRequest;
-import pe.edu.upeu.catalogo.dto.ProductoResponse;
-import pe.edu.upeu.catalogo.entity.Producto;
-import pe.edu.upeu.catalogo.exception.ResourceNotFoundException;
-import pe.edu.upeu.catalogo.mapper.ProductoMapper;
-import pe.edu.upeu.catalogo.repository.ProductoRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-
-@Service
-@RequiredArgsConstructor
-public class ProductoService {
-
-    private final ProductoRepository productoRepository;
-    private final ProductoMapper productoMapper;
-
-    public List<ProductoResponse> listar() {
-        return productoRepository.findAll().stream()
-                .map(productoMapper::toResponse)
-                .toList();
-    }
-
-    public ProductoResponse obtener(Long id) {
-        return productoMapper.toResponse(buscarOFallar(id));
-    }
-
-    public ProductoResponse crear(ProductoRequest request) {
-        Producto producto = productoMapper.toEntity(request);
-        return productoMapper.toResponse(productoRepository.save(producto));
-    }
-
-    public ProductoResponse actualizar(Long id, ProductoRequest request) {
-        Producto producto = buscarOFallar(id);
-        producto.setNombre(request.getNombre());
-        producto.setDescripcion(request.getDescripcion());
-        producto.setPrecio(request.getPrecio());
-        producto.setActivo(request.getActivo());
-        return productoMapper.toResponse(productoRepository.save(producto));
-    }
-
-    public void eliminar(Long id) {
-        productoRepository.delete(buscarOFallar(id));
-    }
-
-    private Producto buscarOFallar(Long id) {
-        return productoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado: " + id));
-    }
-}
-```
-
-#### 3.3.9 Crear el controlador REST de `Categoria`
+#### 3.3.7 Crear el controlador REST de `Categoria`
 
 **`controller/CategoriaController.java`**
 
@@ -1156,7 +1071,239 @@ La validación evita que el microservicio acepte datos incompletos antes de lleg
 
 **Error frecuente**: olvidar `@Valid` en el parámetro `@RequestBody` del controlador. Sin esa anotación, Spring ignora `@NotBlank`/`@Size`/`@NotNull` del DTO y deja pasar datos inválidos hasta el service (o hasta la base de datos).
 
-#### 3.3.10 Crear el controlador REST de `Producto`
+`Producto` sigue exactamente el mismo patrón que `Categoria`: misma secuencia de capas, mismo estilo — solo cambian los campos propios del recurso.
+
+#### 3.3.8 Crear la entidad `Producto`
+
+**`entity/Producto.java`**
+
+```java
+package pe.edu.upeu.catalogo.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+import java.math.BigDecimal;
+
+@Entity
+@Table(name = "productos")
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Producto {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "nombre", nullable = false, length = 100)
+    private String nombre;
+
+    @Column(name = "descripcion", length = 255)
+    private String descripcion;
+
+    @Column(name = "precio", nullable = false, precision = 10, scale = 2)
+    private BigDecimal precio;
+
+    @Column(name = "activo", nullable = false)
+    private Boolean activo;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_categoria", nullable = false)
+    private Categoria categoria;
+}
+```
+
+A diferencia de LP2 (que no relaciona `Categoria` y `Producto` en su S1), aquí `Producto` sí lleva la relación desde el inicio: `@ManyToOne` es JPA estándar, sin nada distribuido de por medio, porque `Categoria` y `Producto` viven en la misma base de datos del mismo microservicio. Feign solo entraría en juego si `Producto` necesitara consultar una `Categoria` que viviera en otro microservicio — no es este caso.
+
+#### 3.3.9 Crear el repositorio, los DTO y el mapper de `Producto`
+
+**`repository/ProductoRepository.java`**
+
+```java
+package pe.edu.upeu.catalogo.repository;
+
+import pe.edu.upeu.catalogo.entity.Producto;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ProductoRepository extends JpaRepository<Producto, Long> {
+}
+```
+
+**`dto/ProductoRequest.java`**
+
+```java
+package pe.edu.upeu.catalogo.dto;
+
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import java.math.BigDecimal;
+
+@Getter
+@Setter
+public class ProductoRequest {
+
+    @NotBlank
+    @Size(max = 100)
+    private String nombre;
+
+    @Size(max = 255)
+    private String descripcion;
+
+    @NotNull
+    @DecimalMin(value = "0.0", inclusive = true)
+    private BigDecimal precio;
+
+    @NotNull
+    private Boolean activo;
+
+    @NotNull
+    private Long categoriaId;
+}
+```
+
+**`dto/ProductoResponse.java`**
+
+```java
+package pe.edu.upeu.catalogo.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import java.math.BigDecimal;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ProductoResponse {
+    private Long id;
+    private String nombre;
+    private String descripcion;
+    private BigDecimal precio;
+    private Boolean activo;
+    private Long categoriaId;
+}
+```
+
+**`mapper/ProductoMapper.java`**
+
+```java
+package pe.edu.upeu.catalogo.mapper;
+
+import pe.edu.upeu.catalogo.dto.ProductoRequest;
+import pe.edu.upeu.catalogo.dto.ProductoResponse;
+import pe.edu.upeu.catalogo.entity.Producto;
+import org.springframework.stereotype.Component;
+
+@Component
+public class ProductoMapper {
+
+    public Producto toEntity(ProductoRequest request) {
+        return Producto.builder()
+                .nombre(request.getNombre())
+                .descripcion(request.getDescripcion())
+                .precio(request.getPrecio())
+                .activo(request.getActivo())
+                .build();
+    }
+
+    public ProductoResponse toResponse(Producto producto) {
+        return ProductoResponse.builder()
+                .id(producto.getId())
+                .nombre(producto.getNombre())
+                .descripcion(producto.getDescripcion())
+                .precio(producto.getPrecio())
+                .activo(producto.getActivo())
+                .categoriaId(producto.getCategoria().getId())
+                .build();
+    }
+}
+```
+
+`toEntity` no asigna `categoria` — solo conoce el `categoriaId` (un `Long`), no la entidad `Categoria` completa. Cargar la `Categoria` real por su id y asignarla es responsabilidad del service (ver 3.3.10), porque requiere consultar `CategoriaRepository`, algo que el mapper no hace.
+
+#### 3.3.10 Crear el servicio de aplicación de `Producto`
+
+**`service/ProductoService.java`**
+
+```java
+package pe.edu.upeu.catalogo.service;
+
+import pe.edu.upeu.catalogo.dto.ProductoRequest;
+import pe.edu.upeu.catalogo.dto.ProductoResponse;
+import pe.edu.upeu.catalogo.entity.Categoria;
+import pe.edu.upeu.catalogo.entity.Producto;
+import pe.edu.upeu.catalogo.exception.ResourceNotFoundException;
+import pe.edu.upeu.catalogo.mapper.ProductoMapper;
+import pe.edu.upeu.catalogo.repository.CategoriaRepository;
+import pe.edu.upeu.catalogo.repository.ProductoRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class ProductoService {
+
+    private final ProductoRepository productoRepository;
+    private final ProductoMapper productoMapper;
+    private final CategoriaRepository categoriaRepository;
+
+    public List<ProductoResponse> listar() {
+        return productoRepository.findAll().stream()
+                .map(productoMapper::toResponse)
+                .toList();
+    }
+
+    public ProductoResponse obtener(Long id) {
+        return productoMapper.toResponse(buscarOFallar(id));
+    }
+
+    public ProductoResponse crear(ProductoRequest request) {
+        Producto producto = productoMapper.toEntity(request);
+        producto.setCategoria(buscarCategoriaOFallar(request.getCategoriaId()));
+        return productoMapper.toResponse(productoRepository.save(producto));
+    }
+
+    public ProductoResponse actualizar(Long id, ProductoRequest request) {
+        Producto producto = buscarOFallar(id);
+        producto.setNombre(request.getNombre());
+        producto.setDescripcion(request.getDescripcion());
+        producto.setPrecio(request.getPrecio());
+        producto.setActivo(request.getActivo());
+        producto.setCategoria(buscarCategoriaOFallar(request.getCategoriaId()));
+        return productoMapper.toResponse(productoRepository.save(producto));
+    }
+
+    public void eliminar(Long id) {
+        productoRepository.delete(buscarOFallar(id));
+    }
+
+    private Producto buscarOFallar(Long id) {
+        return productoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado: " + id));
+    }
+
+    private Categoria buscarCategoriaOFallar(Long categoriaId) {
+        return categoriaRepository.findById(categoriaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria no encontrada: " + categoriaId));
+    }
+}
+```
+
+`ProductoService` ahora depende también de `CategoriaRepository` (ya existe desde 3.3.5) para validar que la `categoriaId` recibida corresponda a una categoría real antes de guardar o actualizar el producto — si no existe, responde HTTP 404 con el mismo `ResourceNotFoundException` que ya usa el resto del CRUD.
+
+#### 3.3.11 Crear el controlador REST de `Producto`
 
 **`controller/ProductoController.java`**
 
@@ -1211,95 +1358,6 @@ public class ProductoController {
 
 `@DecimalMin(value = "0.0", inclusive = true)` en `precio` (dto/ProductoRequest.java) rechaza con HTTP 400 cualquier producto con precio negativo — misma lógica de validación temprana que ya usa `Categoria`.
 
-#### 3.3.11 Crear el filtro de trazabilidad `CorrelationIdFilter` y configurar logs
-
-Este filtro agrega un identificador de trazabilidad a cada request usando el header `X-Trace-ID`. Si el cliente no lo envía, el filtro genera un UUID.
-
-En S1 la trazabilidad es interna al microservicio:
-
-```text
-Cliente shell / Swagger -> Controller -> Service -> Repository -> BD
-```
-
-Todos los logs producidos durante esa petición pueden compartir el mismo `traceId`.
-
-**`filter/CorrelationIdFilter.java`**
-
-```java
-package pe.edu.upeu.catalogo.filter;
-
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.MDC;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
-import java.util.UUID;
-
-@Component
-public class CorrelationIdFilter extends OncePerRequestFilter {
-
-    public static final String TRACE_ID_HEADER = "X-Trace-ID";
-    public static final String MDC_KEY = "traceId";
-
-    @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                     HttpServletResponse response,
-                                     FilterChain filterChain) throws ServletException, IOException {
-        String traceId = request.getHeader(TRACE_ID_HEADER);
-        if (traceId == null || traceId.isBlank()) {
-            traceId = UUID.randomUUID().toString();
-        }
-        try {
-            MDC.put(MDC_KEY, traceId);
-            response.setHeader(TRACE_ID_HEADER, traceId);
-            filterChain.doFilter(request, response);
-        } finally {
-            MDC.remove(MDC_KEY);
-        }
-    }
-}
-```
-
-Crea también `src/main/resources/logback-spring.xml`. Este archivo define el formato de logs e incluye el `traceId` en cada línea (`[%X{traceId}]`), con salida por consola y por archivo en `logs/catalogo.log`:
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<configuration>
-    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
-
-    <property name="LOG_PATTERN"
-              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId}] %-5level %logger{36} - %msg%n"/>
-
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>${LOG_PATTERN}</pattern>
-        </encoder>
-    </appender>
-
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/catalogo.log</file>
-        <encoder>
-            <pattern>${LOG_PATTERN}</pattern>
-        </encoder>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/catalogo-%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>7</maxHistory>
-        </rollingPolicy>
-    </appender>
-
-    <root level="INFO">
-        <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="FILE"/>
-    </root>
-</configuration>
-```
-
-Más adelante, cuando se agreguen Gateway, Feign o frontend, el mismo header `X-Trace-ID` podrá propagarse entre componentes para trazabilidad distribuida.
-
 #### 3.3.12 Revisar estructura resultante
 
 Después de crear los archivos anteriores, revisa que la estructura de `catalogo-ms` quede similar a:
@@ -1353,7 +1411,7 @@ Antes de ejecutar, la lectura del CRUD debe responder:
 5. ¿Qué archivos conversan con JPA?
 6. ¿Qué DTO se usa para recibir datos de cada recurso desde la API?
 7. ¿Qué excepción se devuelve cuando no existe una categoría o un producto?
-8. ¿Por qué `Producto` no tiene todavía relación con `Categoria`?
+8. ¿Por qué `Producto` puede tener una relación `@ManyToOne` directa con `Categoria` sin necesitar Feign ni ninguna llamada HTTP?
 9. ¿Para qué sirve `CorrelationIdFilter`, y por qué es compartido entre `Categoria` y `Producto`?
 10. ¿Cómo aparece el `traceId` en los logs?
 
@@ -1407,7 +1465,7 @@ docker exec -it pagatu-postgres-catalogo-dev psql -U pagatu -d pagatu_catalogo_d
 
 #### 3.4.4 Revisar Swagger
 
-Abre Swagger usando el puerto que aparece en la consola:
+Abre Swagger en el puerto `8080`:
 
 ```text
 http://localhost:8080/swagger-ui/index.html
@@ -1521,7 +1579,7 @@ Prueba también un caso de validación fallida (sin `nombre`) y confirma que res
 
 **Producto**:
 
-Crea un producto:
+Crea un producto (usa el `id` de la categoría creada arriba — aquí se asume `1`):
 
 PowerShell:
 
@@ -1530,7 +1588,7 @@ Invoke-RestMethod `
   -Method Post `
   -Uri "http://localhost:8080/api/productos" `
   -ContentType "application/json" `
-  -Body '{"nombre":"Matricula","descripcion":"Matricula del ciclo","precio":350.00,"activo":true}'
+  -Body '{"nombre":"Matricula","descripcion":"Matricula del ciclo","precio":350.00,"activo":true,"categoriaId":1}'
 ```
 
 bash macOS/Linux:
@@ -1538,7 +1596,7 @@ bash macOS/Linux:
 ```bash
 curl -X POST http://localhost:8080/api/productos \
   -H "Content-Type: application/json" \
-  -d '{"nombre":"Matricula","descripcion":"Matricula del ciclo","precio":350.00,"activo":true}'
+  -d '{"nombre":"Matricula","descripcion":"Matricula del ciclo","precio":350.00,"activo":true,"categoriaId":1}'
 ```
 
 Lista todos los productos:
@@ -1558,7 +1616,7 @@ Actualiza un producto:
 ```bash
 curl -X PUT http://localhost:8080/api/productos/1 \
   -H "Content-Type: application/json" \
-  -d '{"nombre":"Matricula","descripcion":"Matricula del ciclo, promocion","precio":300.00,"activo":true}'
+  -d '{"nombre":"Matricula","descripcion":"Matricula del ciclo, promocion","precio":300.00,"activo":true,"categoriaId":1}'
 ```
 
 Elimina un producto:
@@ -1567,7 +1625,7 @@ Elimina un producto:
 curl -X DELETE http://localhost:8080/api/productos/1
 ```
 
-Prueba también un producto con `precio` negativo y confirma que responde HTTP 400.
+Prueba también un producto con `precio` negativo y confirma que responde HTTP 400, y un `categoriaId` inexistente (por ejemplo `9999`) y confirma que responde HTTP 404.
 
 ### 3.5 Simular escalamiento horizontal (múltiples instancias)
 
@@ -1874,7 +1932,7 @@ Esta sección sirve si tu equipo ya cerró la sesión con un tag de git en su pr
 | Revisar health y metrics | [Ver paso 3.4.5](#345-verificar-health-y-metrics) |
 | Probar CRUD por shell | [Ver paso 3.4.6](#346-probar-crud-por-shell) |
 | Simular escalamiento horizontal | [Ver paso 3.5](#35-simular-escalamiento-horizontal-multiples-instancias) |
-| Levantar y escalar PROD local | [Ver paso 3.7](#37-probar-produccion-local-con-docker) |
+| Levantar y escalar PROD local | [Ver paso 3.7](#37-probar-produccion-local-con-docker-opcional) |
 
 Comandos mínimos DEV:
 
@@ -1961,9 +2019,9 @@ Esta actividad autónoma se desarrolla sobre el proyecto de fin de curso del equ
 
 ### 4.1 Plantilla de evidencia individual
 
-Entrega un PDF con el siguiente nombre:
-
 El PDF de esta sesión debe generarse como impresión o exportación de la sección correspondiente en MkDocs o una herramienta equivalente. No se acepta un PDF armado manualmente fuera de la documentación del proyecto.
+
+Entrega un PDF con el siguiente nombre:
 
 ```text
 S01_Equipo##_ApellidoNombre.pdf

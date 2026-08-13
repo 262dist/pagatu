@@ -65,6 +65,27 @@ Resultado esperado U3: el estudiante integra los componentes desarrollados en la
 
 ## Arquitectura pagatu v2026
 
+### Nivel 1: Contexto del sistema (System Context - C4 nivel 1)
+
+```mermaid
+flowchart LR
+    Usuario(["Usuario - estudiante o administrador"])
+    Pagatu["pagatu - sistema distribuido de comercio electrónico"]
+    PaymentGateway["Pasarela de pagos externa"]
+
+    Usuario -->|"usa"| Pagatu
+    Pagatu -->|"autoriza / confirma pago"| PaymentGateway
+
+    classDef system fill:#eef6ff,stroke:#2b6cb0,stroke-width:2px,color:#111;
+    classDef external fill:#fff3cd,stroke:#b7791f,stroke-width:2px,color:#5f370e;
+    class Pagatu system;
+    class PaymentGateway external;
+```
+
+`pagatu` se ve como una sola caja negra: sin microservicios, sin Gateway, sin Kafka por dentro. Solo importa quién lo usa (el usuario) y con qué sistema externo conversa (la pasarela de pagos). El detalle interno aparece recién en el nivel 2.
+
+### Nivel 2: Contenedores (Container diagram - C4 nivel 2)
+
 ```mermaid
 %%{init: {"flowchart": {"nodeSpacing": 18, "rankSpacing": 28, "curve": "basis"}} }%%
 flowchart LR
