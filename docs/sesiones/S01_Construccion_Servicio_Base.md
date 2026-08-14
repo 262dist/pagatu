@@ -375,6 +375,20 @@ En este paso no basta con crear el proyecto. Como se agregan `Spring Data JPA`, 
 
 Ese fallo es útil para aprender: un microservicio con persistencia necesita una dependencia de infraestructura disponible. En el curso no usaremos H2 para ocultar el problema ni desactivaremos la conexión a BD; levantaremos PostgreSQL con Docker desde el inicio.
 
+Antes de crear el proyecto, así queda organizado el monorepo `pagatu` a partir de hoy:
+
+```text
+pagatu/
+├── services/
+│   └── catalogo-ms/         <- hoy
+├── infra/                    <- desde S2: config (S2), Eureka (S3), gateway (S4)
+└── platform/                 <- desde S3: observabilidad (S3-S4), Kafka (S8)
+```
+
+- `services/` agrupa los microservicios de negocio — hoy solo `catalogo-ms`, en sesiones futuras se suman más (`orden-ms`, `auth-ms`, `pago-ms`). Los separamos de la raíz para no mezclar carpetas de negocio con infraestructura de soporte.
+- `infra/` es la infraestructura propia del sistema (Config Server, Eureka, Gateway): sostiene a los microservicios pero no tiene valor de negocio propio — se agrega progresivamente (Config Server en S2, Eureka en S3, Gateway en S4).
+- `platform/` son dependencias compartidas de laboratorio, no exclusivas de `pagatu`: observabilidad (Prometheus/Loki desde S3, Grafana desde S4) y Kafka (mensajería asíncrona, desde S8).
+
 #### 3.2.1 Crear el proyecto con Spring Initializr desde VS Code
 
 Desde la raíz del monorepo `pagatu`, abre VS Code, `Ctrl+Shift+P` y ejecuta el comando:
