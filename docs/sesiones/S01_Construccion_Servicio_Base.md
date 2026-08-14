@@ -24,7 +24,7 @@ Al concluir la clase, estarás en condiciones de:
 
 ### 1.4 Producto de sesión
 
-`catalogo-ms` funcional con CRUD de categorías y de productos, ejecutable en DEV con Maven Wrapper con múltiples instancias en paralelo, PostgreSQL, Swagger, Actuator, README operativo y pruebas por shell. De forma opcional, también ejecutable en producción local con Docker.
+`pagatu-catalogo-ms` funcional con CRUD de categorías y de productos, ejecutable en DEV con Maven Wrapper con múltiples instancias en paralelo, PostgreSQL, Swagger, Actuator, README operativo y pruebas por shell. De forma opcional, también ejecutable en producción local con Docker.
 
 ### 1.5 Metodología
 
@@ -33,7 +33,7 @@ Al concluir la clase, estarás en condiciones de:
 | Actividades a Realizar en el Periodo | Orientaciones generales (Orientaciones Metodológicas) | Material de estudio recomendado |
 |---|---|---|
 | Revisión previa individual | Leer el sílabo de la Unidad 1 y el caso de la plataforma de comercio electrónico (ver 1.6). Trabajo individual, antes de clase; preparar el entorno local (Java 21, Docker) si aún no está listo. | Sílabo del curso Unidad 1, guía de sesión (MkDocs), plataforma UPeU. |
-| Clase presencial | Construcción guiada de `catalogo-ms`: entidad, CRUD, PostgreSQL, Flyway, Swagger, Actuator y filtro de trazabilidad. Trabajo individual, siguiendo al docente paso a paso; consulta inmediata ante errores de arranque o de conexión a base de datos. Producción local con Docker (3.6-3.7) es alcance opcional: no es necesario completarla para cerrar la sesión. | Pasos 3.1 a 3.8 de esta guía, VS Code, Docker Desktop, repositorio GitHub `pagatu`. |
+| Clase presencial | Construcción guiada de `pagatu-catalogo-ms`: entidad, CRUD, PostgreSQL, Flyway, Swagger, Actuator y filtro de trazabilidad. Trabajo individual, siguiendo al docente paso a paso; consulta inmediata ante errores de arranque o de conexión a base de datos. Producción local con Docker (3.6-3.7) es alcance opcional: no es necesario completarla para cerrar la sesión. | Pasos 3.1 a 3.8 de esta guía, VS Code, Docker Desktop, repositorio GitHub `pagatu`. |
 | Evaluación formativa | Revisión en clase del servicio ejecutando en DEV, con múltiples instancias corriendo en paralelo. La evidencia se completa y sustenta de forma individual, fuera del aula, según los criterios mínimos de la sección 4.4. | Indicaciones de entrega (4.3), rúbrica de evaluación (4.6), repositorio GitHub `pagatu` (tag de cierre de sesión), plataforma UPeU (entrega del PDF). |
 
 ### 1.6 Motivación de la sesión
@@ -63,7 +63,7 @@ El equipo de ingeniería decide rediseñar la arquitectura del sistema utilizand
 1. ¿Qué ventajas ofrece dividir el sistema en servicios?
 2. ¿Qué desventajas trae dividir el sistema en servicios, más allá del costo (por ejemplo: complejidad operativa, consistencia de datos entre servicios, latencia de red, dificultad para depurar un flujo que cruza varios servicios)?
 
-En esta sesión se inicia ese rediseño construyendo el primer componente del sistema `pagatu`: `catalogo-ms`.
+En esta sesión se inicia ese rediseño construyendo el primer componente del sistema `pagatu`: `pagatu-catalogo-ms`.
 
 ### 1.7 Ubicación en el curso
 
@@ -80,7 +80,7 @@ Roadmap para elaborar el producto de la unidad (Container diagram C4 nivel 2):
 flowchart TB
     Cliente["Cliente de prueba - PowerShell / bash / Swagger"]
     Gateway["Gateway - punto único de acceso - balanceo de carga"]
-    Catalogo["catalogo-ms - HOY - REST + BD + health"]
+    Catalogo["pagatu-catalogo-ms - HOY - REST + BD + health"]
     Orden["orden-ms - trabajo aplicado"]
     Eureka["Registro de servicios - Eureka"]
     Config["Servidor de configuración - Config Server"]
@@ -100,7 +100,7 @@ flowchart TB
     class Catalogo today;
 ```
 
-Hoy se construye el primer componente real de la U1: `catalogo-ms`. En las siguientes sesiones se agregan configuración centralizada, registro de servicios, múltiples instancias, Gateway y balanceo. La evaluación U1 valida el sistema base integrado construido con esos componentes.
+Hoy se construye el primer componente real de la U1: `pagatu-catalogo-ms`. En las siguientes sesiones se agregan configuración centralizada, registro de servicios, múltiples instancias, Gateway y balanceo. La evaluación U1 valida el sistema base integrado construido con esos componentes.
 
 ## 2. Explica
 
@@ -108,7 +108,7 @@ Tiempo: 25 min.
 
 ### 2.1 Arquitectura de la sesión
 
-**Figura 2. Arquitectura de capas de `catalogo-ms` en la sesión S1**
+**Figura 2. Arquitectura de capas de `pagatu-catalogo-ms` en la sesión S1**
 
 ```mermaid
 flowchart TB
@@ -139,7 +139,7 @@ Este diagrama es el mapa que guía el resto de la explicación: cada apartado si
 
 Un microservicio debe tener responsabilidad clara, persistencia propia, configuración por ambiente y capacidad de ejecutarse de forma independiente.
 
-Ejemplo: `catalogo-ms` se encarga de gestionar categorías, conceptos de pago y sus precios, con su propia base de datos. No debería guardar clientes, órdenes ni pagos. Si más adelante `orden-ms` necesita saber si un concepto de pago existe y cuál es su precio, consulta a `catalogo-ms` por red en lugar de leer directamente su base de datos.
+Ejemplo: `pagatu-catalogo-ms` se encarga de gestionar categorías, conceptos de pago y sus precios, con su propia base de datos. No debería guardar clientes, órdenes ni pagos. Si más adelante `orden-ms` necesita saber si un concepto de pago existe y cuál es su precio, consulta a `pagatu-catalogo-ms` por red en lugar de leer directamente su base de datos.
 
 ### 2.3 Persistencia: PostgreSQL y migraciones con Flyway
 
@@ -165,7 +165,7 @@ erDiagram
     }
 ```
 
-`id_categoria` es una llave foránea normal de PostgreSQL (`REFERENCES categorias(id)`), no una integración entre microservicios: ambas tablas viven en la misma base de datos de `catalogo-ms`. Una `Categoria` puede existir sin `Producto`s asociados, pero todo `Producto` exige una `Categoria` válida (`NOT NULL`).
+`id_categoria` es una llave foránea normal de PostgreSQL (`REFERENCES categorias(id)`), no una integración entre microservicios: ambas tablas viven en la misma base de datos de `pagatu-catalogo-ms`. Una `Categoria` puede existir sin `Producto`s asociados, pero todo `Producto` exige una `Categoria` válida (`NOT NULL`).
 
 Esta separación importa: si Hibernate pudiera crear o alterar tablas solo (`ddl-auto: update`), el esquema real de producción quedaría a merced de cómo esté escrita la entidad Java en cada momento, sin historial ni control de versiones del cambio. Con Flyway, cada cambio de esquema es un script versionado y revisable, igual en DEV que en cualquier otro ambiente.
 
@@ -180,8 +180,8 @@ Esta separación importa: si Hibernate pudiera crear o alterar tablas solo (`ddl
 ```mermaid
 flowchart TB
     DevClient["Cliente - PowerShell / bash / Swagger"]
-    DevApp1["catalogo-ms - Java 21 + Maven Wrapper - puerto 8080"]
-    DevApp2["catalogo-ms - segunda instancia (3.5) - puerto 8081"]
+    DevApp1["pagatu-catalogo-ms - Java 21 + Maven Wrapper - puerto 8080"]
+    DevApp2["pagatu-catalogo-ms - segunda instancia (3.5) - puerto 8081"]
     subgraph DevDocker["Docker: solo base de datos"]
         DevDb[("pagatu_catalogo_db - PostgreSQL - localhost:15432 -> 5432")]
     end
@@ -209,13 +209,13 @@ Esta parte sí se practica en S1 (ver 3.6-3.7) — muestra, por contraste con 2.
 flowchart TB
     ProdClient["Cliente interno - curl container"]
     subgraph ProdDocker["Docker Network: pagatu-catalogo-int"]
-        ProdApp1["catalogo-ms - instancia 1 - jar - 8080 interno"]
-        ProdApp2["catalogo-ms - instancia 2 - jar - 8080 interno"]
+        ProdApp1["pagatu-catalogo-ms - instancia 1 - jar - 8080 interno"]
+        ProdApp2["pagatu-catalogo-ms - instancia 2 - jar - 8080 interno"]
         ProdDb[("pagatu_catalogo_db - PostgreSQL - pagatu-postgres-catalogo:5432")]
     end
 
-    ProdClient -->|"catalogo-ms:8080"| ProdApp1
-    ProdClient -->|"catalogo-ms:8080"| ProdApp2
+    ProdClient -->|"pagatu-catalogo-ms:8080"| ProdApp1
+    ProdClient -->|"pagatu-catalogo-ms:8080"| ProdApp2
     ProdApp1 -->|"pagatu-postgres-catalogo:5432"| ProdDb
     ProdApp2 -->|"pagatu-postgres-catalogo:5432"| ProdDb
 
@@ -225,7 +225,7 @@ flowchart TB
     class ProdDb db;
 ```
 
-Las dos flechas del cliente muestran el **mismo** destino, `catalogo-ms:8080` — eso es intencional, no un error: dentro de la red Docker, ambas instancias comparten ese mismo nombre de servicio y puerto interno, y es el DNS embebido de Docker el que reparte cada petición entre una u otra instancia por turno. Lo que cambia entre una petición y otra es **qué instancia responde por detrás**, no lo que el cliente pide — a diferencia de DEV (2.4.1), donde el cliente sí elige explícitamente `8080` u `8081`.
+Las dos flechas del cliente muestran el **mismo** destino, `pagatu-catalogo-ms:8080` — eso es intencional, no un error: dentro de la red Docker, ambas instancias comparten ese mismo nombre de servicio y puerto interno, y es el DNS embebido de Docker el que reparte cada petición entre una u otra instancia por turno. Lo que cambia entre una petición y otra es **qué instancia responde por detrás**, no lo que el cliente pide — a diferencia de DEV (2.4.1), donde el cliente sí elige explícitamente `8080` u `8081`.
 
 Regla práctica:
 
@@ -238,11 +238,11 @@ Regla práctica:
 
 Tiempo: 2h.
 
-**Actividad:** construcción guiada de `catalogo-ms`, el primer microservicio REST del proyecto, con CRUD completo de `Categoria` y `Producto` (Producto de la sesión en 1.4).
+**Actividad:** construcción guiada de `pagatu-catalogo-ms`, el primer microservicio REST del proyecto, con CRUD completo de `Categoria` y `Producto` (Producto de la sesión en 1.4).
 
-**Propósito de la actividad:** construir `catalogo-ms` de punta a punta — desde el proyecto vacío hasta el CRUD completo de `Categoria` y `Producto` ejecutando en DEV, con persistencia, validación y trazabilidad — verificando cada incremento antes de continuar al siguiente.
+**Propósito de la actividad:** construir `pagatu-catalogo-ms` de punta a punta — desde el proyecto vacío hasta el CRUD completo de `Categoria` y `Producto` ejecutando en DEV, con persistencia, validación y trazabilidad — verificando cada incremento antes de continuar al siguiente.
 
-**Orientaciones metodológicas:** en el laboratorio, el docente guía la construcción de `catalogo-ms` paso a paso frente a la clase, y los estudiantes replican cada paso en su propio equipo, verificando el resultado con comandos de consola antes de avanzar al siguiente. La versión actual usa monorepo, nombres con sufijo `-ms` y PostgreSQL para los microservicios; el patrón completo se replica luego en `orden-ms` como trabajo aplicado (sección 4).
+**Orientaciones metodológicas:** en el laboratorio, el docente guía la construcción de `pagatu-catalogo-ms` paso a paso frente a la clase, y los estudiantes replican cada paso en su propio equipo, verificando el resultado con comandos de consola antes de avanzar al siguiente. La versión actual usa monorepo, nombres con sufijo `-ms` y PostgreSQL para los microservicios; el patrón completo se replica luego en `orden-ms` como trabajo aplicado (sección 4).
 
 **Actividades para realizar:**
 
@@ -369,7 +369,7 @@ code --install-extension cweijan.vscode-database-client2
 
 ### 3.2 Crear el proyecto Spring Boot desde VS Code con dependencias base
 
-**Producto del paso:** proyecto Spring Boot creado en `services/catalogo-ms`, con `artifactId` `pagatu-catalogo-ms`, paquete `pe.edu.upeu.catalogo`, dependencias base instaladas, PostgreSQL DEV levantado en Docker y un endpoint web simple respondiendo desde el navegador o shell.
+**Producto del paso:** proyecto Spring Boot creado en `services/pagatu-catalogo-ms`, con `artifactId` `pagatu-catalogo-ms`, paquete `pe.edu.upeu.catalogo`, dependencias base instaladas, PostgreSQL DEV levantado en Docker y un endpoint web simple respondiendo desde el navegador o shell.
 
 En este paso no basta con crear el proyecto. Como se agregan `Spring Data JPA`, `PostgreSQL Driver` y `Flyway`, Spring Boot intentará configurar una conexión a base de datos al arrancar. Por eso, si ejecutas el microservicio sin configurar y levantar PostgreSQL, el arranque fallará.
 
@@ -380,12 +380,12 @@ Antes de crear el proyecto, así queda organizado el monorepo `pagatu` a partir 
 ```text
 pagatu/
 ├── services/
-│   └── catalogo-ms/         <- hoy
+│   └── pagatu-catalogo-ms/         <- hoy
 ├── infra/                    <- desde S2: config (S2), Eureka (S3), gateway (S4)
 └── platform/                 <- desde S3: observabilidad (S3-S4), Kafka (S8)
 ```
 
-- `services/` agrupa los microservicios de negocio — hoy solo `catalogo-ms`, en sesiones futuras se suman más (`orden-ms`, `auth-ms`, `pago-ms`). Los separamos de la raíz para no mezclar carpetas de negocio con infraestructura de soporte.
+- `services/` agrupa los microservicios de negocio — hoy solo `pagatu-catalogo-ms`, en sesiones futuras se suman más (`orden-ms`, `auth-ms`, `pago-ms`). Los separamos de la raíz para no mezclar carpetas de negocio con infraestructura de soporte.
 - `infra/` es la infraestructura propia del sistema (Config Server, Eureka, Gateway): sostiene a los microservicios pero no tiene valor de negocio propio — se agrega progresivamente (Config Server en S2, Eureka en S3, Gateway en S4).
 - `platform/` son dependencias compartidas de laboratorio, no exclusivas de `pagatu`: observabilidad (Prometheus/Loki desde S3, Grafana desde S4) y Kafka (mensajería asíncrona, desde S8).
 
@@ -412,7 +412,7 @@ Usa la siguiente configuración:
 | Packaging | Jar |
 | Java | 21 |
 | Dependencias | Seleccionar dependencias del proyecto |
-| Ubicación sugerente | `services/catalogo-ms` puedes poner en cualquier lugar |
+| Ubicación sugerente | `services/pagatu-catalogo-ms` puedes poner en cualquier lugar |
 
 Nota sobre la versión: el generador de Spring Initializr ya no ofrece ninguna versión 3.x — las únicas opciones son líneas 4.x. Se fija **4.0.7** por el mismo motivo verificado en LP2 (ver `docs/lp2/adr/ADR-003-spring-boot-4.md` del repo `bomerp`): dentro de la línea 4.x, SpringDoc OpenAPI declara compatibilidad solo hasta `4.1.0-M1`, así que 4.0.7 es la versión estable dentro de ese rango. Si al generar el proyecto ves `spring-boot-starter-web` reemplazado por `spring-boot-starter-webmvc`, o starters de prueba granulares en vez de uno solo, es esperado en esta línea de Boot — no lo corrijas.
 
@@ -427,15 +427,29 @@ Dependencias a seleccionar:
 | Documentación y operación | SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator | Documentar la API con Swagger y verificar health |
 | Persistencia | Spring Data JPA, PostgreSQL Driver, Flyway | Acceso a datos, conexión a PostgreSQL y migraciones de BD |
 
+Referencia visual (selección real en VS Code con Spring Boot 4.0.7, las 9 dependencias de la tabla):
+
+![Selección de dependencias en Spring Initializr (1/2): Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI, Spring Boot Actuator](img/s01-3.2.1-dependencias-1.png)
+
+![Selección de dependencias en Spring Initializr (2/2): Spring Data JPA, PostgreSQL Driver, Flyway Migration](img/s01-3.2.1-dependencias-2.png)
+
 Nota sobre motor de base de datos: en DIST se trabaja con **PostgreSQL** (no Oracle — Oracle es el motor de LP2/BD2, fuera del alcance de este curso). Si el equipo prefiere **MySQL**, es una alternativa válida: cambia `PostgreSQL Driver` por `MySQL Driver` en el Initializr y `flyway-database-postgresql` por `flyway-mysql` en el `pom.xml` — el resto de la guía (Flyway, JPA, `ddl-auto: validate`) aplica igual, solo cambia el driver y la URL de conexión.
 
 Nota: SpringDoc/Swagger documenta los endpoints del microservicio; no es infraestructura distribuida. La infraestructura distribuida inicia desde S2 con configuración centralizada.
 
-Nota: el directorio del microservicio en el monorepo es `services/catalogo-ms`, pero el `artifactId` Maven usado por el proyecto actual es `pagatu-catalogo-ms` — el mismo nombre que luego se usa en `spring.application.name` (ver 3.2.4).
+Nota: el directorio del microservicio en el monorepo es `services/pagatu-catalogo-ms`, el mismo nombre que el `artifactId` Maven y que luego se usa en `spring.application.name` (ver 3.2.4) — Spring Initializr genera la carpeta con ese nombre automáticamente al posicionarte dentro de `services/` y usar "Generate into this folder", sin necesidad de renombrar nada después.
+
+Después de `Enter`, el asistente pide dónde guardar el proyecto. Navega hasta `services/` y da clic en **"Generate into this folder"**:
+
+![Selector de carpeta de VS Code navegado hasta pagatu/services, con el botón "Generate into this folder" resaltado](img/s01-3.2.1-guardar.png)
+
+Al terminar, VS Code confirma la generación y el proyecto queda visible en el Explorer:
+
+![Notificación "Successfully generated" y el proyecto generado visible en el Explorer de VS Code](img/s01-3.2.1-generado.png)
 
 #### 3.2.2 Revisar dependencias PostgreSQL y Flyway
 
-Abre `services/catalogo-ms/pom.xml` y verifica que existan las dependencias de persistencia para PostgreSQL:
+Abre `services/pagatu-catalogo-ms/pom.xml` y verifica que existan las dependencias de persistencia para PostgreSQL:
 
 ```xml
 <dependency>
@@ -461,13 +475,13 @@ Ubícate en la carpeta del microservicio:
 
 ```powershell
 # Windows (PowerShell o cmd)
-cd services/catalogo-ms
+cd services/pagatu-catalogo-ms
 .\mvnw.cmd spring-boot:run
 ```
 
 ```bash
 # macOS / Linux
-cd services/catalogo-ms
+cd services/pagatu-catalogo-ms
 ./mvnw spring-boot:run
 ```
 
@@ -485,11 +499,11 @@ No se corrige quitando JPA ni usando H2. Se corrige declarando PostgreSQL DEV y 
 
 **Producto del paso:** ambiente DEV completo — PostgreSQL en Docker y la aplicación configurada para conectarse a él.
 
-El ambiente de desarrollo de `catalogo-ms` tiene dos partes: PostgreSQL corriendo en Docker (`compose-dev.yml`) y la propia aplicación configurada para encontrarlo (`application.yml`/`application-dev.yml`). En S1 la aplicación se ejecuta en DEV con Maven Wrapper desde el host — solo la base de datos vive en Docker.
+El ambiente de desarrollo de `pagatu-catalogo-ms` tiene dos partes: PostgreSQL corriendo en Docker (`compose-dev.yml`) y la propia aplicación configurada para encontrarlo (`application.yml`/`application-dev.yml`). En S1 la aplicación se ejecuta en DEV con Maven Wrapper desde el host — solo la base de datos vive en Docker.
 
 **Docker: PostgreSQL DEV**
 
-En `services/catalogo-ms`, crea el archivo `compose-dev.yml`:
+En `services/pagatu-catalogo-ms`, crea el archivo `compose-dev.yml`:
 
 ```yaml
 name: pagatu-catalogo-dev
@@ -585,7 +599,7 @@ El puerto queda fijo en `8080` para todo el resto de esta guía — más simple 
 
 En DEV, Flyway queda activo y ejecuta automáticamente `V1__create_catalogo_tables.sql` al arrancar la aplicación (se crea en 3.3.1). JPA/Hibernate no crea tablas; solo valida que las entidades coincidan con la estructura de la base de datos mediante `ddl-auto: validate`.
 
-En S2 esta configuración se moverá progresivamente al Config Server, que busca el archivo de configuración por `spring.application.name` (`pagatu-catalogo-ms.yml` en el config-repo) — por eso ese nombre lleva el mismo prefijo `pagatu-` que el `artifactId`, y no queda como `catalogo-ms` a secas: evita ambigüedad si en algún momento hay otro proyecto con un servicio del mismo nombre corriendo contra un registro compartido. En S1 la configuración se mantiene local para que el alumno entienda primero qué necesita el microservicio para arrancar.
+En S2 esta configuración se moverá progresivamente al Config Server, que busca el archivo de configuración por `spring.application.name` (`pagatu-catalogo-ms.yml` en el config-repo) — por eso ese nombre lleva el mismo prefijo `pagatu-` que el `artifactId`, y no queda como `pagatu-catalogo-ms` a secas: evita ambigüedad si en algún momento hay otro proyecto con un servicio del mismo nombre corriendo contra un registro compartido. En S1 la configuración se mantiene local para que el alumno entienda primero qué necesita el microservicio para arrancar.
 
 #### 3.2.5 Crear un endpoint temporal de saludo
 
@@ -604,7 +618,7 @@ public class SaludoController {
 
     @GetMapping("/saludo")
     public String saludo() {
-        return "catalogo-ms activo";
+        return "pagatu-catalogo-ms activo";
     }
 }
 ```
@@ -663,7 +677,7 @@ curl http://localhost:8080/saludo
 Resultado esperado:
 
 ```text
-catalogo-ms activo
+pagatu-catalogo-ms activo
 ```
 
 También puedes revisar Swagger en el puerto `8080`:
@@ -674,7 +688,7 @@ http://localhost:8080/swagger-ui/index.html
 
 **Evidencia de cierre del paso 3.2**
 
-- Proyecto creado en `services/catalogo-ms`.
+- Proyecto creado en `services/pagatu-catalogo-ms`.
 - `pom.xml` con dependencias base y persistencia PostgreSQL.
 - PostgreSQL DEV ejecutando en Docker.
 - `application.yml` con perfil `dev` activo.
@@ -683,11 +697,11 @@ http://localhost:8080/swagger-ui/index.html
 
 ### 3.3 Construir el CRUD de `Categoria` y `Producto`
 
-**Producto del paso:** CRUD de `Categoria` y de `Producto` incorporados en `catalogo-ms`, incluyendo entidades, capas de aplicación, validaciones, filtro de trazabilidad y migración de base de datos, escritos directamente por el estudiante (sin depender de un repositorio externo).
+**Producto del paso:** CRUD de `Categoria` y de `Producto` incorporados en `pagatu-catalogo-ms`, incluyendo entidades, capas de aplicación, validaciones, filtro de trazabilidad y migración de base de datos, escritos directamente por el estudiante (sin depender de un repositorio externo).
 
-`catalogo-ms` gestiona lo que se puede comprar o pagar: no solo categorías, también los conceptos de pago concretos (`Producto`: nombre, descripción, precio y si está activo). Ambas entidades se construyen en esta misma sesión, siguiendo exactamente el mismo patrón de capas una y otra vez — una vez que entiendes el patrón con `Categoria`, replicarlo en `Producto` es mecánico.
+`pagatu-catalogo-ms` gestiona lo que se puede comprar o pagar: no solo categorías, también los conceptos de pago concretos (`Producto`: nombre, descripción, precio y si está activo). Ambas entidades se construyen en esta misma sesión, siguiendo exactamente el mismo patrón de capas una y otra vez — una vez que entiendes el patrón con `Categoria`, replicarlo en `Producto` es mecánico.
 
-Cada archivo de este paso se crea directamente dentro de `services/catalogo-ms/src/main/java/pe/edu/upeu/catalogo` (o en `src/main/resources` cuando corresponda), siguiendo la misma estructura de carpetas usada en todo el curso:
+Cada archivo de este paso se crea directamente dentro de `services/pagatu-catalogo-ms/src/main/java/pe/edu/upeu/catalogo` (o en `src/main/resources` cuando corresponda), siguiendo la misma estructura de carpetas usada en todo el curso:
 
 ```text
 config
@@ -736,7 +750,7 @@ Antes de construir `Categoria` y `Producto`, se crean dos piezas compartidas que
 
 #### 3.3.2 Crear las excepciones y el manejador global de errores
 
-Estas clases son **compartidas**: no son específicas de `Categoria` ni de `Producto`, cualquier módulo de `catalogo-ms` las reutiliza tal cual.
+Estas clases son **compartidas**: no son específicas de `Categoria` ni de `Producto`, cualquier módulo de `pagatu-catalogo-ms` las reutiliza tal cual.
 
 **`exception/ResourceNotFoundException.java`**
 
@@ -1406,7 +1420,7 @@ public class ProductoController {
 
 #### 3.3.12 Revisar estructura resultante
 
-Después de crear los archivos anteriores, revisa que la estructura de `catalogo-ms` quede similar a:
+Después de crear los archivos anteriores, revisa que la estructura de `pagatu-catalogo-ms` quede similar a:
 
 ```text
 src/main/java/pe/edu/upeu/catalogo
@@ -1481,13 +1495,13 @@ Ejecuta el microservicio:
 
 ```powershell
 # Windows (PowerShell o cmd)
-cd services/catalogo-ms
+cd services/pagatu-catalogo-ms
 .\mvnw.cmd spring-boot:run
 ```
 
 ```bash
 # macOS / Linux
-cd services/catalogo-ms
+cd services/pagatu-catalogo-ms
 ./mvnw spring-boot:run
 ```
 
@@ -1759,15 +1773,15 @@ Prueba también un producto con `precio` negativo y confirma que responde HTTP 4
 
 ### 3.5 Simular escalamiento horizontal (múltiples instancias)
 
-**Producto del paso:** dos instancias de `catalogo-ms` corriendo al mismo tiempo, cada una en un puerto distinto, ambas conectadas a la misma PostgreSQL DEV.
+**Producto del paso:** dos instancias de `pagatu-catalogo-ms` corriendo al mismo tiempo, cada una en un puerto distinto, ambas conectadas a la misma PostgreSQL DEV.
 
-**Figura 6. Escalamiento horizontal de `catalogo-ms` con dos instancias en paralelo**
+**Figura 6. Escalamiento horizontal de `pagatu-catalogo-ms` con dos instancias en paralelo**
 
 ```mermaid
 flowchart TB
     DevClient["Cliente - PowerShell / bash / Swagger"]
-    DevApp1["catalogo-ms - instancia 1 - puerto 8080"]
-    DevApp2["catalogo-ms - instancia 2 - puerto 8081"]
+    DevApp1["pagatu-catalogo-ms - instancia 1 - puerto 8080"]
+    DevApp2["pagatu-catalogo-ms - instancia 2 - puerto 8081"]
     subgraph DevDocker["Docker: solo base de datos"]
         DevDb[("pagatu_catalogo_db - PostgreSQL - localhost:15432 -> 5432")]
     end
@@ -1785,7 +1799,7 @@ flowchart TB
 
 Un microservicio distribuido debe poder escalar horizontalmente: correr varias copias idénticas a la vez, cada una en su propio puerto, sin configuración fija que las haga chocar. Con `server.port` fijo en `8080` (el que usa el resto de esta guía), una segunda instancia no puede arrancar en la misma máquina — el puerto ya está ocupado.
 
-**Sin modificar `application-dev.yml`** (para no romper el puerto 8080 que usan los pasos anteriores de esta guía), la Terminal 1 sigue corriendo tal cual en `8080` (la que ya tenías abierta desde 3.4). Abre una **Terminal 2** nueva y pásale un puerto distinto como argumento de línea de comandos, desde `services/catalogo-ms`:
+**Sin modificar `application-dev.yml`** (para no romper el puerto 8080 que usan los pasos anteriores de esta guía), la Terminal 1 sigue corriendo tal cual en `8080` (la que ya tenías abierta desde 3.4). Abre una **Terminal 2** nueva y pásale un puerto distinto como argumento de línea de comandos, desde `services/pagatu-catalogo-ms`:
 
 ```powershell
 # Windows (PowerShell o cmd) - Terminal 2 (simultánea, con Postgres y la Terminal 1 ya corriendo en 8080)
@@ -1819,7 +1833,7 @@ curl http://localhost:8080/actuator/health
 curl http://localhost:8081/actuator/health
 ```
 
-Resultado esperado: ambas responden `catalogo-ms activo` y `{"status":"UP"}`, cada una en su propio puerto, conectadas de forma independiente a la misma PostgreSQL DEV.
+Resultado esperado: ambas responden `pagatu-catalogo-ms activo` y `{"status":"UP"}`, cada una en su propio puerto, conectadas de forma independiente a la misma PostgreSQL DEV.
 
 **Por qué importa esto en S1.** Todavía no hay Gateway ni balanceador de carga — eso llega en S4 ("Punto único de acceso y distribución de tráfico"). Pero la capacidad de correr múltiples instancias sin puerto fijo es la base técnica que un balanceador necesita para repartir tráfico entre copias del mismo servicio; practicarla desde S1 deja esa evidencia lista para cuando el Gateway integre esta pieza.
 
@@ -1832,7 +1846,7 @@ Resultado esperado: ambas responden `catalogo-ms activo` y `{"status":"UP"}`, ca
 
 En DEV la aplicación se ejecuta con Maven Wrapper desde el host y solo PostgreSQL corre en Docker. En PROD local, la aplicación también se ejecutará como contenedor. Por eso se agregan archivos separados para construir la imagen, pasar variables de entorno y conectar el contenedor de la aplicación con su PostgreSQL dockerizado.
 
-Agrega o revisa estos archivos en `services/catalogo-ms`:
+Agrega o revisa estos archivos en `services/pagatu-catalogo-ms`:
 
 ```text
 .env
@@ -1841,7 +1855,7 @@ Dockerfile
 compose.yml
 ```
 
-Y este archivo en `services/catalogo-ms/src/main/resources`:
+Y este archivo en `services/pagatu-catalogo-ms/src/main/resources`:
 
 ```text
 application-prod.yml
@@ -1964,7 +1978,7 @@ services:
     networks:
       - pagatu-catalogo-int
 
-  catalogo-ms:
+  pagatu-catalogo-ms:
     build: .
     restart: unless-stopped
     depends_on:
@@ -2001,8 +2015,8 @@ En S1 basta con la red interna del microservicio. Más adelante, cuando aparezca
 PowerShell / bash macOS/Linux:
 
 ```bash
-cd services/catalogo-ms
-docker compose up -d --build --scale catalogo-ms=2
+cd services/pagatu-catalogo-ms
+docker compose up -d --build --scale pagatu-catalogo-ms=2
 docker compose ps
 ```
 
@@ -2022,7 +2036,7 @@ En S1 el microservicio en PROD local no publica puerto host directo. Se valida d
 PowerShell / bash macOS/Linux:
 
 ```bash
-docker run --rm --network pagatu-catalogo-int curlimages/curl:8.10.1 -s http://catalogo-ms:8080/actuator/health
+docker run --rm --network pagatu-catalogo-int curlimages/curl:8.10.1 -s http://pagatu-catalogo-ms:8080/actuator/health
 ```
 
 Resultado esperado:
@@ -2033,7 +2047,7 @@ Resultado esperado:
 
 #### 3.7.4 Revisar logs y bajar el entorno
 
-La producción local se levantó con dos instancias usando `--scale catalogo-ms=2`. No uses más de dos en laboratorio porque cada instancia consume CPU y memoria.
+La producción local se levantó con dos instancias usando `--scale pagatu-catalogo-ms=2`. No uses más de dos en laboratorio porque cada instancia consume CPU y memoria.
 
 PowerShell / bash macOS/Linux:
 
@@ -2044,7 +2058,7 @@ docker compose ps
 Revisa logs de ambas instancias:
 
 ```bash
-docker compose logs --tail=80 catalogo-ms
+docker compose logs --tail=80 pagatu-catalogo-ms
 ```
 
 Al terminar la evidencia, baja el entorno para liberar CPU, memoria, red y contenedores:
@@ -2072,14 +2086,14 @@ Comandos mínimos DEV:
 
 ```powershell
 # Windows (PowerShell o cmd)
-cd services/catalogo-ms
+cd services/pagatu-catalogo-ms
 docker compose -f compose-dev.yml up -d
 .\mvnw.cmd spring-boot:run
 ```
 
 ```bash
 # macOS / Linux
-cd services/catalogo-ms
+cd services/pagatu-catalogo-ms
 docker compose -f compose-dev.yml up -d
 ./mvnw spring-boot:run
 ```
@@ -2087,8 +2101,8 @@ docker compose -f compose-dev.yml up -d
 Comandos mínimos PROD local:
 
 ```bash
-cd services/catalogo-ms
-docker compose up -d --build --scale catalogo-ms=2
+cd services/pagatu-catalogo-ms
+docker compose up -d --build --scale pagatu-catalogo-ms=2
 docker compose ps
 ```
 
@@ -2100,9 +2114,9 @@ DEV:
 
 | Archivo | Propósito |
 |---|---|
-| `services/catalogo-ms/compose-dev.yml` | PostgreSQL DEV |
-| `services/catalogo-ms/src/main/resources/application.yml` | Configuración base y perfil activo |
-| `services/catalogo-ms/src/main/resources/application-dev.yml` | Configuración DEV con puerto `8080` y BD DEV |
+| `services/pagatu-catalogo-ms/compose-dev.yml` | PostgreSQL DEV |
+| `services/pagatu-catalogo-ms/src/main/resources/application.yml` | Configuración base y perfil activo |
+| `services/pagatu-catalogo-ms/src/main/resources/application-dev.yml` | Configuración DEV con puerto `8080` y BD DEV |
 
 PROD local:
 
@@ -2110,11 +2124,11 @@ PROD local:
 
 | Archivo | Propósito |
 |---|---|
-| `services/catalogo-ms/Dockerfile` | Imagen de aplicación |
-| `services/catalogo-ms/compose.yml` | Producción local con Docker |
-| `services/catalogo-ms/.env.example` | Variables esperadas para PROD local |
-| `services/catalogo-ms/.env` | Variables locales de ejecución PROD |
-| `services/catalogo-ms/src/main/resources/application-prod.yml` | Configuración PROD local |
+| `services/pagatu-catalogo-ms/Dockerfile` | Imagen de aplicación |
+| `services/pagatu-catalogo-ms/compose.yml` | Producción local con Docker |
+| `services/pagatu-catalogo-ms/.env.example` | Variables esperadas para PROD local |
+| `services/pagatu-catalogo-ms/.env` | Variables locales de ejecución PROD |
+| `services/pagatu-catalogo-ms/src/main/resources/application-prod.yml` | Configuración PROD local |
 
 Comunes:
 
@@ -2122,10 +2136,10 @@ Comunes:
 
 | Archivo | Propósito |
 |---|---|
-| `services/catalogo-ms/pom.xml` | Dependencias del microservicio |
-| `services/catalogo-ms/src/main/java/...` | Código del servicio |
-| `services/catalogo-ms/src/main/resources/db/migration` | Migraciones Flyway |
-| `services/catalogo-ms/README.md` | Operación y evidencias |
+| `services/pagatu-catalogo-ms/pom.xml` | Dependencias del microservicio |
+| `services/pagatu-catalogo-ms/src/main/java/...` | Código del servicio |
+| `services/pagatu-catalogo-ms/src/main/resources/db/migration` | Migraciones Flyway |
+| `services/pagatu-catalogo-ms/README.md` | Operación y evidencias |
 
 #### 3.8.2 Verificación rápida de base de datos
 
@@ -2153,7 +2167,7 @@ docker exec -it pagatu-postgres-catalogo psql -U pagatu -d pagatu_catalogo_db -c
 
 **Evidencia de aprendizaje:**
 
-- `catalogo-ms` funcional con CRUD de categorías y productos, ejecutándose en DEV con múltiples instancias en paralelo (escalamiento horizontal).
+- `pagatu-catalogo-ms` funcional con CRUD de categorías y productos, ejecutándose en DEV con múltiples instancias en paralelo (escalamiento horizontal).
 - PostgreSQL, Swagger y Actuator verificados, con README operativo y pruebas por shell documentadas.
 - (Opcional) Producción local con Docker configurada y probada.
 
@@ -2163,11 +2177,11 @@ Tiempo: 4h fuera del aula.
 
 ### 4.1 Actividad
 
-Replicación autónoma del patrón de `catalogo-ms` en otro microservicio del dominio (`orden-ms`), documentada en evidencia individual.
+Replicación autónoma del patrón de `pagatu-catalogo-ms` en otro microservicio del dominio (`orden-ms`), documentada en evidencia individual.
 
 Completa y evidencia estas tareas:
 
-1. Replicar el patrón de `catalogo-ms` en otro servicio del dominio, por ejemplo `orden-ms`.
+1. Replicar el patrón de `pagatu-catalogo-ms` en otro servicio del dominio, por ejemplo `orden-ms`.
 2. Ejecutar el microservicio en DEV con Maven Wrapper.
 3. Probar el CRUD por PowerShell o bash.
 4. Verificar Swagger, `/actuator/health` y `/actuator/metrics` en DEV.
@@ -2211,7 +2225,7 @@ El PDF debe usar esta estructura, completando cada sección con tus evidencias.
 Incluye capturas o salidas de consola con una breve explicación debajo de cada una, organizadas en los mismos 5 bloques de la rúbrica (4.6) — así queda claro qué evidencia corresponde a cada criterio evaluado:
 
 1. *Microservicios correctamente delimitados según el dominio*
-    - Explica en 2-3 líneas qué entidades gestiona `orden-ms` y por qué pertenecen a ese dominio y no al de `catalogo-ms`.
+    - Explica en 2-3 líneas qué entidades gestiona `orden-ms` y por qué pertenecen a ese dominio y no al de `pagatu-catalogo-ms`.
 2. *Persistencia de datos con PostgreSQL y Flyway*
     - Migraciones Flyway aplicadas (carpeta `db/migration` y logs de arranque).
     - Consulta de tabla y registros con `psql`.
@@ -2309,7 +2323,7 @@ Comparación entre DEV y PROD local (aplica solo si completaste la parte opciona
 | Propósito | Desarrollo, depuración y cambios rápidos | Ejecución reproducible y cercana a producción |
 
 1. ¿Por qué un microservicio debe ser stateless?
-2. ¿Qué responsabilidad tiene `catalogo-ms`?
+2. ¿Qué responsabilidad tiene `pagatu-catalogo-ms`?
 3. ¿Cómo se prueba el servicio sin usar Postman?
 4. ¿Qué evidencia demuestra que la BD fue usada?
 5. ¿Por qué la Terminal 2 necesita `--server.port=8081` (o `--server.port=0`) para no chocar con la Terminal 1?
@@ -2327,7 +2341,7 @@ Si completaste la parte opcional de 3.6-3.7:
 
 | Criterio | Peso (%) | A (20 pts) | B (15 pts) | C (10 pts) | D (5 pts) | Nivel obtenido |
 |---|---:|---|---|---|---|---:|
-| 1. Microservicios correctamente delimitados según el dominio* | 20 | El microservicio replicado (p. ej. `orden-ms`) gestiona únicamente las entidades de su propio dominio, sin mezclar responsabilidades de `catalogo-ms` u otro microservicio. | Respeta su dominio, aunque con límites imprecisos en algún punto. | El microservicio mezcla responsabilidades de otro dominio o la delimitación no es clara. | No se evidencia separación de responsabilidades por dominio. | |
+| 1. Microservicios correctamente delimitados según el dominio* | 20 | El microservicio replicado (p. ej. `orden-ms`) gestiona únicamente las entidades de su propio dominio, sin mezclar responsabilidades de `pagatu-catalogo-ms` u otro microservicio. | Respeta su dominio, aunque con límites imprecisos en algún punto. | El microservicio mezcla responsabilidades de otro dominio o la delimitación no es clara. | No se evidencia separación de responsabilidades por dominio. | |
 | 2. Persistencia de datos con PostgreSQL y Flyway* | 20 | Migraciones Flyway versionadas y aplicadas sin errores en el microservicio replicado; sus tablas verificadas con `psql`, con datos consistentes. | Flyway aplica las migraciones y las tablas existen, pero la verificación con `psql` es parcial o no está documentada. | Usa PostgreSQL sin Flyway (migraciones manuales) o con errores menores en el versionado. | No hay evidencia de conexión a PostgreSQL ni de tablas creadas correctamente. | |
 | 3. Endpoints REST funcionales y documentados* | 20 | CRUD completo del recurso principal del microservicio replicado funciona y está documentado en Swagger, incluida la validación (HTTP 400) y el manejo de recursos inexistentes (HTTP 404). | CRUD funcional para al menos una operación del microservicio replicado, documentado en Swagger. | Endpoints parcialmente funcionales o sin documentación. | No hay endpoints funcionales. | |
 | 4. Ejecución y escalamiento horizontal* | 20 | Evidencia dos instancias del microservicio replicado corriendo en paralelo (`8080` y `8081`) respondiendo por separado, y explica por qué no debe depender de un puerto fijo. | Evidencia dos instancias corriendo, pero la explicación del escalamiento es incompleta. | Solo evidencia una instancia en DEV, sin explicar el escalamiento. | No evidencia el microservicio en ejecución. | |
@@ -2354,7 +2368,7 @@ Indica 2 fortalezas y 2 recomendaciones.
 
 Tiempo: 5 min.
 
-**Resumen breve:** hoy `catalogo-ms` pasó de proyecto vacío a microservicio con CRUD completo de `Categoria` y `Producto`, conectado a PostgreSQL con Flyway, documentado con Swagger y corriendo con dos instancias en paralelo — el patrón que se repetirá en cada microservicio del proyecto.
+**Resumen breve:** hoy `pagatu-catalogo-ms` pasó de proyecto vacío a microservicio con CRUD completo de `Categoria` y `Producto`, conectado a PostgreSQL con Flyway, documentado con Swagger y corriendo con dos instancias en paralelo — el patrón que se repetirá en cada microservicio del proyecto.
 
 **Dinámica participativa:** en una ronda rápida (o con una herramienta digital tipo formulario o encuesta en vivo), cada estudiante comparte en una frase qué dejó corriendo al cerrar la sesión (por ejemplo, en qué puerto quedó su segunda instancia).
 
