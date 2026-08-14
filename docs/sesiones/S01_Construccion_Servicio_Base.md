@@ -429,7 +429,11 @@ Dependencias a seleccionar:
 
 Referencia visual (selección real en VS Code con Spring Boot 4.0.7, las 9 dependencias de la tabla):
 
+**Figura 6. Selección de dependencias en Spring Initializr (1/2)**
+
 ![Selección de dependencias en Spring Initializr (1/2): Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI, Spring Boot Actuator](img/s01-3.2.1-dependencias-1.png)
+
+**Figura 7. Selección de dependencias en Spring Initializr (2/2)**
 
 ![Selección de dependencias en Spring Initializr (2/2): Spring Data JPA, PostgreSQL Driver, Flyway Migration](img/s01-3.2.1-dependencias-2.png)
 
@@ -441,9 +445,13 @@ Nota: el directorio del microservicio en el monorepo es `services/pagatu-catalog
 
 Después de `Enter`, el asistente pide dónde guardar el proyecto. Navega hasta `services/` y da clic en **"Generate into this folder"**:
 
+**Figura 8. Selector de carpeta de VS Code para generar el proyecto**
+
 ![Selector de carpeta de VS Code navegado hasta pagatu/services, con el botón "Generate into this folder" resaltado](img/s01-3.2.1-guardar.png)
 
 Al terminar, VS Code confirma la generación y el proyecto queda visible en el Explorer:
+
+**Figura 9. Proyecto generado, visible en el Explorer de VS Code**
 
 ![Notificación "Successfully generated" y el proyecto generado visible en el Explorer de VS Code](img/s01-3.2.1-generado.png)
 
@@ -535,7 +543,9 @@ docker compose -f compose-dev.yml up -d
 docker ps
 ```
 
-Además de `docker ps`, puedes verificar la conexión con un cliente gráfico de base de datos (extensión de VS Code, DBeaver, pgAdmin, etc.): host `127.0.0.1`, puerto `15432`, usuario y contraseña `pagatu`, base de datos `pagatu_catalogo_db`. Las tablas (como `flyway_schema_history`) aparecen recién después de ejecutar la aplicación por primera vez (3.2.6), cuando Flyway corre las migraciones — hoy, con solo el contenedor levantado, la conexión ya debe ser exitosa aunque la base esté vacía.
+Además de `docker ps`, puedes verificar la conexión con un cliente gráfico de base de datos (extensión de VS Code, DBeaver, pgAdmin, etc.): host `127.0.0.1`, puerto `15432`, usuario y contraseña `pagatu`, base de datos `pagatu_catalogo_db`. En este punto (solo el contenedor levantado, sin ejecutar aún la aplicación) la conexión ya debe ser exitosa, con la base vacía — la captura de referencia se tomó más adelante, después de que Flyway aplicó la migración, por eso ya muestra la tabla `flyway_schema_history`.
+
+**Figura 10. Conexión exitosa a PostgreSQL vía cliente gráfico en VS Code**
 
 ![Conexión exitosa a PostgreSQL vía cliente gráfico en VS Code: host 127.0.0.1, puerto 15432, usuario y base pagatu_catalogo_db](img/s01-3.2.4-conectar-cliente-grafico.png)
 
@@ -749,6 +759,31 @@ CREATE TABLE IF NOT EXISTS productos (
 `productos` sí lleva la relación con `categorias` desde esta primera versión: `id_categoria` es una llave foránea (`REFERENCES categorias(id)`) porque ambas tablas viven en la misma base de datos del mismo microservicio — es una relación relacional normal, no una llamada entre microservicios. Feign (o cualquier cliente HTTP) solo haría falta si `Categoria` y `Producto` vivieran en microservicios distintos; no es el caso aquí.
 
 En DEV y PROD local, Flyway ejecuta esta migración automáticamente al arrancar la aplicación — no antes, y no porque el estudiante la ejecute a mano. Lo que sí queda definido desde ahora es la estructura exacta que las entidades `Categoria` y `Producto` (siguiente paso) tienen que respetar: mismos nombres de columna, mismo `NOT NULL`, mismo tipo, y la misma llave foránea. Si alguna entidad no coincide, `ddl-auto: validate` hará fallar el arranque en 3.4 con un error claro señalando la diferencia.
+
+**Troubleshooting: `Migration checksum mismatch`.** Flyway trata cada migración ya aplicada como inmutable: si `V1__create_catalogo_tables.sql` ya corrió (aunque sea una sola vez) y después editas ese mismo archivo, Spring Boot DevTools reinicia la aplicación al detectar el cambio, Flyway recalcula el checksum del archivo y ya no coincide con el que quedó guardado en `flyway_schema_history` — el arranque falla con `Migration checksum mismatch for migration version 1`. Dos formas de resolverlo, según el caso:
+
+**Sin datos reales todavía (lo normal en este punto de S1):**
+
+1. Confirma que `V1__create_catalogo_tables.sql` ya tiene el contenido final (las dos tablas de 3.3.1) — este reset borra todo, así que corrígelo antes de continuar.
+2. Detén el contenedor y borra su volumen (esto elimina todas las tablas, incluida `flyway_schema_history`):
+
+    ```bash
+    docker compose -f compose-dev.yml down -v
+    ```
+
+3. Vuelve a levantar el contenedor, ahora con la base completamente vacía:
+
+    ```bash
+    docker compose -f compose-dev.yml up -d
+    ```
+
+4. Ejecuta la aplicación (3.2.6). Flyway aplica `V1` desde cero sobre la base vacía y crea las tres tablas: `categorias`, `productos` y `flyway_schema_history`.
+
+**Figura 11. Resultado tras resetear el volumen y volver a ejecutar la aplicación: las tres tablas creadas**
+
+![Explorer de VS Code mostrando las tablas categorias, flyway_schema_history y productos ya creadas, con la aplicación arrancada correctamente en la terminal](img/s01-3.3.1-resultado-reset.png)
+
+**Si ya tienes datos que no quieres perder** (más adelante en el curso, con datos de prueba cargados): no edites `V1`. Crea un archivo nuevo `V2__create_catalogo_tables.sql` con la corrección — Flyway solo aplica migraciones nuevas hacia adelante, nunca reescribe una ya aplicada.
 
 Antes de construir `Categoria` y `Producto`, se crean dos piezas compartidas que usan ambos recursos: el manejo de errores y el filtro de trazabilidad. Así, cuando llegue el turno del servicio de cada recurso, `ResourceNotFoundException` ya existe y puede usarse directamente.
 
@@ -1779,7 +1814,7 @@ Prueba también un producto con `precio` negativo y confirma que responde HTTP 4
 
 **Producto del paso:** dos instancias de `pagatu-catalogo-ms` corriendo al mismo tiempo, cada una en un puerto distinto, ambas conectadas a la misma PostgreSQL DEV.
 
-**Figura 6. Escalamiento horizontal de `pagatu-catalogo-ms` con dos instancias en paralelo**
+**Figura 12. Escalamiento horizontal de `pagatu-catalogo-ms` con dos instancias en paralelo**
 
 ```mermaid
 flowchart TB
