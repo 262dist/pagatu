@@ -4362,6 +4362,12 @@ docker<span class="w"> </span>compose<span class="w"> </span>ps
 <div class="highlight"><pre><span></span><code>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-catalogo<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_catalogo_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;\dt&quot;</span>
 docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-catalogo<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_catalogo_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;SELECT * FROM categorias;&quot;</span>
 </code></pre></div>
+<p><strong>Evidencia de aprendizaje:</strong></p>
+<ul>
+<li><code>catalogo-ms</code> funcional con CRUD de categorías y productos, ejecutándose en DEV con múltiples instancias en paralelo (escalamiento horizontal).</li>
+<li>PostgreSQL, Swagger y Actuator verificados, con README operativo y pruebas por shell documentadas.</li>
+<li>(Opcional) Producción local con Docker configurada y probada.</li>
+</ul>
 <h2 id="4-crea-actividad-autonoma">4. Crea: actividad autónoma<a class="headerlink" href="#4-crea-actividad-autonoma" title="Permanent link">&para;</a></h2>
 <p>Tiempo: 4h fuera del aula.</p>
 <h3 id="41-actividad">4.1 Actividad<a class="headerlink" href="#41-actividad" title="Permanent link">&para;</a></h3>
