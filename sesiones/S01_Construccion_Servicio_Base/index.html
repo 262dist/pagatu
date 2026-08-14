@@ -2876,6 +2876,18 @@ code<span class="w"> </span>--install-extension<span class="w"> </span>vmware.vs
 <p><strong>Producto del paso:</strong> proyecto Spring Boot creado en <code>services/catalogo-ms</code>, con <code>artifactId</code> <code>pagatu-catalogo-ms</code>, paquete <code>pe.edu.upeu.catalogo</code>, dependencias base instaladas, PostgreSQL DEV levantado en Docker y un endpoint web simple respondiendo desde el navegador o shell.</p>
 <p>En este paso no basta con crear el proyecto. Como se agregan <code>Spring Data JPA</code>, <code>PostgreSQL Driver</code> y <code>Flyway</code>, Spring Boot intentará configurar una conexión a base de datos al arrancar. Por eso, si ejecutas el microservicio sin configurar y levantar PostgreSQL, el arranque fallará.</p>
 <p>Ese fallo es útil para aprender: un microservicio con persistencia necesita una dependencia de infraestructura disponible. En el curso no usaremos H2 para ocultar el problema ni desactivaremos la conexión a BD; levantaremos PostgreSQL con Docker desde el inicio.</p>
+<p>Antes de crear el proyecto, así queda organizado el monorepo <code>pagatu</code> a partir de hoy:</p>
+<div class="highlight"><pre><span></span><code>pagatu/
+├── services/
+│   └── catalogo-ms/         &lt;- hoy
+├── infra/                    &lt;- desde S2: config (S2), Eureka (S3), gateway (S4)
+└── platform/                 &lt;- desde S3: observabilidad (S3-S4), Kafka (S8)
+</code></pre></div>
+<ul>
+<li><code>services/</code> agrupa los microservicios de negocio — hoy solo <code>catalogo-ms</code>, en sesiones futuras se suman más (<code>orden-ms</code>, <code>auth-ms</code>, <code>pago-ms</code>). Los separamos de la raíz para no mezclar carpetas de negocio con infraestructura de soporte.</li>
+<li><code>infra/</code> es la infraestructura propia del sistema (Config Server, Eureka, Gateway): sostiene a los microservicios pero no tiene valor de negocio propio — se agrega progresivamente (Config Server en S2, Eureka en S3, Gateway en S4).</li>
+<li><code>platform/</code> son dependencias compartidas de laboratorio, no exclusivas de <code>pagatu</code>: observabilidad (Prometheus/Loki desde S3, Grafana desde S4) y Kafka (mensajería asíncrona, desde S8).</li>
+</ul>
 <h4 id="321-crear-el-proyecto-con-spring-initializr-desde-vs-code">3.2.1 Crear el proyecto con Spring Initializr desde VS Code<a class="headerlink" href="#321-crear-el-proyecto-con-spring-initializr-desde-vs-code" title="Permanent link">&para;</a></h4>
 <p>Desde la raíz del monorepo <code>pagatu</code>, abre VS Code, <code>Ctrl+Shift+P</code> y ejecuta el comando:</p>
 <div class="highlight"><pre><span></span><code>Spring Initializr: Create a Maven Project
