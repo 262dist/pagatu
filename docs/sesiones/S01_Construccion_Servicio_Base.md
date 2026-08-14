@@ -2136,6 +2136,12 @@ docker exec -it pagatu-postgres-catalogo psql -U pagatu -d pagatu_catalogo_db -c
 docker exec -it pagatu-postgres-catalogo psql -U pagatu -d pagatu_catalogo_db -c "SELECT * FROM categorias;"
 ```
 
+**Evidencia de aprendizaje:**
+
+- `catalogo-ms` funcional con CRUD de categorías y productos, ejecutándose en DEV con múltiples instancias en paralelo (escalamiento horizontal).
+- PostgreSQL, Swagger y Actuator verificados, con README operativo y pruebas por shell documentadas.
+- (Opcional) Producción local con Docker configurada y probada.
+
 ## 4. Crea: actividad autónoma
 
 Tiempo: 4h fuera del aula.
