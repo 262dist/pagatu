@@ -2979,20 +2979,24 @@ code<span class="w"> </span>--install-extension<span class="w"> </span>vmware.vs
 </tbody>
 </table>
 <p>Referencia visual (selección real en VS Code con Spring Boot 4.0.7, las 9 dependencias de la tabla):</p>
+<p><strong>Figura 6. Selección de dependencias en Spring Initializr (1/2)</strong></p>
 <p><img alt="Selección de dependencias en Spring Initializr (1/2): Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI, Spring Boot Actuator" src="../img/s01-3.2.1-dependencias-1.png" /></p>
+<p><strong>Figura 7. Selección de dependencias en Spring Initializr (2/2)</strong></p>
 <p><img alt="Selección de dependencias en Spring Initializr (2/2): Spring Data JPA, PostgreSQL Driver, Flyway Migration" src="../img/s01-3.2.1-dependencias-2.png" /></p>
 <p>Nota sobre motor de base de datos: en DIST se trabaja con <strong>PostgreSQL</strong> (no Oracle — Oracle es el motor de LP2/BD2, fuera del alcance de este curso). Si el equipo prefiere <strong>MySQL</strong>, es una alternativa válida: cambia <code>PostgreSQL Driver</code> por <code>MySQL Driver</code> en el Initializr y <code>flyway-database-postgresql</code> por <code>flyway-mysql</code> en el <code>pom.xml</code> — el resto de la guía (Flyway, JPA, <code>ddl-auto: validate</code>) aplica igual, solo cambia el driver y la URL de conexión.</p>
 <p>Nota: SpringDoc/Swagger documenta los endpoints del microservicio; no es infraestructura distribuida. La infraestructura distribuida inicia desde S2 con configuración centralizada.</p>
 <p>Nota: el directorio del microservicio en el monorepo es <code>services/pagatu-catalogo-ms</code>, el mismo nombre que el <code>artifactId</code> Maven y que luego se usa en <code>spring.application.name</code> (ver 3.2.4) — Spring Initializr genera la carpeta con ese nombre automáticamente al posicionarte dentro de <code>services/</code> y usar "Generate into this folder", sin necesidad de renombrar nada después.</p>
 <p>Después de <code>Enter</code>, el asistente pide dónde guardar el proyecto. Navega hasta <code>services/</code> y da clic en <strong>"Generate into this folder"</strong>:</p>
+<p><strong>Figura 8. Selector de carpeta de VS Code para generar el proyecto</strong></p>
 <p><img alt="Selector de carpeta de VS Code navegado hasta pagatu/services, con el botón &quot;Generate into this folder&quot; resaltado" src="../img/s01-3.2.1-guardar.png" /></p>
 <p>Al terminar, VS Code confirma la generación y el proyecto queda visible en el Explorer:</p>
+<p><strong>Figura 9. Proyecto generado, visible en el Explorer de VS Code</strong></p>
 <p><img alt="Notificación &quot;Successfully generated&quot; y el proyecto generado visible en el Explorer de VS Code" src="../img/s01-3.2.1-generado.png" /></p>
 <h4 id="322-revisar-dependencias-postgresql-y-flyway">3.2.2 Revisar dependencias PostgreSQL y Flyway<a class="headerlink" href="#322-revisar-dependencias-postgresql-y-flyway" title="Permanent link">&para;</a></h4>
 <p>Abre <code>services/pagatu-catalogo-ms/pom.xml</code> y verifica que existan las dependencias de persistencia para PostgreSQL:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">&lt;dependency&gt;</span>
-<span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.flywaydb<span class="nt">&lt;/groupId&gt;</span>
-<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>flyway-core<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-flyway<span class="nt">&lt;/artifactId&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 <span class="nt">&lt;dependency&gt;</span>
 <span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.flywaydb<span class="nt">&lt;/groupId&gt;</span>
@@ -3004,6 +3008,7 @@ code<span class="w"> </span>--install-extension<span class="w"> </span>vmware.vs
 <span class="w">    </span><span class="nt">&lt;scope&gt;</span>runtime<span class="nt">&lt;/scope&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div>
+<p><code>spring-boot-starter-flyway</code> ya trae <code>flyway-core</code> como dependencia transitiva — no hace falta declararlo aparte.</p>
 <h4 id="323-ejecutar-una-primera-vez-y-reconocer-el-fallo-esperado">3.2.3 Ejecutar una primera vez y reconocer el fallo esperado<a class="headerlink" href="#323-ejecutar-una-primera-vez-y-reconocer-el-fallo-esperado" title="Permanent link">&para;</a></h4>
 <p>El proyecto trae Maven Wrapper (<code>mvnw</code>/<code>mvnw.cmd</code>): no requiere tener Maven instalado en el host, así que todos los comandos Maven de esta guía se ejecutan con el wrapper, nunca con <code>mvn</code> a secas.</p>
 <p>Ubícate en la carpeta del microservicio:</p>
@@ -3050,6 +3055,9 @@ Reason: Failed to determine a suitable driver class
 <div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-dev.yml<span class="w"> </span>up<span class="w"> </span>-d
 docker<span class="w"> </span>ps
 </code></pre></div>
+<p>Además de <code>docker ps</code>, puedes verificar la conexión con un cliente gráfico de base de datos (extensión de VS Code, DBeaver, pgAdmin, etc.): host <code>127.0.0.1</code>, puerto <code>15432</code>, usuario y contraseña <code>pagatu</code>, base de datos <code>pagatu_catalogo_db</code>. En este punto (solo el contenedor levantado, sin ejecutar aún la aplicación) la conexión ya debe ser exitosa, con la base vacía — la captura de referencia se tomó más adelante, después de que Flyway aplicó la migración, por eso ya muestra la tabla <code>flyway_schema_history</code>.</p>
+<p><strong>Figura 10. Conexión exitosa a PostgreSQL vía cliente gráfico en VS Code</strong></p>
+<p><img alt="Conexión exitosa a PostgreSQL vía cliente gráfico en VS Code: host 127.0.0.1, puerto 15432, usuario y base pagatu_catalogo_db" src="../img/s01-3.2.4-conectar-cliente-grafico.png" /></p>
 <p><strong>Aplicación: <code>application.yml</code> y <code>application-dev.yml</code></strong></p>
 <p>Como la aplicación corre fuera de Docker y solo PostgreSQL corre dentro, la configuración debe apuntar a <code>localhost:15432</code>, que es el puerto publicado por el contenedor de base de datos.</p>
 <p>En <code>src/main/resources</code>, crea o ajusta <code>application.yml</code> como configuración base:</p>
@@ -3182,6 +3190,10 @@ service
 </code></pre></div>
 <p>Con <code>ddl-auto: validate</code> (ver 2.3), JPA no crea ni modifica tablas: solo compara las entidades contra lo que ya existe en la base de datos, y si no coincide, la aplicación falla al arrancar. Por eso el orden lógico es primero la migración Flyway, que define la estructura real, y recién después las entidades Java, que deben coincidir con ella exactamente.</p>
 <h4 id="331-crear-la-migracion-flyway-de-categorias-y-productos">3.3.1 Crear la migración Flyway de <code>categorias</code> y <code>productos</code><a class="headerlink" href="#331-crear-la-migracion-flyway-de-categorias-y-productos" title="Permanent link">&para;</a></h4>
+<p><strong>Producto del paso:</strong> migración <code>V1</code> aplicada sobre una base DEV limpia, con las tres tablas creadas (<code>categorias</code>, <code>productos</code>, <code>flyway_schema_history</code>) y verificadas en <code>localhost:8080</code>.</p>
+<p>Antes de crear el archivo, baja el contenedor de PostgreSQL DEV y borra su volumen, para garantizar que Flyway va a aplicar la migración sobre una base completamente vacía — así se escribe el archivo una sola vez y se ejecuta una sola vez, sin arriesgarte a editar una migración que Flyway ya aplicó (ver el aviso al final de este paso):</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-dev.yml<span class="w"> </span>down<span class="w"> </span>-v
+</code></pre></div>
 <p><strong><code>src/main/resources/db/migration/V1__create_catalogo_tables.sql</code></strong></p>
 <p>El archivo crea <strong>ambas</strong> tablas de una vez, por eso su nombre no describe solo <code>Categoria</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">categorias</span><span class="w"> </span><span class="p">(</span>
@@ -3202,7 +3214,22 @@ service
 <span class="p">);</span>
 </code></pre></div>
 <p><code>productos</code> sí lleva la relación con <code>categorias</code> desde esta primera versión: <code>id_categoria</code> es una llave foránea (<code>REFERENCES categorias(id)</code>) porque ambas tablas viven en la misma base de datos del mismo microservicio — es una relación relacional normal, no una llamada entre microservicios. Feign (o cualquier cliente HTTP) solo haría falta si <code>Categoria</code> y <code>Producto</code> vivieran en microservicios distintos; no es el caso aquí.</p>
-<p>En DEV y PROD local, Flyway ejecuta esta migración automáticamente al arrancar la aplicación — no antes, y no porque el estudiante la ejecute a mano. Lo que sí queda definido desde ahora es la estructura exacta que las entidades <code>Categoria</code> y <code>Producto</code> (siguiente paso) tienen que respetar: mismos nombres de columna, mismo <code>NOT NULL</code>, mismo tipo, y la misma llave foránea. Si alguna entidad no coincide, <code>ddl-auto: validate</code> hará fallar el arranque en 3.4 con un error claro señalando la diferencia.</p>
+<p>Con el archivo ya guardado (contenido final, sin más ediciones pendientes), levanta de nuevo el contenedor sobre la base vacía:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-dev.yml<span class="w"> </span>up<span class="w"> </span>-d
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c"># Windows (PowerShell o cmd)</span>
+<span class="p">.\</span><span class="n">mvnw</span><span class="p">.</span><span class="n">cmd</span> <span class="n">spring-boot</span><span class="p">:</span><span class="n">run</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># macOS / Linux</span>
+./mvnw<span class="w"> </span>spring-boot:run
+</code></pre></div>
+<p>Ejecuta la aplicación (3.2.6). Flyway aplica <code>V1</code> automáticamente al arrancar y crea las tres tablas: <code>categorias</code>, <code>productos</code> y <code>flyway_schema_history</code>.</p>
+<p><strong>Figura 11. Resultado al ejecutar la aplicación: las tres tablas creadas</strong></p>
+<p><img alt="Explorer de VS Code mostrando las tablas categorias, flyway_schema_history y productos ya creadas, con la aplicación arrancada correctamente en la terminal" src="../img/s01-3.3.1-resultado-reset.png" /></p>
+<p>Verifica en el navegador o con <code>curl</code>/<code>Invoke-RestMethod</code> que <code>localhost:8080</code> responde: el endpoint <code>/saludo</code> (3.2.5) y <code>/actuator/health</code> (<code>{"status":"UP"}</code>, confirma que la conexión a PostgreSQL sigue viva después de aplicar la migración).</p>
+<p>Lo que queda definido desde ahora es la estructura exacta que las entidades <code>Categoria</code> y <code>Producto</code> (siguiente paso) tienen que respetar: mismos nombres de columna, mismo <code>NOT NULL</code>, mismo tipo, y la misma llave foránea. Si alguna entidad no coincide, <code>ddl-auto: validate</code> hará fallar el arranque con un error claro señalando la diferencia.</p>
+<p><strong>Aviso — <code>Migration checksum mismatch</code>:</strong> Flyway trata cada migración ya aplicada como inmutable. Si de aquí en adelante necesitas corregir algo en <code>V1__create_catalogo_tables.sql</code> después de haberlo ejecutado, <strong>no lo edites</strong> — Spring Boot DevTools reinicia la app en cada guardado, Flyway recalcula el checksum del archivo, y como ya no coincide con el que quedó guardado en <code>flyway_schema_history</code>, el arranque falla con <code>Migration checksum mismatch for migration version 1</code>. Dos salidas: repetir el reset de este paso (<code>down -v</code> / <code>up -d</code>, válido mientras no haya datos reales que perder) o crear un archivo nuevo <code>V2__create_catalogo_tables.sql</code> con la corrección (obligatorio si ya hay datos que no quieres perder) — Flyway solo aplica migraciones nuevas hacia adelante, nunca reescribe una ya aplicada.</p>
+<p><strong>Si ya tienes datos que no quieres perder</strong> (más adelante en el curso, con datos de prueba cargados): no edites <code>V1</code>. Crea un archivo nuevo <code>V2__create_catalogo_tables.sql</code> con la corrección — Flyway solo aplica migraciones nuevas hacia adelante, nunca reescribe una ya aplicada.</p>
 <p>Antes de construir <code>Categoria</code> y <code>Producto</code>, se crean dos piezas compartidas que usan ambos recursos: el manejo de errores y el filtro de trazabilidad. Así, cuando llegue el turno del servicio de cada recurso, <code>ResourceNotFoundException</code> ya existe y puede usarse directamente.</p>
 <h4 id="332-crear-las-excepciones-y-el-manejador-global-de-errores">3.3.2 Crear las excepciones y el manejador global de errores<a class="headerlink" href="#332-crear-las-excepciones-y-el-manejador-global-de-errores" title="Permanent link">&para;</a></h4>
 <p>Estas clases son <strong>compartidas</strong>: no son específicas de <code>Categoria</code> ni de <code>Producto</code>, cualquier módulo de <code>pagatu-catalogo-ms</code> las reutiliza tal cual.</p>
@@ -4020,7 +4047,7 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <p>Prueba también un producto con <code>precio</code> negativo y confirma que responde HTTP 400, y un <code>categoriaId</code> inexistente (por ejemplo <code>9999</code>) y confirma que responde HTTP 404.</p>
 <h3 id="35-simular-escalamiento-horizontal-multiples-instancias">3.5 Simular escalamiento horizontal (múltiples instancias)<a class="headerlink" href="#35-simular-escalamiento-horizontal-multiples-instancias" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> dos instancias de <code>pagatu-catalogo-ms</code> corriendo al mismo tiempo, cada una en un puerto distinto, ambas conectadas a la misma PostgreSQL DEV.</p>
-<p><strong>Figura 6. Escalamiento horizontal de <code>pagatu-catalogo-ms</code> con dos instancias en paralelo</strong></p>
+<p><strong>Figura 12. Escalamiento horizontal de <code>pagatu-catalogo-ms</code> con dos instancias en paralelo</strong></p>
 <pre class="mermaid"><code>flowchart TB
     DevClient["Cliente - PowerShell / bash / Swagger"]
     DevApp1["pagatu-catalogo-ms - instancia 1 - puerto 8080"]
