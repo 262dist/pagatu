@@ -535,6 +535,10 @@ docker compose -f compose-dev.yml up -d
 docker ps
 ```
 
+Además de `docker ps`, puedes verificar la conexión con un cliente gráfico de base de datos (extensión de VS Code, DBeaver, pgAdmin, etc.): host `127.0.0.1`, puerto `15432`, usuario y contraseña `pagatu`, base de datos `pagatu_catalogo_db`. Las tablas (como `flyway_schema_history`) aparecen recién después de ejecutar la aplicación por primera vez (3.2.6), cuando Flyway corre las migraciones — hoy, con solo el contenedor levantado, la conexión ya debe ser exitosa aunque la base esté vacía.
+
+![Conexión exitosa a PostgreSQL vía cliente gráfico en VS Code: host 127.0.0.1, puerto 15432, usuario y base pagatu_catalogo_db](img/s01-3.2.4-conectar-cliente-grafico.png)
+
 **Aplicación: `application.yml` y `application-dev.yml`**
 
 Como la aplicación corre fuera de Docker y solo PostgreSQL corre dentro, la configuración debe apuntar a `localhost:15432`, que es el puerto publicado por el contenedor de base de datos.
