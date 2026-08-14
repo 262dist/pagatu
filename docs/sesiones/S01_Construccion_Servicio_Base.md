@@ -454,7 +454,7 @@ Al terminar, VS Code confirma la generación y el proyecto queda visible en el E
 **Figura 9. Proyecto generado, visible en el Explorer de VS Code**
 
 ![Notificación "Successfully generated" y el proyecto generado visible en el Explorer de VS Code](img/s01-3.2.1-generado.png)
-
+ 
 #### 3.2.2 Revisar dependencias PostgreSQL y Flyway
 
 Abre `services/pagatu-catalogo-ms/pom.xml` y verifica que existan las dependencias de persistencia para PostgreSQL:
