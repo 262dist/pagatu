@@ -461,8 +461,8 @@ Abre `services/pagatu-catalogo-ms/pom.xml` y verifica que existan las dependenci
 
 ```xml
 <dependency>
-    <groupId>org.flywaydb</groupId>
-    <artifactId>flyway-core</artifactId>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-flyway</artifactId>
 </dependency>
 <dependency>
     <groupId>org.flywaydb</groupId>
@@ -474,6 +474,8 @@ Abre `services/pagatu-catalogo-ms/pom.xml` y verifica que existan las dependenci
     <scope>runtime</scope>
 </dependency>
 ```
+
+`spring-boot-starter-flyway` ya trae `flyway-core` como dependencia transitiva — no hace falta declararlo aparte.
 
 #### 3.2.3 Ejecutar una primera vez y reconocer el fallo esperado
 
