@@ -733,6 +733,14 @@ Con `ddl-auto: validate` (ver 2.3), JPA no crea ni modifica tablas: solo compara
 
 #### 3.3.1 Crear la migración Flyway de `categorias` y `productos`
 
+**Producto del paso:** migración `V1` aplicada sobre una base DEV limpia, con las tres tablas creadas (`categorias`, `productos`, `flyway_schema_history`) y verificadas en `localhost:8080`.
+
+Antes de crear el archivo, baja el contenedor de PostgreSQL DEV y borra su volumen, para garantizar que Flyway va a aplicar la migración sobre una base completamente vacía — así se escribe el archivo una sola vez y se ejecuta una sola vez, sin arriesgarte a editar una migración que Flyway ya aplicó (ver el aviso al final de este paso):
+
+```bash
+docker compose -f compose-dev.yml down -v
+```
+
 **`src/main/resources/db/migration/V1__create_catalogo_tables.sql`**
 
 El archivo crea **ambas** tablas de una vez, por eso su nombre no describe solo `Categoria`:
@@ -758,30 +766,33 @@ CREATE TABLE IF NOT EXISTS productos (
 
 `productos` sí lleva la relación con `categorias` desde esta primera versión: `id_categoria` es una llave foránea (`REFERENCES categorias(id)`) porque ambas tablas viven en la misma base de datos del mismo microservicio — es una relación relacional normal, no una llamada entre microservicios. Feign (o cualquier cliente HTTP) solo haría falta si `Categoria` y `Producto` vivieran en microservicios distintos; no es el caso aquí.
 
-En DEV y PROD local, Flyway ejecuta esta migración automáticamente al arrancar la aplicación — no antes, y no porque el estudiante la ejecute a mano. Lo que sí queda definido desde ahora es la estructura exacta que las entidades `Categoria` y `Producto` (siguiente paso) tienen que respetar: mismos nombres de columna, mismo `NOT NULL`, mismo tipo, y la misma llave foránea. Si alguna entidad no coincide, `ddl-auto: validate` hará fallar el arranque en 3.4 con un error claro señalando la diferencia.
+Con el archivo ya guardado (contenido final, sin más ediciones pendientes), levanta de nuevo el contenedor sobre la base vacía:
 
-**Troubleshooting: `Migration checksum mismatch`.** Flyway trata cada migración ya aplicada como inmutable: si `V1__create_catalogo_tables.sql` ya corrió (aunque sea una sola vez) y después editas ese mismo archivo, Spring Boot DevTools reinicia la aplicación al detectar el cambio, Flyway recalcula el checksum del archivo y ya no coincide con el que quedó guardado en `flyway_schema_history` — el arranque falla con `Migration checksum mismatch for migration version 1`. Dos formas de resolverlo, según el caso:
+```bash
+docker compose -f compose-dev.yml up -d
+```
 
-**Sin datos reales todavía (lo normal en este punto de S1):**
+```powershell
+# Windows (PowerShell o cmd)
+.\mvnw.cmd spring-boot:run
+```
 
-1. Confirma que `V1__create_catalogo_tables.sql` ya tiene el contenido final (las dos tablas de 3.3.1) — este reset borra todo, así que corrígelo antes de continuar.
-2. Detén el contenedor y borra su volumen (esto elimina todas las tablas, incluida `flyway_schema_history`):
+```bash
+# macOS / Linux
+./mvnw spring-boot:run
+```
 
-    ```bash
-    docker compose -f compose-dev.yml down -v
-    ```
+Ejecuta la aplicación (3.2.6). Flyway aplica `V1` automáticamente al arrancar y crea las tres tablas: `categorias`, `productos` y `flyway_schema_history`.
 
-3. Vuelve a levantar el contenedor, ahora con la base completamente vacía:
-
-    ```bash
-    docker compose -f compose-dev.yml up -d
-    ```
-
-4. Ejecuta la aplicación (3.2.6). Flyway aplica `V1` desde cero sobre la base vacía y crea las tres tablas: `categorias`, `productos` y `flyway_schema_history`.
-
-**Figura 11. Resultado tras resetear el volumen y volver a ejecutar la aplicación: las tres tablas creadas**
+**Figura 11. Resultado al ejecutar la aplicación: las tres tablas creadas**
 
 ![Explorer de VS Code mostrando las tablas categorias, flyway_schema_history y productos ya creadas, con la aplicación arrancada correctamente en la terminal](img/s01-3.3.1-resultado-reset.png)
+
+Verifica en el navegador o con `curl`/`Invoke-RestMethod` que `localhost:8080` responde: el endpoint `/saludo` (3.2.5) y `/actuator/health` (`{"status":"UP"}`, confirma que la conexión a PostgreSQL sigue viva después de aplicar la migración).
+
+Lo que queda definido desde ahora es la estructura exacta que las entidades `Categoria` y `Producto` (siguiente paso) tienen que respetar: mismos nombres de columna, mismo `NOT NULL`, mismo tipo, y la misma llave foránea. Si alguna entidad no coincide, `ddl-auto: validate` hará fallar el arranque con un error claro señalando la diferencia.
+
+**Aviso — `Migration checksum mismatch`:** Flyway trata cada migración ya aplicada como inmutable. Si de aquí en adelante necesitas corregir algo en `V1__create_catalogo_tables.sql` después de haberlo ejecutado, **no lo edites** — Spring Boot DevTools reinicia la app en cada guardado, Flyway recalcula el checksum del archivo, y como ya no coincide con el que quedó guardado en `flyway_schema_history`, el arranque falla con `Migration checksum mismatch for migration version 1`. Dos salidas: repetir el reset de este paso (`down -v` / `up -d`, válido mientras no haya datos reales que perder) o crear un archivo nuevo `V2__create_catalogo_tables.sql` con la corrección (obligatorio si ya hay datos que no quieres perder) — Flyway solo aplica migraciones nuevas hacia adelante, nunca reescribe una ya aplicada.
 
 **Si ya tienes datos que no quieres perder** (más adelante en el curso, con datos de prueba cargados): no edites `V1`. Crea un archivo nuevo `V2__create_catalogo_tables.sql` con la corrección — Flyway solo aplica migraciones nuevas hacia adelante, nunca reescribe una ya aplicada.
 
