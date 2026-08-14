@@ -406,11 +406,12 @@ Usa la siguiente configuración:
 | Project | Maven Project |
 | Spring Boot | **4.0.7** |
 | Language | Java |
-| Java | 21 |
 | Group Id | `pe.edu.upeu` |
 | Artifact Id | `pagatu-catalogo-ms` |
 | Package name | `pe.edu.upeu.catalogo` |
 | Packaging | Jar |
+| Java | 21 |
+| Dependencias | Seleccionar dependencias del proyecto |
 | Ubicación sugerente | `services/catalogo-ms` puedes poner en cualquier lugar |
 
 Nota sobre la versión: el generador de Spring Initializr ya no ofrece ninguna versión 3.x — las únicas opciones son líneas 4.x. Se fija **4.0.7** por el mismo motivo verificado en LP2 (ver `docs/lp2/adr/ADR-003-spring-boot-4.md` del repo `bomerp`): dentro de la línea 4.x, SpringDoc OpenAPI declara compatibilidad solo hasta `4.1.0-M1`, así que 4.0.7 es la versión estable dentro de ese rango. Si al generar el proyecto ves `spring-boot-starter-web` reemplazado por `spring-boot-starter-webmvc`, o starters de prueba granulares en vez de uno solo, es esperado en esta línea de Boot — no lo corrijas.
