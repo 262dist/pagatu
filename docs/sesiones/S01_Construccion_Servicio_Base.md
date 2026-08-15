@@ -84,7 +84,7 @@ flowchart TB
     Orden["orden-ms - trabajo aplicado"]
     Eureka["Registro de servicios - Eureka"]
     Config["Servidor de configuración - Config Server"]
-    Repo["Repositorio de configuración - pagatu-catalogo-ms.yml, pagatu-orden-ms.yml"]
+    Repo[("Repositorio de configuración - pagatu-catalogo-ms.yml, pagatu-orden-ms.yml")]
 
     Cliente --> Gateway
     Gateway --> Catalogo
@@ -373,8 +373,6 @@ code --install-extension cweijan.vscode-database-client2
 
 En este paso no basta con crear el proyecto. Como se agregan `Spring Data JPA`, `PostgreSQL Driver` y `Flyway`, Spring Boot intentará configurar una conexión a base de datos al arrancar. Por eso, si ejecutas el microservicio sin configurar y levantar PostgreSQL, el arranque fallará.
 
-Ese fallo es útil para aprender: un microservicio con persistencia necesita una dependencia de infraestructura disponible. En el curso no usaremos H2 para ocultar el problema ni desactivaremos la conexión a BD; levantaremos PostgreSQL con Docker desde el inicio.
-
 Antes de crear el proyecto, así queda organizado el monorepo `pagatu` a partir de hoy:
 
 ```text
@@ -438,10 +436,6 @@ Referencia visual (selección real en VS Code con Spring Boot 4.0.7, las 9 depen
 ![Selección de dependencias en Spring Initializr (2/2): Spring Data JPA, PostgreSQL Driver, Flyway Migration](img/s01-3.2.1-dependencias-2.png)
 
 Nota sobre motor de base de datos: en DIST se trabaja con **PostgreSQL** (no Oracle — Oracle es el motor de LP2/BD2, fuera del alcance de este curso). Si el equipo prefiere **MySQL**, es una alternativa válida: cambia `PostgreSQL Driver` por `MySQL Driver` en el Initializr y `flyway-database-postgresql` por `flyway-mysql` en el `pom.xml` — el resto de la guía (Flyway, JPA, `ddl-auto: validate`) aplica igual, solo cambia el driver y la URL de conexión.
-
-Nota: SpringDoc/Swagger documenta los endpoints del microservicio; no es infraestructura distribuida. La infraestructura distribuida inicia desde S2 con configuración centralizada.
-
-Nota: el directorio del microservicio en el monorepo es `services/pagatu-catalogo-ms`, el mismo nombre que el `artifactId` Maven y que luego se usa en `spring.application.name` (ver 3.2.4) — Spring Initializr genera la carpeta con ese nombre automáticamente al posicionarte dentro de `services/` y usar "Generate into this folder", sin necesidad de renombrar nada después.
 
 Después de `Enter`, el asistente pide dónde guardar el proyecto. Navega hasta `services/` y da clic en **"Generate into this folder"**:
 
@@ -509,7 +503,7 @@ No se corrige quitando JPA ni usando H2. Se corrige declarando PostgreSQL DEV y 
 
 **Producto del paso:** ambiente DEV completo — PostgreSQL en Docker y la aplicación configurada para conectarse a él.
 
-El ambiente de desarrollo de `pagatu-catalogo-ms` tiene dos partes: PostgreSQL corriendo en Docker (`compose-dev.yml`) y la propia aplicación configurada para encontrarlo (`application.yml`/`application-dev.yml`). En S1 la aplicación se ejecuta en DEV con Maven Wrapper desde el host — solo la base de datos vive en Docker.
+El ambiente de desarrollo de `pagatu-catalogo-ms` tiene dos partes: PostgreSQL corriendo en Docker (`compose-dev.yml`) y la propia aplicación configurada para encontrarlo (`application.yml`/`application-dev.yml`). La aplicación se ejecuta en DEV con Maven Wrapper desde el host — solo la base de datos vive en Docker.
 
 **Docker: PostgreSQL DEV**
 
@@ -545,7 +539,7 @@ docker compose -f compose-dev.yml up -d
 docker ps
 ```
 
-Además de `docker ps`, puedes verificar la conexión con un cliente gráfico de base de datos (extensión de VS Code, DBeaver, pgAdmin, etc.): host `127.0.0.1`, puerto `15432`, usuario y contraseña `pagatu`, base de datos `pagatu_catalogo_db`. En este punto (solo el contenedor levantado, sin ejecutar aún la aplicación) la conexión ya debe ser exitosa, con la base vacía — la captura de referencia se tomó más adelante, después de que Flyway aplicó la migración, por eso ya muestra la tabla `flyway_schema_history`.
+Además de `docker ps`, puedes verificar la conexión con un cliente gráfico de base de datos (extensión de VS Code, DBeaver, pgAdmin, etc.): host `127.0.0.1`, puerto `15432`, usuario y contraseña `pagatu`, base de datos `pagatu_catalogo_db`. En este punto (solo el contenedor levantado, sin ejecutar aún la aplicación) la conexión ya debe ser exitosa, con la base vacía — la captura de referencia se tomó luego de ejecutar la aplicación, después de que Flyway aplicó la migración, por eso ya muestra la tabla `flyway_schema_history`.
 
 **Figura 10. Conexión exitosa a PostgreSQL vía cliente gráfico en VS Code**
 
