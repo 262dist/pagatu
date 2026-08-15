@@ -2649,7 +2649,7 @@
     Orden["orden-ms - trabajo aplicado"]
     Eureka["Registro de servicios - Eureka"]
     Config["Servidor de configuración - Config Server"]
-    Repo["Repositorio de configuración - pagatu-catalogo-ms.yml, pagatu-orden-ms.yml"]
+    Repo[("Repositorio de configuración - pagatu-catalogo-ms.yml, pagatu-orden-ms.yml")]
 
     Cliente --&gt; Gateway
     Gateway --&gt; Catalogo
@@ -2875,7 +2875,6 @@ code<span class="w"> </span>--install-extension<span class="w"> </span>vmware.vs
 <h3 id="32-crear-el-proyecto-spring-boot-desde-vs-code-con-dependencias-base">3.2 Crear el proyecto Spring Boot desde VS Code con dependencias base<a class="headerlink" href="#32-crear-el-proyecto-spring-boot-desde-vs-code-con-dependencias-base" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> proyecto Spring Boot creado en <code>services/pagatu-catalogo-ms</code>, con <code>artifactId</code> <code>pagatu-catalogo-ms</code>, paquete <code>pe.edu.upeu.catalogo</code>, dependencias base instaladas, PostgreSQL DEV levantado en Docker y un endpoint web simple respondiendo desde el navegador o shell.</p>
 <p>En este paso no basta con crear el proyecto. Como se agregan <code>Spring Data JPA</code>, <code>PostgreSQL Driver</code> y <code>Flyway</code>, Spring Boot intentará configurar una conexión a base de datos al arrancar. Por eso, si ejecutas el microservicio sin configurar y levantar PostgreSQL, el arranque fallará.</p>
-<p>Ese fallo es útil para aprender: un microservicio con persistencia necesita una dependencia de infraestructura disponible. En el curso no usaremos H2 para ocultar el problema ni desactivaremos la conexión a BD; levantaremos PostgreSQL con Docker desde el inicio.</p>
 <p>Antes de crear el proyecto, así queda organizado el monorepo <code>pagatu</code> a partir de hoy:</p>
 <div class="highlight"><pre><span></span><code>pagatu/
 ├── services/
@@ -2984,8 +2983,6 @@ code<span class="w"> </span>--install-extension<span class="w"> </span>vmware.vs
 <p><strong>Figura 7. Selección de dependencias en Spring Initializr (2/2)</strong></p>
 <p><img alt="Selección de dependencias en Spring Initializr (2/2): Spring Data JPA, PostgreSQL Driver, Flyway Migration" src="../img/s01-3.2.1-dependencias-2.png" /></p>
 <p>Nota sobre motor de base de datos: en DIST se trabaja con <strong>PostgreSQL</strong> (no Oracle — Oracle es el motor de LP2/BD2, fuera del alcance de este curso). Si el equipo prefiere <strong>MySQL</strong>, es una alternativa válida: cambia <code>PostgreSQL Driver</code> por <code>MySQL Driver</code> en el Initializr y <code>flyway-database-postgresql</code> por <code>flyway-mysql</code> en el <code>pom.xml</code> — el resto de la guía (Flyway, JPA, <code>ddl-auto: validate</code>) aplica igual, solo cambia el driver y la URL de conexión.</p>
-<p>Nota: SpringDoc/Swagger documenta los endpoints del microservicio; no es infraestructura distribuida. La infraestructura distribuida inicia desde S2 con configuración centralizada.</p>
-<p>Nota: el directorio del microservicio en el monorepo es <code>services/pagatu-catalogo-ms</code>, el mismo nombre que el <code>artifactId</code> Maven y que luego se usa en <code>spring.application.name</code> (ver 3.2.4) — Spring Initializr genera la carpeta con ese nombre automáticamente al posicionarte dentro de <code>services/</code> y usar "Generate into this folder", sin necesidad de renombrar nada después.</p>
 <p>Después de <code>Enter</code>, el asistente pide dónde guardar el proyecto. Navega hasta <code>services/</code> y da clic en <strong>"Generate into this folder"</strong>:</p>
 <p><strong>Figura 8. Selector de carpeta de VS Code para generar el proyecto</strong></p>
 <p><img alt="Selector de carpeta de VS Code navegado hasta pagatu/services, con el botón &quot;Generate into this folder&quot; resaltado" src="../img/s01-3.2.1-guardar.png" /></p>
@@ -3028,7 +3025,7 @@ Reason: Failed to determine a suitable driver class
 <p>No se corrige quitando JPA ni usando H2. Se corrige declarando PostgreSQL DEV y levantando la base de datos con Docker.</p>
 <h4 id="324-configurar-el-ambiente-de-desarrollo">3.2.4 Configurar el ambiente de desarrollo<a class="headerlink" href="#324-configurar-el-ambiente-de-desarrollo" title="Permanent link">&para;</a></h4>
 <p><strong>Producto del paso:</strong> ambiente DEV completo — PostgreSQL en Docker y la aplicación configurada para conectarse a él.</p>
-<p>El ambiente de desarrollo de <code>pagatu-catalogo-ms</code> tiene dos partes: PostgreSQL corriendo en Docker (<code>compose-dev.yml</code>) y la propia aplicación configurada para encontrarlo (<code>application.yml</code>/<code>application-dev.yml</code>). En S1 la aplicación se ejecuta en DEV con Maven Wrapper desde el host — solo la base de datos vive en Docker.</p>
+<p>El ambiente de desarrollo de <code>pagatu-catalogo-ms</code> tiene dos partes: PostgreSQL corriendo en Docker (<code>compose-dev.yml</code>) y la propia aplicación configurada para encontrarlo (<code>application.yml</code>/<code>application-dev.yml</code>). La aplicación se ejecuta en DEV con Maven Wrapper desde el host — solo la base de datos vive en Docker.</p>
 <p><strong>Docker: PostgreSQL DEV</strong></p>
 <p>En <code>services/pagatu-catalogo-ms</code>, crea el archivo <code>compose-dev.yml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-catalogo-dev</span>
@@ -3055,7 +3052,7 @@ Reason: Failed to determine a suitable driver class
 <div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-dev.yml<span class="w"> </span>up<span class="w"> </span>-d
 docker<span class="w"> </span>ps
 </code></pre></div>
-<p>Además de <code>docker ps</code>, puedes verificar la conexión con un cliente gráfico de base de datos (extensión de VS Code, DBeaver, pgAdmin, etc.): host <code>127.0.0.1</code>, puerto <code>15432</code>, usuario y contraseña <code>pagatu</code>, base de datos <code>pagatu_catalogo_db</code>. En este punto (solo el contenedor levantado, sin ejecutar aún la aplicación) la conexión ya debe ser exitosa, con la base vacía — la captura de referencia se tomó más adelante, después de que Flyway aplicó la migración, por eso ya muestra la tabla <code>flyway_schema_history</code>.</p>
+<p>Además de <code>docker ps</code>, puedes verificar la conexión con un cliente gráfico de base de datos (extensión de VS Code, DBeaver, pgAdmin, etc.): host <code>127.0.0.1</code>, puerto <code>15432</code>, usuario y contraseña <code>pagatu</code>, base de datos <code>pagatu_catalogo_db</code>. En este punto (solo el contenedor levantado, sin ejecutar aún la aplicación) la conexión ya debe ser exitosa, con la base vacía — la captura de referencia se tomó luego de ejecutar la aplicación, después de que Flyway aplicó la migración, por eso ya muestra la tabla <code>flyway_schema_history</code>.</p>
 <p><strong>Figura 10. Conexión exitosa a PostgreSQL vía cliente gráfico en VS Code</strong></p>
 <p><img alt="Conexión exitosa a PostgreSQL vía cliente gráfico en VS Code: host 127.0.0.1, puerto 15432, usuario y base pagatu_catalogo_db" src="../img/s01-3.2.4-conectar-cliente-grafico.png" /></p>
 <p><strong>Aplicación: <code>application.yml</code> y <code>application-dev.yml</code></strong></p>
