@@ -515,6 +515,32 @@ volumes:
   pagatu_catalogo_dev_data:
 ```
 
+**`compose-dev.yml` equivalente con MySQL** (alternativa a esta misma, con un usuario propio en vez de `root`):
+
+```yaml
+name: pagatu-catalogo-dev
+
+services:
+  mysql-catalogo-dev:
+    image: mysql:8.4
+    container_name: pagatu-mysql-catalogo-dev
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: pagatu
+      MYSQL_DATABASE: pagatu_catalogo_db
+      MYSQL_USER: pagatu
+      MYSQL_PASSWORD: pagatu
+    ports:
+      - "13306:3306"
+    volumes:
+      - pagatu_catalogo_dev_data:/var/lib/mysql
+
+volumes:
+  pagatu_catalogo_dev_data:
+```
+
+`MYSQL_USER`/`MYSQL_PASSWORD` crean el usuario `pagatu` con privilegios acotados a `pagatu_catalogo_db` — la aplicación se conecta como `pagatu`, no como `root`. `MYSQL_ROOT_PASSWORD` sigue siendo obligatorio para la imagen (MySQL no arranca sin él), pero no lo usa el backend. La URL de conexión en `application-dev.yml` cambiaría a `jdbc:mysql://localhost:13306/pagatu_catalogo_db`.
+
 Levanta la base de datos:
 
 PowerShell / bash macOS/Linux:
