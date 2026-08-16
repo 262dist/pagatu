@@ -1158,6 +1158,39 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#3518-necesidad-el-cliente-necesita-el-nombre-de-la-categoria-no-solo-su-id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.18 Necesidad: el cliente necesita el nombre de la categoría, no solo su id
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3519-solucion-manual-los-cambios-en-productoresponse-productomapper-productorepository-y-productoservice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.19 Solución manual: los cambios en ProductoResponse, ProductoMapper, ProductoRepository y ProductoService
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3520-como-lo-resuelve-la-industria-mapstruct-opcional-referencia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.20 Cómo lo resuelve la industria: MapStruct (opcional, referencia)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2059,6 +2092,39 @@
     <span class="md-ellipsis">
       
         3.5.17 Probar CRUD por shell
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3518-necesidad-el-cliente-necesita-el-nombre-de-la-categoria-no-solo-su-id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.18 Necesidad: el cliente necesita el nombre de la categoría, no solo su id
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3519-solucion-manual-los-cambios-en-productoresponse-productomapper-productorepository-y-productoservice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.19 Solución manual: los cambios en ProductoResponse, ProductoMapper, ProductoRepository y ProductoService
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3520-como-lo-resuelve-la-industria-mapstruct-opcional-referencia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.20 Cómo lo resuelve la industria: MapStruct (opcional, referencia)
       
     </span>
   </a>
@@ -3909,6 +3975,178 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>DELETE<span class="w"> </span>http://localhost:8080/api/v1/productos/1
 </code></pre></div>
 <p>Prueba también un producto con <code>precio</code> negativo y confirma que responde HTTP 400, y un <code>categoriaId</code> inexistente (por ejemplo <code>9999</code>) y confirma que responde HTTP 404.</p>
+<h4 id="3518-necesidad-el-cliente-necesita-el-nombre-de-la-categoria-no-solo-su-id">3.5.18 Necesidad: el cliente necesita el nombre de la categoría, no solo su id<a class="headerlink" href="#3518-necesidad-el-cliente-necesita-el-nombre-de-la-categoria-no-solo-su-id" title="Permanent link">&para;</a></h4>
+<p><strong>Producto del paso:</strong> evidencia del problema que motiva el cambio de 3.5.19.</p>
+<p>El CRUD ya funciona, pero <code>GET /api/v1/productos</code> responde así (3.5.7):</p>
+<div class="highlight"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;nombre&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Matricula&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;descripcion&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Matricula del ciclo&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;precio&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">350.00</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;activo&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;categoriaId&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+<p><code>categoriaId: 1</code> es un número sin significado para quien consume este listado (una SPA, Swagger, cualquier cliente). Para mostrar "Electrodomésticos" junto al producto, ese cliente tendría que hacer una segunda petición a <code>GET /api/v1/categorias/1</code> por cada <code>categoriaId</code> distinto que reciba — exactamente lo que se evita si el propio listado ya trae el nombre de la categoría.</p>
+<p>Resultado esperado después de 3.5.19:</p>
+<div class="highlight"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;nombre&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Matricula&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;descripcion&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Matricula del ciclo&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;precio&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">350.00</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;activo&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;categoria&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;nombre&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Electrodomesticos&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;descripcion&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Linea blanca y pequenos electrodomesticos&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+<p><strong>Requisito antes de continuar:</strong> ten el CRUD de 3.5.2-3.5.17 funcionando y probado — 3.5.19 modifica clases que ya existen, no las crea desde cero.</p>
+<h4 id="3519-solucion-manual-los-cambios-en-productoresponse-productomapper-productorepository-y-productoservice">3.5.19 Solución manual: los cambios en <code>ProductoResponse</code>, <code>ProductoMapper</code>, <code>ProductoRepository</code> y <code>ProductoService</code><a class="headerlink" href="#3519-solucion-manual-los-cambios-en-productoresponse-productomapper-productorepository-y-productoservice" title="Permanent link">&para;</a></h4>
+<p><strong>Producto del paso:</strong> <code>Producto</code> con <code>categoria</code> anidada en la respuesta, sin N+1.</p>
+<p>Solo cambian estas cuatro clases — <code>Categoria</code>, <code>CategoriaRequest</code>, <code>CategoriaResponse</code>, <code>CategoriaMapper</code> y <code>CategoriaService</code> (3.5.2-3.5.4) quedan exactamente igual.</p>
+<p><strong><code>dto/ProductoResponse.java</code></strong> — <code>categoriaId: Long</code> pasa a <code>categoria: CategoriaResponse</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.dto</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">lombok.AllArgsConstructor</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lombok.Builder</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lombok.Getter</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lombok.NoArgsConstructor</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lombok.Setter</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.math.BigDecimal</span><span class="p">;</span>
+
+<span class="nd">@Getter</span>
+<span class="nd">@Setter</span>
+<span class="nd">@Builder</span>
+<span class="nd">@NoArgsConstructor</span>
+<span class="nd">@AllArgsConstructor</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ProductoResponse</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">nombre</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">descripcion</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">precio</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Boolean</span><span class="w"> </span><span class="n">activo</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">CategoriaResponse</span><span class="w"> </span><span class="n">categoria</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong><code>mapper/ProductoMapper.java</code></strong> — recibe <code>CategoriaMapper</code> inyectado para construir el objeto anidado:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.mapper</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.dto.ProductoRequest</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.dto.ProductoResponse</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.entity.Producto</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lombok.RequiredArgsConstructor</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.stereotype.Component</span><span class="p">;</span>
+
+<span class="nd">@Component</span>
+<span class="nd">@RequiredArgsConstructor</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ProductoMapper</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">CategoriaMapper</span><span class="w"> </span><span class="n">categoriaMapper</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Producto</span><span class="w"> </span><span class="nf">toEntity</span><span class="p">(</span><span class="n">ProductoRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Producto</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">                </span><span class="p">.</span><span class="na">nombre</span><span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="na">getNombre</span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="na">descripcion</span><span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="na">getDescripcion</span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="na">precio</span><span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="na">getPrecio</span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="na">activo</span><span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="na">getActivo</span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ProductoResponse</span><span class="w"> </span><span class="nf">toResponse</span><span class="p">(</span><span class="n">Producto</span><span class="w"> </span><span class="n">producto</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ProductoResponse</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">                </span><span class="p">.</span><span class="na">id</span><span class="p">(</span><span class="n">producto</span><span class="p">.</span><span class="na">getId</span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="na">nombre</span><span class="p">(</span><span class="n">producto</span><span class="p">.</span><span class="na">getNombre</span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="na">descripcion</span><span class="p">(</span><span class="n">producto</span><span class="p">.</span><span class="na">getDescripcion</span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="na">precio</span><span class="p">(</span><span class="n">producto</span><span class="p">.</span><span class="na">getPrecio</span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="na">activo</span><span class="p">(</span><span class="n">producto</span><span class="p">.</span><span class="na">getActivo</span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="na">categoria</span><span class="p">(</span><span class="n">categoriaMapper</span><span class="p">.</span><span class="na">toResponse</span><span class="p">(</span><span class="n">producto</span><span class="p">.</span><span class="na">getCategoria</span><span class="p">()))</span>
+<span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong><code>repository/ProductoRepository.java</code></strong> — agrega una consulta con <code>JOIN FETCH</code> para el listado. Sin esto, <code>toResponse</code> dispara una consulta adicional por cada producto al leer <code>producto.getCategoria()</code> (N+1: un producto, una consulta extra; cien productos, cien consultas extra):</p>
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.repository</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.entity.Producto</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.data.jpa.repository.JpaRepository</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.data.jpa.repository.Query</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.List</span><span class="p">;</span>
+
+<span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">ProductoRepository</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">JpaRepository</span><span class="o">&lt;</span><span class="n">Producto</span><span class="p">,</span><span class="w"> </span><span class="n">Long</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="nd">@Query</span><span class="p">(</span><span class="s">&quot;SELECT p FROM Producto p JOIN FETCH p.categoria&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Producto</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">findAllConCategoria</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong><code>service/ProductoService.java</code></strong> — solo cambia <code>listar()</code>, para usar la nueva consulta:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">ProductoResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">listar</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">productoRepository</span><span class="p">.</span><span class="na">findAllConCategoria</span><span class="p">().</span><span class="na">stream</span><span class="p">()</span>
+<span class="w">            </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">productoMapper</span><span class="p">::</span><span class="n">toResponse</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="na">toList</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><code>obtener(id)</code> no cambia: trae una sola fila, así que un <code>findById()</code> normal ya alcanza sin disparar N consultas — el <code>JOIN FETCH</code> solo hace falta cuando se listan varias filas a la vez.</p>
+<h4 id="3520-como-lo-resuelve-la-industria-mapstruct-opcional-referencia">3.5.20 Cómo lo resuelve la industria: MapStruct (opcional, referencia)<a class="headerlink" href="#3520-como-lo-resuelve-la-industria-mapstruct-opcional-referencia" title="Permanent link">&para;</a></h4>
+<div class="admonition note">
+<p class="admonition-title">Alternativa opcional, no reemplaza 3.5.19 en la evidencia de la sesión</p>
+<p>Esta sección es informativa: muestra cómo un equipo profesional evita
+escribir a mano el cuerpo de los mappers. La implementación que se
+evalúa en 4.4-4.6 es la de 3.5.19 (manual). Adoptar MapStruct es una
+decisión de equipo, no un requisito de S1.</p>
+</div>
+<p><strong>Producto del paso:</strong> los mismos mappers de 3.5.19, generados en compilación en vez de escritos a mano.</p>
+<p>Con <a href="https://mapstruct.org/">MapStruct</a>, un mapper es una <strong>interfaz</strong> — el procesador de anotaciones genera la implementación (<code>ProductoMapperImpl</code>) al compilar, sin que nadie escriba <code>new ProductoResponse(...)</code> a mano.</p>
+<p>En el <code>pom.xml</code>, agrega la dependencia:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.mapstruct<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>mapstruct<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;version&gt;</span>1.6.3<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div>
+<p>Y en el <code>maven-compiler-plugin</code>, junto al <code>annotationProcessorPaths</code> que ya tiene Lombok, agrega el de MapStruct <strong>después</strong> de Lombok — MapStruct necesita ver los getters/setters que Lombok genera, y el orden de los <code>&lt;path&gt;</code> determina en qué orden corren los procesadores:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;annotationProcessorPaths&gt;</span>
+<span class="w">    </span><span class="nt">&lt;path&gt;</span>
+<span class="w">        </span><span class="nt">&lt;groupId&gt;</span>org.projectlombok<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">        </span><span class="nt">&lt;artifactId&gt;</span>lombok<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/path&gt;</span>
+<span class="w">    </span><span class="nt">&lt;path&gt;</span>
+<span class="w">        </span><span class="nt">&lt;groupId&gt;</span>org.mapstruct<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">        </span><span class="nt">&lt;artifactId&gt;</span>mapstruct-processor<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">        </span><span class="nt">&lt;version&gt;</span>1.6.3<span class="nt">&lt;/version&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/path&gt;</span>
+<span class="nt">&lt;/annotationProcessorPaths&gt;</span>
+</code></pre></div>
+<p><code>CategoriaMapper</code> y <code>ProductoMapper</code> pasan de clase a interfaz:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Mapper</span><span class="p">(</span><span class="n">componentModel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;spring&quot;</span><span class="p">)</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">CategoriaMapper</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">CategoriaResponse</span><span class="w"> </span><span class="nf">toResponse</span><span class="p">(</span><span class="n">Categoria</span><span class="w"> </span><span class="n">categoria</span><span class="p">);</span>
+<span class="w">    </span><span class="n">Categoria</span><span class="w"> </span><span class="nf">toEntity</span><span class="p">(</span><span class="n">CategoriaRequest</span><span class="w"> </span><span class="n">request</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="nd">@Mapper</span><span class="p">(</span><span class="n">componentModel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;spring&quot;</span><span class="p">,</span><span class="w"> </span><span class="kd">uses</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CategoriaMapper</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">ProductoMapper</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="nd">@Mapping</span><span class="p">(</span><span class="n">target</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;categoria&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ignore</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
+<span class="w">    </span><span class="n">Producto</span><span class="w"> </span><span class="nf">toEntity</span><span class="p">(</span><span class="n">ProductoRequest</span><span class="w"> </span><span class="n">request</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">ProductoResponse</span><span class="w"> </span><span class="nf">toResponse</span><span class="p">(</span><span class="n">Producto</span><span class="w"> </span><span class="n">producto</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Como <code>Producto.categoria</code> y <code>ProductoResponse.categoria</code> se llaman igual, MapStruct los relaciona sin configuración adicional y usa <code>CategoriaMapper</code> (declarado en <code>uses</code>) para convertir el objeto anidado. <code>toEntity</code> sigue ignorando <code>categoria</code> — <code>ProductoRequest</code> solo trae <code>categoriaId</code>, y asignar la <code>Categoria</code> real sigue siendo responsabilidad del service (<code>buscarCategoriaOFallar</code>, 3.5.8), igual que en la versión manual.</p>
+<p><strong>Ventajas frente al mapeo manual (3.5.19):</strong></p>
+<ul>
+<li><strong>Menos código que mantener</strong>: no hay cuerpo de método que revisar cuando se agrega un campo nuevo al DTO — si el nombre coincide con el de la entidad, MapStruct lo mapea solo.</li>
+<li><strong>Errores en compilación, no en producción</strong>: si un campo del DTO no tiene de dónde mapearse, MapStruct falla el build con un mensaje claro, en vez de dejar ese campo en <code>null</code> silenciosamente (el riesgo real de un mapeo manual con muchos campos: olvidar asignar uno).</li>
+<li><strong>Sin costo de reflexión en tiempo de ejecución</strong>: a diferencia de librerías como ModelMapper (que mapean por reflexión en cada llamada), el código de MapStruct es Java plano generado en compilación — mismo rendimiento que el mapeo manual.</li>
+</ul>
+<p><strong>El <code>JOIN FETCH</code> de <code>ProductoRepository</code> (3.5.19) sigue siendo necesario</strong> — MapStruct solo transforma objetos que ya están en memoria; de dónde y cómo se cargaron esos objetos (y si dispara N+1 consultas) es un problema de JPA/Hibernate, ajeno por completo a la herramienta de mapeo.</p>
 <h3 id="36-configurar-produccion-local-con-docker-opcional">3.6 Configurar producción local con Docker (opcional)<a class="headerlink" href="#36-configurar-produccion-local-con-docker-opcional" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> archivos de producción local preparados: <code>Dockerfile</code>, <code>.env</code>, <code>.env.example</code>, <code>compose.yml</code> y <code>application-prod.yml</code>.</p>
 <p>En DEV la aplicación se ejecuta con Maven Wrapper desde el host y solo PostgreSQL corre en Docker. En PROD local, la aplicación también se ejecutará como contenedor. Por eso se agregan archivos separados para construir la imagen, pasar variables de entorno y conectar el contenedor de la aplicación con su PostgreSQL dockerizado.</p>
