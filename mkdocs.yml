@@ -11,15 +11,8 @@ nav:
   - Silabos:
       - Silabo 2026-1: silabo_dist_2026_1.md
       - Silabo 2026-2: silabo_dist_2026_2.md
-  - 1. Sistema distribuido base orientado a producción:
+  - I. Sistema distribuido base orientado a producción:
       - S1 - Construcción de un servicio base para un sistema distribuido: sesiones/S01_Construccion_Servicio_Base.md
-  - Propuesta de proyecto:
-      - Contenido: propuesta-proyecto/contenido.md
-      - Estructura estándar: propuesta-proyecto/OFICIAL_ESTRUCTURA_ESTANDAR.md
-      - Propuesta de migración: propuesta-proyecto/propuesta_migracion.md
-      - README: propuesta-proyecto/README.md
-      - Acerca del proyecto: propuesta-proyecto/README_01_ACERCA_DEL_PROYECTO.md
-      - Arquitectura detallada: propuesta-proyecto/README_02_ARQUITECTURA_DETALLADA.md
 
 theme:
   name: material
