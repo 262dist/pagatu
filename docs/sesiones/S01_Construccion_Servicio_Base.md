@@ -1954,6 +1954,219 @@ curl -X DELETE http://localhost:8080/api/v1/productos/1
 
 Prueba también un producto con `precio` negativo y confirma que responde HTTP 400, y un `categoriaId` inexistente (por ejemplo `9999`) y confirma que responde HTTP 404.
 
+#### 3.5.18 Necesidad: el cliente necesita el nombre de la categoría, no solo su id
+
+**Producto del paso:** evidencia del problema que motiva el cambio de 3.5.19.
+
+El CRUD ya funciona, pero `GET /api/v1/productos` responde así (3.5.7):
+
+```json
+[
+  {
+    "id": 1,
+    "nombre": "Matricula",
+    "descripcion": "Matricula del ciclo",
+    "precio": 350.00,
+    "activo": true,
+    "categoriaId": 1
+  }
+]
+```
+
+`categoriaId: 1` es un número sin significado para quien consume este listado (una SPA, Swagger, cualquier cliente). Para mostrar "Electrodomésticos" junto al producto, ese cliente tendría que hacer una segunda petición a `GET /api/v1/categorias/1` por cada `categoriaId` distinto que reciba — exactamente lo que se evita si el propio listado ya trae el nombre de la categoría.
+
+Resultado esperado después de 3.5.19:
+
+```json
+[
+  {
+    "id": 1,
+    "nombre": "Matricula",
+    "descripcion": "Matricula del ciclo",
+    "precio": 350.00,
+    "activo": true,
+    "categoria": {
+      "id": 1,
+      "nombre": "Electrodomesticos",
+      "descripcion": "Linea blanca y pequenos electrodomesticos"
+    }
+  }
+]
+```
+
+**Requisito antes de continuar:** ten el CRUD de 3.5.2-3.5.17 funcionando y probado — 3.5.19 modifica clases que ya existen, no las crea desde cero.
+
+#### 3.5.19 Solución manual: los cambios en `ProductoResponse`, `ProductoMapper`, `ProductoRepository` y `ProductoService`
+
+**Producto del paso:** `Producto` con `categoria` anidada en la respuesta, sin N+1.
+
+Solo cambian estas cuatro clases — `Categoria`, `CategoriaRequest`, `CategoriaResponse`, `CategoriaMapper` y `CategoriaService` (3.5.2-3.5.4) quedan exactamente igual.
+
+**`dto/ProductoResponse.java`** — `categoriaId: Long` pasa a `categoria: CategoriaResponse`:
+
+```java
+package pe.edu.upeu.catalogo.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import java.math.BigDecimal;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ProductoResponse {
+    private Long id;
+    private String nombre;
+    private String descripcion;
+    private BigDecimal precio;
+    private Boolean activo;
+    private CategoriaResponse categoria;
+}
+```
+
+**`mapper/ProductoMapper.java`** — recibe `CategoriaMapper` inyectado para construir el objeto anidado:
+
+```java
+package pe.edu.upeu.catalogo.mapper;
+
+import pe.edu.upeu.catalogo.dto.ProductoRequest;
+import pe.edu.upeu.catalogo.dto.ProductoResponse;
+import pe.edu.upeu.catalogo.entity.Producto;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+@Component
+@RequiredArgsConstructor
+public class ProductoMapper {
+
+    private final CategoriaMapper categoriaMapper;
+
+    public Producto toEntity(ProductoRequest request) {
+        return Producto.builder()
+                .nombre(request.getNombre())
+                .descripcion(request.getDescripcion())
+                .precio(request.getPrecio())
+                .activo(request.getActivo())
+                .build();
+    }
+
+    public ProductoResponse toResponse(Producto producto) {
+        return ProductoResponse.builder()
+                .id(producto.getId())
+                .nombre(producto.getNombre())
+                .descripcion(producto.getDescripcion())
+                .precio(producto.getPrecio())
+                .activo(producto.getActivo())
+                .categoria(categoriaMapper.toResponse(producto.getCategoria()))
+                .build();
+    }
+}
+```
+
+**`repository/ProductoRepository.java`** — agrega una consulta con `JOIN FETCH` para el listado. Sin esto, `toResponse` dispara una consulta adicional por cada producto al leer `producto.getCategoria()` (N+1: un producto, una consulta extra; cien productos, cien consultas extra):
+
+```java
+package pe.edu.upeu.catalogo.repository;
+
+import pe.edu.upeu.catalogo.entity.Producto;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
+
+public interface ProductoRepository extends JpaRepository<Producto, Long> {
+
+    @Query("SELECT p FROM Producto p JOIN FETCH p.categoria")
+    List<Producto> findAllConCategoria();
+}
+```
+
+**`service/ProductoService.java`** — solo cambia `listar()`, para usar la nueva consulta:
+
+```java
+public List<ProductoResponse> listar() {
+    return productoRepository.findAllConCategoria().stream()
+            .map(productoMapper::toResponse)
+            .toList();
+}
+```
+
+`obtener(id)` no cambia: trae una sola fila, así que un `findById()` normal ya alcanza sin disparar N consultas — el `JOIN FETCH` solo hace falta cuando se listan varias filas a la vez.
+
+#### 3.5.20 Cómo lo resuelve la industria: MapStruct (opcional, referencia)
+
+!!! note "Alternativa opcional, no reemplaza 3.5.19 en la evidencia de la sesión"
+    Esta sección es informativa: muestra cómo un equipo profesional evita
+    escribir a mano el cuerpo de los mappers. La implementación que se
+    evalúa en 4.4-4.6 es la de 3.5.19 (manual). Adoptar MapStruct es una
+    decisión de equipo, no un requisito de S1.
+
+**Producto del paso:** los mismos mappers de 3.5.19, generados en compilación en vez de escritos a mano.
+
+Con [MapStruct](https://mapstruct.org/), un mapper es una **interfaz** — el procesador de anotaciones genera la implementación (`ProductoMapperImpl`) al compilar, sin que nadie escriba `new ProductoResponse(...)` a mano.
+
+En el `pom.xml`, agrega la dependencia:
+
+```xml
+<dependency>
+    <groupId>org.mapstruct</groupId>
+    <artifactId>mapstruct</artifactId>
+    <version>1.6.3</version>
+</dependency>
+```
+
+Y en el `maven-compiler-plugin`, junto al `annotationProcessorPaths` que ya tiene Lombok, agrega el de MapStruct **después** de Lombok — MapStruct necesita ver los getters/setters que Lombok genera, y el orden de los `<path>` determina en qué orden corren los procesadores:
+
+```xml
+<annotationProcessorPaths>
+    <path>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+    </path>
+    <path>
+        <groupId>org.mapstruct</groupId>
+        <artifactId>mapstruct-processor</artifactId>
+        <version>1.6.3</version>
+    </path>
+</annotationProcessorPaths>
+```
+
+`CategoriaMapper` y `ProductoMapper` pasan de clase a interfaz:
+
+```java
+@Mapper(componentModel = "spring")
+public interface CategoriaMapper {
+    CategoriaResponse toResponse(Categoria categoria);
+    Categoria toEntity(CategoriaRequest request);
+}
+```
+
+```java
+@Mapper(componentModel = "spring", uses = CategoriaMapper.class)
+public interface ProductoMapper {
+
+    @Mapping(target = "categoria", ignore = true)
+    Producto toEntity(ProductoRequest request);
+
+    ProductoResponse toResponse(Producto producto);
+}
+```
+
+Como `Producto.categoria` y `ProductoResponse.categoria` se llaman igual, MapStruct los relaciona sin configuración adicional y usa `CategoriaMapper` (declarado en `uses`) para convertir el objeto anidado. `toEntity` sigue ignorando `categoria` — `ProductoRequest` solo trae `categoriaId`, y asignar la `Categoria` real sigue siendo responsabilidad del service (`buscarCategoriaOFallar`, 3.5.8), igual que en la versión manual.
+
+**Ventajas frente al mapeo manual (3.5.19):**
+
+- **Menos código que mantener**: no hay cuerpo de método que revisar cuando se agrega un campo nuevo al DTO — si el nombre coincide con el de la entidad, MapStruct lo mapea solo.
+- **Errores en compilación, no en producción**: si un campo del DTO no tiene de dónde mapearse, MapStruct falla el build con un mensaje claro, en vez de dejar ese campo en `null` silenciosamente (el riesgo real de un mapeo manual con muchos campos: olvidar asignar uno).
+- **Sin costo de reflexión en tiempo de ejecución**: a diferencia de librerías como ModelMapper (que mapean por reflexión en cada llamada), el código de MapStruct es Java plano generado en compilación — mismo rendimiento que el mapeo manual.
+
+**El `JOIN FETCH` de `ProductoRepository` (3.5.19) sigue siendo necesario** — MapStruct solo transforma objetos que ya están en memoria; de dónde y cómo se cargaron esos objetos (y si dispara N+1 consultas) es un problema de JPA/Hibernate, ajeno por completo a la herramienta de mapeo.
+
 ### 3.6 Configurar producción local con Docker (opcional)
 
 **Producto del paso:** archivos de producción local preparados: `Dockerfile`, `.env`, `.env.example`, `compose.yml` y `application-prod.yml`.
