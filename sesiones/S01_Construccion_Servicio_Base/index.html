@@ -744,6 +744,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#25-contrato-y-versionado-de-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Contrato y versionado de API
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1862,6 +1873,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#25-contrato-y-versionado-de-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Contrato y versionado de API
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2739,6 +2761,10 @@
 <li>Si la aplicación corre dentro de Docker, usa el nombre del servicio y el puerto interno.</li>
 </ul>
 <p><strong>Error frecuente</strong>: levantar más de dos instancias en el laboratorio. Cada instancia adicional consume CPU y memoria del equipo del estudiante sin aportar valor pedagógico extra en S1 — dos instancias bastan para demostrar el patrón (ver 3.4 y 3.7.4).</p>
+<h3 id="25-contrato-y-versionado-de-api">2.5 Contrato y versionado de API<a class="headerlink" href="#25-contrato-y-versionado-de-api" title="Permanent link">&para;</a></h3>
+<p><strong>Versionado básico de API</strong>: <code>pagatu-catalogo-ms</code> versiona su contrato en la propia URL (<code>/api/v1/...</code>). Es la forma más simple de versionado: si en el futuro un cambio rompe compatibilidad, se publica <code>/api/v2/...</code> sin obligar a los consumidores existentes (otros microservicios, un futuro frontend, o cualquier integración externa) a migrar de inmediato. En S1 basta con fijar el prefijo <code>v1</code>; no se implementa todavía coexistencia de versiones.</p>
+<p><strong>Error frecuente</strong>: dejar el contrato sin códigos de error documentados. Un contrato verificable incluye 400, 404 y 500, no solo el camino feliz.</p>
+<p>Swagger (SpringDoc OpenAPI, ver 3.2.1) publica este contrato como documentación viva y siempre sincronizada con el código.</p>
 <h2 id="3-aplica-actividad-practica-guiada">3. Aplica: actividad práctica guiada<a class="headerlink" href="#3-aplica-actividad-practica-guiada" title="Permanent link">&para;</a></h2>
 <p>Tiempo: 2h.</p>
 <p><strong>Actividad:</strong> construcción guiada de <code>pagatu-catalogo-ms</code>, el primer microservicio REST del proyecto, con CRUD completo de <code>Categoria</code> y <code>Producto</code> (Producto de la sesión en 1.4).</p>
@@ -3562,7 +3588,7 @@ service
 <span class="kn">import</span><span class="w"> </span><span class="nn">java.util.List</span><span class="p">;</span>
 
 <span class="nd">@RestController</span>
-<span class="nd">@RequestMapping</span><span class="p">(</span><span class="s">&quot;/api/categorias&quot;</span><span class="p">)</span>
+<span class="nd">@RequestMapping</span><span class="p">(</span><span class="s">&quot;/api/v1/categorias&quot;</span><span class="p">)</span>
 <span class="nd">@RequiredArgsConstructor</span>
 <span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CategoriaController</span><span class="w"> </span><span class="p">{</span>
 
@@ -3820,7 +3846,7 @@ service
 <span class="kn">import</span><span class="w"> </span><span class="nn">java.util.List</span><span class="p">;</span>
 
 <span class="nd">@RestController</span>
-<span class="nd">@RequestMapping</span><span class="p">(</span><span class="s">&quot;/api/productos&quot;</span><span class="p">)</span>
+<span class="nd">@RequestMapping</span><span class="p">(</span><span class="s">&quot;/api/v1/productos&quot;</span><span class="p">)</span>
 <span class="nd">@RequiredArgsConstructor</span>
 <span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ProductoController</span><span class="w"> </span><span class="p">{</span>
 
@@ -3972,12 +3998,12 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
   <span class="n">-Method</span> <span class="n">Post</span> <span class="p">`</span>
-  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/categorias&quot;</span> <span class="p">`</span>
+  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/v1/categorias&quot;</span> <span class="p">`</span>
   <span class="n">-ContentType</span> <span class="s2">&quot;application/json&quot;</span> <span class="p">`</span>
   <span class="n">-Body</span> <span class="s1">&#39;{&quot;nombre&quot;:&quot;Electrodomesticos&quot;,&quot;descripcion&quot;:&quot;Linea blanca y pequenos electrodomesticos&quot;}&#39;</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/categorias<span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/categorias<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;nombre&quot;:&quot;Electrodomesticos&quot;,&quot;descripcion&quot;:&quot;Linea blanca y pequenos electrodomesticos&quot;}&#39;</span>
 </code></pre></div>
@@ -3985,30 +4011,30 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
   <span class="n">-Method</span> <span class="n">Get</span> <span class="p">`</span>
-  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/categorias&quot;</span>
+  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/v1/categorias&quot;</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8080/api/categorias
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8080/api/v1/categorias
 </code></pre></div>
 <p>Obtiene una categoría por id:</p>
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
   <span class="n">-Method</span> <span class="n">Get</span> <span class="p">`</span>
-  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/categorias/1&quot;</span>
+  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/v1/categorias/1&quot;</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8080/api/categorias/1
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8080/api/v1/categorias/1
 </code></pre></div>
 <p>Actualiza una categoría:</p>
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
   <span class="n">-Method</span> <span class="n">Put</span> <span class="p">`</span>
-  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/categorias/1&quot;</span> <span class="p">`</span>
+  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/v1/categorias/1&quot;</span> <span class="p">`</span>
   <span class="n">-ContentType</span> <span class="s2">&quot;application/json&quot;</span> <span class="p">`</span>
   <span class="n">-Body</span> <span class="s1">&#39;{&quot;nombre&quot;:&quot;Electrodomesticos&quot;,&quot;descripcion&quot;:&quot;Linea blanca, pequenos y grandes electrodomesticos&quot;}&#39;</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>http://localhost:8080/api/categorias/1<span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>http://localhost:8080/api/v1/categorias/1<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;nombre&quot;:&quot;Electrodomesticos&quot;,&quot;descripcion&quot;:&quot;Linea blanca, pequenos y grandes electrodomesticos&quot;}&#39;</span>
 </code></pre></div>
@@ -4016,10 +4042,10 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
   <span class="n">-Method</span> <span class="n">Delete</span> <span class="p">`</span>
-  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/categorias/1&quot;</span>
+  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/v1/categorias/1&quot;</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>DELETE<span class="w"> </span>http://localhost:8080/api/categorias/1
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>DELETE<span class="w"> </span>http://localhost:8080/api/v1/categorias/1
 </code></pre></div>
 <p>Prueba también un caso de validación fallida (sin <code>nombre</code>) y confirma que responde HTTP 400, y una consulta a un <code>id</code> inexistente y confirma que responde HTTP 404.</p>
 <p><strong>Producto</strong>:</p>
@@ -4027,12 +4053,12 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
   <span class="n">-Method</span> <span class="n">Post</span> <span class="p">`</span>
-  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/productos&quot;</span> <span class="p">`</span>
+  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/v1/productos&quot;</span> <span class="p">`</span>
   <span class="n">-ContentType</span> <span class="s2">&quot;application/json&quot;</span> <span class="p">`</span>
   <span class="n">-Body</span> <span class="s1">&#39;{&quot;nombre&quot;:&quot;Matricula&quot;,&quot;descripcion&quot;:&quot;Matricula del ciclo&quot;,&quot;precio&quot;:350.00,&quot;activo&quot;:true,&quot;categoriaId&quot;:1}&#39;</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/productos<span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/productos<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;nombre&quot;:&quot;Matricula&quot;,&quot;descripcion&quot;:&quot;Matricula del ciclo&quot;,&quot;precio&quot;:350.00,&quot;activo&quot;:true,&quot;categoriaId&quot;:1}&#39;</span>
 </code></pre></div>
@@ -4040,30 +4066,30 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
   <span class="n">-Method</span> <span class="n">Get</span> <span class="p">`</span>
-  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/productos&quot;</span>
+  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/v1/productos&quot;</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8080/api/productos
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8080/api/v1/productos
 </code></pre></div>
 <p>Obtiene un producto por id:</p>
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
   <span class="n">-Method</span> <span class="n">Get</span> <span class="p">`</span>
-  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/productos/1&quot;</span>
+  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/v1/productos/1&quot;</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8080/api/productos/1
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8080/api/v1/productos/1
 </code></pre></div>
 <p>Actualiza un producto:</p>
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
   <span class="n">-Method</span> <span class="n">Put</span> <span class="p">`</span>
-  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/productos/1&quot;</span> <span class="p">`</span>
+  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/v1/productos/1&quot;</span> <span class="p">`</span>
   <span class="n">-ContentType</span> <span class="s2">&quot;application/json&quot;</span> <span class="p">`</span>
   <span class="n">-Body</span> <span class="s1">&#39;{&quot;nombre&quot;:&quot;Matricula&quot;,&quot;descripcion&quot;:&quot;Matricula del ciclo, promocion&quot;,&quot;precio&quot;:300.00,&quot;activo&quot;:true,&quot;categoriaId&quot;:1}&#39;</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>http://localhost:8080/api/productos/1<span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>http://localhost:8080/api/v1/productos/1<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;nombre&quot;:&quot;Matricula&quot;,&quot;descripcion&quot;:&quot;Matricula del ciclo, promocion&quot;,&quot;precio&quot;:300.00,&quot;activo&quot;:true,&quot;categoriaId&quot;:1}&#39;</span>
 </code></pre></div>
@@ -4071,10 +4097,10 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
   <span class="n">-Method</span> <span class="n">Delete</span> <span class="p">`</span>
-  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/productos/1&quot;</span>
+  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/v1/productos/1&quot;</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>DELETE<span class="w"> </span>http://localhost:8080/api/productos/1
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>DELETE<span class="w"> </span>http://localhost:8080/api/v1/productos/1
 </code></pre></div>
 <p>Prueba también un producto con <code>precio</code> negativo y confirma que responde HTTP 400, y un <code>categoriaId</code> inexistente (por ejemplo <code>9999</code>) y confirma que responde HTTP 404.</p>
 <h3 id="36-configurar-produccion-local-con-docker-opcional">3.6 Configurar producción local con Docker (opcional)<a class="headerlink" href="#36-configurar-produccion-local-con-docker-opcional" title="Permanent link">&para;</a></h3>
