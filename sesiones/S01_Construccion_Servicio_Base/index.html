@@ -3213,6 +3213,14 @@ service
 <p><strong>Aviso — <code>Migration checksum mismatch</code>:</strong> Flyway trata cada migración ya aplicada como inmutable. Si de aquí en adelante necesitas corregir algo en <code>V1__create_catalogo_tables.sql</code> después de haberlo ejecutado, <strong>no lo edites</strong> — Spring Boot DevTools reinicia la app en cada guardado, Flyway recalcula el checksum del archivo, y como ya no coincide con el que quedó guardado en <code>flyway_schema_history</code>, el arranque falla con <code>Migration checksum mismatch for migration version 1</code>. Dos salidas: repetir el reset de este paso (<code>down -v</code> / <code>up -d</code>, válido mientras no haya datos reales que perder) o crear un archivo nuevo <code>V2__create_catalogo_tables.sql</code> con la corrección (obligatorio si ya hay datos que no quieres perder) — Flyway solo aplica migraciones nuevas hacia adelante, nunca reescribe una ya aplicada.</p>
 <p><strong>Si ya tienes datos que no quieres perder</strong> (más adelante en el curso, con datos de prueba cargados): no edites <code>V1</code>. Crea un archivo nuevo <code>V2__create_catalogo_tables.sql</code> con la corrección — Flyway solo aplica migraciones nuevas hacia adelante, nunca reescribe una ya aplicada.</p>
 <p>Con la migración lista, ahora se construye <code>Categoria</code> completo: entidad, repositorio, DTO, mapper, servicio y controlador, en ese orden — antes de tocar <code>Producto</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Entrega en dos partes: tags <code>s01-servicio-base-p1</code> / <code>s01-servicio-base-p2</code></p>
+<p>Hasta aquí (Figura 12, las tres tablas creadas por Flyway) llega la
+primera entrega de S1, tag <code>s01-servicio-base-p1</code>. La construcción del
+CRUD de <code>Categoria</code> y <code>Producto</code> (3.5.2 en adelante: entidad,
+repositorio, DTO, mapper, servicio y controlador de cada uno) es la
+segunda entrega, tag <code>s01-servicio-base-p2</code>.</p>
+</div>
 <h4 id="352-crear-la-entidad-categoria">3.5.2 Crear la entidad <code>Categoria</code><a class="headerlink" href="#352-crear-la-entidad-categoria" title="Permanent link">&para;</a></h4>
 <p><strong><code>entity/Categoria.java</code></strong></p>
 <div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.entity</span><span class="p">;</span>
