@@ -33,7 +33,7 @@ Al concluir la clase, estarás en condiciones de:
 | Actividades a Realizar en el Periodo | Orientaciones generales (Orientaciones Metodológicas) | Material de estudio recomendado |
 |---|---|---|
 | Revisión previa individual | Leer el sílabo de la Unidad 1 y el caso de la plataforma de comercio electrónico (ver 1.6). Trabajo individual, antes de clase; preparar el entorno local (Java 21, Docker) si aún no está listo. | Sílabo del curso Unidad 1, guía de sesión (MkDocs), plataforma UPeU. |
-| Clase presencial | Construcción guiada de `pagatu-catalogo-ms`: entidad, CRUD, PostgreSQL, Flyway, Swagger, Actuator y filtro de trazabilidad. Trabajo individual, siguiendo al docente paso a paso; consulta inmediata ante errores de arranque o de conexión a base de datos. Producción local con Docker (3.6-3.7) es alcance opcional: no es necesario completarla para cerrar la sesión. | Pasos 3.1 a 3.8 de esta guía, VS Code, Docker Desktop, repositorio GitHub `pagatu`. |
+| Clase presencial | Construcción guiada de `pagatu-catalogo-ms`: entidad, CRUD, PostgreSQL, Flyway, Swagger, Actuator y filtro de trazabilidad. Trabajo individual, siguiendo al docente paso a paso; consulta inmediata ante errores de arranque o de conexión a base de datos. Producción local con Docker (3.6-3.7) es alcance opcional: no es necesario completarla para cerrar la sesión. | Pasos 3.1 a 3.7 de esta guía, VS Code, Docker Desktop, repositorio GitHub `pagatu`. |
 | Evaluación formativa | Revisión en clase del servicio ejecutando en DEV, con múltiples instancias corriendo en paralelo. La evidencia se completa y sustenta de forma individual, fuera del aula, según los criterios mínimos de la sección 4.4. | Indicaciones de entrega (4.3), rúbrica de evaluación (4.6), repositorio GitHub `pagatu` (tag de cierre de sesión), plataforma UPeU (entrega del PDF). |
 
 ### 1.6 Motivación de la sesión
@@ -130,7 +130,7 @@ Lectura del diagrama:
 - **En S1 el `traceId` lo genera el propio filtro**, porque todavía no hay frontend: el cliente de prueba es PowerShell/bash/Swagger, no Angular. Desde S11 (integración con el cliente frontend), Angular podrá enviar su propio `X-Trace-ID` y el filtro lo respeta en vez de generar uno nuevo — pero eso es fuera del alcance de U1.
 - El controller recibe y devuelve **DTO** (`CategoriaRequest`/`CategoriaResponse`), nunca la entidad JPA directamente. El service delega en `CategoriaMapper` la conversión entre el DTO y la **entidad** `Categoria` antes de pasarla al repository (y de vuelta a DTO para la respuesta).
 - El controller nunca habla directo con el repository ni con la base de datos: siempre pasa por el service.
-- `GlobalExceptionHandler` recibe excepciones de **más de una capa**, no solo del controller: la validación `@Valid` falla en el borde del controller (antes de que su método se ejecute), pero `ResourceNotFoundException` la lanza la propia `CategoriaService`/`ProductoService` (en `buscarOFallar()`, ver 3.3.6 y 3.3.10) cuando el `id` no existe. Spring intercepta la excepción venga de donde venga y la enruta al handler — ninguna capa "llama" al handler explícitamente.
+- `GlobalExceptionHandler` recibe excepciones de **más de una capa**, no solo del controller: la validación `@Valid` falla en el borde del controller (antes de que su método se ejecute), pero `ResourceNotFoundException` la lanza la propia `CategoriaService`/`ProductoService` (en `buscarOFallar()`, ver 3.5.4 y 3.5.8) cuando el `id` no existe. Spring intercepta la excepción venga de donde venga y la enruta al handler — ninguna capa "llama" al handler explícitamente.
 - Si algo falla en cualquier capa, `GlobalExceptionHandler` intercepta el error y responde con un formato consistente, en vez de dejar que el error crudo de Spring llegue al cliente.
 
 Este diagrama es el mapa que guía el resto de la explicación: cada apartado siguiente desarrolla uno de sus componentes, en el mismo orden del Índice (1.2).
@@ -143,7 +143,7 @@ Ejemplo: `pagatu-catalogo-ms` se encarga de gestionar categorías, conceptos de 
 
 ### 2.3 Persistencia: PostgreSQL y migraciones con Flyway
 
-El microservicio no crea sus propias tablas al arrancar: **Flyway** ejecuta el script de migración (`V1__create_catalogo_tables.sql`, ver 3.3.1) una sola vez, y deja un registro de que ya se aplicó. Luego Hibernate/JPA solo **valida** que las entidades `Categoria` y `Producto` coincidan con las tablas creadas (`ddl-auto: validate`) — no crea ni modifica estructura.
+El microservicio no crea sus propias tablas al arrancar: **Flyway** ejecuta el script de migración (`V1__create_catalogo_tables.sql`, ver 3.5.1) una sola vez, y deja un registro de que ya se aplicó. Luego Hibernate/JPA solo **valida** que las entidades `Categoria` y `Producto` coincidan con las tablas creadas (`ddl-auto: validate`) — no crea ni modifica estructura.
 
 **Figura 3. Modelo entidad-relación de `categorias` y `productos`**
 
@@ -169,7 +169,7 @@ erDiagram
 
 Esta separación importa: si Hibernate pudiera crear o alterar tablas solo (`ddl-auto: update`), el esquema real de producción quedaría a merced de cómo esté escrita la entidad Java en cada momento, sin historial ni control de versiones del cambio. Con Flyway, cada cambio de esquema es un script versionado y revisable, igual en DEV que en cualquier otro ambiente.
 
-**Error frecuente**: si PostgreSQL está apagado o el contenedor de `compose-dev.yml` (ver 3.2.4) no levantó, la aplicación no arranca — Flyway no logra conectarse para aplicar la migración. Antes de asumir un error de código, revisa que el contenedor esté corriendo y que las variables de conexión coincidan.
+**Error frecuente**: si PostgreSQL está apagado o el contenedor de `compose-dev.yml` (ver 3.2.3) no levantó, la aplicación no arranca — Flyway no logra conectarse para aplicar la migración. Antes de asumir un error de código, revisa que el contenedor esté corriendo y que las variables de conexión coincidan.
 
 ### 2.4 Ejecución reproducible en DEV y escalamiento horizontal
 
@@ -181,7 +181,7 @@ Esta separación importa: si Hibernate pudiera crear o alterar tablas solo (`ddl
 flowchart TB
     DevClient["Cliente - PowerShell / bash / Swagger"]
     DevApp1["pagatu-catalogo-ms - Java 21 + Maven Wrapper - puerto 8080"]
-    DevApp2["pagatu-catalogo-ms - segunda instancia (3.5) - puerto 8081"]
+    DevApp2["pagatu-catalogo-ms - segunda instancia (3.4) - puerto 8081"]
     subgraph DevDocker["Docker: solo base de datos"]
         DevDb[("pagatu_catalogo_db - PostgreSQL - localhost:15432 -> 5432")]
     end
@@ -197,7 +197,7 @@ flowchart TB
     class DevDb db;
 ```
 
-En DEV, la aplicación corre en el host con Maven Wrapper, en el puerto fijo `8080`; solo PostgreSQL corre en Docker. La segunda instancia (línea punteada, puerto `8081`) es el caso secundario que se practica más adelante, en 3.5 — el resto de esta guía trabaja solo con la primera instancia, en `8080`.
+En DEV, la aplicación corre en el host con Maven Wrapper, en el puerto fijo `8080`; solo PostgreSQL corre en Docker. La segunda instancia (línea punteada, puerto `8081`) es el caso secundario que se practica más adelante, en 3.4 — el resto de esta guía trabaja solo con la primera instancia, en `8080`.
 
 #### 2.4.2 PROD local: aplicación dentro de Docker
 
@@ -232,7 +232,7 @@ Regla práctica:
 - Si la aplicación corre fuera de Docker, usa `localhost` con el puerto expuesto por Docker.
 - Si la aplicación corre dentro de Docker, usa el nombre del servicio y el puerto interno.
 
-**Error frecuente**: levantar más de dos instancias en el laboratorio. Cada instancia adicional consume CPU y memoria del equipo del estudiante sin aportar valor pedagógico extra en S1 — dos instancias bastan para demostrar el patrón (ver 3.5 y 3.7.4).
+**Error frecuente**: levantar más de dos instancias en el laboratorio. Cada instancia adicional consume CPU y memoria del equipo del estudiante sin aportar valor pedagógico extra en S1 — dos instancias bastan para demostrar el patrón (ver 3.4 y 3.7.4).
 
 ## 3. Aplica: actividad práctica guiada
 
@@ -247,13 +247,12 @@ Tiempo: 2h.
 **Actividades para realizar:**
 
 - **3.1** Instalar y verificar Java 21, VS Code y sus extensiones.
-- **3.2** Crear el proyecto Spring Boot con las dependencias base.
-- **3.3** Construir el CRUD de `Categoria` y `Producto`.
-- **3.4** Ejecutar y probar el microservicio en DEV.
-- **3.5** Simular escalamiento horizontal (múltiples instancias).
+- **3.2** Crear el proyecto Spring Boot con las dependencias base y conexión a la base de datos.
+- **3.3** Crear las excepciones y el filtro de trazabilidad.
+- **3.4** Simular escalamiento horizontal (múltiples instancias).
+- **3.5** Construir el CRUD de `Categoria` y `Producto`.
 - **3.6** Configurar producción local con Docker (opcional).
 - **3.7** Probar producción local con Docker (opcional).
-- **3.8** Ruta alternativa: partir del tag de cierre de la sesión.
 
 ### 3.1 Instalar y verificar Java 21 LTS, VS Code y sus extensiones
 
@@ -360,14 +359,14 @@ code --install-extension cweijan.vscode-database-client2
 |---|---|---|
 | Extension Pack for Java | `vscjava.vscode-java-pack` | Soporte base de Java (autocompletado, debug, Maven); incluye Spring Initializr Java Support, usado en 3.2.1. |
 | Spring Boot Extension Pack | `vmware.vscode-boot-dev-pack` | Herramientas específicas de Spring Boot: navegación de beans, Spring Boot Dashboard, soporte de `application.yml`. |
-| Database Client | `cweijan.vscode-database-client2` | Cliente gráfico multi-motor: MySQL, PostgreSQL, SQLite, SQL Server, Oracle, entre otros — sirve para conectarse a la PostgreSQL de este proyecto (ver 3.2.4). |
+| Database Client | `cweijan.vscode-database-client2` | Cliente gráfico multi-motor: MySQL, PostgreSQL, SQLite, SQL Server, Oracle, entre otros — sirve para conectarse a la PostgreSQL de este proyecto (ver 3.2.3). |
 
 !!! tip "Si instalaste todo pero `Ctrl+Shift+P` → \"Spring\" no muestra ningún comando"
     El Spring Boot Extension Pack puede quedar **instalado pero deshabilitado**. Reiniciar VS Code (o toda la PC) no lo arregla si quedó en ese estado.
 
     Verifica en el panel de extensiones (`Ctrl+Shift+X`, buscar "Spring"): si el botón dice **Enable** en vez de **Disable**, está deshabilitado — actívalo. Recién ahí aparecen los comandos de Spring en la paleta de comandos.
 
-### 3.2 Crear el proyecto Spring Boot desde VS Code con dependencias base
+### 3.2 Crear el proyecto Spring Boot desde VS Code con dependencias base y conexión a la base de datos
 
 **Producto del paso:** proyecto Spring Boot creado en `services/pagatu-catalogo-ms`, con `artifactId` `pagatu-catalogo-ms`, paquete `pe.edu.upeu.catalogo`, dependencias base instaladas, PostgreSQL DEV levantado en Docker y un endpoint web simple respondiendo desde el navegador o shell.
 
@@ -449,29 +448,7 @@ Al terminar, VS Code confirma la generación y el proyecto queda visible en el E
 
 ![Notificación "Successfully generated" y el proyecto generado visible en el Explorer de VS Code](img/s01-3.2.1-generado.png)
  
-#### 3.2.2 Revisar dependencias PostgreSQL y Flyway
-
-Abre `services/pagatu-catalogo-ms/pom.xml` y verifica que existan las dependencias de persistencia para PostgreSQL:
-
-```xml
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-flyway</artifactId>
-</dependency>
-<dependency>
-    <groupId>org.flywaydb</groupId>
-    <artifactId>flyway-database-postgresql</artifactId>
-</dependency>
-<dependency>
-    <groupId>org.postgresql</groupId>
-    <artifactId>postgresql</artifactId>
-    <scope>runtime</scope>
-</dependency>
-```
-
-`spring-boot-starter-flyway` ya trae `flyway-core` como dependencia transitiva — no hace falta declararlo aparte.
-
-#### 3.2.3 Ejecutar una primera vez y reconocer el fallo esperado
+#### 3.2.2 Ejecutar una primera vez y reconocer el fallo esperado
 
 El proyecto trae Maven Wrapper (`mvnw`/`mvnw.cmd`): no requiere tener Maven instalado en el host, así que todos los comandos Maven de esta guía se ejecutan con el wrapper, nunca con `mvn` a secas.
 
@@ -499,7 +476,7 @@ Reason: Failed to determine a suitable driver class
 
 No se corrige quitando JPA ni usando H2. Se corrige declarando PostgreSQL DEV y levantando la base de datos con Docker.
 
-#### 3.2.4 Configurar el ambiente de desarrollo
+#### 3.2.3 Configurar el ambiente de desarrollo
 
 **Producto del paso:** ambiente DEV completo — PostgreSQL en Docker y la aplicación configurada para conectarse a él.
 
@@ -543,7 +520,7 @@ Además de `docker ps`, puedes verificar la conexión con un cliente gráfico de
 
 **Figura 10. Conexión exitosa a PostgreSQL vía cliente gráfico en VS Code**
 
-![Conexión exitosa a PostgreSQL vía cliente gráfico en VS Code: host 127.0.0.1, puerto 15432, usuario y base pagatu_catalogo_db](img/s01-3.2.4-conectar-cliente-grafico.png)
+![Conexión exitosa a PostgreSQL vía cliente gráfico en VS Code: host 127.0.0.1, puerto 15432, usuario y base pagatu_catalogo_db](img/s01-3.2.3-conectar-cliente-grafico.png)
 
 **Aplicación: `application.yml` y `application-dev.yml`**
 
@@ -605,37 +582,13 @@ management:
       show-details: always
 ```
 
-El puerto queda fijo en `8080` para todo el resto de esta guía — más simple para probar con Swagger/shell sin tener que buscar qué puerto asignó Spring Boot cada vez. Cuando en 3.5 se necesite escalar a varias instancias, el puerto dinámico se pide como argumento de línea de comandos, sin tocar este archivo (ver 3.5).
+El puerto queda fijo en `8080` para todo el resto de esta guía — más simple para probar con Swagger/shell sin tener que buscar qué puerto asignó Spring Boot cada vez. Cuando en 3.4 se necesite escalar a varias instancias, el puerto dinámico se pide como argumento de línea de comandos, sin tocar este archivo (ver 3.4).
 
-En DEV, Flyway queda activo y ejecuta automáticamente `V1__create_catalogo_tables.sql` al arrancar la aplicación (se crea en 3.3.1). JPA/Hibernate no crea tablas; solo valida que las entidades coincidan con la estructura de la base de datos mediante `ddl-auto: validate`.
+En DEV, Flyway queda activo y ejecuta automáticamente `V1__create_catalogo_tables.sql` al arrancar la aplicación (se crea en 3.5.1). JPA/Hibernate no crea tablas; solo valida que las entidades coincidan con la estructura de la base de datos mediante `ddl-auto: validate`.
 
 En S2 esta configuración se moverá progresivamente al Config Server, que busca el archivo de configuración por `spring.application.name` (`pagatu-catalogo-ms.yml` en el config-repo) — por eso ese nombre lleva el mismo prefijo `pagatu-` que el `artifactId`, y no queda como `pagatu-catalogo-ms` a secas: evita ambigüedad si en algún momento hay otro proyecto con un servicio del mismo nombre corriendo contra un registro compartido. En S1 la configuración se mantiene local para que el alumno entienda primero qué necesita el microservicio para arrancar.
 
-#### 3.2.5 Crear un endpoint temporal de saludo
-
-Antes del CRUD, crea un controlador mínimo para comprobar que la aplicación web responde.
-
-**`controller/SaludoController.java`**
-
-```java
-package pe.edu.upeu.catalogo.controller;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
-public class SaludoController {
-
-    @GetMapping("/saludo")
-    public String saludo() {
-        return "pagatu-catalogo-ms activo";
-    }
-}
-```
-
-Este endpoint es temporal para validar el arranque web. Luego el foco pasará al CRUD de categorías y productos.
-
-#### 3.2.6 Ejecutar y comprobar que ya no falla
+#### 3.2.4 Ejecutar y comprobar que ya no falla
 
 Antes de ejecutar la aplicación, comprueba desde la consola que PostgreSQL DEV está listo y que la base de datos existe.
 
@@ -668,6 +621,58 @@ Con PostgreSQL DEV levantado y verificado, ejecuta la aplicación:
 ./mvnw spring-boot:run
 ```
 
+Verifica que la aplicación arrancó sin el error de conexión de 3.2.2:
+
+```text
+Tomcat started on port 8080 (http) with context path '/'
+```
+
+Confirma también con `/actuator/health` (disponible desde 3.2.1, sin necesitar ningún endpoint propio todavía):
+
+PowerShell:
+
+```powershell
+Invoke-RestMethod `
+  -Method Get `
+  -Uri "http://localhost:8080/actuator/health"
+```
+
+bash macOS/Linux:
+
+```bash
+curl http://localhost:8080/actuator/health
+```
+
+Resultado esperado: `{"status":"UP"}`. Deja la aplicación corriendo — el siguiente paso la modifica en caliente, sin reiniciarla a mano.
+
+#### 3.2.5 Crear un endpoint temporal de saludo
+
+Con la aplicación todavía corriendo (3.2.4), crea un controlador mínimo — esto también sirve para comprobar que Spring Boot DevTools recarga en caliente (*hot reload*) sin que vuelvas a ejecutar `spring-boot:run`.
+
+**`controller/SaludoController.java`**
+
+```java
+package pe.edu.upeu.catalogo.controller;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class SaludoController {
+
+    @GetMapping("/saludo")
+    public String saludo() {
+        return "pagatu-catalogo-ms activo";
+    }
+}
+```
+
+Al guardar el archivo, la misma terminal donde sigue corriendo `spring-boot:run` (3.2.4) debe mostrar que DevTools detectó el cambio y reinició sola, sin que la detengas ni la vuelvas a lanzar:
+
+```text
+Restarting due to 1 class path change (1 addition, 0 deletions, 0 modifications)
+```
+
 Prueba el endpoint:
 
 PowerShell:
@@ -684,17 +689,13 @@ bash macOS/Linux:
 curl http://localhost:8080/saludo
 ```
 
-Resultado esperado:
-
-```text
-pagatu-catalogo-ms activo
-```
-
 También puedes revisar Swagger en el puerto `8080`:
 
 ```text
 http://localhost:8080/swagger-ui/index.html
 ```
+
+Este endpoint es temporal para validar el arranque web y el hot-reload de DevTools. Luego el foco pasará al CRUD de categorías y productos.
 
 **Evidencia de cierre del paso 3.2**
 
@@ -705,96 +706,13 @@ http://localhost:8080/swagger-ui/index.html
 - `application-dev.yml` con puerto `8080` y conexión a PostgreSQL DEV.
 - Endpoint `/saludo` respondiendo.
 
-### 3.3 Construir el CRUD de `Categoria` y `Producto`
+### 3.3 Crear las excepciones y el filtro de trazabilidad
 
-**Producto del paso:** CRUD de `Categoria` y de `Producto` incorporados en `pagatu-catalogo-ms`, incluyendo entidades, capas de aplicación, validaciones, filtro de trazabilidad y migración de base de datos, escritos directamente por el estudiante (sin depender de un repositorio externo).
+**Producto del paso:** manejo de errores centralizado y filtro de trazabilidad (`traceId` en cada log) funcionando en `pagatu-catalogo-ms`, antes de construir el CRUD.
 
-`pagatu-catalogo-ms` gestiona lo que se puede comprar o pagar: no solo categorías, también los conceptos de pago concretos (`Producto`: nombre, descripción, precio y si está activo). Ambas entidades se construyen en esta misma sesión, siguiendo exactamente el mismo patrón de capas una y otra vez — una vez que entiendes el patrón con `Categoria`, replicarlo en `Producto` es mecánico.
+Antes de construir `Categoria` y `Producto` (3.5), se crean dos piezas **compartidas** que usa todo el microservicio, no una entidad en particular: el manejo de errores y el filtro de trazabilidad. Así, cuando llegue el turno de cada recurso, `ResourceNotFoundException` ya existe y puede usarse directamente.
 
-Cada archivo de este paso se crea directamente dentro de `services/pagatu-catalogo-ms/src/main/java/pe/edu/upeu/catalogo` (o en `src/main/resources` cuando corresponda), siguiendo la misma estructura de carpetas usada en todo el curso:
-
-```text
-config
-controller
-dto
-entity
-exception
-filter
-mapper
-repository
-service
-```
-
-Con `ddl-auto: validate` (ver 2.3), JPA no crea ni modifica tablas: solo compara las entidades contra lo que ya existe en la base de datos, y si no coincide, la aplicación falla al arrancar. Por eso el orden lógico es primero la migración Flyway, que define la estructura real, y recién después las entidades Java, que deben coincidir con ella exactamente.
-
-#### 3.3.1 Crear la migración Flyway de `categorias` y `productos`
-
-**Producto del paso:** migración `V1` aplicada sobre una base DEV limpia, con las tres tablas creadas (`categorias`, `productos`, `flyway_schema_history`) y verificadas en `localhost:8080`.
-
-Antes de crear el archivo, baja el contenedor de PostgreSQL DEV y borra su volumen, para garantizar que Flyway va a aplicar la migración sobre una base completamente vacía — así se escribe el archivo una sola vez y se ejecuta una sola vez, sin arriesgarte a editar una migración que Flyway ya aplicó (ver el aviso al final de este paso):
-
-```bash
-docker compose -f compose-dev.yml down -v
-```
-
-**`src/main/resources/db/migration/V1__create_catalogo_tables.sql`**
-
-El archivo crea **ambas** tablas de una vez, por eso su nombre no describe solo `Categoria`:
-
-```sql
-CREATE TABLE IF NOT EXISTS categorias (
-    id BIGINT GENERATED BY DEFAULT AS IDENTITY,
-    nombre VARCHAR(100) NOT NULL,
-    descripcion VARCHAR(255),
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE IF NOT EXISTS productos (
-    id BIGINT GENERATED BY DEFAULT AS IDENTITY,
-    nombre VARCHAR(100) NOT NULL,
-    descripcion VARCHAR(255),
-    precio NUMERIC(10,2) NOT NULL,
-    activo BOOLEAN NOT NULL DEFAULT true,
-    id_categoria BIGINT NOT NULL REFERENCES categorias(id),
-    PRIMARY KEY (id)
-);
-```
-
-`productos` sí lleva la relación con `categorias` desde esta primera versión: `id_categoria` es una llave foránea (`REFERENCES categorias(id)`) porque ambas tablas viven en la misma base de datos del mismo microservicio — es una relación relacional normal, no una llamada entre microservicios. Feign (o cualquier cliente HTTP) solo haría falta si `Categoria` y `Producto` vivieran en microservicios distintos; no es el caso aquí.
-
-Con el archivo ya guardado (contenido final, sin más ediciones pendientes), levanta de nuevo el contenedor sobre la base vacía:
-
-```bash
-docker compose -f compose-dev.yml up -d
-```
-
-```powershell
-# Windows (PowerShell o cmd)
-.\mvnw.cmd spring-boot:run
-```
-
-```bash
-# macOS / Linux
-./mvnw spring-boot:run
-```
-
-Ejecuta la aplicación (3.2.6). Flyway aplica `V1` automáticamente al arrancar y crea las tres tablas: `categorias`, `productos` y `flyway_schema_history`.
-
-**Figura 11. Resultado al ejecutar la aplicación: las tres tablas creadas**
-
-![Explorer de VS Code mostrando las tablas categorias, flyway_schema_history y productos ya creadas, con la aplicación arrancada correctamente en la terminal](img/s01-3.3.1-resultado-reset.png)
-
-Verifica en el navegador o con `curl`/`Invoke-RestMethod` que `localhost:8080` responde: el endpoint `/saludo` (3.2.5) y `/actuator/health` (`{"status":"UP"}`, confirma que la conexión a PostgreSQL sigue viva después de aplicar la migración).
-
-Lo que queda definido desde ahora es la estructura exacta que las entidades `Categoria` y `Producto` (siguiente paso) tienen que respetar: mismos nombres de columna, mismo `NOT NULL`, mismo tipo, y la misma llave foránea. Si alguna entidad no coincide, `ddl-auto: validate` hará fallar el arranque con un error claro señalando la diferencia.
-
-**Aviso — `Migration checksum mismatch`:** Flyway trata cada migración ya aplicada como inmutable. Si de aquí en adelante necesitas corregir algo en `V1__create_catalogo_tables.sql` después de haberlo ejecutado, **no lo edites** — Spring Boot DevTools reinicia la app en cada guardado, Flyway recalcula el checksum del archivo, y como ya no coincide con el que quedó guardado en `flyway_schema_history`, el arranque falla con `Migration checksum mismatch for migration version 1`. Dos salidas: repetir el reset de este paso (`down -v` / `up -d`, válido mientras no haya datos reales que perder) o crear un archivo nuevo `V2__create_catalogo_tables.sql` con la corrección (obligatorio si ya hay datos que no quieres perder) — Flyway solo aplica migraciones nuevas hacia adelante, nunca reescribe una ya aplicada.
-
-**Si ya tienes datos que no quieres perder** (más adelante en el curso, con datos de prueba cargados): no edites `V1`. Crea un archivo nuevo `V2__create_catalogo_tables.sql` con la corrección — Flyway solo aplica migraciones nuevas hacia adelante, nunca reescribe una ya aplicada.
-
-Antes de construir `Categoria` y `Producto`, se crean dos piezas compartidas que usan ambos recursos: el manejo de errores y el filtro de trazabilidad. Así, cuando llegue el turno del servicio de cada recurso, `ResourceNotFoundException` ya existe y puede usarse directamente.
-
-#### 3.3.2 Crear las excepciones y el manejador global de errores
+#### 3.3.1 Crear las excepciones y el manejador global de errores
 
 Estas clases son **compartidas**: no son específicas de `Categoria` ni de `Producto`, cualquier módulo de `pagatu-catalogo-ms` las reutiliza tal cual.
 
@@ -850,7 +768,7 @@ public class GlobalExceptionHandler {
 }
 ```
 
-#### 3.3.3 Crear el filtro de trazabilidad `CorrelationIdFilter` y configurar logs
+#### 3.3.2 Crear el filtro de trazabilidad `CorrelationIdFilter` y configurar logs
 
 Este filtro agrega un identificador de trazabilidad a cada request usando el header `X-Trace-ID`. Si el cliente no lo envía, el filtro genera un UUID.
 
@@ -939,9 +857,189 @@ Crea también `src/main/resources/logback-spring.xml`. Este archivo define el fo
 
 Más adelante, cuando se agreguen Gateway, Feign o frontend, el mismo header `X-Trace-ID` podrá propagarse entre componentes para trazabilidad distribuida.
 
-Con la infraestructura compartida lista, ahora se construye `Categoria` completo: entidad, repositorio, DTO, mapper, servicio y controlador, en ese orden — antes de tocar `Producto`.
+#### 3.3.3 Ejecutar y probar
 
-#### 3.3.4 Crear la entidad `Categoria`
+**Verifica el cambio de formato.** Antes de `logback-spring.xml`, la terminal mostraba el formato por defecto de Spring Boot (timestamp con zona horaria, PID, nombre de la app y del hilo):
+
+```text
+2026-08-15T18:51:40.107-05:00  INFO 3804 --- [pagatu-catalogo-ms] [  restartedMain] p.e.u.c.PagatuCatalogoMsApplication      : Started PagatuCatalogoMsApplication in 1.765 seconds (process running for 110927.327)
+```
+
+Después de reiniciar con `logback-spring.xml` en su lugar, el formato cambia al patrón definido (`[%X{traceId}]` en vez de PID/app/hilo):
+
+```text
+2026-08-15 18:53:05.581 [] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-08-15 18:53:05.590 [] INFO  p.e.u.c.PagatuCatalogoMsApplication - Started PagatuCatalogoMsApplication in 1.715 seconds (process running for 111012.81)
+2026-08-15 18:53:17.004 [22deb350-54b4-4dea-a9c6-b09aaae9cea6] INFO  o.s.api.AbstractOpenApiResource - Init duration for springdoc-openapi is: 113 ms
+```
+
+Las primeras líneas (arranque de la app) muestran `[]` vacío: todavía no hay ninguna petición HTTP en curso, así que el `MDC` no tiene `traceId` que mostrar. La última línea ya trae un `traceId` real (`22deb350-...`) porque llegó una petición HTTP (por ejemplo, al abrir Swagger UI): el `CorrelationIdFilter` generó el UUID, lo puso en el `MDC`, y ese log —disparado durante esa petición— lo heredó automáticamente. Es la prueba de que el filtro de trazabilidad ya funciona de punta a punta.
+
+### 3.4 Simular escalamiento horizontal (múltiples instancias)
+
+**Producto del paso:** dos instancias de `pagatu-catalogo-ms` corriendo al mismo tiempo, cada una en un puerto distinto, ambas conectadas a la misma PostgreSQL DEV.
+
+**Figura 11. Escalamiento horizontal de `pagatu-catalogo-ms` con dos instancias en paralelo**
+
+```mermaid
+flowchart TB
+    DevClient["Cliente - PowerShell / bash / Swagger"]
+    DevApp1["pagatu-catalogo-ms - instancia 1 - puerto 8080"]
+    DevApp2["pagatu-catalogo-ms - instancia 2 - puerto 8081"]
+    subgraph DevDocker["Docker: solo base de datos"]
+        DevDb[("pagatu_catalogo_db - PostgreSQL - localhost:15432 -> 5432")]
+    end
+
+    DevClient -->|"localhost:8080"| DevApp1
+    DevClient -->|"localhost:8081"| DevApp2
+    DevApp1 -->|"localhost:15432"| DevDb
+    DevApp2 -->|"localhost:15432"| DevDb
+
+    classDef app fill:#eef6ff,stroke:#2b6cb0,color:#111;
+    classDef db fill:#fff4de,stroke:#b7791f,color:#111;
+    class DevApp1,DevApp2 app;
+    class DevDb db;
+```
+
+Un microservicio distribuido debe poder escalar horizontalmente: correr varias copias idénticas a la vez, cada una en su propio puerto, sin configuración fija que las haga chocar. Con `server.port` fijo en `8080` (el que usa el resto de esta guía), una segunda instancia no puede arrancar en la misma máquina — el puerto ya está ocupado.
+
+#### 3.4.1 Levantar una segunda instancia
+
+**Sin modificar `application-dev.yml`** (para no romper el puerto 8080 que usan los pasos siguientes de esta guía), la Terminal 1 sigue corriendo tal cual en `8080` (la que ya tenías abierta desde 3.3.3). Abre una **Terminal 2** nueva y pásale un puerto distinto como argumento de línea de comandos, desde `services/pagatu-catalogo-ms`:
+
+```powershell
+# Windows (PowerShell o cmd) - Terminal 2 (simultánea, con Postgres y la Terminal 1 ya corriendo en 8080)
+.\mvnw.cmd spring-boot:run "-Dspring-boot.run.arguments=--server.port=8081"
+```
+
+```bash
+# macOS / Linux - Terminal 2 (simultánea, con Postgres y la Terminal 1 ya corriendo en 8080)
+./mvnw spring-boot:run -Dspring-boot.run.arguments=--server.port=8081
+```
+
+`--server.port=8081` le indica a Spring Boot que arranque en ese puerto en vez del `8080` fijo del `application-dev.yml`. También puedes usar `--server.port=0` si prefieres que el sistema operativo asigne uno libre cualquiera — la diferencia es que con `8081` sabes el puerto de antemano, sin tener que leerlo de la consola.
+
+#### 3.4.2 Ejecutar y probar
+
+Verifica que ambas instancias responden por separado, con el endpoint de saludo y con `/actuator/health`:
+
+PowerShell:
+
+```powershell
+Invoke-RestMethod -Method Get -Uri "http://localhost:8080/saludo"
+Invoke-RestMethod -Method Get -Uri "http://localhost:8081/saludo"
+Invoke-RestMethod -Method Get -Uri "http://localhost:8080/actuator/health"
+Invoke-RestMethod -Method Get -Uri "http://localhost:8081/actuator/health"
+```
+
+bash macOS/Linux:
+
+```bash
+curl http://localhost:8080/saludo
+curl http://localhost:8081/saludo
+curl http://localhost:8080/actuator/health
+curl http://localhost:8081/actuator/health
+```
+
+Resultado esperado: ambas responden `pagatu-catalogo-ms activo` y `{"status":"UP"}`, cada una en su propio puerto, conectadas de forma independiente a la misma PostgreSQL DEV.
+
+**Por qué importa esto en S1.** Todavía no hay Gateway ni balanceador de carga — eso llega en S4 ("Punto único de acceso y distribución de tráfico"). Pero la capacidad de correr múltiples instancias sin puerto fijo es la base técnica que un balanceador necesita para repartir tráfico entre copias del mismo servicio; practicarla desde S1 deja esa evidencia lista para cuando el Gateway integre esta pieza.
+
+!!! note "3.6 y 3.7 son opcionales"
+    El alcance evaluado de S1 termina en el escalamiento horizontal de 3.4. Producción local con Docker (3.6-3.7) es contenido adicional: profundiza la ejecución reproducible del microservicio, pero no es necesario completarlo para que la sesión se considere lograda, y no es prerequisito de S2 — Config Server (S2) se configura sobre el microservicio ejecutando en DEV, sin depender de que la aplicación misma haya corrido dentro de Docker. Si te queda tiempo en clase o quieres profundizar por tu cuenta, adelante.
+
+### 3.5 Construir el CRUD de `Categoria` y `Producto`
+
+**Producto del paso:** CRUD de `Categoria` y de `Producto` incorporados en `pagatu-catalogo-ms`, incluyendo entidades, capas de aplicación, validaciones y migración de base de datos, escritos directamente por el estudiante (sin depender de un repositorio externo), ejecutando en DEV con Swagger, health y CRUD verificados por shell.
+
+`pagatu-catalogo-ms` gestiona lo que se puede comprar o pagar: no solo categorías, también los conceptos de pago concretos (`Producto`: nombre, descripción, precio y si está activo). Ambas entidades se construyen en esta misma sesión, siguiendo exactamente el mismo patrón de capas una y otra vez — una vez que entiendes el patrón con `Categoria`, replicarlo en `Producto` es mecánico.
+
+Cada archivo de este paso se crea directamente dentro de `services/pagatu-catalogo-ms/src/main/java/pe/edu/upeu/catalogo` (o en `src/main/resources` cuando corresponda), siguiendo la misma estructura de carpetas usada en todo el curso:
+
+```text
+config
+controller
+dto
+entity
+exception
+filter
+mapper
+repository
+service
+```
+
+`exception/` y `filter/` ya se crearon en 3.3 — aquí se agregan `entity`, `repository`, `dto`, `mapper`, `service` y `controller`.
+
+Con `ddl-auto: validate` (ver 2.3), JPA no crea ni modifica tablas: solo compara las entidades contra lo que ya existe en la base de datos, y si no coincide, la aplicación falla al arrancar. Por eso el orden lógico es primero la migración Flyway, que define la estructura real, y recién después las entidades Java, que deben coincidir con ella exactamente.
+
+#### 3.5.1 Crear la migración Flyway de `categorias` y `productos`
+
+**Producto del paso:** migración `V1` aplicada sobre una base DEV limpia, con las tres tablas creadas (`categorias`, `productos`, `flyway_schema_history`) y verificadas en `localhost:8080`.
+
+Antes de crear el archivo, baja el contenedor de PostgreSQL DEV y borra su volumen, para garantizar que Flyway va a aplicar la migración sobre una base completamente vacía — así se escribe el archivo una sola vez y se ejecuta una sola vez, sin arriesgarte a editar una migración que Flyway ya aplicó (ver el aviso al final de este paso):
+
+```bash
+docker compose -f compose-dev.yml down -v
+```
+
+**`src/main/resources/db/migration/V1__create_catalogo_tables.sql`**
+
+El archivo crea **ambas** tablas de una vez, por eso su nombre no describe solo `Categoria`:
+
+```sql
+CREATE TABLE IF NOT EXISTS categorias (
+    id BIGINT GENERATED BY DEFAULT AS IDENTITY,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion VARCHAR(255),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS productos (
+    id BIGINT GENERATED BY DEFAULT AS IDENTITY,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion VARCHAR(255),
+    precio NUMERIC(10,2) NOT NULL,
+    activo BOOLEAN NOT NULL DEFAULT true,
+    id_categoria BIGINT NOT NULL REFERENCES categorias(id),
+    PRIMARY KEY (id)
+);
+```
+
+`productos` sí lleva la relación con `categorias` desde esta primera versión: `id_categoria` es una llave foránea (`REFERENCES categorias(id)`) porque ambas tablas viven en la misma base de datos del mismo microservicio — es una relación relacional normal, no una llamada entre microservicios. Feign (o cualquier cliente HTTP) solo haría falta si `Categoria` y `Producto` vivieran en microservicios distintos; no es el caso aquí.
+
+Con el archivo ya guardado (contenido final, sin más ediciones pendientes), levanta de nuevo el contenedor sobre la base vacía:
+
+```bash
+docker compose -f compose-dev.yml up -d
+```
+
+```powershell
+# Windows (PowerShell o cmd)
+.\mvnw.cmd spring-boot:run
+```
+
+```bash
+# macOS / Linux
+./mvnw spring-boot:run
+```
+
+Ejecuta la aplicación (3.2.4). Flyway aplica `V1` automáticamente al arrancar y crea las tres tablas: `categorias`, `productos` y `flyway_schema_history`.
+
+**Figura 12. Resultado al ejecutar la aplicación: las tres tablas creadas**
+
+![Explorer de VS Code mostrando las tablas categorias, flyway_schema_history y productos ya creadas, con la aplicación arrancada correctamente en la terminal](img/s01-3.5.1-resultado-reset.png)
+
+Verifica en el navegador o con `curl`/`Invoke-RestMethod` que `localhost:8080` responde: el endpoint `/saludo` (3.2.5) y `/actuator/health` (`{"status":"UP"}`, confirma que la conexión a PostgreSQL sigue viva después de aplicar la migración).
+
+Lo que queda definido desde ahora es la estructura exacta que las entidades `Categoria` y `Producto` (siguiente paso) tienen que respetar: mismos nombres de columna, mismo `NOT NULL`, mismo tipo, y la misma llave foránea. Si alguna entidad no coincide, `ddl-auto: validate` hará fallar el arranque con un error claro señalando la diferencia.
+
+**Aviso — `Migration checksum mismatch`:** Flyway trata cada migración ya aplicada como inmutable. Si de aquí en adelante necesitas corregir algo en `V1__create_catalogo_tables.sql` después de haberlo ejecutado, **no lo edites** — Spring Boot DevTools reinicia la app en cada guardado, Flyway recalcula el checksum del archivo, y como ya no coincide con el que quedó guardado en `flyway_schema_history`, el arranque falla con `Migration checksum mismatch for migration version 1`. Dos salidas: repetir el reset de este paso (`down -v` / `up -d`, válido mientras no haya datos reales que perder) o crear un archivo nuevo `V2__create_catalogo_tables.sql` con la corrección (obligatorio si ya hay datos que no quieres perder) — Flyway solo aplica migraciones nuevas hacia adelante, nunca reescribe una ya aplicada.
+
+**Si ya tienes datos que no quieres perder** (más adelante en el curso, con datos de prueba cargados): no edites `V1`. Crea un archivo nuevo `V2__create_catalogo_tables.sql` con la corrección — Flyway solo aplica migraciones nuevas hacia adelante, nunca reescribe una ya aplicada.
+
+Con la migración lista, ahora se construye `Categoria` completo: entidad, repositorio, DTO, mapper, servicio y controlador, en ese orden — antes de tocar `Producto`.
+
+#### 3.5.2 Crear la entidad `Categoria`
 
 **`entity/Categoria.java`**
 
@@ -972,7 +1070,7 @@ public class Categoria {
 }
 ```
 
-#### 3.3.5 Crear el repositorio, los DTO y el mapper de `Categoria`
+#### 3.5.3 Crear el repositorio, los DTO y el mapper de `Categoria`
 
 **`repository/CategoriaRepository.java`**
 
@@ -1062,7 +1160,7 @@ public class CategoriaMapper {
 }
 ```
 
-#### 3.3.6 Crear el servicio de aplicación de `Categoria`
+#### 3.5.4 Crear el servicio de aplicación de `Categoria`
 
 **`service/CategoriaService.java`**
 
@@ -1120,7 +1218,7 @@ public class CategoriaService {
 }
 ```
 
-#### 3.3.7 Crear el controlador REST de `Categoria`
+#### 3.5.5 Crear el controlador REST de `Categoria`
 
 **`controller/CategoriaController.java`**
 
@@ -1179,7 +1277,7 @@ La validación evita que el microservicio acepte datos incompletos antes de lleg
 
 `Producto` sigue exactamente el mismo patrón que `Categoria`: misma secuencia de capas, mismo estilo — solo cambian los campos propios del recurso.
 
-#### 3.3.8 Crear la entidad `Producto`
+#### 3.5.6 Crear la entidad `Producto`
 
 **`entity/Producto.java`**
 
@@ -1223,7 +1321,7 @@ public class Producto {
 
 A diferencia de LP2 (que no relaciona `Categoria` y `Producto` en su S1), aquí `Producto` sí lleva la relación desde el inicio: `@ManyToOne` es JPA estándar, sin nada distribuido de por medio, porque `Categoria` y `Producto` viven en la misma base de datos del mismo microservicio. Feign solo entraría en juego si `Producto` necesitara consultar una `Categoria` que viviera en otro microservicio — no es este caso.
 
-#### 3.3.9 Crear el repositorio, los DTO y el mapper de `Producto`
+#### 3.5.7 Crear el repositorio, los DTO y el mapper de `Producto`
 
 **`repository/ProductoRepository.java`**
 
@@ -1335,9 +1433,9 @@ public class ProductoMapper {
 }
 ```
 
-`toEntity` no asigna `categoria` — solo conoce el `categoriaId` (un `Long`), no la entidad `Categoria` completa. Cargar la `Categoria` real por su id y asignarla es responsabilidad del service (ver 3.3.10), porque requiere consultar `CategoriaRepository`, algo que el mapper no hace.
+`toEntity` no asigna `categoria` — solo conoce el `categoriaId` (un `Long`), no la entidad `Categoria` completa. Cargar la `Categoria` real por su id y asignarla es responsabilidad del service (ver 3.5.8), porque requiere consultar `CategoriaRepository`, algo que el mapper no hace.
 
-#### 3.3.10 Crear el servicio de aplicación de `Producto`
+#### 3.5.8 Crear el servicio de aplicación de `Producto`
 
 **`service/ProductoService.java`**
 
@@ -1407,9 +1505,9 @@ public class ProductoService {
 }
 ```
 
-`ProductoService` ahora depende también de `CategoriaRepository` (ya existe desde 3.3.5) para validar que la `categoriaId` recibida corresponda a una categoría real antes de guardar o actualizar el producto — si no existe, responde HTTP 404 con el mismo `ResourceNotFoundException` que ya usa el resto del CRUD.
+`ProductoService` ahora depende también de `CategoriaRepository` (ya existe desde 3.5.3) para validar que la `categoriaId` recibida corresponda a una categoría real antes de guardar o actualizar el producto — si no existe, responde HTTP 404 con el mismo `ResourceNotFoundException` que ya usa el resto del CRUD.
 
-#### 3.3.11 Crear el controlador REST de `Producto`
+#### 3.5.9 Crear el controlador REST de `Producto`
 
 **`controller/ProductoController.java`**
 
@@ -1464,7 +1562,7 @@ public class ProductoController {
 
 `@DecimalMin(value = "0.0", inclusive = true)` en `precio` (dto/ProductoRequest.java) rechaza con HTTP 400 cualquier producto con precio negativo — misma lógica de validación temprana que ya usa `Categoria`.
 
-#### 3.3.12 Revisar estructura resultante
+#### 3.5.10 Revisar estructura resultante
 
 Después de crear los archivos anteriores, revisa que la estructura de `pagatu-catalogo-ms` quede similar a:
 
@@ -1506,7 +1604,7 @@ src/main/resources
 
 `config/` queda disponible para configuraciones locales del servicio (por ejemplo, un bean de OpenAPI); en S1 puede quedar vacío.
 
-#### 3.3.13 Preguntas de verificación antes de ejecutar
+#### 3.5.11 Preguntas de verificación antes de ejecutar
 
 Antes de ejecutar, la lectura del CRUD debe responder:
 
@@ -1521,11 +1619,9 @@ Antes de ejecutar, la lectura del CRUD debe responder:
 9. ¿Para qué sirve `CorrelationIdFilter`, y por qué es compartido entre `Categoria` y `Producto`?
 10. ¿Cómo aparece el `traceId` en los logs?
 
-### 3.4 Ejecutar y probar el microservicio en DEV
+Con el CRUD completo, ejecuta y verifica todo de punta a punta: tablas creadas por Flyway, Swagger, health y CRUD de ambos recursos por shell.
 
-**Producto del paso:** microservicio ejecutando en desarrollo fuera del IDE, tablas `categorias` y `productos` creadas por Flyway, Swagger disponible, health activo y CRUD de ambos recursos verificado por shell.
-
-#### 3.4.1 Verificar PostgreSQL DEV
+#### 3.5.12 Verificar PostgreSQL DEV
 
 Verifica que PostgreSQL DEV siga activo:
 
@@ -1535,9 +1631,9 @@ PowerShell / bash macOS/Linux:
 docker ps
 ```
 
-#### 3.4.2 Ejecutar con Maven Wrapper
+#### 3.5.13 Ejecutar con Maven Wrapper
 
-Ejecuta el microservicio:
+El microservicio ya debería estar corriendo desde 3.3.3 (DevTools lo reinicia solo con cada archivo nuevo). Si lo cerraste, vuelve a ejecutarlo:
 
 ```powershell
 # Windows (PowerShell o cmd)
@@ -1557,7 +1653,7 @@ En la consola debes ver una línea confirmando que arrancó en el puerto fijo `8
 Tomcat started on port 8080 (http) with context path '/'
 ```
 
-#### 3.4.3 Verificar tablas creadas por Flyway
+#### 3.5.14 Verificar tablas creadas por Flyway
 
 Luego verifica que Flyway haya creado ambas tablas en DEV:
 
@@ -1569,7 +1665,7 @@ docker exec -it pagatu-postgres-catalogo-dev psql -U pagatu -d pagatu_catalogo_d
 docker exec -it pagatu-postgres-catalogo-dev psql -U pagatu -d pagatu_catalogo_db -c "\d productos"
 ```
 
-#### 3.4.4 Revisar Swagger
+#### 3.5.15 Revisar Swagger
 
 Abre Swagger en el puerto `8080`:
 
@@ -1579,7 +1675,7 @@ http://localhost:8080/swagger-ui/index.html
 
 Verifica que aparezcan las operaciones del controlador de categorías.
 
-#### 3.4.5 Verificar health y metrics
+#### 3.5.16 Verificar health y metrics
 
 Verifica `/actuator/health`:
 
@@ -1631,7 +1727,7 @@ curl http://localhost:8080/actuator/metrics/jvm.memory.used
 
 Nota: para exponer `/actuator/prometheus` se requiere agregar `micrometer-registry-prometheus`.
 
-#### 3.4.6 Probar CRUD por shell
+#### 3.5.17 Probar CRUD por shell
 
 **Categoría**:
 
@@ -1816,75 +1912,6 @@ curl -X DELETE http://localhost:8080/api/productos/1
 ```
 
 Prueba también un producto con `precio` negativo y confirma que responde HTTP 400, y un `categoriaId` inexistente (por ejemplo `9999`) y confirma que responde HTTP 404.
-
-### 3.5 Simular escalamiento horizontal (múltiples instancias)
-
-**Producto del paso:** dos instancias de `pagatu-catalogo-ms` corriendo al mismo tiempo, cada una en un puerto distinto, ambas conectadas a la misma PostgreSQL DEV.
-
-**Figura 12. Escalamiento horizontal de `pagatu-catalogo-ms` con dos instancias en paralelo**
-
-```mermaid
-flowchart TB
-    DevClient["Cliente - PowerShell / bash / Swagger"]
-    DevApp1["pagatu-catalogo-ms - instancia 1 - puerto 8080"]
-    DevApp2["pagatu-catalogo-ms - instancia 2 - puerto 8081"]
-    subgraph DevDocker["Docker: solo base de datos"]
-        DevDb[("pagatu_catalogo_db - PostgreSQL - localhost:15432 -> 5432")]
-    end
-
-    DevClient -->|"localhost:8080"| DevApp1
-    DevClient -->|"localhost:8081"| DevApp2
-    DevApp1 -->|"localhost:15432"| DevDb
-    DevApp2 -->|"localhost:15432"| DevDb
-
-    classDef app fill:#eef6ff,stroke:#2b6cb0,color:#111;
-    classDef db fill:#fff4de,stroke:#b7791f,color:#111;
-    class DevApp1,DevApp2 app;
-    class DevDb db;
-```
-
-Un microservicio distribuido debe poder escalar horizontalmente: correr varias copias idénticas a la vez, cada una en su propio puerto, sin configuración fija que las haga chocar. Con `server.port` fijo en `8080` (el que usa el resto de esta guía), una segunda instancia no puede arrancar en la misma máquina — el puerto ya está ocupado.
-
-**Sin modificar `application-dev.yml`** (para no romper el puerto 8080 que usan los pasos anteriores de esta guía), la Terminal 1 sigue corriendo tal cual en `8080` (la que ya tenías abierta desde 3.4). Abre una **Terminal 2** nueva y pásale un puerto distinto como argumento de línea de comandos, desde `services/pagatu-catalogo-ms`:
-
-```powershell
-# Windows (PowerShell o cmd) - Terminal 2 (simultánea, con Postgres y la Terminal 1 ya corriendo en 8080)
-.\mvnw.cmd spring-boot:run "-Dspring-boot.run.arguments=--server.port=8081"
-```
-
-```bash
-# macOS / Linux - Terminal 2 (simultánea, con Postgres y la Terminal 1 ya corriendo en 8080)
-./mvnw spring-boot:run -Dspring-boot.run.arguments=--server.port=8081
-```
-
-`--server.port=8081` le indica a Spring Boot que arranque en ese puerto en vez del `8080` fijo del `application-dev.yml`. También puedes usar `--server.port=0` si prefieres que el sistema operativo asigne uno libre cualquiera — la diferencia es que con `8081` sabes el puerto de antemano, sin tener que leerlo de la consola.
-
-Verifica que ambas instancias responden por separado, con el endpoint de saludo y con `/actuator/health`:
-
-PowerShell:
-
-```powershell
-Invoke-RestMethod -Method Get -Uri "http://localhost:8080/saludo"
-Invoke-RestMethod -Method Get -Uri "http://localhost:8081/saludo"
-Invoke-RestMethod -Method Get -Uri "http://localhost:8080/actuator/health"
-Invoke-RestMethod -Method Get -Uri "http://localhost:8081/actuator/health"
-```
-
-bash macOS/Linux:
-
-```bash
-curl http://localhost:8080/saludo
-curl http://localhost:8081/saludo
-curl http://localhost:8080/actuator/health
-curl http://localhost:8081/actuator/health
-```
-
-Resultado esperado: ambas responden `pagatu-catalogo-ms activo` y `{"status":"UP"}`, cada una en su propio puerto, conectadas de forma independiente a la misma PostgreSQL DEV.
-
-**Por qué importa esto en S1.** Todavía no hay Gateway ni balanceador de carga — eso llega en S4 ("Punto único de acceso y distribución de tráfico"). Pero la capacidad de correr múltiples instancias sin puerto fijo es la base técnica que un balanceador necesita para repartir tráfico entre copias del mismo servicio; practicarla desde S1 deja esa evidencia lista para cuando el Gateway integre esta pieza.
-
-!!! note "3.6 y 3.7 son opcionales"
-    El alcance evaluado de S1 termina en el escalamiento horizontal de 3.5. Producción local con Docker (3.6-3.7) es contenido adicional: profundiza la ejecución reproducible del microservicio, pero no es necesario completarlo para que la sesión se considere lograda, y no es prerequisito de S2 — Config Server (S2) se configura sobre el microservicio ejecutando en DEV, sin depender de que la aplicación misma haya corrido dentro de Docker. Si te queda tiempo en clase o quieres profundizar por tu cuenta, adelante.
 
 ### 3.6 Configurar producción local con Docker (opcional)
 
@@ -2113,104 +2140,6 @@ Al terminar la evidencia, baja el entorno para liberar CPU, memoria, red y conte
 docker compose down
 ```
 
-### 3.8 Ruta alternativa: partir del tag de cierre de la sesión
-
-Esta sección sirve si tu equipo ya cerró la sesión con un tag de git en su propio repositorio del proyecto (por ejemplo `s01`) y quieres solo levantar, probar y revisar evidencias sin repetir toda la construcción paso a paso.
-
-**Tabla 5. Referencias de la ruta alternativa**
-
-| Necesidad | Referencia |
-|---|---|
-| Levantar y probar en DEV | [Ver paso 3.4](#34-ejecutar-y-probar-el-microservicio-en-dev) |
-| Revisar Swagger | [Ver paso 3.4.4](#344-revisar-swagger) |
-| Revisar health y metrics | [Ver paso 3.4.5](#345-verificar-health-y-metrics) |
-| Probar CRUD por shell | [Ver paso 3.4.6](#346-probar-crud-por-shell) |
-| Simular escalamiento horizontal | [Ver paso 3.5](#35-simular-escalamiento-horizontal-multiples-instancias) |
-| Levantar y escalar PROD local | [Ver paso 3.7](#37-probar-produccion-local-con-docker-opcional) |
-
-Comandos mínimos DEV:
-
-```powershell
-# Windows (PowerShell o cmd)
-cd services/pagatu-catalogo-ms
-docker compose -f compose-dev.yml up -d
-.\mvnw.cmd spring-boot:run
-```
-
-```bash
-# macOS / Linux
-cd services/pagatu-catalogo-ms
-docker compose -f compose-dev.yml up -d
-./mvnw spring-boot:run
-```
-
-Comandos mínimos PROD local:
-
-```bash
-cd services/pagatu-catalogo-ms
-docker compose up -d --build --scale pagatu-catalogo-ms=2
-docker compose ps
-```
-
-#### 3.8.1 Archivos clave por modo de ejecución
-
-DEV:
-
-**Tabla 6. Archivos clave en DEV**
-
-| Archivo | Propósito |
-|---|---|
-| `services/pagatu-catalogo-ms/compose-dev.yml` | PostgreSQL DEV |
-| `services/pagatu-catalogo-ms/src/main/resources/application.yml` | Configuración base y perfil activo |
-| `services/pagatu-catalogo-ms/src/main/resources/application-dev.yml` | Configuración DEV con puerto `8080` y BD DEV |
-
-PROD local:
-
-**Tabla 7. Archivos clave en PROD local**
-
-| Archivo | Propósito |
-|---|---|
-| `services/pagatu-catalogo-ms/Dockerfile` | Imagen de aplicación |
-| `services/pagatu-catalogo-ms/compose.yml` | Producción local con Docker |
-| `services/pagatu-catalogo-ms/.env.example` | Variables esperadas para PROD local |
-| `services/pagatu-catalogo-ms/.env` | Variables locales de ejecución PROD |
-| `services/pagatu-catalogo-ms/src/main/resources/application-prod.yml` | Configuración PROD local |
-
-Comunes:
-
-**Tabla 8. Archivos comunes**
-
-| Archivo | Propósito |
-|---|---|
-| `services/pagatu-catalogo-ms/pom.xml` | Dependencias del microservicio |
-| `services/pagatu-catalogo-ms/src/main/java/...` | Código del servicio |
-| `services/pagatu-catalogo-ms/src/main/resources/db/migration` | Migraciones Flyway |
-| `services/pagatu-catalogo-ms/README.md` | Operación y evidencias |
-
-#### 3.8.2 Verificación rápida de base de datos
-
-DEV:
-
-```bash
-docker exec -it pagatu-postgres-catalogo-dev psql -U pagatu -d pagatu_catalogo_db
-```
-
-Dentro de `psql`:
-
-```sql
-\dt
-\d categorias
-SELECT * FROM categorias;
-\q
-```
-
-PROD local:
-
-```bash
-docker exec -it pagatu-postgres-catalogo psql -U pagatu -d pagatu_catalogo_db -c "\dt"
-docker exec -it pagatu-postgres-catalogo psql -U pagatu -d pagatu_catalogo_db -c "SELECT * FROM categorias;"
-```
-
 **Evidencia de aprendizaje:**
 
 - `pagatu-catalogo-ms` funcional con CRUD de categorías y productos, ejecutándose en DEV con múltiples instancias en paralelo (escalamiento horizontal).
@@ -2347,7 +2276,7 @@ PROD local con Docker (3.6-3.7) es opcional: si se incluye, suma como evidencia 
 
 Evidencia mínima que debes poder defender sobre el escalamiento horizontal:
 
-**Tabla 9. Comparación entre instancias del escalamiento horizontal**
+**Tabla 5. Comparación entre instancias del escalamiento horizontal**
 
 | Aspecto | Instancia 1 | Instancia 2 |
 |---|---|---|
@@ -2358,13 +2287,13 @@ Evidencia mínima que debes poder defender sobre el escalamiento horizontal:
 
 Comparación entre DEV y PROD local (aplica solo si completaste la parte opcional de 3.6-3.7):
 
-**Tabla 10. Comparación entre DEV y PROD local**
+**Tabla 6. Comparación entre DEV y PROD local**
 
 | Aspecto | DEV Maven Wrapper | PROD Docker |
 |---|---|---|
 | Aplicación | Ejecuta en host con `mvnw spring-boot:run` | Ejecuta dentro de contenedor |
 | Base de datos | PostgreSQL en Docker DEV | PostgreSQL en Docker PROD |
-| Puerto del microservicio | Fijo `8080` (o `8081` con una segunda instancia, ver 3.5) | Interno `8080` dentro de Docker |
+| Puerto del microservicio | Fijo `8080` (o `8081` con una segunda instancia, ver 3.4) | Interno `8080` dentro de Docker |
 | Acceso externo | Directo por `localhost` | Por red Docker; luego por Gateway |
 | Propósito | Desarrollo, depuración y cambios rápidos | Ejecución reproducible y cercana a producción |
 
@@ -2383,7 +2312,7 @@ Si completaste la parte opcional de 3.6-3.7:
 
 ### 4.6 Rúbrica de evaluación
 
-**Tabla 11. Rúbrica de evaluación**
+**Tabla 7. Rúbrica de evaluación**
 
 | Criterio | Peso (%) | A (20 pts) | B (15 pts) | C (10 pts) | D (5 pts) | Nivel obtenido |
 |---|---:|---|---|---|---|---:|
