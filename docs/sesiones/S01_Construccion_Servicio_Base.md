@@ -1073,6 +1073,13 @@ Lo que queda definido desde ahora es la estructura exacta que las entidades `Cat
 
 Con la migración lista, ahora se construye `Categoria` completo: entidad, repositorio, DTO, mapper, servicio y controlador, en ese orden — antes de tocar `Producto`.
 
+!!! note "Entrega en dos partes: tags `s01-servicio-base-p1` / `s01-servicio-base-p2`"
+    Hasta aquí (Figura 12, las tres tablas creadas por Flyway) llega la
+    primera entrega de S1, tag `s01-servicio-base-p1`. La construcción del
+    CRUD de `Categoria` y `Producto` (3.5.2 en adelante: entidad,
+    repositorio, DTO, mapper, servicio y controlador de cada uno) es la
+    segunda entrega, tag `s01-servicio-base-p2`.
+
 #### 3.5.2 Crear la entidad `Categoria`
 
 **`entity/Categoria.java`**
