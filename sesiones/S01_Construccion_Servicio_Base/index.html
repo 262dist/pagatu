@@ -3033,6 +3033,28 @@ Reason: Failed to determine a suitable driver class
 <span class="nt">volumes</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">pagatu_catalogo_dev_data</span><span class="p">:</span>
 </code></pre></div>
+<p><strong><code>compose-dev.yml</code> equivalente con MySQL</strong> (alternativa a esta misma, con un usuario propio en vez de <code>root</code>):</p>
+<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-catalogo-dev</span>
+
+<span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">mysql-catalogo-dev</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mysql:8.4</span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-mysql-catalogo-dev</span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">MYSQL_ROOT_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
+<span class="w">      </span><span class="nt">MYSQL_DATABASE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu_catalogo_db</span>
+<span class="w">      </span><span class="nt">MYSQL_USER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
+<span class="w">      </span><span class="nt">MYSQL_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;13306:3306&quot;</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu_catalogo_dev_data:/var/lib/mysql</span>
+
+<span class="nt">volumes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pagatu_catalogo_dev_data</span><span class="p">:</span>
+</code></pre></div>
+<p><code>MYSQL_USER</code>/<code>MYSQL_PASSWORD</code> crean el usuario <code>pagatu</code> con privilegios acotados a <code>pagatu_catalogo_db</code> — la aplicación se conecta como <code>pagatu</code>, no como <code>root</code>. <code>MYSQL_ROOT_PASSWORD</code> sigue siendo obligatorio para la imagen (MySQL no arranca sin él), pero no lo usa el backend. La URL de conexión en <code>application-dev.yml</code> cambiaría a <code>jdbc:mysql://localhost:13306/pagatu_catalogo_db</code>.</p>
 <p>Levanta la base de datos:</p>
 <p>PowerShell / bash macOS/Linux:</p>
 <div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-dev.yml<span class="w"> </span>up<span class="w"> </span>-d
