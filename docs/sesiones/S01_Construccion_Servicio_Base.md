@@ -616,7 +616,7 @@ management:
       show-details: always
 ```
 
-El puerto queda fijo en `8080` para todo el resto de esta guía — más simple para probar con Swagger/shell sin tener que buscar qué puerto asignó Spring Boot cada vez. Cuando en 3.4 se necesite escalar a varias instancias, el puerto dinámico se pide como argumento de línea de comandos, sin tocar este archivo (ver 3.4).
+El puerto queda fijo en `8080` para todo el resto de esta guía — más simple para probar con Swagger/shell sin tener que buscar qué puerto asignó Spring Boot cada vez. Cuando en 3.4 se necesite escalar a varias instancias, el puerto de la segunda se pasa como argumento de línea de comandos, sin tocar este archivo (ver 3.4).
 
 En DEV, Flyway queda activo y ejecuta automáticamente `V1__create_catalogo_tables.sql` al arrancar la aplicación (se crea en 3.5.1). JPA/Hibernate no crea tablas; solo valida que las entidades coincidan con la estructura de la base de datos mediante `ddl-auto: validate`.
 
