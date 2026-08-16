@@ -234,6 +234,14 @@ Regla práctica:
 
 **Error frecuente**: levantar más de dos instancias en el laboratorio. Cada instancia adicional consume CPU y memoria del equipo del estudiante sin aportar valor pedagógico extra en S1 — dos instancias bastan para demostrar el patrón (ver 3.4 y 3.7.4).
 
+### 2.5 Contrato y versionado de API
+
+**Versionado básico de API**: `pagatu-catalogo-ms` versiona su contrato en la propia URL (`/api/v1/...`). Es la forma más simple de versionado: si en el futuro un cambio rompe compatibilidad, se publica `/api/v2/...` sin obligar a los consumidores existentes (otros microservicios, un futuro frontend, o cualquier integración externa) a migrar de inmediato. En S1 basta con fijar el prefijo `v1`; no se implementa todavía coexistencia de versiones.
+
+**Error frecuente**: dejar el contrato sin códigos de error documentados. Un contrato verificable incluye 400, 404 y 500, no solo el camino feliz.
+
+Swagger (SpringDoc OpenAPI, ver 3.2.1) publica este contrato como documentación viva y siempre sincronizada con el código.
+
 ## 3. Aplica: actividad práctica guiada
 
 Tiempo: 2h.
@@ -1236,7 +1244,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/categorias")
+@RequestMapping("/api/v1/categorias")
 @RequiredArgsConstructor
 public class CategoriaController {
 
@@ -1525,7 +1533,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/productos")
+@RequestMapping("/api/v1/productos")
 @RequiredArgsConstructor
 public class ProductoController {
 
@@ -1738,7 +1746,7 @@ PowerShell:
 ```powershell
 Invoke-RestMethod `
   -Method Post `
-  -Uri "http://localhost:8080/api/categorias" `
+  -Uri "http://localhost:8080/api/v1/categorias" `
   -ContentType "application/json" `
   -Body '{"nombre":"Electrodomesticos","descripcion":"Linea blanca y pequenos electrodomesticos"}'
 ```
@@ -1746,7 +1754,7 @@ Invoke-RestMethod `
 bash macOS/Linux:
 
 ```bash
-curl -X POST http://localhost:8080/api/categorias \
+curl -X POST http://localhost:8080/api/v1/categorias \
   -H "Content-Type: application/json" \
   -d '{"nombre":"Electrodomesticos","descripcion":"Linea blanca y pequenos electrodomesticos"}'
 ```
@@ -1758,13 +1766,13 @@ PowerShell:
 ```powershell
 Invoke-RestMethod `
   -Method Get `
-  -Uri "http://localhost:8080/api/categorias"
+  -Uri "http://localhost:8080/api/v1/categorias"
 ```
 
 bash macOS/Linux:
 
 ```bash
-curl http://localhost:8080/api/categorias
+curl http://localhost:8080/api/v1/categorias
 ```
 
 Obtiene una categoría por id:
@@ -1774,13 +1782,13 @@ PowerShell:
 ```powershell
 Invoke-RestMethod `
   -Method Get `
-  -Uri "http://localhost:8080/api/categorias/1"
+  -Uri "http://localhost:8080/api/v1/categorias/1"
 ```
 
 bash macOS/Linux:
 
 ```bash
-curl http://localhost:8080/api/categorias/1
+curl http://localhost:8080/api/v1/categorias/1
 ```
 
 Actualiza una categoría:
@@ -1790,7 +1798,7 @@ PowerShell:
 ```powershell
 Invoke-RestMethod `
   -Method Put `
-  -Uri "http://localhost:8080/api/categorias/1" `
+  -Uri "http://localhost:8080/api/v1/categorias/1" `
   -ContentType "application/json" `
   -Body '{"nombre":"Electrodomesticos","descripcion":"Linea blanca, pequenos y grandes electrodomesticos"}'
 ```
@@ -1798,7 +1806,7 @@ Invoke-RestMethod `
 bash macOS/Linux:
 
 ```bash
-curl -X PUT http://localhost:8080/api/categorias/1 \
+curl -X PUT http://localhost:8080/api/v1/categorias/1 \
   -H "Content-Type: application/json" \
   -d '{"nombre":"Electrodomesticos","descripcion":"Linea blanca, pequenos y grandes electrodomesticos"}'
 ```
@@ -1810,13 +1818,13 @@ PowerShell:
 ```powershell
 Invoke-RestMethod `
   -Method Delete `
-  -Uri "http://localhost:8080/api/categorias/1"
+  -Uri "http://localhost:8080/api/v1/categorias/1"
 ```
 
 bash macOS/Linux:
 
 ```bash
-curl -X DELETE http://localhost:8080/api/categorias/1
+curl -X DELETE http://localhost:8080/api/v1/categorias/1
 ```
 
 Prueba también un caso de validación fallida (sin `nombre`) y confirma que responde HTTP 400, y una consulta a un `id` inexistente y confirma que responde HTTP 404.
@@ -1830,7 +1838,7 @@ PowerShell:
 ```powershell
 Invoke-RestMethod `
   -Method Post `
-  -Uri "http://localhost:8080/api/productos" `
+  -Uri "http://localhost:8080/api/v1/productos" `
   -ContentType "application/json" `
   -Body '{"nombre":"Matricula","descripcion":"Matricula del ciclo","precio":350.00,"activo":true,"categoriaId":1}'
 ```
@@ -1838,7 +1846,7 @@ Invoke-RestMethod `
 bash macOS/Linux:
 
 ```bash
-curl -X POST http://localhost:8080/api/productos \
+curl -X POST http://localhost:8080/api/v1/productos \
   -H "Content-Type: application/json" \
   -d '{"nombre":"Matricula","descripcion":"Matricula del ciclo","precio":350.00,"activo":true,"categoriaId":1}'
 ```
@@ -1850,13 +1858,13 @@ PowerShell:
 ```powershell
 Invoke-RestMethod `
   -Method Get `
-  -Uri "http://localhost:8080/api/productos"
+  -Uri "http://localhost:8080/api/v1/productos"
 ```
 
 bash macOS/Linux:
 
 ```bash
-curl http://localhost:8080/api/productos
+curl http://localhost:8080/api/v1/productos
 ```
 
 Obtiene un producto por id:
@@ -1866,13 +1874,13 @@ PowerShell:
 ```powershell
 Invoke-RestMethod `
   -Method Get `
-  -Uri "http://localhost:8080/api/productos/1"
+  -Uri "http://localhost:8080/api/v1/productos/1"
 ```
 
 bash macOS/Linux:
 
 ```bash
-curl http://localhost:8080/api/productos/1
+curl http://localhost:8080/api/v1/productos/1
 ```
 
 Actualiza un producto:
@@ -1882,7 +1890,7 @@ PowerShell:
 ```powershell
 Invoke-RestMethod `
   -Method Put `
-  -Uri "http://localhost:8080/api/productos/1" `
+  -Uri "http://localhost:8080/api/v1/productos/1" `
   -ContentType "application/json" `
   -Body '{"nombre":"Matricula","descripcion":"Matricula del ciclo, promocion","precio":300.00,"activo":true,"categoriaId":1}'
 ```
@@ -1890,7 +1898,7 @@ Invoke-RestMethod `
 bash macOS/Linux:
 
 ```bash
-curl -X PUT http://localhost:8080/api/productos/1 \
+curl -X PUT http://localhost:8080/api/v1/productos/1 \
   -H "Content-Type: application/json" \
   -d '{"nombre":"Matricula","descripcion":"Matricula del ciclo, promocion","precio":300.00,"activo":true,"categoriaId":1}'
 ```
@@ -1902,13 +1910,13 @@ PowerShell:
 ```powershell
 Invoke-RestMethod `
   -Method Delete `
-  -Uri "http://localhost:8080/api/productos/1"
+  -Uri "http://localhost:8080/api/v1/productos/1"
 ```
 
 bash macOS/Linux:
 
 ```bash
-curl -X DELETE http://localhost:8080/api/productos/1
+curl -X DELETE http://localhost:8080/api/v1/productos/1
 ```
 
 Prueba también un producto con `precio` negativo y confirma que responde HTTP 400, y un `categoriaId` inexistente (por ejemplo `9999`) y confirma que responde HTTP 404.
