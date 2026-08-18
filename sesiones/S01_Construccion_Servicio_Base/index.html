@@ -1191,6 +1191,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#3521-generar-el-jar-manualmente-opcional-verificacion-rapida" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.21 Generar el jar manualmente (opcional, verificación rápida)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2131,6 +2142,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#3521-generar-el-jar-manualmente-opcional-verificacion-rapida" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5.21 Generar el jar manualmente (opcional, verificación rápida)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2632,13 +2654,13 @@
 el comando de Temurin es el mismo para Intel y para Apple Silicon
 M1/M2/M3/M4 — Homebrew detecta la arquitectura automáticamente):</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># 1. Instalar Homebrew (si no lo tiene)</span>
-/bin/bash<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh<span class="k">)</span><span class="s2">&quot;</span>
+/bin/bash<span class="w"> </span>-c<span class="w"> </span><span class="s2">"</span><span class="k">$(</span>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh<span class="k">)</span><span class="s2">"</span>
 
 <span class="c1"># 2. Solo en Apple Silicon (M1/M2/M3/M4): agregar Homebrew al PATH.</span>
 <span class="c1">#    Se instala en /opt/homebrew (no en /usr/local como en Intel), y el</span>
 <span class="c1">#    propio instalador lo pide como paso obligatorio, no opcional.</span>
-<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;eval &quot;$(/opt/homebrew/bin/brew shellenv)&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zprofile
-<span class="nb">eval</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>/opt/homebrew/bin/brew<span class="w"> </span>shellenv<span class="k">)</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s1">'eval "$(/opt/homebrew/bin/brew shellenv)"'</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zprofile
+<span class="nb">eval</span><span class="w"> </span><span class="s2">"</span><span class="k">$(</span>/opt/homebrew/bin/brew<span class="w"> </span>shellenv<span class="k">)</span><span class="s2">"</span>
 
 <span class="c1"># 3. Instalar Temurin 21</span>
 brew<span class="w"> </span>install<span class="w"> </span>--cask<span class="w"> </span>temurin@21
@@ -2646,12 +2668,12 @@ brew<span class="w"> </span>install<span class="w"> </span>--cask<span class="w"
 <p><strong>Linux (Ubuntu/Debian)</strong> — repositorio oficial de Adoptium vía <code>apt</code>:</p>
 <div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>wget<span class="w"> </span>apt-transport-https<span class="w"> </span>gpg
 wget<span class="w"> </span>-qO<span class="w"> </span>-<span class="w"> </span>https://packages.adoptium.net/artifactory/api/gpg/key/public<span class="w"> </span><span class="p">|</span><span class="w"> </span>gpg<span class="w"> </span>--dearmor<span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/apt/trusted.gpg.d/adoptium.gpg<span class="w"> </span>&gt;<span class="w"> </span>/dev/null
-<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;deb https://packages.adoptium.net/artifactory/deb </span><span class="k">$(</span>awk<span class="w"> </span>-F<span class="o">=</span><span class="w"> </span><span class="s1">&#39;/^VERSION_CODENAME/{print$2}&#39;</span><span class="w"> </span>/etc/os-release<span class="k">)</span><span class="s2"> main&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/apt/sources.list.d/adoptium.list
+<span class="nb">echo</span><span class="w"> </span><span class="s2">"deb https://packages.adoptium.net/artifactory/deb </span><span class="k">$(</span>awk<span class="w"> </span>-F<span class="o">=</span><span class="w"> </span><span class="s1">'/^VERSION_CODENAME/{print$2}'</span><span class="w"> </span>/etc/os-release<span class="k">)</span><span class="s2"> main"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/apt/sources.list.d/adoptium.list
 sudo<span class="w"> </span>apt<span class="w"> </span>update
 sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>temurin-21-jdk
 </code></pre></div>
 <p><strong>Linux (Fedora/RHEL)</strong> — repositorio oficial de Adoptium vía <code>dnf</code>:</p>
-<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/yum.repos.d/adoptium.repo<span class="w"> </span>&gt;<span class="w"> </span>/dev/null<span class="w"> </span><span class="s">&lt;&lt;&#39;EOF&#39;</span>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/yum.repos.d/adoptium.repo<span class="w"> </span>&gt;<span class="w"> </span>/dev/null<span class="w"> </span><span class="s">&lt;&lt;'EOF'</span>
 <span class="s">[Adoptium]</span>
 <span class="s">name=Adoptium</span>
 <span class="s">baseurl=https://packages.adoptium.net/artifactory/rpm/$(. /etc/os-release; echo $ID)/$releasever/$basearch</span>
@@ -2847,7 +2869,7 @@ code<span class="w"> </span>--install-extension<span class="w"> </span>vmware.vs
 </code></pre></div>
 <p>Si todavía no existe configuración de base de datos, el error esperado será parecido a:</p>
 <div class="highlight"><pre><span></span><code>APPLICATION FAILED TO START
-Failed to configure a DataSource: &#39;url&#39; attribute is not specified and no embedded datasource could be configured.
+Failed to configure a DataSource: 'url' attribute is not specified and no embedded datasource could be configured.
 Reason: Failed to determine a suitable driver class
 </code></pre></div>
 <p>No se corrige quitando JPA ni usando H2. Se corrige declarando PostgreSQL DEV y levantando la base de datos con Docker.</p>
@@ -2868,7 +2890,7 @@ Reason: Failed to determine a suitable driver class
 <span class="w">      </span><span class="nt">POSTGRES_USER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
 <span class="w">      </span><span class="nt">POSTGRES_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
 <span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;15432:5432&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"15432:5432"</span>
 <span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu_catalogo_dev_data:/var/lib/postgresql/data</span>
 
@@ -2889,7 +2911,7 @@ Reason: Failed to determine a suitable driver class
 <span class="w">      </span><span class="nt">MYSQL_USER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
 <span class="w">      </span><span class="nt">MYSQL_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
 <span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;13306:3306&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"13306:3306"</span>
 <span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu_catalogo_dev_data:/var/lib/mysql</span>
 
@@ -2963,8 +2985,8 @@ docker<span class="w"> </span>ps
 <h4 id="324-ejecutar-y-comprobar-que-ya-no-falla">3.2.4 Ejecutar y comprobar que ya no falla<a class="headerlink" href="#324-ejecutar-y-comprobar-que-ya-no-falla" title="Permanent link">&para;</a></h4>
 <p>Antes de ejecutar la aplicación, comprueba desde la consola que PostgreSQL DEV está listo y que la base de datos existe.</p>
 <p>PowerShell / bash macOS/Linux:</p>
-<div class="highlight"><pre><span></span><code>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-catalogo-dev<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_catalogo_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;SELECT current_database();&quot;</span>
-docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-catalogo-dev<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_catalogo_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;\dt&quot;</span>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-catalogo-dev<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_catalogo_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">"SELECT current_database();"</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-catalogo-dev<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_catalogo_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">"\dt"</span>
 </code></pre></div>
 <p>Resultado esperado:</p>
 <div class="highlight"><pre><span></span><code>current_database
@@ -2980,13 +3002,13 @@ pagatu_catalogo_db
 ./mvnw<span class="w"> </span>spring-boot:run
 </code></pre></div>
 <p>Verifica que la aplicación arrancó sin el error de conexión de 3.2.2:</p>
-<div class="highlight"><pre><span></span><code>Tomcat started on port 8080 (http) with context path &#39;/&#39;
+<div class="highlight"><pre><span></span><code>Tomcat started on port 8080 (http) with context path '/'
 </code></pre></div>
 <p>Confirma también con <code>/actuator/health</code> (disponible desde 3.2.1, sin necesitar ningún endpoint propio todavía):</p>
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
   <span class="n">-Method</span> <span class="n">Get</span> <span class="p">`</span>
-  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/actuator/health&quot;</span>
+  <span class="n">-Uri</span> <span class="s2">"http://localhost:8080/actuator/health"</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8080/actuator/health
@@ -3003,9 +3025,9 @@ pagatu_catalogo_db
 <span class="nd">@RestController</span>
 <span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SaludoController</span><span class="w"> </span><span class="p">{</span>
 
-<span class="w">    </span><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">&quot;/saludo&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/saludo"</span><span class="p">)</span>
 <span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">saludo</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;pagatu-catalogo-ms activo&quot;</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="s">"pagatu-catalogo-ms activo"</span><span class="p">;</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -3016,7 +3038,7 @@ pagatu_catalogo_db
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
   <span class="n">-Method</span> <span class="n">Get</span> <span class="p">`</span>
-  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/saludo&quot;</span>
+  <span class="n">-Uri</span> <span class="s2">"http://localhost:8080/saludo"</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8080/saludo
@@ -3067,20 +3089,20 @@ pagatu_catalogo_db
 <span class="w">    </span><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">ResourceNotFoundException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
 <span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="nf">handleNotFound</span><span class="p">(</span><span class="n">ResourceNotFoundException</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
-<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;timestamp&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">());</span>
-<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;status&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">NOT_FOUND</span><span class="p">.</span><span class="na">value</span><span class="p">());</span>
-<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;error&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Not Found&quot;</span><span class="p">);</span>
-<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;message&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ex</span><span class="p">.</span><span class="na">getMessage</span><span class="p">());</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"timestamp"</span><span class="p">,</span><span class="w"> </span><span class="n">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">());</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"status"</span><span class="p">,</span><span class="w"> </span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">NOT_FOUND</span><span class="p">.</span><span class="na">value</span><span class="p">());</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"error"</span><span class="p">,</span><span class="w"> </span><span class="s">"Not Found"</span><span class="p">);</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"message"</span><span class="p">,</span><span class="w"> </span><span class="n">ex</span><span class="p">.</span><span class="na">getMessage</span><span class="p">());</span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">NOT_FOUND</span><span class="p">).</span><span class="na">body</span><span class="p">(</span><span class="n">body</span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>
 
 <span class="w">    </span><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">MethodArgumentNotValidException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
 <span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="nf">handleValidation</span><span class="p">(</span><span class="n">MethodArgumentNotValidException</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
-<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;timestamp&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">());</span>
-<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;status&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">BAD_REQUEST</span><span class="p">.</span><span class="na">value</span><span class="p">());</span>
-<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;error&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Bad Request&quot;</span><span class="p">);</span>
-<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;message&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Error de validación en los datos enviados&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"timestamp"</span><span class="p">,</span><span class="w"> </span><span class="n">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">());</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"status"</span><span class="p">,</span><span class="w"> </span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">BAD_REQUEST</span><span class="p">.</span><span class="na">value</span><span class="p">());</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"error"</span><span class="p">,</span><span class="w"> </span><span class="s">"Bad Request"</span><span class="p">);</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"message"</span><span class="p">,</span><span class="w"> </span><span class="s">"Error de validación en los datos enviados"</span><span class="p">);</span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">BAD_REQUEST</span><span class="p">).</span><span class="na">body</span><span class="p">(</span><span class="n">body</span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
@@ -3108,8 +3130,8 @@ pagatu_catalogo_db
 <span class="nd">@Component</span>
 <span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CorrelationIdFilter</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">OncePerRequestFilter</span><span class="w"> </span><span class="p">{</span>
 
-<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">TRACE_ID_HEADER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;X-Trace-ID&quot;</span><span class="p">;</span>
-<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">MDC_KEY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;traceId&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">TRACE_ID_HEADER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"X-Trace-ID"</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">MDC_KEY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"traceId"</span><span class="p">;</span>
 
 <span class="w">    </span><span class="nd">@Override</span>
 <span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">doFilterInternal</span><span class="p">(</span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">,</span>
@@ -3130,33 +3152,33 @@ pagatu_catalogo_db
 <span class="p">}</span>
 </code></pre></div>
 <p>Crea también <code>src/main/resources/logback-spring.xml</code>. Este archivo define el formato de logs e incluye el <code>traceId</code> en cada línea (<code>[%X{traceId}]</code>), con salida por consola y por archivo en <code>logs/catalogo.log</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
 <span class="nt">&lt;configuration&gt;</span>
-<span class="w">    </span><span class="nt">&lt;include</span><span class="w"> </span><span class="na">resource=</span><span class="s">&quot;org/springframework/boot/logging/logback/defaults.xml&quot;</span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;include</span><span class="w"> </span><span class="na">resource=</span><span class="s">"org/springframework/boot/logging/logback/defaults.xml"</span><span class="nt">/&gt;</span>
 
-<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;LOG_PATTERN&quot;</span>
-<span class="w">              </span><span class="na">value=</span><span class="s">&quot;%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId}] %-5level %logger{36} - %msg%n&quot;</span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"LOG_PATTERN"</span>
+<span class="w">              </span><span class="na">value=</span><span class="s">"%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId}] %-5level %logger{36} - %msg%n"</span><span class="nt">/&gt;</span>
 
-<span class="w">    </span><span class="nt">&lt;appender</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;CONSOLE&quot;</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;ch.qos.logback.core.ConsoleAppender&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;appender</span><span class="w"> </span><span class="na">name=</span><span class="s">"CONSOLE"</span><span class="w"> </span><span class="na">class=</span><span class="s">"ch.qos.logback.core.ConsoleAppender"</span><span class="nt">&gt;</span>
 <span class="w">        </span><span class="nt">&lt;encoder&gt;</span>
 <span class="w">            </span><span class="nt">&lt;pattern&gt;</span>${LOG_PATTERN}<span class="nt">&lt;/pattern&gt;</span>
 <span class="w">        </span><span class="nt">&lt;/encoder&gt;</span>
 <span class="w">    </span><span class="nt">&lt;/appender&gt;</span>
 
-<span class="w">    </span><span class="nt">&lt;appender</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;FILE&quot;</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;appender</span><span class="w"> </span><span class="na">name=</span><span class="s">"FILE"</span><span class="w"> </span><span class="na">class=</span><span class="s">"ch.qos.logback.core.rolling.RollingFileAppender"</span><span class="nt">&gt;</span>
 <span class="w">        </span><span class="nt">&lt;file&gt;</span>logs/catalogo.log<span class="nt">&lt;/file&gt;</span>
 <span class="w">        </span><span class="nt">&lt;encoder&gt;</span>
 <span class="w">            </span><span class="nt">&lt;pattern&gt;</span>${LOG_PATTERN}<span class="nt">&lt;/pattern&gt;</span>
 <span class="w">        </span><span class="nt">&lt;/encoder&gt;</span>
-<span class="w">        </span><span class="nt">&lt;rollingPolicy</span><span class="w"> </span><span class="na">class=</span><span class="s">&quot;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&quot;</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="nt">&lt;rollingPolicy</span><span class="w"> </span><span class="na">class=</span><span class="s">"ch.qos.logback.core.rolling.TimeBasedRollingPolicy"</span><span class="nt">&gt;</span>
 <span class="w">            </span><span class="nt">&lt;fileNamePattern&gt;</span>logs/catalogo-%d{yyyy-MM-dd}.log<span class="nt">&lt;/fileNamePattern&gt;</span>
 <span class="w">            </span><span class="nt">&lt;maxHistory&gt;</span>7<span class="nt">&lt;/maxHistory&gt;</span>
 <span class="w">        </span><span class="nt">&lt;/rollingPolicy&gt;</span>
 <span class="w">    </span><span class="nt">&lt;/appender&gt;</span>
 
-<span class="w">    </span><span class="nt">&lt;root</span><span class="w"> </span><span class="na">level=</span><span class="s">&quot;INFO&quot;</span><span class="nt">&gt;</span>
-<span class="w">        </span><span class="nt">&lt;appender-ref</span><span class="w"> </span><span class="na">ref=</span><span class="s">&quot;CONSOLE&quot;</span><span class="nt">/&gt;</span>
-<span class="w">        </span><span class="nt">&lt;appender-ref</span><span class="w"> </span><span class="na">ref=</span><span class="s">&quot;FILE&quot;</span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;root</span><span class="w"> </span><span class="na">level=</span><span class="s">"INFO"</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="nt">&lt;appender-ref</span><span class="w"> </span><span class="na">ref=</span><span class="s">"CONSOLE"</span><span class="nt">/&gt;</span>
+<span class="w">        </span><span class="nt">&lt;appender-ref</span><span class="w"> </span><span class="na">ref=</span><span class="s">"FILE"</span><span class="nt">/&gt;</span>
 <span class="w">    </span><span class="nt">&lt;/root&gt;</span>
 <span class="nt">&lt;/configuration&gt;</span>
 </code></pre></div>
@@ -3166,7 +3188,7 @@ pagatu_catalogo_db
 <div class="highlight"><pre><span></span><code>2026-08-15T18:51:40.107-05:00  INFO 3804 --- [pagatu-catalogo-ms] [  restartedMain] p.e.u.c.PagatuCatalogoMsApplication      : Started PagatuCatalogoMsApplication in 1.765 seconds (process running for 110927.327)
 </code></pre></div>
 <p>Después de reiniciar con <code>logback-spring.xml</code> en su lugar, el formato cambia al patrón definido (<code>[%X{traceId}]</code> en vez de PID/app/hilo):</p>
-<div class="highlight"><pre><span></span><code>2026-08-15 18:53:05.581 [] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path &#39;/&#39;
+<div class="highlight"><pre><span></span><code>2026-08-15 18:53:05.581 [] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
 2026-08-15 18:53:05.590 [] INFO  p.e.u.c.PagatuCatalogoMsApplication - Started PagatuCatalogoMsApplication in 1.715 seconds (process running for 111012.81)
 2026-08-15 18:53:17.004 [22deb350-54b4-4dea-a9c6-b09aaae9cea6] INFO  o.s.api.AbstractOpenApiResource - Init duration for springdoc-openapi is: 113 ms
 </code></pre></div>
@@ -3195,7 +3217,7 @@ pagatu_catalogo_db
 <h4 id="341-levantar-una-segunda-instancia">3.4.1 Levantar una segunda instancia<a class="headerlink" href="#341-levantar-una-segunda-instancia" title="Permanent link">&para;</a></h4>
 <p><strong>Sin modificar <code>application-dev.yml</code></strong> (para no romper el puerto 8080 que usan los pasos siguientes de esta guía), la Terminal 1 sigue corriendo tal cual en <code>8080</code> (la que ya tenías abierta desde 3.3.3). Abre una <strong>Terminal 2</strong> nueva y pásale un puerto distinto como argumento de línea de comandos, desde <code>services/pagatu-catalogo-ms</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="c"># Windows (PowerShell o cmd) - Terminal 2 (simultánea, con Postgres y la Terminal 1 ya corriendo en 8080)</span>
-<span class="p">.\</span><span class="n">mvnw</span><span class="p">.</span><span class="n">cmd</span> <span class="n">spring-boot</span><span class="p">:</span><span class="n">run</span> <span class="s2">&quot;-Dspring-boot.run.arguments=--server.port=8081&quot;</span>
+<span class="p">.\</span><span class="n">mvnw</span><span class="p">.</span><span class="n">cmd</span> <span class="n">spring-boot</span><span class="p">:</span><span class="n">run</span> <span class="s2">"-Dspring-boot.run.arguments=--server.port=8081"</span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><span class="c1"># macOS / Linux - Terminal 2 (simultánea, con Postgres y la Terminal 1 ya corriendo en 8080)</span>
 ./mvnw<span class="w"> </span>spring-boot:run<span class="w"> </span>-Dspring-boot.run.arguments<span class="o">=</span>--server.port<span class="o">=</span><span class="m">8081</span>
@@ -3204,10 +3226,10 @@ pagatu_catalogo_db
 <h4 id="342-ejecutar-y-probar">3.4.2 Ejecutar y probar<a class="headerlink" href="#342-ejecutar-y-probar" title="Permanent link">&para;</a></h4>
 <p>Verifica que ambas instancias responden por separado, con el endpoint de saludo y con <code>/actuator/health</code>:</p>
 <p>PowerShell:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/saludo&quot;</span>
-<span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8081/saludo&quot;</span>
-<span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/actuator/health&quot;</span>
-<span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8081/actuator/health&quot;</span>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:8080/saludo"</span>
+<span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:8081/saludo"</span>
+<span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:8080/actuator/health"</span>
+<span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:8081/actuator/health"</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8080/saludo
@@ -3295,7 +3317,7 @@ segunda entrega, tag <code>s01-servicio-base-p2</code>.</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">lombok.*</span><span class="p">;</span>
 
 <span class="nd">@Entity</span>
-<span class="nd">@Table</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;categorias&quot;</span><span class="p">)</span>
+<span class="nd">@Table</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"categorias"</span><span class="p">)</span>
 <span class="nd">@Getter</span>
 <span class="nd">@Setter</span>
 <span class="nd">@Builder</span>
@@ -3307,10 +3329,10 @@ segunda entrega, tag <code>s01-servicio-base-p2</code>.</p>
 <span class="w">    </span><span class="nd">@GeneratedValue</span><span class="p">(</span><span class="n">strategy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GenerationType</span><span class="p">.</span><span class="na">IDENTITY</span><span class="p">)</span>
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">;</span>
 
-<span class="w">    </span><span class="nd">@Column</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;nombre&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">nullable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span>
+<span class="w">    </span><span class="nd">@Column</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"nombre"</span><span class="p">,</span><span class="w"> </span><span class="n">nullable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span>
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">nombre</span><span class="p">;</span>
 
-<span class="w">    </span><span class="nd">@Column</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;descripcion&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">255</span><span class="p">)</span>
+<span class="w">    </span><span class="nd">@Column</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"descripcion"</span><span class="p">,</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">255</span><span class="p">)</span>
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">descripcion</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -3441,7 +3463,7 @@ segunda entrega, tag <code>s01-servicio-base-p2</code>.</p>
 
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Categoria</span><span class="w"> </span><span class="nf">buscarOFallar</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">categoriaRepository</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
-<span class="w">                </span><span class="p">.</span><span class="na">orElseThrow</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ResourceNotFoundException</span><span class="p">(</span><span class="s">&quot;Categoria no encontrada: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">id</span><span class="p">));</span>
+<span class="w">                </span><span class="p">.</span><span class="na">orElseThrow</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ResourceNotFoundException</span><span class="p">(</span><span class="s">"Categoria no encontrada: "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">id</span><span class="p">));</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -3460,7 +3482,7 @@ segunda entrega, tag <code>s01-servicio-base-p2</code>.</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">java.util.List</span><span class="p">;</span>
 
 <span class="nd">@RestController</span>
-<span class="nd">@RequestMapping</span><span class="p">(</span><span class="s">&quot;/api/v1/categorias&quot;</span><span class="p">)</span>
+<span class="nd">@RequestMapping</span><span class="p">(</span><span class="s">"/api/v1/categorias"</span><span class="p">)</span>
 <span class="nd">@RequiredArgsConstructor</span>
 <span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CategoriaController</span><span class="w"> </span><span class="p">{</span>
 
@@ -3471,7 +3493,7 @@ segunda entrega, tag <code>s01-servicio-base-p2</code>.</p>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">categoriaService</span><span class="p">.</span><span class="na">listar</span><span class="p">();</span>
 <span class="w">    </span><span class="p">}</span>
 
-<span class="w">    </span><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">&quot;/{id}&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/{id}"</span><span class="p">)</span>
 <span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">CategoriaResponse</span><span class="w"> </span><span class="nf">obtener</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">categoriaService</span><span class="p">.</span><span class="na">obtener</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>
@@ -3482,12 +3504,12 @@ segunda entrega, tag <code>s01-servicio-base-p2</code>.</p>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">categoriaService</span><span class="p">.</span><span class="na">crear</span><span class="p">(</span><span class="n">request</span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>
 
-<span class="w">    </span><span class="nd">@PutMapping</span><span class="p">(</span><span class="s">&quot;/{id}&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="nd">@PutMapping</span><span class="p">(</span><span class="s">"/{id}"</span><span class="p">)</span>
 <span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">CategoriaResponse</span><span class="w"> </span><span class="nf">actualizar</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="nd">@Valid</span><span class="w"> </span><span class="nd">@RequestBody</span><span class="w"> </span><span class="n">CategoriaRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">categoriaService</span><span class="p">.</span><span class="na">actualizar</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>
 
-<span class="w">    </span><span class="nd">@DeleteMapping</span><span class="p">(</span><span class="s">&quot;/{id}&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="nd">@DeleteMapping</span><span class="p">(</span><span class="s">"/{id}"</span><span class="p">)</span>
 <span class="w">    </span><span class="nd">@ResponseStatus</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">NO_CONTENT</span><span class="p">)</span>
 <span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">eliminar</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="n">categoriaService</span><span class="p">.</span><span class="na">eliminar</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
@@ -3506,7 +3528,7 @@ segunda entrega, tag <code>s01-servicio-base-p2</code>.</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">java.math.BigDecimal</span><span class="p">;</span>
 
 <span class="nd">@Entity</span>
-<span class="nd">@Table</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;productos&quot;</span><span class="p">)</span>
+<span class="nd">@Table</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"productos"</span><span class="p">)</span>
 <span class="nd">@Getter</span>
 <span class="nd">@Setter</span>
 <span class="nd">@Builder</span>
@@ -3518,20 +3540,20 @@ segunda entrega, tag <code>s01-servicio-base-p2</code>.</p>
 <span class="w">    </span><span class="nd">@GeneratedValue</span><span class="p">(</span><span class="n">strategy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GenerationType</span><span class="p">.</span><span class="na">IDENTITY</span><span class="p">)</span>
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">;</span>
 
-<span class="w">    </span><span class="nd">@Column</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;nombre&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">nullable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span>
+<span class="w">    </span><span class="nd">@Column</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"nombre"</span><span class="p">,</span><span class="w"> </span><span class="n">nullable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span>
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">nombre</span><span class="p">;</span>
 
-<span class="w">    </span><span class="nd">@Column</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;descripcion&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">255</span><span class="p">)</span>
+<span class="w">    </span><span class="nd">@Column</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"descripcion"</span><span class="p">,</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">255</span><span class="p">)</span>
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">descripcion</span><span class="p">;</span>
 
-<span class="w">    </span><span class="nd">@Column</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;precio&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">nullable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="n">precision</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="n">scale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">    </span><span class="nd">@Column</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"precio"</span><span class="p">,</span><span class="w"> </span><span class="n">nullable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="n">precision</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="n">scale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">precio</span><span class="p">;</span>
 
-<span class="w">    </span><span class="nd">@Column</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;activo&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">nullable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
+<span class="w">    </span><span class="nd">@Column</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"activo"</span><span class="p">,</span><span class="w"> </span><span class="n">nullable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Boolean</span><span class="w"> </span><span class="n">activo</span><span class="p">;</span>
 
 <span class="w">    </span><span class="nd">@ManyToOne</span><span class="p">(</span><span class="n">fetch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FetchType</span><span class="p">.</span><span class="na">LAZY</span><span class="p">)</span>
-<span class="w">    </span><span class="nd">@JoinColumn</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;id_categoria&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">nullable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
+<span class="w">    </span><span class="nd">@JoinColumn</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"id_categoria"</span><span class="p">,</span><span class="w"> </span><span class="n">nullable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Categoria</span><span class="w"> </span><span class="n">categoria</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -3569,7 +3591,7 @@ segunda entrega, tag <code>s01-servicio-base-p2</code>.</p>
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">descripcion</span><span class="p">;</span>
 
 <span class="w">    </span><span class="nd">@NotNull</span>
-<span class="w">    </span><span class="nd">@DecimalMin</span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;0.0&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">inclusive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
+<span class="w">    </span><span class="nd">@DecimalMin</span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"0.0"</span><span class="p">,</span><span class="w"> </span><span class="n">inclusive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">precio</span><span class="p">;</span>
 
 <span class="w">    </span><span class="nd">@NotNull</span>
@@ -3693,12 +3715,12 @@ segunda entrega, tag <code>s01-servicio-base-p2</code>.</p>
 
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Producto</span><span class="w"> </span><span class="nf">buscarOFallar</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">productoRepository</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
-<span class="w">                </span><span class="p">.</span><span class="na">orElseThrow</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ResourceNotFoundException</span><span class="p">(</span><span class="s">&quot;Producto no encontrado: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">id</span><span class="p">));</span>
+<span class="w">                </span><span class="p">.</span><span class="na">orElseThrow</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ResourceNotFoundException</span><span class="p">(</span><span class="s">"Producto no encontrado: "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">id</span><span class="p">));</span>
 <span class="w">    </span><span class="p">}</span>
 
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Categoria</span><span class="w"> </span><span class="nf">buscarCategoriaOFallar</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">categoriaId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">categoriaRepository</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">categoriaId</span><span class="p">)</span>
-<span class="w">                </span><span class="p">.</span><span class="na">orElseThrow</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ResourceNotFoundException</span><span class="p">(</span><span class="s">&quot;Categoria no encontrada: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">categoriaId</span><span class="p">));</span>
+<span class="w">                </span><span class="p">.</span><span class="na">orElseThrow</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ResourceNotFoundException</span><span class="p">(</span><span class="s">"Categoria no encontrada: "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">categoriaId</span><span class="p">));</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -3718,7 +3740,7 @@ segunda entrega, tag <code>s01-servicio-base-p2</code>.</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">java.util.List</span><span class="p">;</span>
 
 <span class="nd">@RestController</span>
-<span class="nd">@RequestMapping</span><span class="p">(</span><span class="s">&quot;/api/v1/productos&quot;</span><span class="p">)</span>
+<span class="nd">@RequestMapping</span><span class="p">(</span><span class="s">"/api/v1/productos"</span><span class="p">)</span>
 <span class="nd">@RequiredArgsConstructor</span>
 <span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ProductoController</span><span class="w"> </span><span class="p">{</span>
 
@@ -3729,7 +3751,7 @@ segunda entrega, tag <code>s01-servicio-base-p2</code>.</p>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">productoService</span><span class="p">.</span><span class="na">listar</span><span class="p">();</span>
 <span class="w">    </span><span class="p">}</span>
 
-<span class="w">    </span><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">&quot;/{id}&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/{id}"</span><span class="p">)</span>
 <span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ProductoResponse</span><span class="w"> </span><span class="nf">obtener</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">productoService</span><span class="p">.</span><span class="na">obtener</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>
@@ -3740,12 +3762,12 @@ segunda entrega, tag <code>s01-servicio-base-p2</code>.</p>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">productoService</span><span class="p">.</span><span class="na">crear</span><span class="p">(</span><span class="n">request</span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>
 
-<span class="w">    </span><span class="nd">@PutMapping</span><span class="p">(</span><span class="s">&quot;/{id}&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="nd">@PutMapping</span><span class="p">(</span><span class="s">"/{id}"</span><span class="p">)</span>
 <span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ProductoResponse</span><span class="w"> </span><span class="nf">actualizar</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="nd">@Valid</span><span class="w"> </span><span class="nd">@RequestBody</span><span class="w"> </span><span class="n">ProductoRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">productoService</span><span class="p">.</span><span class="na">actualizar</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>
 
-<span class="w">    </span><span class="nd">@DeleteMapping</span><span class="p">(</span><span class="s">&quot;/{id}&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="nd">@DeleteMapping</span><span class="p">(</span><span class="s">"/{id}"</span><span class="p">)</span>
 <span class="w">    </span><span class="nd">@ResponseStatus</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">NO_CONTENT</span><span class="p">)</span>
 <span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">eliminar</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="n">productoService</span><span class="p">.</span><span class="na">eliminar</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
@@ -3821,14 +3843,14 @@ src/main/resources
 ./mvnw<span class="w"> </span>spring-boot:run
 </code></pre></div>
 <p>En la consola debes ver una línea confirmando que arrancó en el puerto fijo <code>8080</code>:</p>
-<div class="highlight"><pre><span></span><code>Tomcat started on port 8080 (http) with context path &#39;/&#39;
+<div class="highlight"><pre><span></span><code>Tomcat started on port 8080 (http) with context path '/'
 </code></pre></div>
 <h4 id="3514-verificar-tablas-creadas-por-flyway">3.5.14 Verificar tablas creadas por Flyway<a class="headerlink" href="#3514-verificar-tablas-creadas-por-flyway" title="Permanent link">&para;</a></h4>
 <p>Luego verifica que Flyway haya creado ambas tablas en DEV:</p>
 <p>PowerShell / bash macOS/Linux:</p>
-<div class="highlight"><pre><span></span><code>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-catalogo-dev<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_catalogo_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;\dt&quot;</span>
-docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-catalogo-dev<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_catalogo_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;\d categorias&quot;</span>
-docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-catalogo-dev<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_catalogo_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;\d productos&quot;</span>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-catalogo-dev<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_catalogo_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">"\dt"</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-catalogo-dev<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_catalogo_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">"\d categorias"</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-catalogo-dev<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_catalogo_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">"\d productos"</span>
 </code></pre></div>
 <h4 id="3515-revisar-swagger">3.5.15 Revisar Swagger<a class="headerlink" href="#3515-revisar-swagger" title="Permanent link">&para;</a></h4>
 <p>Abre Swagger en el puerto <code>8080</code>:</p>
@@ -3840,7 +3862,7 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
   <span class="n">-Method</span> <span class="n">Get</span> <span class="p">`</span>
-  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/actuator/health&quot;</span>
+  <span class="n">-Uri</span> <span class="s2">"http://localhost:8080/actuator/health"</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8080/actuator/health
@@ -3849,7 +3871,7 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
   <span class="n">-Method</span> <span class="n">Get</span> <span class="p">`</span>
-  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/actuator/metrics&quot;</span>
+  <span class="n">-Uri</span> <span class="s2">"http://localhost:8080/actuator/metrics"</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8080/actuator/metrics
@@ -3858,7 +3880,7 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
   <span class="n">-Method</span> <span class="n">Get</span> <span class="p">`</span>
-  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/actuator/metrics/jvm.memory.used&quot;</span>
+  <span class="n">-Uri</span> <span class="s2">"http://localhost:8080/actuator/metrics/jvm.memory.used"</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8080/actuator/metrics/jvm.memory.used
@@ -3870,20 +3892,20 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
   <span class="n">-Method</span> <span class="n">Post</span> <span class="p">`</span>
-  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/v1/categorias&quot;</span> <span class="p">`</span>
-  <span class="n">-ContentType</span> <span class="s2">&quot;application/json&quot;</span> <span class="p">`</span>
-  <span class="n">-Body</span> <span class="s1">&#39;{&quot;nombre&quot;:&quot;Electrodomesticos&quot;,&quot;descripcion&quot;:&quot;Linea blanca y pequenos electrodomesticos&quot;}&#39;</span>
+  <span class="n">-Uri</span> <span class="s2">"http://localhost:8080/api/v1/categorias"</span> <span class="p">`</span>
+  <span class="n">-ContentType</span> <span class="s2">"application/json"</span> <span class="p">`</span>
+  <span class="n">-Body</span> <span class="s1">'{"nombre":"Servicios de enseñanza","descripcion":"Cursos, talleres y programas academicos"}'</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/categorias<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;nombre&quot;:&quot;Electrodomesticos&quot;,&quot;descripcion&quot;:&quot;Linea blanca y pequenos electrodomesticos&quot;}&#39;</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"nombre":"Servicios de enseñanza","descripcion":"Cursos, talleres y programas academicos"}'</span>
 </code></pre></div>
 <p>Lista todas las categorías:</p>
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
   <span class="n">-Method</span> <span class="n">Get</span> <span class="p">`</span>
-  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/v1/categorias&quot;</span>
+  <span class="n">-Uri</span> <span class="s2">"http://localhost:8080/api/v1/categorias"</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8080/api/v1/categorias
@@ -3892,7 +3914,7 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
   <span class="n">-Method</span> <span class="n">Get</span> <span class="p">`</span>
-  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/v1/categorias/1&quot;</span>
+  <span class="n">-Uri</span> <span class="s2">"http://localhost:8080/api/v1/categorias/1"</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8080/api/v1/categorias/1
@@ -3901,20 +3923,20 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
   <span class="n">-Method</span> <span class="n">Put</span> <span class="p">`</span>
-  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/v1/categorias/1&quot;</span> <span class="p">`</span>
-  <span class="n">-ContentType</span> <span class="s2">&quot;application/json&quot;</span> <span class="p">`</span>
-  <span class="n">-Body</span> <span class="s1">&#39;{&quot;nombre&quot;:&quot;Electrodomesticos&quot;,&quot;descripcion&quot;:&quot;Linea blanca, pequenos y grandes electrodomesticos&quot;}&#39;</span>
+  <span class="n">-Uri</span> <span class="s2">"http://localhost:8080/api/v1/categorias/1"</span> <span class="p">`</span>
+  <span class="n">-ContentType</span> <span class="s2">"application/json"</span> <span class="p">`</span>
+  <span class="n">-Body</span> <span class="s1">'{"nombre":"Servicios de enseñanza","descripcion":"Cursos, talleres, programas academicos y certificaciones"}'</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>http://localhost:8080/api/v1/categorias/1<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;nombre&quot;:&quot;Electrodomesticos&quot;,&quot;descripcion&quot;:&quot;Linea blanca, pequenos y grandes electrodomesticos&quot;}&#39;</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"nombre":"Servicios de enseñanza","descripcion":"Cursos, talleres, programas academicos y certificaciones"}'</span>
 </code></pre></div>
 <p>Elimina una categoría:</p>
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
   <span class="n">-Method</span> <span class="n">Delete</span> <span class="p">`</span>
-  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/v1/categorias/1&quot;</span>
+  <span class="n">-Uri</span> <span class="s2">"http://localhost:8080/api/v1/categorias/1"</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>DELETE<span class="w"> </span>http://localhost:8080/api/v1/categorias/1
@@ -3925,20 +3947,20 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
   <span class="n">-Method</span> <span class="n">Post</span> <span class="p">`</span>
-  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/v1/productos&quot;</span> <span class="p">`</span>
-  <span class="n">-ContentType</span> <span class="s2">&quot;application/json&quot;</span> <span class="p">`</span>
-  <span class="n">-Body</span> <span class="s1">&#39;{&quot;nombre&quot;:&quot;Matricula&quot;,&quot;descripcion&quot;:&quot;Matricula del ciclo&quot;,&quot;precio&quot;:350.00,&quot;activo&quot;:true,&quot;categoriaId&quot;:1}&#39;</span>
+  <span class="n">-Uri</span> <span class="s2">"http://localhost:8080/api/v1/productos"</span> <span class="p">`</span>
+  <span class="n">-ContentType</span> <span class="s2">"application/json"</span> <span class="p">`</span>
+  <span class="n">-Body</span> <span class="s1">'{"nombre":"Matricula 2026-2","descripcion":"Matricula del ciclo 2026-2","precio":350.00,"activo":true,"categoriaId":1}'</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/productos<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;nombre&quot;:&quot;Matricula&quot;,&quot;descripcion&quot;:&quot;Matricula del ciclo&quot;,&quot;precio&quot;:350.00,&quot;activo&quot;:true,&quot;categoriaId&quot;:1}&#39;</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"nombre":"Matricula 2026-2","descripcion":"Matricula del ciclo 2026-2","precio":350.00,"activo":true,"categoriaId":1}'</span>
 </code></pre></div>
 <p>Lista todos los productos:</p>
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
   <span class="n">-Method</span> <span class="n">Get</span> <span class="p">`</span>
-  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/v1/productos&quot;</span>
+  <span class="n">-Uri</span> <span class="s2">"http://localhost:8080/api/v1/productos"</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8080/api/v1/productos
@@ -3947,7 +3969,7 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
   <span class="n">-Method</span> <span class="n">Get</span> <span class="p">`</span>
-  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/v1/productos/1&quot;</span>
+  <span class="n">-Uri</span> <span class="s2">"http://localhost:8080/api/v1/productos/1"</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8080/api/v1/productos/1
@@ -3956,20 +3978,20 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
   <span class="n">-Method</span> <span class="n">Put</span> <span class="p">`</span>
-  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/v1/productos/1&quot;</span> <span class="p">`</span>
-  <span class="n">-ContentType</span> <span class="s2">&quot;application/json&quot;</span> <span class="p">`</span>
-  <span class="n">-Body</span> <span class="s1">&#39;{&quot;nombre&quot;:&quot;Matricula&quot;,&quot;descripcion&quot;:&quot;Matricula del ciclo, promocion&quot;,&quot;precio&quot;:300.00,&quot;activo&quot;:true,&quot;categoriaId&quot;:1}&#39;</span>
+  <span class="n">-Uri</span> <span class="s2">"http://localhost:8080/api/v1/productos/1"</span> <span class="p">`</span>
+  <span class="n">-ContentType</span> <span class="s2">"application/json"</span> <span class="p">`</span>
+  <span class="n">-Body</span> <span class="s1">'{"nombre":"Matricula 2026-2","descripcion":"Matricula del ciclo 2026-2, promocion","precio":300.00,"activo":true,"categoriaId":1}'</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>http://localhost:8080/api/v1/productos/1<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;nombre&quot;:&quot;Matricula&quot;,&quot;descripcion&quot;:&quot;Matricula del ciclo, promocion&quot;,&quot;precio&quot;:300.00,&quot;activo&quot;:true,&quot;categoriaId&quot;:1}&#39;</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"nombre":"Matricula 2026-2","descripcion":"Matricula del ciclo 2026-2, promocion","precio":300.00,"activo":true,"categoriaId":1}'</span>
 </code></pre></div>
 <p>Elimina un producto:</p>
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="p">`</span>
   <span class="n">-Method</span> <span class="n">Delete</span> <span class="p">`</span>
-  <span class="n">-Uri</span> <span class="s2">&quot;http://localhost:8080/api/v1/productos/1&quot;</span>
+  <span class="n">-Uri</span> <span class="s2">"http://localhost:8080/api/v1/productos/1"</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>DELETE<span class="w"> </span>http://localhost:8080/api/v1/productos/1
@@ -3980,28 +4002,28 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <p>El CRUD ya funciona, pero <code>GET /api/v1/productos</code> responde así (3.5.7):</p>
 <div class="highlight"><pre><span></span><code><span class="p">[</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;nombre&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Matricula&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;descripcion&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Matricula del ciclo&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;precio&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">350.00</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;activo&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;categoriaId&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"nombre"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Matricula 2026-2"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"descripcion"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Matricula del ciclo 2026-2"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"precio"</span><span class="p">:</span><span class="w"> </span><span class="mf">350.00</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"activo"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"categoriaId"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">]</span>
 </code></pre></div>
-<p><code>categoriaId: 1</code> es un número sin significado para quien consume este listado (una SPA, Swagger, cualquier cliente). Para mostrar "Electrodomésticos" junto al producto, ese cliente tendría que hacer una segunda petición a <code>GET /api/v1/categorias/1</code> por cada <code>categoriaId</code> distinto que reciba — exactamente lo que se evita si el propio listado ya trae el nombre de la categoría.</p>
+<p><code>categoriaId: 1</code> es un número sin significado para quien consume este listado (una SPA, Swagger, cualquier cliente). Para mostrar "Servicios de enseñanza" junto al producto, ese cliente tendría que hacer una segunda petición a <code>GET /api/v1/categorias/1</code> por cada <code>categoriaId</code> distinto que reciba — exactamente lo que se evita si el propio listado ya trae el nombre de la categoría.</p>
 <p>Resultado esperado después de 3.5.19:</p>
 <div class="highlight"><pre><span></span><code><span class="p">[</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;nombre&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Matricula&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;descripcion&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Matricula del ciclo&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;precio&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">350.00</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;activo&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;categoria&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;nombre&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Electrodomesticos&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;descripcion&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Linea blanca y pequenos electrodomesticos&quot;</span>
+<span class="w">    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"nombre"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Matricula 2026-2"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"descripcion"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Matricula del ciclo 2026-2"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"precio"</span><span class="p">:</span><span class="w"> </span><span class="mf">350.00</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"activo"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"categoria"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"nombre"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Servicios de enseñanza"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"descripcion"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Cursos, talleres y programas academicos"</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">]</span>
@@ -4081,7 +4103,7 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 
 <span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">ProductoRepository</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">JpaRepository</span><span class="o">&lt;</span><span class="n">Producto</span><span class="p">,</span><span class="w"> </span><span class="n">Long</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
 
-<span class="w">    </span><span class="nd">@Query</span><span class="p">(</span><span class="s">&quot;SELECT p FROM Producto p JOIN FETCH p.categoria&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="nd">@Query</span><span class="p">(</span><span class="s">"SELECT p FROM Producto p JOIN FETCH p.categoria"</span><span class="p">)</span>
 <span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Producto</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">findAllConCategoria</span><span class="p">();</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -4110,6 +4132,13 @@ decisión de equipo, no un requisito de S1.</p>
 <span class="w">    </span><span class="nt">&lt;version&gt;</span>1.6.3<span class="nt">&lt;/version&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Formatear el pom.xml automáticamente en VS Code</p>
+<p>Al pegar una dependencia nueva es fácil que la indentación quede desalineada
+(como en la captura de arriba). VS Code puede reformatear todo el archivo:
+con el <code>pom.xml</code> abierto, <code>Shift+Alt+F</code> en Windows/Linux (<code>Shift+Option+F</code>
+en Mac), o clic derecho → <strong>Format Document</strong>.</p>
+</div>
 <p>Y en el <code>maven-compiler-plugin</code>, junto al <code>annotationProcessorPaths</code> que ya tiene Lombok, agrega el de MapStruct <strong>después</strong> de Lombok — MapStruct necesita ver los getters/setters que Lombok genera, y el orden de los <code>&lt;path&gt;</code> determina en qué orden corren los procesadores:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">&lt;annotationProcessorPaths&gt;</span>
 <span class="w">    </span><span class="nt">&lt;path&gt;</span>
@@ -4123,22 +4152,44 @@ decisión de equipo, no un requisito de S1.</p>
 <span class="w">    </span><span class="nt">&lt;/path&gt;</span>
 <span class="nt">&lt;/annotationProcessorPaths&gt;</span>
 </code></pre></div>
-<p><code>CategoriaMapper</code> y <code>ProductoMapper</code> pasan de clase a interfaz:</p>
-<div class="highlight"><pre><span></span><code><span class="nd">@Mapper</span><span class="p">(</span><span class="n">componentModel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;spring&quot;</span><span class="p">)</span>
+<p><code>CategoriaMapper</code> y <code>ProductoMapper</code> pasan de clase a interfaz. Reemplaza el contenido completo de cada archivo (mismo paquete, mismo nombre de archivo que en 3.5.4 y su equivalente de <code>Producto</code>) — no solo el cuerpo de la interfaz, para no dejar colgado el <code>import</code> de <code>Component</code> que ya no se usa:</p>
+<p><strong><code>mapper/CategoriaMapper.java</code></strong></p>
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.mapper</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.dto.CategoriaRequest</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.dto.CategoriaResponse</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.entity.Categoria</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.mapstruct.Mapper</span><span class="p">;</span>
+
+<span class="nd">@Mapper</span><span class="p">(</span><span class="n">componentModel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"spring"</span><span class="p">)</span>
 <span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">CategoriaMapper</span><span class="w"> </span><span class="p">{</span>
+
 <span class="w">    </span><span class="n">CategoriaResponse</span><span class="w"> </span><span class="nf">toResponse</span><span class="p">(</span><span class="n">Categoria</span><span class="w"> </span><span class="n">categoria</span><span class="p">);</span>
+
 <span class="w">    </span><span class="n">Categoria</span><span class="w"> </span><span class="nf">toEntity</span><span class="p">(</span><span class="n">CategoriaRequest</span><span class="w"> </span><span class="n">request</span><span class="p">);</span>
 <span class="p">}</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><span class="nd">@Mapper</span><span class="p">(</span><span class="n">componentModel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;spring&quot;</span><span class="p">,</span><span class="w"> </span><span class="kd">uses</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CategoriaMapper</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<p><strong><code>mapper/ProductoMapper.java</code></strong></p>
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.mapper</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.dto.ProductoRequest</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.dto.ProductoResponse</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.entity.Producto</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.mapstruct.Mapper</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.mapstruct.Mapping</span><span class="p">;</span>
+
+<span class="nd">@Mapper</span><span class="p">(</span><span class="n">componentModel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"spring"</span><span class="p">,</span><span class="w"> </span><span class="kd">uses</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CategoriaMapper</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
 <span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">ProductoMapper</span><span class="w"> </span><span class="p">{</span>
 
-<span class="w">    </span><span class="nd">@Mapping</span><span class="p">(</span><span class="n">target</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;categoria&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ignore</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
+<span class="w">    </span><span class="nd">@Mapping</span><span class="p">(</span><span class="n">target</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"categoria"</span><span class="p">,</span><span class="w"> </span><span class="n">ignore</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
 <span class="w">    </span><span class="n">Producto</span><span class="w"> </span><span class="nf">toEntity</span><span class="p">(</span><span class="n">ProductoRequest</span><span class="w"> </span><span class="n">request</span><span class="p">);</span>
 
 <span class="w">    </span><span class="n">ProductoResponse</span><span class="w"> </span><span class="nf">toResponse</span><span class="p">(</span><span class="n">Producto</span><span class="w"> </span><span class="n">producto</span><span class="p">);</span>
 <span class="p">}</span>
 </code></pre></div>
+<p>Nota: <code>import org.springframework.stereotype.Component;</code> de la versión manual (3.5.4) ya no hace falta — <code>@Mapper(componentModel = "spring")</code> es lo que le dice a MapStruct que genere la implementación como un bean de Spring (<code>@Component</code> incluido), sin declararlo a mano.</p>
 <p>Como <code>Producto.categoria</code> y <code>ProductoResponse.categoria</code> se llaman igual, MapStruct los relaciona sin configuración adicional y usa <code>CategoriaMapper</code> (declarado en <code>uses</code>) para convertir el objeto anidado. <code>toEntity</code> sigue ignorando <code>categoria</code> — <code>ProductoRequest</code> solo trae <code>categoriaId</code>, y asignar la <code>Categoria</code> real sigue siendo responsabilidad del service (<code>buscarCategoriaOFallar</code>, 3.5.8), igual que en la versión manual.</p>
 <p><strong>Ventajas frente al mapeo manual (3.5.19):</strong></p>
 <ul>
@@ -4147,6 +4198,15 @@ decisión de equipo, no un requisito de S1.</p>
 <li><strong>Sin costo de reflexión en tiempo de ejecución</strong>: a diferencia de librerías como ModelMapper (que mapean por reflexión en cada llamada), el código de MapStruct es Java plano generado en compilación — mismo rendimiento que el mapeo manual.</li>
 </ul>
 <p><strong>El <code>JOIN FETCH</code> de <code>ProductoRepository</code> (3.5.19) sigue siendo necesario</strong> — MapStruct solo transforma objetos que ya están en memoria; de dónde y cómo se cargaron esos objetos (y si dispara N+1 consultas) es un problema de JPA/Hibernate, ajeno por completo a la herramienta de mapeo.</p>
+<h4 id="3521-generar-el-jar-manualmente-opcional-verificacion-rapida">3.5.21 Generar el jar manualmente (opcional, verificación rápida)<a class="headerlink" href="#3521-generar-el-jar-manualmente-opcional-verificacion-rapida" title="Permanent link">&para;</a></h4>
+<p><strong>Producto del paso:</strong> jar ejecutable generado y probado, sin Docker.</p>
+<p>Antes de armar la imagen de producción local (3.6), puedes generar y ejecutar el jar directamente en el host para verificar que el proyecto compila y arranca sin errores:</p>
+<div class="highlight"><pre><span></span><code><span class="p">.\</span><span class="n">mvnw</span><span class="p">.</span><span class="n">cmd</span> <span class="n">clean</span> <span class="n">package</span> <span class="n">-DskipTests</span>
+</code></pre></div>
+<p>Esto deja el archivo en <code>target\pagatu-catalogo-ms-*.jar</code>. Para ejecutarlo:</p>
+<div class="highlight"><pre><span></span><code><span class="n">java</span> <span class="n">-jar</span> <span class="n">target</span><span class="p">\</span><span class="n">pagatu-catalogo-ms</span><span class="p">-*.</span><span class="n">jar</span>
+</code></pre></div>
+<p>Este paso es solo una verificación rápida en el host, con el perfil <code>dev</code> y PostgreSQL DEV ya levantado (3.2). El jar de producción real no se construye así — el <code>Dockerfile</code> de 3.6.1 lo genera dentro de la imagen, con <code>mvn clean package</code> corriendo en un contenedor de build separado.</p>
 <h3 id="36-configurar-produccion-local-con-docker-opcional">3.6 Configurar producción local con Docker (opcional)<a class="headerlink" href="#36-configurar-produccion-local-con-docker-opcional" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> archivos de producción local preparados: <code>Dockerfile</code>, <code>.env</code>, <code>.env.example</code>, <code>compose.yml</code> y <code>application-prod.yml</code>.</p>
 <p>En DEV la aplicación se ejecuta con Maven Wrapper desde el host y solo PostgreSQL corre en Docker. En PROD local, la aplicación también se ejecutará como contenedor. Por eso se agregan archivos separados para construir la imagen, pasar variables de entorno y conectar el contenedor de la aplicación con su PostgreSQL dockerizado.</p>
@@ -4177,7 +4237,7 @@ compose.yml
 
 <span class="k">EXPOSE</span><span class="w"> </span><span class="s">8080</span>
 
-<span class="k">ENTRYPOINT</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;java&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;-jar&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;app.jar&quot;</span><span class="p">]</span>
+<span class="k">ENTRYPOINT</span><span class="w"> </span><span class="p">[</span><span class="s2">"java"</span><span class="p">,</span><span class="w"> </span><span class="s2">"-jar"</span><span class="p">,</span><span class="w"> </span><span class="s2">"app.jar"</span><span class="p">]</span>
 </code></pre></div>
 <p>Nota: los <code>RUN mvn</code> de arriba corren <strong>dentro</strong> de la imagen oficial de Maven usada solo para construir (<code>maven:3.9.9-eclipse-temurin-21</code>), no en tu host — no contradice que en el host se use el Maven Wrapper.</p>
 <h4 id="362-crear-env-y-envexample">3.6.2 Crear <code>.env</code> y <code>.env.example</code><a class="headerlink" href="#362-crear-env-y-envexample" title="Permanent link">&para;</a></h4>
@@ -4244,7 +4304,7 @@ PROD -&gt; flyway.enabled=true + ddl-auto=validate
 <span class="w">      </span><span class="nt">POSTGRES_USER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${DB_USER}</span>
 <span class="w">      </span><span class="nt">POSTGRES_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${DB_PASS}</span>
 <span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;CMD-SHELL&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;pg_isready</span><span class="nv"> </span><span class="s">-U</span><span class="nv"> </span><span class="s">${DB_USER}</span><span class="nv"> </span><span class="s">-d</span><span class="nv"> </span><span class="s">${DB_NAME}&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"CMD-SHELL"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"pg_isready</span><span class="nv"> </span><span class="s">-U</span><span class="nv"> </span><span class="s">${DB_USER}</span><span class="nv"> </span><span class="s">-d</span><span class="nv"> </span><span class="s">${DB_NAME}"</span><span class="p p-Indicator">]</span>
 <span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
 <span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5s</span>
 <span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
@@ -4252,7 +4312,7 @@ PROD -&gt; flyway.enabled=true + ddl-auto=validate
 <span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu_catalogo_data:/var/lib/postgresql/data</span>
 <span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;25432:5432&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"25432:5432"</span>
 <span class="w">    </span><span class="nt">networks</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-catalogo-int</span>
 
@@ -4292,8 +4352,8 @@ docker<span class="w"> </span>compose<span class="w"> </span>ps
 </code></pre></div>
 <h4 id="372-verificar-la-base-de-datos-prod">3.7.2 Verificar la base de datos PROD<a class="headerlink" href="#372-verificar-la-base-de-datos-prod" title="Permanent link">&para;</a></h4>
 <p>PowerShell / bash macOS/Linux:</p>
-<div class="highlight"><pre><span></span><code>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-catalogo<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_catalogo_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;\dt&quot;</span>
-docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-catalogo<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_catalogo_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;\d categorias&quot;</span>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-catalogo<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_catalogo_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">"\dt"</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-catalogo<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_catalogo_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">"\d categorias"</span>
 </code></pre></div>
 <h4 id="373-verificar-health-desde-la-red-docker">3.7.3 Verificar health desde la red Docker<a class="headerlink" href="#373-verificar-health-desde-la-red-docker" title="Permanent link">&para;</a></h4>
 <p>En S1 el microservicio en PROD local no publica puerto host directo. Se valida desde la red Docker interna; en sesiones posteriores el acceso externo se hará por Gateway.</p>
@@ -4301,7 +4361,7 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--network<span class="w"> </span>pagatu-catalogo-int<span class="w"> </span>curlimages/curl:8.10.1<span class="w"> </span>-s<span class="w"> </span>http://pagatu-catalogo-ms:8080/actuator/health
 </code></pre></div>
 <p>Resultado esperado:</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="s2">&quot;UP&quot;</span><span class="p">}</span>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="nt">"status"</span><span class="p">:</span><span class="s2">"UP"</span><span class="p">}</span>
 </code></pre></div>
 <h4 id="374-revisar-logs-y-bajar-el-entorno">3.7.4 Revisar logs y bajar el entorno<a class="headerlink" href="#374-revisar-logs-y-bajar-el-entorno" title="Permanent link">&para;</a></h4>
 <p>La producción local se levantó con dos instancias usando <code>--scale pagatu-catalogo-ms=2</code>. No uses más de dos en laboratorio porque cada instancia consume CPU y memoria.</p>
