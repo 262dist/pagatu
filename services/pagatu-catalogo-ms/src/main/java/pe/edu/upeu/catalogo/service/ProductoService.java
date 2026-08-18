@@ -22,7 +22,7 @@ public class ProductoService {
     private final CategoriaRepository categoriaRepository;
 
     public List<ProductoResponse> listar() {
-        return productoRepository.findAll().stream()
+        return productoRepository.findAllConCategoria().stream()
                 .map(productoMapper::toResponse)
                 .toList();
     }

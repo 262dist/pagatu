@@ -3,23 +3,13 @@ package pe.edu.upeu.catalogo.mapper;
 import pe.edu.upeu.catalogo.dto.CategoriaRequest;
 import pe.edu.upeu.catalogo.dto.CategoriaResponse;
 import pe.edu.upeu.catalogo.entity.Categoria;
-import org.springframework.stereotype.Component;
 
-@Component
-public class CategoriaMapper {
+import org.mapstruct.Mapper;
 
-    public Categoria toEntity(CategoriaRequest request) {
-        return Categoria.builder()
-                .nombre(request.getNombre())
-                .descripcion(request.getDescripcion())
-                .build();
-    }
+@Mapper(componentModel = "spring")
+public interface CategoriaMapper {
 
-    public CategoriaResponse toResponse(Categoria categoria) {
-        return CategoriaResponse.builder()
-                .id(categoria.getId())
-                .nombre(categoria.getNombre())
-                .descripcion(categoria.getDescripcion())
-                .build();
-    }
+    CategoriaResponse toResponse(Categoria categoria);
+
+    Categoria toEntity(CategoriaRequest request);
 }

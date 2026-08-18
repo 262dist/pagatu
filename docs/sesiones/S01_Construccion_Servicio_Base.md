@@ -1781,7 +1781,7 @@ Invoke-RestMethod `
   -Method Post `
   -Uri "http://localhost:8080/api/v1/categorias" `
   -ContentType "application/json" `
-  -Body '{"nombre":"Electrodomesticos","descripcion":"Linea blanca y pequenos electrodomesticos"}'
+  -Body '{"nombre":"Servicios de enseñanza","descripcion":"Cursos, talleres y programas academicos"}'
 ```
 
 bash macOS/Linux:
@@ -1789,7 +1789,7 @@ bash macOS/Linux:
 ```bash
 curl -X POST http://localhost:8080/api/v1/categorias \
   -H "Content-Type: application/json" \
-  -d '{"nombre":"Electrodomesticos","descripcion":"Linea blanca y pequenos electrodomesticos"}'
+  -d '{"nombre":"Servicios de enseñanza","descripcion":"Cursos, talleres y programas academicos"}'
 ```
 
 Lista todas las categorías:
@@ -1833,7 +1833,7 @@ Invoke-RestMethod `
   -Method Put `
   -Uri "http://localhost:8080/api/v1/categorias/1" `
   -ContentType "application/json" `
-  -Body '{"nombre":"Electrodomesticos","descripcion":"Linea blanca, pequenos y grandes electrodomesticos"}'
+  -Body '{"nombre":"Servicios de enseñanza","descripcion":"Cursos, talleres, programas academicos y certificaciones"}'
 ```
 
 bash macOS/Linux:
@@ -1841,7 +1841,7 @@ bash macOS/Linux:
 ```bash
 curl -X PUT http://localhost:8080/api/v1/categorias/1 \
   -H "Content-Type: application/json" \
-  -d '{"nombre":"Electrodomesticos","descripcion":"Linea blanca, pequenos y grandes electrodomesticos"}'
+  -d '{"nombre":"Servicios de enseñanza","descripcion":"Cursos, talleres, programas academicos y certificaciones"}'
 ```
 
 Elimina una categoría:
@@ -1873,7 +1873,7 @@ Invoke-RestMethod `
   -Method Post `
   -Uri "http://localhost:8080/api/v1/productos" `
   -ContentType "application/json" `
-  -Body '{"nombre":"Matricula","descripcion":"Matricula del ciclo","precio":350.00,"activo":true,"categoriaId":1}'
+  -Body '{"nombre":"Matricula 2026-2","descripcion":"Matricula del ciclo 2026-2","precio":350.00,"activo":true,"categoriaId":1}'
 ```
 
 bash macOS/Linux:
@@ -1881,7 +1881,7 @@ bash macOS/Linux:
 ```bash
 curl -X POST http://localhost:8080/api/v1/productos \
   -H "Content-Type: application/json" \
-  -d '{"nombre":"Matricula","descripcion":"Matricula del ciclo","precio":350.00,"activo":true,"categoriaId":1}'
+  -d '{"nombre":"Matricula 2026-2","descripcion":"Matricula del ciclo 2026-2","precio":350.00,"activo":true,"categoriaId":1}'
 ```
 
 Lista todos los productos:
@@ -1925,7 +1925,7 @@ Invoke-RestMethod `
   -Method Put `
   -Uri "http://localhost:8080/api/v1/productos/1" `
   -ContentType "application/json" `
-  -Body '{"nombre":"Matricula","descripcion":"Matricula del ciclo, promocion","precio":300.00,"activo":true,"categoriaId":1}'
+  -Body '{"nombre":"Matricula 2026-2","descripcion":"Matricula del ciclo 2026-2, promocion","precio":300.00,"activo":true,"categoriaId":1}'
 ```
 
 bash macOS/Linux:
@@ -1933,7 +1933,7 @@ bash macOS/Linux:
 ```bash
 curl -X PUT http://localhost:8080/api/v1/productos/1 \
   -H "Content-Type: application/json" \
-  -d '{"nombre":"Matricula","descripcion":"Matricula del ciclo, promocion","precio":300.00,"activo":true,"categoriaId":1}'
+  -d '{"nombre":"Matricula 2026-2","descripcion":"Matricula del ciclo 2026-2, promocion","precio":300.00,"activo":true,"categoriaId":1}'
 ```
 
 Elimina un producto:
@@ -1964,8 +1964,8 @@ El CRUD ya funciona, pero `GET /api/v1/productos` responde así (3.5.7):
 [
   {
     "id": 1,
-    "nombre": "Matricula",
-    "descripcion": "Matricula del ciclo",
+    "nombre": "Matricula 2026-2",
+    "descripcion": "Matricula del ciclo 2026-2",
     "precio": 350.00,
     "activo": true,
     "categoriaId": 1
@@ -1973,7 +1973,7 @@ El CRUD ya funciona, pero `GET /api/v1/productos` responde así (3.5.7):
 ]
 ```
 
-`categoriaId: 1` es un número sin significado para quien consume este listado (una SPA, Swagger, cualquier cliente). Para mostrar "Electrodomésticos" junto al producto, ese cliente tendría que hacer una segunda petición a `GET /api/v1/categorias/1` por cada `categoriaId` distinto que reciba — exactamente lo que se evita si el propio listado ya trae el nombre de la categoría.
+`categoriaId: 1` es un número sin significado para quien consume este listado (una SPA, Swagger, cualquier cliente). Para mostrar "Servicios de enseñanza" junto al producto, ese cliente tendría que hacer una segunda petición a `GET /api/v1/categorias/1` por cada `categoriaId` distinto que reciba — exactamente lo que se evita si el propio listado ya trae el nombre de la categoría.
 
 Resultado esperado después de 3.5.19:
 
@@ -1981,14 +1981,14 @@ Resultado esperado después de 3.5.19:
 [
   {
     "id": 1,
-    "nombre": "Matricula",
-    "descripcion": "Matricula del ciclo",
+    "nombre": "Matricula 2026-2",
+    "descripcion": "Matricula del ciclo 2026-2",
     "precio": 350.00,
     "activo": true,
     "categoria": {
       "id": 1,
-      "nombre": "Electrodomesticos",
-      "descripcion": "Linea blanca y pequenos electrodomesticos"
+      "nombre": "Servicios de enseñanza",
+      "descripcion": "Cursos, talleres y programas academicos"
     }
   }
 ]
@@ -2120,6 +2120,12 @@ En el `pom.xml`, agrega la dependencia:
 </dependency>
 ```
 
+!!! tip "Formatear el pom.xml automáticamente en VS Code"
+    Al pegar una dependencia nueva es fácil que la indentación quede desalineada
+    (como en la captura de arriba). VS Code puede reformatear todo el archivo:
+    con el `pom.xml` abierto, `Shift+Alt+F` en Windows/Linux (`Shift+Option+F`
+    en Mac), o clic derecho → **Format Document**.
+
 Y en el `maven-compiler-plugin`, junto al `annotationProcessorPaths` que ya tiene Lombok, agrega el de MapStruct **después** de Lombok — MapStruct necesita ver los getters/setters que Lombok genera, y el orden de los `<path>` determina en qué orden corren los procesadores:
 
 ```xml
@@ -2136,17 +2142,40 @@ Y en el `maven-compiler-plugin`, junto al `annotationProcessorPaths` que ya tien
 </annotationProcessorPaths>
 ```
 
-`CategoriaMapper` y `ProductoMapper` pasan de clase a interfaz:
+`CategoriaMapper` y `ProductoMapper` pasan de clase a interfaz. Reemplaza el contenido completo de cada archivo (mismo paquete, mismo nombre de archivo que en 3.5.4 y su equivalente de `Producto`) — no solo el cuerpo de la interfaz, para no dejar colgado el `import` de `Component` que ya no se usa:
+
+**`mapper/CategoriaMapper.java`**
 
 ```java
+package pe.edu.upeu.catalogo.mapper;
+
+import pe.edu.upeu.catalogo.dto.CategoriaRequest;
+import pe.edu.upeu.catalogo.dto.CategoriaResponse;
+import pe.edu.upeu.catalogo.entity.Categoria;
+
+import org.mapstruct.Mapper;
+
 @Mapper(componentModel = "spring")
 public interface CategoriaMapper {
+
     CategoriaResponse toResponse(Categoria categoria);
+
     Categoria toEntity(CategoriaRequest request);
 }
 ```
 
+**`mapper/ProductoMapper.java`**
+
 ```java
+package pe.edu.upeu.catalogo.mapper;
+
+import pe.edu.upeu.catalogo.dto.ProductoRequest;
+import pe.edu.upeu.catalogo.dto.ProductoResponse;
+import pe.edu.upeu.catalogo.entity.Producto;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
 @Mapper(componentModel = "spring", uses = CategoriaMapper.class)
 public interface ProductoMapper {
 
@@ -2157,6 +2186,8 @@ public interface ProductoMapper {
 }
 ```
 
+Nota: `import org.springframework.stereotype.Component;` de la versión manual (3.5.4) ya no hace falta — `@Mapper(componentModel = "spring")` es lo que le dice a MapStruct que genere la implementación como un bean de Spring (`@Component` incluido), sin declararlo a mano.
+
 Como `Producto.categoria` y `ProductoResponse.categoria` se llaman igual, MapStruct los relaciona sin configuración adicional y usa `CategoriaMapper` (declarado en `uses`) para convertir el objeto anidado. `toEntity` sigue ignorando `categoria` — `ProductoRequest` solo trae `categoriaId`, y asignar la `Categoria` real sigue siendo responsabilidad del service (`buscarCategoriaOFallar`, 3.5.8), igual que en la versión manual.
 
 **Ventajas frente al mapeo manual (3.5.19):**
@@ -2166,6 +2197,24 @@ Como `Producto.categoria` y `ProductoResponse.categoria` se llaman igual, MapStr
 - **Sin costo de reflexión en tiempo de ejecución**: a diferencia de librerías como ModelMapper (que mapean por reflexión en cada llamada), el código de MapStruct es Java plano generado en compilación — mismo rendimiento que el mapeo manual.
 
 **El `JOIN FETCH` de `ProductoRepository` (3.5.19) sigue siendo necesario** — MapStruct solo transforma objetos que ya están en memoria; de dónde y cómo se cargaron esos objetos (y si dispara N+1 consultas) es un problema de JPA/Hibernate, ajeno por completo a la herramienta de mapeo.
+
+#### 3.5.21 Generar el jar manualmente (opcional, verificación rápida)
+
+**Producto del paso:** jar ejecutable generado y probado, sin Docker.
+
+Antes de armar la imagen de producción local (3.6), puedes generar y ejecutar el jar directamente en el host para verificar que el proyecto compila y arranca sin errores:
+
+```powershell
+.\mvnw.cmd clean package -DskipTests
+```
+
+Esto deja el archivo en `target\pagatu-catalogo-ms-*.jar`. Para ejecutarlo:
+
+```powershell
+java -jar target\pagatu-catalogo-ms-*.jar
+```
+
+Este paso es solo una verificación rápida en el host, con el perfil `dev` y PostgreSQL DEV ya levantado (3.2). El jar de producción real no se construye así — el `Dockerfile` de 3.6.1 lo genera dentro de la imagen, con `mvn clean package` corriendo en un contenedor de build separado.
 
 ### 3.6 Configurar producción local con Docker (opcional)
 

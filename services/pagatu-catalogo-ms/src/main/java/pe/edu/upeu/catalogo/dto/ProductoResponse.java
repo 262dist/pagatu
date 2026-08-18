@@ -18,5 +18,5 @@ public class ProductoResponse {
     private String descripcion;
     private BigDecimal precio;
     private Boolean activo;
-    private Long categoriaId;
+    private CategoriaResponse categoria;
 }

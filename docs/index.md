@@ -29,7 +29,7 @@ Resultado esperado U1: el estudiante construye un primer servicio REST funcional
 | Sesión | Tema (sílabo) | MS que se toca | Trabajo principal |
 |---|---|---|---|
 | S1 | Construcción de un servicio base para un sistema distribuido. | `catalogo-ms` | Servicio REST base, PostgreSQL, Swagger, Actuator. |
-| [S2](sesiones/S02_Configuracion_Centralizada_Ambientes.md) | Gestión centralizada de configuración y ambientes. | `catalogo-ms` + `orden-ms` (nuevo, esqueleto) | Config Server + config-repo; se crea `orden-ms` mínimo (CRUD simple) para tener un segundo servicio que también lea del Config Server. |
+| S2 | Gestión centralizada de configuración y ambientes. | `catalogo-ms` + `orden-ms` (nuevo, esqueleto) | Config Server + config-repo; se crea `orden-ms` mínimo (CRUD simple) para tener un segundo servicio que también lea del Config Server. |
 | S3 | Registro, descubrimiento y ejecución concurrente de servicios. | `catalogo-ms`, `orden-ms` | Eureka; ambos servicios se registran; múltiples instancias de `catalogo-ms` visibles en el dashboard de Eureka. Se levantan Prometheus y Loki para empezar a recolectar métricas y logs de esas instancias. |
 | S4 | Punto único de acceso y distribución de tráfico. | `catalogo-ms`, `orden-ms` | Gateway enruta a ambos; balanceo de carga entre instancias. Se agrega Grafana con paneles básicos sobre las métricas y logs que ya recolectan Prometheus y Loki desde S3. |
 | S5 | Integración del sistema distribuido base: servicios, configuración centralizada, descubrimiento, ejecución concurrente, Gateway y balanceo de carga. | — | Sustentación del sistema base, con evidencia de operación de los MS en los paneles de Grafana: instancias registradas en Eureka, balanceo de carga entre ellas y métricas/logs en vivo. |
@@ -180,5 +180,4 @@ Convención del diagrama: las flechas continuas representan interacciones de neg
 
 - [Sílabo 2026-2](silabo_dist_2026_2.md)
 - [S1 - Construcción de un servicio base](sesiones/S01_Construccion_Servicio_Base.md)
-- [S2 - Gestión centralizada de configuración y ambientes](sesiones/S02_Configuracion_Centralizada_Ambientes.md)
 - [Guía de Proyecto Sello](proyecto-sello/index.md)
