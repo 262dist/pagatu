@@ -1174,6 +1174,28 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#tipo-de-comprobante-por-orden-boleta-simple-boleta-con-dni-o-factura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tipo de comprobante por orden: boleta simple, boleta con DNI o factura
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metodo-de-pago-por-orden" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Método de pago por orden
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1814,6 +1836,28 @@
     <span class="md-ellipsis">
       
         Crear el proyecto base de pagatu-cliente-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tipo-de-comprobante-por-orden-boleta-simple-boleta-con-dni-o-factura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tipo de comprobante por orden: boleta simple, boleta con DNI o factura
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metodo-de-pago-por-orden" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Método de pago por orden
       
     </span>
   </a>
@@ -3231,6 +3275,9 @@ Indica 2 fortalezas y 2 recomendaciones.
 <span class="w">    </span><span class="n">id_cliente</span><span class="w"> </span><span class="nb">BIGINT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
 <span class="w">    </span><span class="n">fecha_creacion</span><span class="w"> </span><span class="k">TIMESTAMP</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="n">now</span><span class="p">(),</span>
 <span class="w">    </span><span class="n">estado</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="s1">'PENDIENTE'</span><span class="p">,</span>
+<span class="w">    </span><span class="n">tipo_comprobante</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="s1">'BOLETA_SIMPLE'</span><span class="p">,</span>
+<span class="w">    </span><span class="n">metodo_pago</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">momento_pago</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="s1">'ADELANTADO'</span><span class="p">,</span>
 <span class="w">    </span><span class="n">total</span><span class="w"> </span><span class="nb">NUMERIC</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
 <span class="w">    </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
 <span class="p">);</span>
@@ -3371,16 +3418,131 @@ Indica 2 fortalezas y 2 recomendaciones.
 <p><strong><code>services/pagatu-cliente-ms/src/main/resources/db/migration/V1__create_cliente_tables.sql</code></strong></p>
 <div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">clientes</span><span class="w"> </span><span class="p">(</span>
 <span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="nb">BIGINT</span><span class="w"> </span><span class="k">GENERATED</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">IDENTITY</span><span class="p">,</span>
-<span class="w">    </span><span class="n">tipo_documento</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
-<span class="w">    </span><span class="n">numero_documento</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
-<span class="w">    </span><span class="n">nombre_razon_social</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">150</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">tipo_persona</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">dni</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span>
+<span class="w">    </span><span class="n">ruc</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">11</span><span class="p">),</span>
+<span class="w">    </span><span class="n">nombre_completo</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span>
+<span class="w">    </span><span class="n">razon_social</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span>
 <span class="w">    </span><span class="n">direccion</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span>
 <span class="w">    </span><span class="n">email</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span>
+<span class="w">    </span><span class="n">whatsapp</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">),</span>
 <span class="w">    </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">),</span>
-<span class="w">    </span><span class="k">UNIQUE</span><span class="w"> </span><span class="p">(</span><span class="n">tipo_documento</span><span class="p">,</span><span class="w"> </span><span class="n">numero_documento</span><span class="p">)</span>
+<span class="w">    </span><span class="k">UNIQUE</span><span class="w"> </span><span class="p">(</span><span class="n">dni</span><span class="p">),</span>
+<span class="w">    </span><span class="k">UNIQUE</span><span class="w"> </span><span class="p">(</span><span class="n">ruc</span><span class="p">)</span>
 <span class="p">);</span>
 </code></pre></div>
-<p><code>tipo_documento</code> distingue <code>DNI</code> (persona natural, autocompletado vía RENIEC) de <code>RUC</code> (persona jurídica, autocompletado vía SUNAT). <code>nombre_razon_social</code> guarda el nombre completo de la persona o la razón social de la empresa, según corresponda — un solo campo, porque para efectos de la orden es indistinto cuál de los dos es. La restricción <code>UNIQUE (tipo_documento, numero_documento)</code> evita registrar el mismo documento dos veces. <code>ordenes.id_cliente</code> (Anexo anterior) apunta al <code>id</code> de esta tabla, sin <code>REFERENCES</code> entre bases de datos.</p>
+<p>Una persona natural puede tener <strong>solo DNI</strong>, o <strong>DNI y RUC a la vez</strong> (un negocio unipersonal, por ejemplo un independiente que emite factura a su propio nombre) — por eso <code>dni</code> y <code>ruc</code> son dos columnas separadas y ambas opcionales, en vez del <code>tipo_documento</code>/<code>numero_documento</code> mutuamente excluyentes de la versión anterior. Una persona jurídica (empresa) solo tiene <code>ruc</code> y <code>razon_social</code>; no tiene <code>dni</code> propio (el DNI de su representante legal es otro dato, fuera de este alcance).</p>
+<p><strong>Tabla 13. Reglas de <code>tipo_persona</code> en <code>clientes</code></strong></p>
+<table>
+<thead>
+<tr>
+<th><code>tipo_persona</code></th>
+<th>Documentos</th>
+<th>Autocompletado</th>
+<th>Campo de nombre usado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NATURAL</code></td>
+<td><code>dni</code> obligatorio; <code>ruc</code> opcional</td>
+<td>RENIEC (por <code>dni</code>); SUNAT (por <code>ruc</code>, si lo tiene)</td>
+<td><code>nombre_completo</code></td>
+</tr>
+<tr>
+<td><code>JURIDICA</code></td>
+<td><code>ruc</code> obligatorio; <code>dni</code> queda <code>NULL</code></td>
+<td>SUNAT (por <code>ruc</code>)</td>
+<td><code>razon_social</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>whatsapp</code> (opcional, no lo completa RENIEC/SUNAT — lo escribe el cliente) es el número al que se envía el comprobante de cada orden una vez confirmada; su uso real llega recién con la mensajería de S8, cuando <code>orden-ms</code> publique el evento correspondiente. <code>ordenes.id_cliente</code> (Anexo anterior) apunta al <code>id</code> de esta tabla, sin <code>REFERENCES</code> entre bases de datos.</p>
+<h3 id="tipo-de-comprobante-por-orden-boleta-simple-boleta-con-dni-o-factura">Tipo de comprobante por orden: boleta simple, boleta con DNI o factura<a class="headerlink" href="#tipo-de-comprobante-por-orden-boleta-simple-boleta-con-dni-o-factura" title="Permanent link">&para;</a></h3>
+<p>Elegir el comprobante es una decisión <strong>de cada orden</strong>, no del perfil del cliente — la misma persona puede pedir boleta simple una vez y factura la siguiente. Por eso este campo vive en <code>ordenes</code> (<code>pagatu-orden-ms</code>), no en <code>clientes</code>.</p>
+<p><strong>Tabla 14. Tipos de comprobante y qué exigen del cliente</strong></p>
+<table>
+<thead>
+<tr>
+<th><code>tipo_comprobante</code></th>
+<th>Requiere</th>
+<th>Uso típico</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BOLETA_SIMPLE</code></td>
+<td>Nada — ni DNI ni RUC</td>
+<td>Compra rápida, sin identificar al cliente.</td>
+</tr>
+<tr>
+<td><code>BOLETA_CON_DNI</code></td>
+<td>El cliente debe tener <code>dni</code> registrado en <code>pagatu-cliente-ms</code></td>
+<td>El cliente quiere su DNI impreso en la boleta (garantía, seguimiento).</td>
+</tr>
+<tr>
+<td><code>FACTURA</code></td>
+<td>El cliente debe tener <code>ruc</code> registrado en <code>pagatu-cliente-ms</code></td>
+<td>El cliente (persona natural con RUC, o persona jurídica) necesita crédito fiscal / gasto deducible.</td>
+</tr>
+</tbody>
+</table>
+<p>La columna <code>tipo_comprobante</code> ya está en <code>ordenes</code> (ver <code>V1__create_orden_tables.sql</code>, arriba en este mismo Anexo). Validar que el cliente realmente tenga <code>dni</code> (para <code>BOLETA_CON_DNI</code>) o <code>ruc</code> (para <code>FACTURA</code>) antes de crear la orden es responsabilidad del código — una consulta a <code>pagatu-cliente-ms</code> — no de una restricción SQL entre bases de datos distintas.</p>
+<h3 id="metodo-de-pago-por-orden">Método de pago por orden<a class="headerlink" href="#metodo-de-pago-por-orden" title="Permanent link">&para;</a></h3>
+<p><code>pagatu</code> es comercio electrónico, así que la orden también registra con qué método el cliente eligió pagar — el procesamiento real de ese pago (confirmar, rechazar, reintentar) es trabajo de <code>pago-ms</code>, recién en S8; hoy solo se deja registrado el método elegido en <code>ordenes.metodo_pago</code>.</p>
+<p>"Contra entrega" no es un método de pago — es <strong>cuándo</strong> se paga. El repartidor puede cobrar en efectivo, por Yape/Plin (QR) o incluso por transferencia al momento de la entrega; el medio sigue siendo uno de los mismos de siempre. Por eso <code>pagatu</code> separa dos columnas: <strong>con qué</strong> se paga (<code>metodo_pago</code>) y <strong>cuándo</strong> se paga (<code>momento_pago</code>).</p>
+<p><strong>Tabla 15. Métodos de pago considerados para <code>pagatu</code></strong></p>
+<table>
+<thead>
+<tr>
+<th><code>metodo_pago</code></th>
+<th>Descripción</th>
+<th>Nota</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TARJETA</code></td>
+<td>Tarjeta de crédito o débito (Visa, Mastercard), vía pasarela de pagos.</td>
+<td>Es el nodo "Pasarela de pagos externa" que ya está en el C4 nivel 1 y 2 (<code>docs/index.md</code>); en la práctica solo aplica cuando <code>momento_pago = ADELANTADO</code>.</td>
+</tr>
+<tr>
+<td><code>YAPE_PLIN</code></td>
+<td>Billetera digital (Yape o Plin) por QR.</td>
+<td>Funciona tanto adelantado como al momento de la entrega.</td>
+</tr>
+<tr>
+<td><code>TRANSFERENCIA</code></td>
+<td>Transferencia bancaria directa.</td>
+<td>El cliente paga fuera del sistema y sube o registra un comprobante; también puede hacerse al recibir el pedido.</td>
+</tr>
+<tr>
+<td><code>PAGO_EFECTIVO</code></td>
+<td>Efectivo — en un agente/punto físico afiliado si es adelantado, o directo al repartidor si es contra entrega.</td>
+<td>Útil para clientes sin tarjeta ni banca digital.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Tabla 16. <code>momento_pago</code>: cuándo se paga</strong></p>
+<table>
+<thead>
+<tr>
+<th><code>momento_pago</code></th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ADELANTADO</code></td>
+<td>El cliente paga al crear la orden, antes del despacho — <code>pago-ms</code> procesa el pago de inmediato (S8-S9).</td>
+</tr>
+<tr>
+<td><code>CONTRA_ENTREGA</code></td>
+<td>El cliente paga cuando recibe el pedido, con cualquiera de los métodos de la Tabla 15 (excepto <code>TARJETA</code>, en la práctica — no suele haber POS físico con el repartidor).</td>
+</tr>
+</tbody>
+</table>
+<p><code>metodo_pago</code> y <code>momento_pago</code> son obligatorios desde hoy (<code>NOT NULL</code>) porque, a diferencia del comprobante, en comercio electrónico real casi nunca se permite crear una orden sin saber cómo y cuándo se va a pagar. Validar reglas como "<code>TARJETA</code> no aplica a <code>CONTRA_ENTREGA</code>" es trabajo del código en <code>pago-ms</code> (S8), no una restricción SQL de esta sesión.</p>
 
 
 
