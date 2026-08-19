@@ -2312,7 +2312,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,metrics
   endpoint:
     health:
       show-details: never
@@ -2405,6 +2405,22 @@ docker exec -it pagatu-postgres-catalogo psql -U pagatu -d pagatu_catalogo_db -c
 docker exec -it pagatu-postgres-catalogo psql -U pagatu -d pagatu_catalogo_db -c "\d categorias"
 ```
 
+**Alternativa: conectarse desde un cliente IDE (DBeaver, DataGrip, TablePlus u otro)**
+
+A diferencia del microservicio (3.7.3), `postgres-catalogo` sí publica su puerto al host en `compose.yml` (`"25432:5432"`), así que se puede inspeccionar visualmente con cualquier cliente de base de datos, sin pasar por `docker exec`:
+
+**Tabla 5. Parámetros de conexión a PostgreSQL PROD local**
+
+| Parámetro | Valor |
+|---|---|
+| Host | `localhost` |
+| Puerto | `25432` |
+| Base de datos | `pagatu_catalogo_db` |
+| Usuario | `pagatu` |
+| Contraseña | `pagatu` |
+
+Estos son los mismos valores de `DB_NAME`/`DB_USER`/`DB_PASS` del `.env` (3.6.2) — el puerto `25432` es el que `compose.yml` mapea hacia el `5432` interno del contenedor, para no chocar con el PostgreSQL DEV que ya usa `15432` en el host.
+
 #### 3.7.3 Verificar health desde la red Docker
 
 En S1 el microservicio en PROD local no publica puerto host directo. Se valida desde la red Docker interna; en sesiones posteriores el acceso externo se hará por Gateway.
@@ -2421,7 +2437,63 @@ Resultado esperado:
 {"status":"UP"}
 ```
 
-#### 3.7.4 Revisar logs y bajar el entorno
+#### 3.7.4 Probar el CRUD completo
+
+**Producto del paso:** endpoints de `Categoria` y `Producto` verificados end-to-end en producción local (crear, listar, obtener, actualizar y eliminar).
+
+Igual que en 3.7.3, el puerto no está publicado al host: cada petición se hace con un contenedor `curl` desechable conectado a la red `pagatu-catalogo-int`. Los `id` usados abajo son ilustrativos — reemplázalos por los que te devuelva cada `POST`.
+
+PowerShell / bash macOS/Linux:
+
+Crear una categoría:
+
+```bash
+docker run --rm --network pagatu-catalogo-int curlimages/curl:8.10.1 -s -X POST http://pagatu-catalogo-ms:8080/api/v1/categorias -H "Content-Type: application/json" -d '{"nombre":"Electronica","descripcion":"Articulos electronicos"}'
+```
+
+Listar categorías:
+
+```bash
+docker run --rm --network pagatu-catalogo-int curlimages/curl:8.10.1 -s http://pagatu-catalogo-ms:8080/api/v1/categorias
+```
+
+Obtener una categoría por id:
+
+```bash
+docker run --rm --network pagatu-catalogo-int curlimages/curl:8.10.1 -s http://pagatu-catalogo-ms:8080/api/v1/categorias/1
+```
+
+Actualizar una categoría:
+
+```bash
+docker run --rm --network pagatu-catalogo-int curlimages/curl:8.10.1 -s -X PUT http://pagatu-catalogo-ms:8080/api/v1/categorias/1 -H "Content-Type: application/json" -d '{"nombre":"Electronica","descripcion":"Articulos electronicos y gadgets"}'
+```
+
+Crear un producto asociado a esa categoría:
+
+```bash
+docker run --rm --network pagatu-catalogo-int curlimages/curl:8.10.1 -s -X POST http://pagatu-catalogo-ms:8080/api/v1/productos -H "Content-Type: application/json" -d '{"nombre":"Audifonos","descripcion":"Audifonos inalambricos","precio":89.90,"activo":true,"categoriaId":1}'
+```
+
+Listar productos:
+
+```bash
+docker run --rm --network pagatu-catalogo-int curlimages/curl:8.10.1 -s http://pagatu-catalogo-ms:8080/api/v1/productos
+```
+
+Eliminar el producto (antes que su categoría, por la relación entre ambos):
+
+```bash
+docker run --rm --network pagatu-catalogo-int curlimages/curl:8.10.1 -s -X DELETE http://pagatu-catalogo-ms:8080/api/v1/productos/1
+```
+
+Eliminar la categoría:
+
+```bash
+docker run --rm --network pagatu-catalogo-int curlimages/curl:8.10.1 -s -X DELETE http://pagatu-catalogo-ms:8080/api/v1/categorias/1
+```
+
+#### 3.7.5 Revisar logs y bajar el entorno
 
 La producción local se levantó con dos instancias usando `--scale pagatu-catalogo-ms=2`. No uses más de dos en laboratorio porque cada instancia consume CPU y memoria.
 
@@ -2448,6 +2520,66 @@ docker compose down
 - `pagatu-catalogo-ms` funcional con CRUD de categorías y productos, ejecutándose en DEV con múltiples instancias en paralelo (escalamiento horizontal).
 - PostgreSQL, Swagger y Actuator verificados, con README operativo y pruebas por shell documentadas.
 - (Opcional) Producción local con Docker configurada y probada.
+
+### Anexo: acceder al microservicio PROD desde el navegador (cambio temporal, opcional)
+
+Por diseño, en S1 el microservicio en PROD local **no publica puerto al host** (3.7.3) — se accede desde la red Docker interna, y con dos instancias corriendo (`--scale pagatu-catalogo-ms=2`) no tiene sentido publicar un solo puerto hacia dos réplicas (ver la explicación de por qué en 3.7.3). El acceso real desde el navegador se resuelve recién con el Gateway, en una sesión posterior.
+
+Si igual quieres verlo en el navegador durante esta sesión, para observarlo por tu cuenta (`/actuator/health`), estos son los cambios necesarios — y cómo revertirlos para no dejar el proyecto en un estado distinto al que describe el resto de la guía. Swagger no entra en esta prueba: está deshabilitado en `prod` a propósito (3.6.3), y habilitarlo aquí, aunque sea temporalmente, contradice la separación DEV/PROD que la guía viene construyendo desde el inicio.
+
+**1. Publicar el puerto en `compose.yml`**
+
+Agrega `ports` al servicio `pagatu-catalogo-ms`:
+
+```yaml
+  pagatu-catalogo-ms:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      postgres-catalogo:
+        condition: service_healthy
+    ports:
+      - "28080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      DB_HOST: pagatu-postgres-catalogo
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - pagatu-catalogo-int
+```
+
+Se usa `28080` en el host (no `8080`) para no chocar con el microservicio DEV, que ya corre en `8080` sobre el host directamente (fuera de Docker) — y de paso sigue el mismo patrón que `25432` para PostgreSQL PROD (3.6.4) frente al `15432` de DEV.
+
+**2. Recrear el contenedor con el cambio**
+
+Sin `--scale`, Compose usa por defecto **1 instancia** por servicio (aquí no hay `deploy.replicas` configurado) — no hace falta indicarlo:
+
+```bash
+docker compose up -d --build
+```
+
+**3. Probar desde el navegador**
+
+```text
+http://localhost:28080/actuator/health
+```
+
+Solo `/actuator/health`: no hay `/swagger-ui.html` que probar porque `application-prod.yml` (3.6.3) tiene `springdoc.swagger-ui.enabled: false` — deshabilitado a propósito en `prod`. Ese apagado no se toca en este anexo; forma parte de la misma separación DEV/PROD que el resto de la guía, no un límite temporal para saltarse.
+
+**4. Revertir al terminar**
+
+Quita el bloque `ports` agregado en el paso 1, y vuelve a levantar con las dos instancias originales:
+
+```bash
+docker compose up -d --build --scale pagatu-catalogo-ms=2
+```
+
+Este anexo es solo para exploración personal — la evidencia de la sesión (4.1 en adelante) se sustenta con el flujo de 3.7.1 a 3.7.5 tal como está, sin puerto publicado.
 
 ## 4. Crea: actividad autónoma
 
@@ -2579,7 +2711,7 @@ PROD local con Docker (3.6-3.7) es opcional: si se incluye, suma como evidencia 
 
 Evidencia mínima que debes poder defender sobre el escalamiento horizontal:
 
-**Tabla 5. Comparación entre instancias del escalamiento horizontal**
+**Tabla 6. Comparación entre instancias del escalamiento horizontal**
 
 | Aspecto | Instancia 1 | Instancia 2 |
 |---|---|---|
@@ -2590,7 +2722,7 @@ Evidencia mínima que debes poder defender sobre el escalamiento horizontal:
 
 Comparación entre DEV y PROD local (aplica solo si completaste la parte opcional de 3.6-3.7):
 
-**Tabla 6. Comparación entre DEV y PROD local**
+**Tabla 7. Comparación entre DEV y PROD local**
 
 | Aspecto | DEV Maven Wrapper | PROD Docker |
 |---|---|---|
@@ -2615,7 +2747,7 @@ Si completaste la parte opcional de 3.6-3.7:
 
 ### 4.6 Rúbrica de evaluación
 
-**Tabla 7. Rúbrica de evaluación**
+**Tabla 8. Rúbrica de evaluación**
 
 | Criterio | Peso (%) | A (20 pts) | B (15 pts) | C (10 pts) | D (5 pts) | Nivel obtenido |
 |---|---:|---|---|---|---|---:|
