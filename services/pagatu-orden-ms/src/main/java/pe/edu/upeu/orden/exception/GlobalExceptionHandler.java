@@ -1,4 +1,4 @@
-package pe.edu.upeu.catalogo.exception;
+package pe.edu.upeu.orden.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

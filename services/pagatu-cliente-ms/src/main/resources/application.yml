@@ -1,5 +1,5 @@
 spring:
   application:
-    name: pagatu-catalogo-ms
+    name: pagatu-cliente-ms
   profiles:
     active: dev

@@ -1,4 +1,4 @@
-package pe.edu.upeu.catalogo.filter;
+package pe.edu.upeu.orden.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

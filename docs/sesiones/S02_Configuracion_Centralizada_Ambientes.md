@@ -1127,9 +1127,11 @@ Tiempo: 5 min.
 - SACAViX. (2026). *Catálogo de patrones*. SACAViX System Design. https://systemdesign.sacavix.com/patterns
 - SACAViX. (2026). *Centralized Configuration*. SACAViX System Design — Centralized Config. https://systemdesign.sacavix.com/patterns/centralized-config
 
-## Anexo: alcance por microservicio y proyecto base de `pagatu-orden-ms`
+## Anexo: alcance por microservicio y proyecto base de `pagatu-orden-ms` y `pagatu-cliente-ms`
 
 Este anexo no es parte de los pasos 3.1-3.13 (que se enfocan solo en `pagatu-config` y en migrar `pagatu-catalogo-ms`). S02 es el momento del curso donde conviene delimitar, por escrito, qué le corresponde a cada microservicio a lo largo de todo el curso — sin modificar S01, que ya fue entregada.
+
+**Error frecuente al crear un proyecto nuevo copiando de otro:** al generar `pagatu-orden-ms`/`pagatu-cliente-ms` con Spring Initializr, es tentador copiar archivos ya hechos de `pagatu-catalogo-ms` (`.env`, `compose.yml`, `application-dev.yml`, `ResourceNotFoundException`, `CorrelationIdFilter`, etc.) para no escribirlos de cero — es una práctica válida, pero cada archivo copiado hay que revisarlo con cuidado: nombre de base de datos, puertos, nombre de contenedor y, sobre todo, la línea `package` de cada clase Java (debe decir `pe.edu.upeu.orden...` o `pe.edu.upeu.cliente...`, no `pe.edu.upeu.catalogo...`) — si el `package` no coincide con la carpeta real del archivo, el proyecto no compila.
 
 ### Alcance de `pagatu-catalogo-ms`, por sesión
 
@@ -1235,7 +1237,7 @@ Las historias 1-4 de `pagatu-cliente-ms` se construyen como trabajo autónomo de
 | Package name | `pe.edu.upeu.orden` |
 | Packaging | Jar |
 | Java | 21 |
-| Dependencias | Las mismas de `pagatu-catalogo-ms` (S1, Tabla 4): Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway. |
+| Dependencias | Las mismas de `pagatu-catalogo-ms` (S1, Tabla 4): Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway. **Además**, agrega MapStruct a mano en el `pom.xml` (S1, 3.5.20) — Spring Initializr no lo ofrece como opción, y sin él el proyecto no compila apenas escribas el primer `Mapper`. |
 | Ubicación sugerente | `services/pagatu-orden-ms` puedes poner en cualquier lugar |
 
 El puerto de base de datos (`15434` DEV / `25434` PROD local) sigue la misma numeración ya reservada para `orden_db` en la arquitectura del proyecto (`docs/index.md`), distinta de `pagatu_catalogo_db` (`15432`/`25432`) para que ambos puedan correr al mismo tiempo. El puerto de aplicación en DEV (`8082`, fijo) sigue el mismo criterio de S1 (puerto fijo, sin argumento) — distinto de `8080`, que ya usa `pagatu-catalogo-ms`.
@@ -1360,7 +1362,7 @@ CREATE TABLE IF NOT EXISTS orden_detalles (
 | Package name | `pe.edu.upeu.cliente` |
 | Packaging | Jar |
 | Java | 21 |
-| Dependencias | Las mismas de `pagatu-catalogo-ms` (S1, Tabla 4): Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway. |
+| Dependencias | Las mismas de `pagatu-catalogo-ms` (S1, Tabla 4): Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway. **Además**, agrega MapStruct a mano en el `pom.xml` (S1, 3.5.20) — Spring Initializr no lo ofrece como opción, y sin él el proyecto no compila apenas escribas el primer `Mapper`. |
 | Ubicación sugerente | `services/pagatu-cliente-ms` puedes poner en cualquier lugar |
 
 El puerto de base de datos (`15433` DEV / `25433` PROD local) es el que ya estaba reservado para `cliente_db` en la arquitectura del proyecto (`docs/index.md`) — el hueco entre `auth_db` (`15431`) y `orden_db` (`15434`). El puerto de aplicación en DEV es `8084`, fijo, distinto de `8080` (`pagatu-catalogo-ms`) y `8082` (`pagatu-orden-ms`); se deja `8081` y `8083` sin usar, por si se necesitan para segundas instancias o para `auth-ms`.
@@ -1473,6 +1475,20 @@ Una persona natural puede tener **solo DNI**, o **DNI y RUC a la vez** (un negoc
 | `JURIDICA` | `ruc` obligatorio; `dni` queda `NULL` | SUNAT (por `ruc`) | `razon_social` |
 
 `whatsapp` (opcional, no lo completa RENIEC/SUNAT — lo escribe el cliente) es el número al que se envía el comprobante de cada orden una vez confirmada; su uso real llega recién con la mensajería de S8, cuando `orden-ms` publique el evento correspondiente. `ordenes.id_cliente` (Anexo anterior) apunta al `id` de esta tabla, sin `REFERENCES` entre bases de datos.
+
+**`services/pagatu-cliente-ms/src/main/resources/db/migration/V2__seed_clientes.sql`** (opcional, datos de prueba)
+
+Flyway también migra datos, no solo estructura — un archivo versionado más, con `INSERT` en vez de `CREATE TABLE`. Sirve para no estar registrando clientes a mano cada vez que reinicias la base de datos:
+
+```sql
+INSERT INTO clientes (tipo_persona, dni, ruc, nombre_completo, razon_social, direccion, email, whatsapp)
+VALUES ('NATURAL', '87654321', NULL, 'Maria Torres Quispe', NULL, 'Av. Los Olivos 123, Lima', 'maria.torres@example.com', '999888777');
+
+INSERT INTO clientes (tipo_persona, dni, ruc, nombre_completo, razon_social, direccion, email, whatsapp)
+VALUES ('JURIDICA', NULL, '20123456789', NULL, 'Comercial Andina S.A.C.', 'Jr. Comercio 456, Lima', 'contacto@comercialandina.pe', '988777666');
+```
+
+Igual que `V1`, una vez aplicado no se edita — si necesitas ajustar estos datos, agrega un `V3` nuevo. `pagatu-orden-ms` no tiene un `V2` propio: sus órdenes se crean desde las pruebas de la sesión (3.7 en adelante), referenciando estos `id` de `clientes` (normalmente `1` y `2`) y los `id` de `productos` sembrados en `pagatu-catalogo-ms` (S1).
 
 ### Tipo de comprobante por orden: boleta simple, boleta con DNI o factura
 

@@ -1,9 +1,9 @@
-name: pagatu-catalogo-prod
+name: pagatu-orden-prod
 
 services:
-  postgres-catalogo:
+  postgres-orden:
     image: postgres:16-alpine
-    container_name: pagatu-postgres-catalogo
+    container_name: pagatu-postgres-orden
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${DB_NAME}
@@ -16,23 +16,23 @@ services:
       retries: 10
       start_period: 20s
     volumes:
-      - pagatu_catalogo_data:/var/lib/postgresql/data
+      - pagatu_orden_data:/var/lib/postgresql/data
     ports:
-      - "25432:5432"
+      - "25434:5432"
     networks:
-      - pagatu-catalogo-int
+      - pagatu-orden-int
 
-  pagatu-catalogo-ms:
+  pagatu-orden-ms:
     build: .
     restart: unless-stopped
     depends_on:
-      postgres-catalogo:
+      postgres-orden:
         condition: service_healthy
     #ports:
-    #  - "28080:8080"    
+    #  - "28082:8080"
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
-      DB_HOST: pagatu-postgres-catalogo
+      DB_HOST: pagatu-postgres-orden
       DB_PORT: 5432
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
@@ -40,11 +40,11 @@ services:
     volumes:
       - ./logs:/app/logs
     networks:
-      - pagatu-catalogo-int
+      - pagatu-orden-int
 
 volumes:
-  pagatu_catalogo_data:
+  pagatu_orden_data:
 
 networks:
-  pagatu-catalogo-int:
-    name: pagatu-catalogo-int
+  pagatu-orden-int:
+    name: pagatu-orden-int

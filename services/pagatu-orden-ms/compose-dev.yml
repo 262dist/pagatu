@@ -1,18 +1,18 @@
-name: pagatu-catalogo-dev
+name: pagatu-orden-dev
 
 services:
-  postgres-catalogo-dev:
+  postgres-orden-dev:
     image: postgres:16-alpine
-    container_name: pagatu-postgres-catalogo-dev
+    container_name: pagatu-postgres-orden-dev
     restart: unless-stopped
     environment:
-      POSTGRES_DB: pagatu_catalogo_db
+      POSTGRES_DB: pagatu_orden_db
       POSTGRES_USER: pagatu
       POSTGRES_PASSWORD: pagatu
     ports:
-      - "15432:5432"
+      - "15434:5432"
     volumes:
-      - pagatu_catalogo_dev_data:/var/lib/postgresql/data
+      - pagatu_orden_dev_data:/var/lib/postgresql/data
 
 volumes:
-  pagatu_catalogo_dev_data:
+  pagatu_orden_dev_data:

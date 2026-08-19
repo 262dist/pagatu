@@ -1,4 +1,4 @@
-package pe.edu.upeu.catalogo.exception;
+package pe.edu.upeu.cliente.exception;
 
 public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException(String mensaje) {

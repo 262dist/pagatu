@@ -1,9 +1,9 @@
 server:
-  port: 8080
+  port: 8082
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:15432/pagatu_catalogo_db
+    url: jdbc:postgresql://localhost:15434/pagatu_orden_db
     username: pagatu
     password: pagatu
     driver-class-name: org.postgresql.Driver
@@ -29,7 +29,7 @@ springdoc:
 
 logging:
   level:
-    pe.edu.upeu.catalogo: DEBUG
+    pe.edu.upeu.orden: DEBUG
 
 management:
   endpoints:
