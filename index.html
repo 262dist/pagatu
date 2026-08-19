@@ -913,8 +913,8 @@ técnicamente.
 <tr>
 <td>S2</td>
 <td>Gestión centralizada de configuración y ambientes.</td>
-<td><code>catalogo-ms</code> + <code>orden-ms</code> (nuevo, esqueleto)</td>
-<td>Config Server + config-repo; se usa <code>orden-ms</code> mínimo (CRUD simple) para tener un segundo servicio que también lea del Config Server.</td>
+<td><code>catalogo-ms</code> + <code>orden-ms</code> (nuevo, esqueleto) + <code>cliente-ms</code> (nuevo, autónomo)</td>
+<td>Config Server + config-repo; se usa <code>orden-ms</code> mínimo (CRUD simple) para tener un segundo servicio que también lea del Config Server. Como trabajo autónomo, se construye <code>pagatu-cliente-ms</code>: perfil del cliente (DNI/RUC, nombre/razón social) con autocompletado vía RENIEC/SUNAT; <code>orden-ms</code> referencia su <code>id_cliente</code> sin llave foránea.</td>
 </tr>
 <tr>
 <td>S3</td>
@@ -958,8 +958,8 @@ técnicamente.
 <tr>
 <td>S7</td>
 <td>Seguridad distribuida y control de acceso.</td>
-<td><code>auth-ms</code> (nuevo)</td>
-<td>JWT propio, roles, Gateway como Resource Server.</td>
+<td><code>auth-ms</code> (nuevo), <code>cliente-ms</code></td>
+<td>JWT propio con Spring Security en clase (Keycloak queda como reemplazo posterior de <code>auth-ms</code>), roles, Gateway como Resource Server. <code>orden-ms</code> deja de aceptar <code>id_cliente</code> en el request y lo toma del JWT ya validado; <code>pagatu-cliente-ms</code> (construido en S2) queda protegido con los mismos roles.</td>
 </tr>
 <tr>
 <td>S8</td>
@@ -977,7 +977,7 @@ técnicamente.
 <td>S10</td>
 <td>Observabilidad y diagnóstico de sistemas distribuidos.</td>
 <td>todos</td>
-<td>Extiende Prometheus/Loki/Grafana (ya en pie desde S3-S4) a <code>auth-ms</code>, <code>orden-ms</code> y <code>pago-ms</code>; agrega paneles de diagnóstico y alertas sobre todo el sistema, no solo <code>catalogo-ms</code>.</td>
+<td>Extiende Prometheus/Loki/Grafana (ya en pie desde S3-S4) a <code>auth-ms</code>, <code>cliente-ms</code>, <code>orden-ms</code> y <code>pago-ms</code>; agrega paneles de diagnóstico y alertas sobre todo el sistema, no solo <code>catalogo-ms</code>.</td>
 </tr>
 <tr>
 <td>S11</td>
@@ -1058,9 +1058,12 @@ flowchart LR
 
     subgraph Runtime["microservicios"]
         subgraph Identity["identidad"]
-            Auth["auth-ms (Keycloak u otro) - dinamico"]
+            Auth["auth-ms (Spring Security en clase, Keycloak despues) - dinamico"]
             AuthDB[("auth_db - D 15431 - P 25431")]
             Auth --&gt; AuthDB
+            Cliente["cliente-ms - dinamico"]
+            ClienteDB[("cliente_db - D 15433 - P 25433")]
+            Cliente --&gt; ClienteDB
         end
 
         subgraph Services["services"]
@@ -1084,15 +1087,18 @@ flowchart LR
         KafkaUI --&gt; Broker
     end
 
-    subgraph External["sistema externo"]
+    subgraph External["sistemas externos"]
         PaymentGateway["Pasarela de pagos externa"]
+        ReniecSunat["RENIEC / SUNAT"]
     end
 
     Angular --&gt; Gateway
     Gateway --&gt; Auth
+    Gateway --&gt; Cliente
     Gateway --&gt; Catalogo
     Gateway --&gt; Orden
     Gateway --&gt; Pago
+    Cliente --&gt;|"consulta DNI / RUC"| ReniecSunat
 
     Config -. "carga configuración" .-&gt; Eureka
     Config -. "carga configuración" .-&gt; Gateway
@@ -1106,7 +1112,7 @@ flowchart LR
     Pago --&gt;|"autoriza / confirma pago"| PaymentGateway
 
     classDef external fill:#fff3cd,stroke:#b7791f,stroke-width:2px,color:#5f370e;
-    class PaymentGateway external;
+    class PaymentGateway,ReniecSunat external;
 
     subgraph Client["clients"]
         Angular["pagatu-ng (Angular 21) - D 4200"]
@@ -1130,7 +1136,8 @@ flowchart LR
 <li>Los microservicios se ejecutan en DEV con Maven y bases de datos en Docker; al cierre de cada sesión se valida producción local con Docker.</li>
 <li>Las pruebas de API se realizan con PowerShell o bash/curl, sin depender de Postman.</li>
 <li>Los flujos asincronos usan mensajería para coordinar ordenes y pagos.</li>
-<li><code>/actuator/health</code> existe desde S1. El stack de observabilidad (Prometheus, Loki, Grafana) se levanta ya en S3-S4 sobre <code>catalogo-ms</code>/<code>orden-ms</code>, para tener evidencia visual de operación desde la sustentación de S5; en S10 se extiende a <code>auth-ms</code>, <code>orden-ms</code> y <code>pago-ms</code> con paneles de diagnóstico y alertas sobre todo el sistema.</li>
+<li><code>/actuator/health</code> existe desde S1. El stack de observabilidad (Prometheus, Loki, Grafana) se levanta ya en S3-S4 sobre <code>catalogo-ms</code>/<code>orden-ms</code>, para tener evidencia visual de operación desde la sustentación de S5; en S10 se extiende a <code>auth-ms</code>, <code>cliente-ms</code>, <code>orden-ms</code> y <code>pago-ms</code> con paneles de diagnóstico y alertas sobre todo el sistema.</li>
+<li><code>pagatu-cliente-ms</code> (autónomo, desde S2) guarda el perfil del cliente (DNI/RUC, nombre/razón social) y lo autocompleta consultando RENIEC (personas naturales) o SUNAT (personas jurídicas) por el número de documento — el sistema no vive aislado, se integra con servicios externos del Estado peruano igual que con la pasarela de pagos. Desde S7, <code>orden-ms</code> deja de confiar en el <code>id_cliente</code> que el request declara y lo toma del JWT ya validado.</li>
 <li>El frontend <code>clients/pagatu-ng</code> (Angular 21) consume el sistema mediante Gateway.</li>
 <li>El producto final se valida end-to-end, se estabiliza y se defiende técnicamente.</li>
 </ol>
