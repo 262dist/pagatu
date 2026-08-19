@@ -1314,10 +1314,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#374-revisar-logs-y-bajar-el-entorno" class="md-nav__link">
+  <a href="#374-probar-el-crud-completo" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.7.4 Revisar logs y bajar el entorno
+        3.7.4 Probar el CRUD completo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#375-revisar-logs-y-bajar-el-entorno" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7.5 Revisar logs y bajar el entorno
       
     </span>
   </a>
@@ -1326,6 +1337,17 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anexo-acceder-al-microservicio-prod-desde-el-navegador-cambio-temporal-opcional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anexo: acceder al microservicio PROD desde el navegador (cambio temporal, opcional)
+      
+    </span>
+  </a>
   
 </li>
         
@@ -2265,10 +2287,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#374-revisar-logs-y-bajar-el-entorno" class="md-nav__link">
+  <a href="#374-probar-el-crud-completo" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.7.4 Revisar logs y bajar el entorno
+        3.7.4 Probar el CRUD completo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#375-revisar-logs-y-bajar-el-entorno" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7.5 Revisar logs y bajar el entorno
       
     </span>
   </a>
@@ -2277,6 +2310,17 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anexo-acceder-al-microservicio-prod-desde-el-navegador-cambio-temporal-opcional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anexo: acceder al microservicio PROD desde el navegador (cambio temporal, opcional)
+      
+    </span>
+  </a>
   
 </li>
         
@@ -4281,7 +4325,7 @@ DB_PASS=pagatu
 <span class="w">  </span><span class="nt">endpoints</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">web</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">exposure</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health,info</span>
+<span class="w">        </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health,info,metrics</span>
 <span class="w">  </span><span class="nt">endpoint</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">health</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">show-details</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">never</span>
@@ -4355,6 +4399,40 @@ docker<span class="w"> </span>compose<span class="w"> </span>ps
 <div class="highlight"><pre><span></span><code>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-catalogo<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_catalogo_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">"\dt"</span>
 docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-catalogo<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_catalogo_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">"\d categorias"</span>
 </code></pre></div>
+<p><strong>Alternativa: conectarse desde un cliente IDE (DBeaver, DataGrip, TablePlus u otro)</strong></p>
+<p>A diferencia del microservicio (3.7.3), <code>postgres-catalogo</code> sí publica su puerto al host en <code>compose.yml</code> (<code>"25432:5432"</code>), así que se puede inspeccionar visualmente con cualquier cliente de base de datos, sin pasar por <code>docker exec</code>:</p>
+<p><strong>Tabla 5. Parámetros de conexión a PostgreSQL PROD local</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parámetro</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Host</td>
+<td><code>localhost</code></td>
+</tr>
+<tr>
+<td>Puerto</td>
+<td><code>25432</code></td>
+</tr>
+<tr>
+<td>Base de datos</td>
+<td><code>pagatu_catalogo_db</code></td>
+</tr>
+<tr>
+<td>Usuario</td>
+<td><code>pagatu</code></td>
+</tr>
+<tr>
+<td>Contraseña</td>
+<td><code>pagatu</code></td>
+</tr>
+</tbody>
+</table>
+<p>Estos son los mismos valores de <code>DB_NAME</code>/<code>DB_USER</code>/<code>DB_PASS</code> del <code>.env</code> (3.6.2) — el puerto <code>25432</code> es el que <code>compose.yml</code> mapea hacia el <code>5432</code> interno del contenedor, para no chocar con el PostgreSQL DEV que ya usa <code>15432</code> en el host.</p>
 <h4 id="373-verificar-health-desde-la-red-docker">3.7.3 Verificar health desde la red Docker<a class="headerlink" href="#373-verificar-health-desde-la-red-docker" title="Permanent link">&para;</a></h4>
 <p>En S1 el microservicio en PROD local no publica puerto host directo. Se valida desde la red Docker interna; en sesiones posteriores el acceso externo se hará por Gateway.</p>
 <p>PowerShell / bash macOS/Linux:</p>
@@ -4363,7 +4441,35 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <p>Resultado esperado:</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span><span class="nt">"status"</span><span class="p">:</span><span class="s2">"UP"</span><span class="p">}</span>
 </code></pre></div>
-<h4 id="374-revisar-logs-y-bajar-el-entorno">3.7.4 Revisar logs y bajar el entorno<a class="headerlink" href="#374-revisar-logs-y-bajar-el-entorno" title="Permanent link">&para;</a></h4>
+<h4 id="374-probar-el-crud-completo">3.7.4 Probar el CRUD completo<a class="headerlink" href="#374-probar-el-crud-completo" title="Permanent link">&para;</a></h4>
+<p><strong>Producto del paso:</strong> endpoints de <code>Categoria</code> y <code>Producto</code> verificados end-to-end en producción local (crear, listar, obtener, actualizar y eliminar).</p>
+<p>Igual que en 3.7.3, el puerto no está publicado al host: cada petición se hace con un contenedor <code>curl</code> desechable conectado a la red <code>pagatu-catalogo-int</code>. Los <code>id</code> usados abajo son ilustrativos — reemplázalos por los que te devuelva cada <code>POST</code>.</p>
+<p>PowerShell / bash macOS/Linux:</p>
+<p>Crear una categoría:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--network<span class="w"> </span>pagatu-catalogo-int<span class="w"> </span>curlimages/curl:8.10.1<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://pagatu-catalogo-ms:8080/api/v1/categorias<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'{"nombre":"Electronica","descripcion":"Articulos electronicos"}'</span>
+</code></pre></div>
+<p>Listar categorías:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--network<span class="w"> </span>pagatu-catalogo-int<span class="w"> </span>curlimages/curl:8.10.1<span class="w"> </span>-s<span class="w"> </span>http://pagatu-catalogo-ms:8080/api/v1/categorias
+</code></pre></div>
+<p>Obtener una categoría por id:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--network<span class="w"> </span>pagatu-catalogo-int<span class="w"> </span>curlimages/curl:8.10.1<span class="w"> </span>-s<span class="w"> </span>http://pagatu-catalogo-ms:8080/api/v1/categorias/1
+</code></pre></div>
+<p>Actualizar una categoría:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--network<span class="w"> </span>pagatu-catalogo-int<span class="w"> </span>curlimages/curl:8.10.1<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>http://pagatu-catalogo-ms:8080/api/v1/categorias/1<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'{"nombre":"Electronica","descripcion":"Articulos electronicos y gadgets"}'</span>
+</code></pre></div>
+<p>Crear un producto asociado a esa categoría:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--network<span class="w"> </span>pagatu-catalogo-int<span class="w"> </span>curlimages/curl:8.10.1<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://pagatu-catalogo-ms:8080/api/v1/productos<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">'{"nombre":"Audifonos","descripcion":"Audifonos inalambricos","precio":89.90,"activo":true,"categoriaId":1}'</span>
+</code></pre></div>
+<p>Listar productos:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--network<span class="w"> </span>pagatu-catalogo-int<span class="w"> </span>curlimages/curl:8.10.1<span class="w"> </span>-s<span class="w"> </span>http://pagatu-catalogo-ms:8080/api/v1/productos
+</code></pre></div>
+<p>Eliminar el producto (antes que su categoría, por la relación entre ambos):</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--network<span class="w"> </span>pagatu-catalogo-int<span class="w"> </span>curlimages/curl:8.10.1<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>DELETE<span class="w"> </span>http://pagatu-catalogo-ms:8080/api/v1/productos/1
+</code></pre></div>
+<p>Eliminar la categoría:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--network<span class="w"> </span>pagatu-catalogo-int<span class="w"> </span>curlimages/curl:8.10.1<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>DELETE<span class="w"> </span>http://pagatu-catalogo-ms:8080/api/v1/categorias/1
+</code></pre></div>
+<h4 id="375-revisar-logs-y-bajar-el-entorno">3.7.5 Revisar logs y bajar el entorno<a class="headerlink" href="#375-revisar-logs-y-bajar-el-entorno" title="Permanent link">&para;</a></h4>
 <p>La producción local se levantó con dos instancias usando <code>--scale pagatu-catalogo-ms=2</code>. No uses más de dos en laboratorio porque cada instancia consume CPU y memoria.</p>
 <p>PowerShell / bash macOS/Linux:</p>
 <div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>ps
@@ -4380,6 +4486,45 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <li>PostgreSQL, Swagger y Actuator verificados, con README operativo y pruebas por shell documentadas.</li>
 <li>(Opcional) Producción local con Docker configurada y probada.</li>
 </ul>
+<h3 id="anexo-acceder-al-microservicio-prod-desde-el-navegador-cambio-temporal-opcional">Anexo: acceder al microservicio PROD desde el navegador (cambio temporal, opcional)<a class="headerlink" href="#anexo-acceder-al-microservicio-prod-desde-el-navegador-cambio-temporal-opcional" title="Permanent link">&para;</a></h3>
+<p>Por diseño, en S1 el microservicio en PROD local <strong>no publica puerto al host</strong> (3.7.3) — se accede desde la red Docker interna, y con dos instancias corriendo (<code>--scale pagatu-catalogo-ms=2</code>) no tiene sentido publicar un solo puerto hacia dos réplicas (ver la explicación de por qué en 3.7.3). El acceso real desde el navegador se resuelve recién con el Gateway, en una sesión posterior.</p>
+<p>Si igual quieres verlo en el navegador durante esta sesión, para observarlo por tu cuenta (<code>/actuator/health</code>), estos son los cambios necesarios — y cómo revertirlos para no dejar el proyecto en un estado distinto al que describe el resto de la guía. Swagger no entra en esta prueba: está deshabilitado en <code>prod</code> a propósito (3.6.3), y habilitarlo aquí, aunque sea temporalmente, contradice la separación DEV/PROD que la guía viene construyendo desde el inicio.</p>
+<p><strong>1. Publicar el puerto en <code>compose.yml</code></strong></p>
+<p>Agrega <code>ports</code> al servicio <code>pagatu-catalogo-ms</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nt">pagatu-catalogo-ms</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.</span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
+<span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">postgres-catalogo</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"28080:8080"</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">SPRING_PROFILES_ACTIVE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${SPRING_PROFILES_ACTIVE}</span>
+<span class="w">      </span><span class="nt">DB_HOST</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-postgres-catalogo</span>
+<span class="w">      </span><span class="nt">DB_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5432</span>
+<span class="w">      </span><span class="nt">DB_NAME</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${DB_NAME}</span>
+<span class="w">      </span><span class="nt">DB_USER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${DB_USER}</span>
+<span class="w">      </span><span class="nt">DB_PASS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${DB_PASS}</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./logs:/app/logs</span>
+<span class="w">    </span><span class="nt">networks</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-catalogo-int</span>
+</code></pre></div>
+<p>Se usa <code>28080</code> en el host (no <code>8080</code>) para no chocar con el microservicio DEV, que ya corre en <code>8080</code> sobre el host directamente (fuera de Docker) — y de paso sigue el mismo patrón que <code>25432</code> para PostgreSQL PROD (3.6.4) frente al <code>15432</code> de DEV.</p>
+<p><strong>2. Recrear el contenedor con el cambio</strong></p>
+<p>Sin <code>--scale</code>, Compose usa por defecto <strong>1 instancia</strong> por servicio (aquí no hay <code>deploy.replicas</code> configurado) — no hace falta indicarlo:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--build
+</code></pre></div>
+<p><strong>3. Probar desde el navegador</strong></p>
+<div class="highlight"><pre><span></span><code>http://localhost:28080/actuator/health
+</code></pre></div>
+<p>Solo <code>/actuator/health</code>: no hay <code>/swagger-ui.html</code> que probar porque <code>application-prod.yml</code> (3.6.3) tiene <code>springdoc.swagger-ui.enabled: false</code> — deshabilitado a propósito en <code>prod</code>. Ese apagado no se toca en este anexo; forma parte de la misma separación DEV/PROD que el resto de la guía, no un límite temporal para saltarse.</p>
+<p><strong>4. Revertir al terminar</strong></p>
+<p>Quita el bloque <code>ports</code> agregado en el paso 1, y vuelve a levantar con las dos instancias originales:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--build<span class="w"> </span>--scale<span class="w"> </span>pagatu-catalogo-ms<span class="o">=</span><span class="m">2</span>
+</code></pre></div>
+<p>Este anexo es solo para exploración personal — la evidencia de la sesión (4.1 en adelante) se sustenta con el flujo de 3.7.1 a 3.7.5 tal como está, sin puerto publicado.</p>
 <h2 id="4-crea-actividad-autonoma">4. Crea: actividad autónoma<a class="headerlink" href="#4-crea-actividad-autonoma" title="Permanent link">&para;</a></h2>
 <p>Tiempo: 4h fuera del aula.</p>
 <h3 id="41-actividad">4.1 Actividad<a class="headerlink" href="#41-actividad" title="Permanent link">&para;</a></h3>
@@ -4498,7 +4643,7 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <p>PROD local con Docker (3.6-3.7) es opcional: si se incluye, suma como evidencia adicional, pero su ausencia no hace que la entrega se considere incompleta.</p>
 <h3 id="45-preguntas-de-defensa">4.5 Preguntas de defensa<a class="headerlink" href="#45-preguntas-de-defensa" title="Permanent link">&para;</a></h3>
 <p>Evidencia mínima que debes poder defender sobre el escalamiento horizontal:</p>
-<p><strong>Tabla 5. Comparación entre instancias del escalamiento horizontal</strong></p>
+<p><strong>Tabla 6. Comparación entre instancias del escalamiento horizontal</strong></p>
 <table>
 <thead>
 <tr>
@@ -4531,7 +4676,7 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 </tbody>
 </table>
 <p>Comparación entre DEV y PROD local (aplica solo si completaste la parte opcional de 3.6-3.7):</p>
-<p><strong>Tabla 6. Comparación entre DEV y PROD local</strong></p>
+<p><strong>Tabla 7. Comparación entre DEV y PROD local</strong></p>
 <table>
 <thead>
 <tr>
@@ -4583,7 +4728,7 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <li>¿Por qué en PROD local no se publica directamente el puerto del microservicio?</li>
 </ol>
 <h3 id="46-rubrica-de-evaluacion">4.6 Rúbrica de evaluación<a class="headerlink" href="#46-rubrica-de-evaluacion" title="Permanent link">&para;</a></h3>
-<p><strong>Tabla 7. Rúbrica de evaluación</strong></p>
+<p><strong>Tabla 8. Rúbrica de evaluación</strong></p>
 <table>
 <thead>
 <tr>
