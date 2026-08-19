@@ -51,7 +51,7 @@ Documentación interactiva (Swagger): `http://localhost:8080/swagger-ui.html`. H
 Migraciones Flyway en `src/main/resources/db/migration/`:
 
 - `V1__create_catalogo_tables.sql` — tablas `categorias` y `productos`.
-- `V2__seed_categorias_productos.sql` — datos de prueba (2 categorías, 3 productos).
+- `V2__seed_categorias_productos.sql` — datos de prueba: 4 categorías, 7 productos.
 
 `ddl-auto: validate` — Flyway crea/versiona el esquema, Hibernate solo valida que las entidades coincidan.
 
@@ -66,4 +66,4 @@ Detalle completo (Dockerfile, red compartida, escalamiento) en la guía de sesi�
 ## Próximos cambios (no implementados todavía)
 
 - **S2**: migración a configuración centralizada (Config Server) — `application-dev.yml`/`application-prod.yml` locales se moverán a `config-repo`.
-- **S9**: posible columna `stock` en `productos`, pendiente de decidir.
+- **S6/S9**: `productos.stock` ya existe en el esquema y en la API, pero todavía no hay ninguna operación que lo descuente de forma segura (`UPDATE ... WHERE stock >= cantidad`, idempotencia, compensación) — eso se construye cuando `orden-ms` empiece a llamar a este servicio.

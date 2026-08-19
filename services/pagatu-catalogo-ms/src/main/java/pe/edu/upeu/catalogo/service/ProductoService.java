@@ -43,6 +43,7 @@ public class ProductoService {
         producto.setDescripcion(request.getDescripcion());
         producto.setPrecio(request.getPrecio());
         producto.setActivo(request.getActivo());
+        producto.setStock(request.getStock());
         producto.setCategoria(buscarCategoriaOFallar(request.getCategoriaId()));
         return productoMapper.toResponse(productoRepository.save(producto));
     }

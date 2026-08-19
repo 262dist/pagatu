@@ -62,8 +62,7 @@ POST /api/v1/ordenes
 Migraciones Flyway en `src/main/resources/db/migration/`:
 
 - `V1__create_orden_tables.sql` — tablas `ordenes` y `orden_detalles`.
-
-Sin `V2` de datos semilla: las órdenes se crean referenciando clientes de `pagatu-cliente-ms` (`V2__seed_clientes.sql`) y productos de `pagatu-catalogo-ms` (`V2__seed_categorias_productos.sql`).
+- `V2__seed_ordenes.sql` — 3 órdenes de prueba con sus ítems, referenciando `clientes` 1-3 (`pagatu-cliente-ms`) y `productos` 1, 2, 4, 5, 7 (`pagatu-catalogo-ms`). Requiere que esos seeds ya estén aplicados en sus respectivas bases — no hay llave foránea entre microservicios que lo garantice, es responsabilidad de quien levanta el entorno.
 
 `ddl-auto: validate` — Flyway crea/versiona el esquema, Hibernate solo valida que las entidades coincidan.
 

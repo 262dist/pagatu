@@ -62,7 +62,7 @@ POST /api/v1/clientes
 Migraciones Flyway en `src/main/resources/db/migration/`:
 
 - `V1__create_cliente_tables.sql` — tabla `clientes`.
-- `V2__seed_clientes.sql` — datos de prueba (1 `NATURAL`, 1 `JURIDICA`).
+- `V2__seed_clientes.sql` — datos de prueba: 4 clientes (2 `NATURAL`, 2 `JURIDICA`); uno de los `NATURAL` tiene DNI **y** RUC (negocio unipersonal).
 
 `ddl-auto: validate` — Flyway crea/versiona el esquema, Hibernate solo valida que las entidades coincidan.
 

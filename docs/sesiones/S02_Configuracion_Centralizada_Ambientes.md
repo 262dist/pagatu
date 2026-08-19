@@ -1160,7 +1160,7 @@ Este anexo no es parte de los pasos 3.1-3.13 (que se enfocan solo en `pagatu-con
 
 **S9 — consistencia distribuida (pendiente de decidir)**
 
-9. *(Sin definir todavía)* Como sistema, quiero descontar stock de un producto cuando se confirma una orden, para no vender más unidades de las disponibles — requeriría agregar una columna `stock` a `productos`, que hoy no existe. Se decide junto con el equipo cuando se llegue a S9.
+9. Como sistema, quiero descontar stock de un producto cuando se confirma una orden, para no vender más unidades de las disponibles. La columna `stock` ya se agregó a `productos` desde el `V1` (S1) — lo que falta construir en S9 es la operación de descuento segura entre `orden-ms` y `pagatu-catalogo-ms` (`UPDATE ... WHERE stock >= cantidad`, idempotencia, compensación si la orden se cancela).
 
 **S10 — observabilidad**
 
@@ -1486,9 +1486,17 @@ VALUES ('NATURAL', '87654321', NULL, 'Maria Torres Quispe', NULL, 'Av. Los Olivo
 
 INSERT INTO clientes (tipo_persona, dni, ruc, nombre_completo, razon_social, direccion, email, whatsapp)
 VALUES ('JURIDICA', NULL, '20123456789', NULL, 'Comercial Andina S.A.C.', 'Jr. Comercio 456, Lima', 'contacto@comercialandina.pe', '988777666');
+
+INSERT INTO clientes (tipo_persona, dni, ruc, nombre_completo, razon_social, direccion, email, whatsapp)
+VALUES ('NATURAL', '45678912', '10456789123', 'Jose Ramirez Lopez', NULL, 'Calle Las Flores 789, Arequipa', 'jose.ramirez@example.com', '977666555');
+
+INSERT INTO clientes (tipo_persona, dni, ruc, nombre_completo, razon_social, direccion, email, whatsapp)
+VALUES ('JURIDICA', NULL, '20567891234', NULL, 'Distribuidora del Sur E.I.R.L.', 'Av. Ejercito 321, Arequipa', 'ventas@distribuidorasur.pe', '966555444');
 ```
 
-Igual que `V1`, una vez aplicado no se edita — si necesitas ajustar estos datos, agrega un `V3` nuevo. `pagatu-orden-ms` no tiene un `V2` propio: sus órdenes se crean desde las pruebas de la sesión (3.7 en adelante), referenciando estos `id` de `clientes` (normalmente `1` y `2`) y los `id` de `productos` sembrados en `pagatu-catalogo-ms` (S1).
+Este cuarto cliente (`NATURAL` con `dni` **y** `ruc`) es justo el caso de 2.3.1: una persona natural con negocio propio, que puede pedir boleta con su DNI o factura con su RUC según la orden.
+
+Igual que `V1`, una vez aplicado no se edita — si necesitas ajustar estos datos, agrega un `V3` nuevo. `pagatu-orden-ms` también tiene su propio `V2__seed_ordenes.sql`, con 3 órdenes de ejemplo referenciando estos `id` de `clientes` y los `id` de `productos` sembrados en `pagatu-catalogo-ms` (S1) — sin llave foránea entre microservicios, así que ese `V2` de `orden-ms` solo funciona si los seeds de `cliente-ms` y `catalogo-ms` ya se aplicaron antes.
 
 ### Tipo de comprobante por orden: boleta simple, boleta con DNI o factura
 

@@ -29,6 +29,9 @@ public class Producto {
     @Column(name = "activo", nullable = false)
     private Boolean activo;
 
+    @Column(name = "stock", nullable = false)
+    private Integer stock;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_categoria", nullable = false)
     private Categoria categoria;

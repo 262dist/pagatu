@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS productos (
     descripcion VARCHAR(255),
     precio NUMERIC(10,2) NOT NULL,
     activo BOOLEAN NOT NULL DEFAULT true,
+    stock INTEGER NOT NULL DEFAULT 0,
     id_categoria BIGINT NOT NULL REFERENCES categorias(id),
     PRIMARY KEY (id)
 );
