@@ -1960,7 +1960,7 @@
 <p><strong>Cómo funciona:</strong> un Config Service centraliza toda la configuración. Los servicios obtienen su configuración al arrancar desde el Config Service. Los cambios de configuración pueden propagarse sin redespliegue. La configuración queda versionada en Git.</p>
 <p><strong>Figura 2. Patrón de Configuración Centralizada</strong></p>
 <pre class="mermaid"><code>flowchart LR
-    Git[("Git Repository")]
+    Git[("Git Repository / local repo")]
     Config["Config Server"]
     A["Service A"]
     B["Service B"]
