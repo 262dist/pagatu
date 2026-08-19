@@ -29,7 +29,7 @@ Resultado esperado U1: el estudiante construye un primer servicio REST funcional
 | Sesión | Tema (sílabo) | MS que se toca | Trabajo principal |
 |---|---|---|---|
 | S1 | Construcción de un servicio base para un sistema distribuido. | `catalogo-ms` | Servicio REST base, PostgreSQL, Swagger, Actuator. |
-| S2 | Gestión centralizada de configuración y ambientes. | `catalogo-ms` + `orden-ms` (nuevo, esqueleto) | Config Server + config-repo; se usa `orden-ms` mínimo (CRUD simple) para tener un segundo servicio que también lea del Config Server. |
+| S2 | Gestión centralizada de configuración y ambientes. | `catalogo-ms` + `orden-ms` (nuevo, esqueleto) + `cliente-ms` (nuevo, autónomo) | Config Server + config-repo; se usa `orden-ms` mínimo (CRUD simple) para tener un segundo servicio que también lea del Config Server. Como trabajo autónomo, se construye `pagatu-cliente-ms`: perfil del cliente (DNI/RUC, nombre/razón social) con autocompletado vía RENIEC/SUNAT; `orden-ms` referencia su `id_cliente` sin llave foránea. |
 | S3 | Registro, descubrimiento y ejecución concurrente de servicios. | `catalogo-ms`, `orden-ms` | Eureka; ambos servicios se registran; múltiples instancias de `catalogo-ms` visibles en el dashboard de Eureka. Se levantan Prometheus y Loki para empezar a recolectar métricas y logs de esas instancias. |
 | S4 | Punto único de acceso y distribución de tráfico. | `catalogo-ms`, `orden-ms` | Gateway enruta a ambos; balanceo de carga entre instancias. Se agrega Grafana con paneles básicos sobre las métricas y logs que ya recolectan Prometheus y Loki desde S3. |
 | S5 | Integración del sistema distribuido base: servicios, configuración centralizada, descubrimiento, ejecución concurrente, Gateway y balanceo de carga. | — | Sustentación del sistema base, con evidencia de operación de los MS en los paneles de Grafana: instancias registradas en Eureka, balanceo de carga entre ellas y métricas/logs en vivo. |
@@ -43,10 +43,10 @@ Resultado esperado U2: el estudiante implementa comunicación síncrona resilien
 | Sesión | Tema (sílabo) | MS que se toca | Trabajo principal |
 |---|---|---|---|
 | S6 | Comunicación síncrona resiliente entre servicios. | `orden-ms` → `catalogo-ms` | Feign + Circuit Breaker: `orden-ms` valida catálogo antes de crear la orden. |
-| S7 | Seguridad distribuida y control de acceso. | `auth-ms` (nuevo) | JWT propio, roles, Gateway como Resource Server. |
+| S7 | Seguridad distribuida y control de acceso. | `auth-ms` (nuevo), `cliente-ms` | JWT propio con Spring Security en clase (Keycloak queda como reemplazo posterior de `auth-ms`), roles, Gateway como Resource Server. `orden-ms` deja de aceptar `id_cliente` en el request y lo toma del JWT ya validado; `pagatu-cliente-ms` (construido en S2) queda protegido con los mismos roles. |
 | S8 | Mensajería asíncrona entre servicios. | `orden-ms` → `pago-ms` (nuevo) | `orden-ms` publica `orden.creada`; `pago-ms` consume y publica `pago.validado`. |
 | S9 | Consistencia distribuida en procesos de negocio. | `orden-ms`, `pago-ms` | Idempotencia, compensación, manejo de eventos duplicados. |
-| S10 | Observabilidad y diagnóstico de sistemas distribuidos. | todos | Extiende Prometheus/Loki/Grafana (ya en pie desde S3-S4) a `auth-ms`, `orden-ms` y `pago-ms`; agrega paneles de diagnóstico y alertas sobre todo el sistema, no solo `catalogo-ms`. |
+| S10 | Observabilidad y diagnóstico de sistemas distribuidos. | todos | Extiende Prometheus/Loki/Grafana (ya en pie desde S3-S4) a `auth-ms`, `cliente-ms`, `orden-ms` y `pago-ms`; agrega paneles de diagnóstico y alertas sobre todo el sistema, no solo `catalogo-ms`. |
 | S11 | Integración con cliente frontend. | Angular 21 | Cliente consumiendo por Gateway: catálogo, crear orden, ver pago. |
 | S12 | Integración del sistema distribuido robusto: comunicación resiliente, seguridad, mensajería, consistencia eventual, observabilidad e integración frontend. | — | Sustentación del sistema robusto. |
 
@@ -97,9 +97,12 @@ flowchart LR
 
     subgraph Runtime["microservicios"]
         subgraph Identity["identidad"]
-            Auth["auth-ms (Keycloak u otro) - dinamico"]
+            Auth["auth-ms (Spring Security en clase, Keycloak despues) - dinamico"]
             AuthDB[("auth_db - D 15431 - P 25431")]
             Auth --> AuthDB
+            Cliente["cliente-ms - dinamico"]
+            ClienteDB[("cliente_db - D 15433 - P 25433")]
+            Cliente --> ClienteDB
         end
 
         subgraph Services["services"]
@@ -123,15 +126,18 @@ flowchart LR
         KafkaUI --> Broker
     end
 
-    subgraph External["sistema externo"]
+    subgraph External["sistemas externos"]
         PaymentGateway["Pasarela de pagos externa"]
+        ReniecSunat["RENIEC / SUNAT"]
     end
 
     Angular --> Gateway
     Gateway --> Auth
+    Gateway --> Cliente
     Gateway --> Catalogo
     Gateway --> Orden
     Gateway --> Pago
+    Cliente -->|"consulta DNI / RUC"| ReniecSunat
 
     Config -. "carga configuración" .-> Eureka
     Config -. "carga configuración" .-> Gateway
@@ -145,7 +151,7 @@ flowchart LR
     Pago -->|"autoriza / confirma pago"| PaymentGateway
 
     classDef external fill:#fff3cd,stroke:#b7791f,stroke-width:2px,color:#5f370e;
-    class PaymentGateway external;
+    class PaymentGateway,ReniecSunat external;
 
     subgraph Client["clients"]
         Angular["pagatu-ng (Angular 21) - D 4200"]
@@ -172,9 +178,10 @@ Convención del diagrama: las flechas continuas representan interacciones de neg
 3. Los microservicios se ejecutan en DEV con Maven y bases de datos en Docker; al cierre de cada sesión se valida producción local con Docker.
 4. Las pruebas de API se realizan con PowerShell o bash/curl, sin depender de Postman.
 5. Los flujos asincronos usan mensajería para coordinar ordenes y pagos.
-6. `/actuator/health` existe desde S1. El stack de observabilidad (Prometheus, Loki, Grafana) se levanta ya en S3-S4 sobre `catalogo-ms`/`orden-ms`, para tener evidencia visual de operación desde la sustentación de S5; en S10 se extiende a `auth-ms`, `orden-ms` y `pago-ms` con paneles de diagnóstico y alertas sobre todo el sistema.
-7. El frontend `clients/pagatu-ng` (Angular 21) consume el sistema mediante Gateway.
-8. El producto final se valida end-to-end, se estabiliza y se defiende técnicamente.
+6. `/actuator/health` existe desde S1. El stack de observabilidad (Prometheus, Loki, Grafana) se levanta ya en S3-S4 sobre `catalogo-ms`/`orden-ms`, para tener evidencia visual de operación desde la sustentación de S5; en S10 se extiende a `auth-ms`, `cliente-ms`, `orden-ms` y `pago-ms` con paneles de diagnóstico y alertas sobre todo el sistema.
+7. `pagatu-cliente-ms` (autónomo, desde S2) guarda el perfil del cliente (DNI/RUC, nombre/razón social) y lo autocompleta consultando RENIEC (personas naturales) o SUNAT (personas jurídicas) por el número de documento — el sistema no vive aislado, se integra con servicios externos del Estado peruano igual que con la pasarela de pagos. Desde S7, `orden-ms` deja de confiar en el `id_cliente` que el request declara y lo toma del JWT ya validado.
+8. El frontend `clients/pagatu-ng` (Angular 21) consume el sistema mediante Gateway.
+9. El producto final se valida end-to-end, se estabiliza y se defiende técnicamente.
 
 ## Enlaces
 

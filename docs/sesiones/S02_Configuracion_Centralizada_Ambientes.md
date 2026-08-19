@@ -1127,9 +1127,101 @@ Tiempo: 5 min.
 - SACAViX. (2026). *Catálogo de patrones*. SACAViX System Design. https://systemdesign.sacavix.com/patterns
 - SACAViX. (2026). *Centralized Configuration*. SACAViX System Design — Centralized Config. https://systemdesign.sacavix.com/patterns/centralized-config
 
-## Anexo: crear el proyecto base de `pagatu-orden-ms`
+## Anexo: alcance por microservicio y proyecto base de `pagatu-orden-ms`
 
-Este anexo no es parte de los pasos 3.1-3.13 (que se enfocan solo en `pagatu-config` y en migrar `pagatu-catalogo-ms`). Es la base que necesitas antes de completar la sección 4 (trabajo autónomo), donde `orden-ms` se conecta a `pagatu-config` — sigue exactamente el mismo patrón de `pagatu-catalogo-ms` (S1).
+Este anexo no es parte de los pasos 3.1-3.13 (que se enfocan solo en `pagatu-config` y en migrar `pagatu-catalogo-ms`). S02 es el momento del curso donde conviene delimitar, por escrito, qué le corresponde a cada microservicio a lo largo de todo el curso — sin modificar S01, que ya fue entregada.
+
+### Alcance de `pagatu-catalogo-ms`, por sesión
+
+**S1 (ya entregado) — CRUD básico**
+
+1. Como cliente, quiero consultar el catálogo de categorías y productos disponibles, para elegir qué comprar.
+2. Como administrador, quiero crear, actualizar y eliminar categorías y productos, para mantener el catálogo actualizado.
+
+**S3 — descubrimiento de servicios**
+
+3. Como sistema, quiero que `pagatu-catalogo-ms` se registre automáticamente en Eureka al arrancar, para que otros servicios (Gateway, `orden-ms`) lo encuentren sin conocer su dirección de antemano.
+
+**S4 — punto único de acceso**
+
+4. Como cliente, quiero acceder al catálogo a través de un único punto de entrada (Gateway), sin necesitar conocer la URL directa de `pagatu-catalogo-ms`.
+5. Como sistema, quiero que el tráfico se reparta entre varias instancias de `pagatu-catalogo-ms`, para soportar más carga sin caerse.
+
+**S6 — comunicación resiliente (consumido por `orden-ms`)**
+
+6. Como sistema (`orden-ms`), quiero consultar un producto por id en `pagatu-catalogo-ms` de forma confiable, para validar que existe y su precio antes de crear una orden.
+
+**S7 — seguridad**
+
+7. Como administrador autenticado, quiero ser el único que puede crear, editar o eliminar categorías y productos, para que usuarios sin permiso no alteren el catálogo.
+8. Como cliente, quiero poder consultar el catálogo sin restricciones, para explorar productos libremente.
+
+**S9 — consistencia distribuida (pendiente de decidir)**
+
+9. *(Sin definir todavía)* Como sistema, quiero descontar stock de un producto cuando se confirma una orden, para no vender más unidades de las disponibles — requeriría agregar una columna `stock` a `productos`, que hoy no existe. Se decide junto con el equipo cuando se llegue a S9.
+
+**S10 — observabilidad**
+
+10. Como equipo de operaciones, quiero ver métricas, logs y el estado de salud de `pagatu-catalogo-ms` en un panel, para detectar problemas antes de que afecten a los clientes.
+
+**S11 — integración frontend**
+
+11. Como cliente, quiero navegar el catálogo desde la aplicación web, para explorar y elegir productos antes de comprar.
+
+### Alcance de `pagatu-orden-ms`, por sesión
+
+**S2 (hoy) — CRUD básico**
+
+1. Como cliente, quiero crear una orden con los productos que quiero comprar (cantidad y precio de cada uno), para registrar mi intención de compra.
+2. Como cliente, quiero consultar el detalle de una orden por su id, para verificar qué pedí y cuánto voy a pagar.
+3. Como cliente o administrador, quiero listar las órdenes existentes, para revisar el historial de pedidos.
+4. Como administrador, quiero cambiar el estado de una orden (confirmar o cancelar), para reflejar su avance real.
+
+**S6 — comunicación resiliente**
+
+5. Como sistema, quiero validar que cada producto de la orden exista y tenga el precio vigente en `pagatu-catalogo-ms` antes de crearla, para no aceptar pedidos con productos inexistentes o precios desactualizados.
+6. Como sistema, quiero responder con un mensaje claro (no un error genérico) si `pagatu-catalogo-ms` no responde, para no dejar al cliente esperando indefinidamente (Circuit Breaker).
+
+**S7 — seguridad**
+
+7. Como cliente autenticado, quiero que solo yo pueda ver mis propias órdenes, para que otros usuarios no accedan a mi información.
+8. Como administrador, quiero ver y gestionar todas las órdenes del sistema, para operar el negocio.
+
+`ordenes.id_cliente` ya nace como `BIGINT`, sin `REFERENCES` — apunta a `pagatu-cliente-ms` (un microservicio nuevo, con su propia base de datos, ver `docs/index.md`), igual que `id_producto` no referencia a `pagatu-catalogo-ms`. Hoy se completa con un valor de prueba (no hay login todavía); desde S7 se poblará con el id que venga del JWT ya validado, en vez de confiar en lo que el cliente mande en el request. `pagatu-cliente-ms` guarda el perfil del cliente (DNI/RUC, nombre o razón social) y lo autocompleta consultando RENIEC o SUNAT según el tipo de documento — ver `docs/index.md`, tabla de U2 (fila S7) y diagrama C4 nivel 2.
+
+**S8 — mensajería asíncrona**
+
+9. Como sistema, quiero publicar un evento cuando se crea una orden, para que `pago-ms` se entere y procese el cobro sin que `orden-ms` tenga que llamarlo directamente.
+
+**S9 — consistencia distribuida**
+
+10. Como cliente, quiero que si envío la misma solicitud de compra dos veces por error (doble clic, reintento de red), no se creen dos órdenes duplicadas (idempotencia).
+11. Como sistema, quiero poder revertir/cancelar una orden automáticamente si el pago asociado falla, para mantener consistencia entre orden y pago (compensación).
+
+**S11 — integración frontend**
+
+12. Como cliente, quiero ver mis órdenes y su estado desde la aplicación web, para hacer seguimiento de mis compras.
+
+### Alcance de `pagatu-cliente-ms`, por sesión
+
+**S2 (hoy, nuevo, autónomo) — CRUD y autocompletado con RENIEC/SUNAT**
+
+1. Como cliente, quiero registrar mi documento de identidad (DNI o RUC), para que el sistema autocomplete mis datos sin que tenga que tipearlos.
+2. Como sistema, quiero consultar RENIEC con el DNI de una persona natural, para obtener su nombre completo y autocompletar el perfil.
+3. Como sistema, quiero consultar SUNAT con el RUC de una persona jurídica, para obtener su razón social y autocompletar el perfil.
+4. Como cliente, quiero consultar mi propio perfil, para verificar que mis datos estén correctos.
+
+**S10 — observabilidad**
+
+5. Como equipo de operaciones, quiero ver métricas, logs y el estado de salud de `pagatu-cliente-ms` en un panel, para detectar problemas (incluidas fallas de RENIEC/SUNAT) antes de que afecten a los clientes.
+
+**S11 — integración frontend**
+
+6. Como cliente, quiero completar mi perfil desde la aplicación web con solo mi DNI o RUC, para no llenar el formulario a mano.
+
+Las historias 1-4 de `pagatu-cliente-ms` se construyen como trabajo autónomo de **esta misma sesión (S2)**, igual que las de `pagatu-orden-ms` — ambos microservicios nuevos se levantan ahora. Las de S10 y S11 quedan como delimitación de alcance para más adelante, sin implementarse todavía.
+
+### Crear el proyecto base de `pagatu-orden-ms`
 
 **Tabla 11. Configuración del proyecto `pagatu-orden-ms` en Spring Initializr**
 
@@ -1232,7 +1324,7 @@ management:
 ```sql
 CREATE TABLE IF NOT EXISTS ordenes (
     id BIGINT GENERATED BY DEFAULT AS IDENTITY,
-    cliente VARCHAR(100) NOT NULL,
+    id_cliente BIGINT NOT NULL,
     fecha_creacion TIMESTAMP NOT NULL DEFAULT now(),
     estado VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE',
     total NUMERIC(10,2) NOT NULL,
@@ -1249,4 +1341,119 @@ CREATE TABLE IF NOT EXISTS orden_detalles (
 );
 ```
 
-`id_orden` sí es una llave foránea normal (`REFERENCES ordenes(id)`), porque `ordenes` y `orden_detalles` viven en la misma base de datos de `pagatu-orden-ms`. `id_producto`, en cambio, **no** lleva `REFERENCES` — el producto vive en la base de datos de `pagatu-catalogo-ms`, un microservicio distinto; validar que ese `id_producto` exista es responsabilidad del código (una consulta HTTP a `pagatu-catalogo-ms`, fuera del alcance de esta sesión), no de una llave foránea entre bases de datos separadas.
+`id_orden` sí es una llave foránea normal (`REFERENCES ordenes(id)`), porque `ordenes` y `orden_detalles` viven en la misma base de datos de `pagatu-orden-ms`. `id_producto` e `id_cliente`, en cambio, **no** llevan `REFERENCES` — el producto vive en la base de datos de `pagatu-catalogo-ms` y el cliente en la de `pagatu-cliente-ms` (nuevo, también hoy — ver más abajo), cada uno un microservicio distinto; validar que existan es responsabilidad del código (una consulta HTTP al microservicio correspondiente), no de una llave foránea entre bases de datos separadas. `id_cliente` se completa hoy con el id de un cliente ya registrado en `pagatu-cliente-ms` (probado a mano, sin login todavía); recién desde S7 ese valor se derivará automáticamente del JWT en vez de venir en el request.
+
+### Crear el proyecto base de `pagatu-cliente-ms`
+
+**Tabla 12. Configuración del proyecto `pagatu-cliente-ms` en Spring Initializr**
+
+| Campo | Valor |
+|---|---|
+| Project | Maven Project |
+| Spring Boot | **4.0.7** |
+| Language | Java |
+| Group Id | `pe.edu.upeu` |
+| Artifact Id | `pagatu-cliente-ms` |
+| Package name | `pe.edu.upeu.cliente` |
+| Packaging | Jar |
+| Java | 21 |
+| Dependencias | Las mismas de `pagatu-catalogo-ms` (S1, Tabla 4): Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway. |
+| Ubicación sugerente | `services/pagatu-cliente-ms` puedes poner en cualquier lugar |
+
+El puerto de base de datos (`15433` DEV / `25433` PROD local) es el que ya estaba reservado para `cliente_db` en la arquitectura del proyecto (`docs/index.md`) — el hueco entre `auth_db` (`15431`) y `orden_db` (`15434`). El puerto de aplicación en DEV es `8084`, fijo, distinto de `8080` (`pagatu-catalogo-ms`) y `8082` (`pagatu-orden-ms`); se deja `8081` y `8083` sin usar, por si se necesitan para segundas instancias o para `auth-ms`.
+
+**`services/pagatu-cliente-ms/compose-dev.yml`**
+
+```yaml
+name: pagatu-cliente-dev
+
+services:
+  postgres-cliente-dev:
+    image: postgres:16-alpine
+    container_name: pagatu-postgres-cliente-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: pagatu_cliente_db
+      POSTGRES_USER: pagatu
+      POSTGRES_PASSWORD: pagatu
+    ports:
+      - "15433:5432"
+    volumes:
+      - pagatu_cliente_dev_data:/var/lib/postgresql/data
+
+volumes:
+  pagatu_cliente_dev_data:
+```
+
+**`services/pagatu-cliente-ms/src/main/resources/application.yml`**
+
+```yaml
+spring:
+  application:
+    name: pagatu-cliente-ms
+  profiles:
+    active: dev
+```
+
+**`services/pagatu-cliente-ms/src/main/resources/application-dev.yml`**
+
+```yaml
+server:
+  port: 8084
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:15433/pagatu_cliente_db
+    username: pagatu
+    password: pagatu
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    pe.edu.upeu.cliente: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+```
+
+**`services/pagatu-cliente-ms/src/main/resources/db/migration/V1__create_cliente_tables.sql`**
+
+```sql
+CREATE TABLE IF NOT EXISTS clientes (
+    id BIGINT GENERATED BY DEFAULT AS IDENTITY,
+    tipo_documento VARCHAR(10) NOT NULL,
+    numero_documento VARCHAR(20) NOT NULL,
+    nombre_razon_social VARCHAR(150) NOT NULL,
+    direccion VARCHAR(255),
+    email VARCHAR(150),
+    PRIMARY KEY (id),
+    UNIQUE (tipo_documento, numero_documento)
+);
+```
+
+`tipo_documento` distingue `DNI` (persona natural, autocompletado vía RENIEC) de `RUC` (persona jurídica, autocompletado vía SUNAT). `nombre_razon_social` guarda el nombre completo de la persona o la razón social de la empresa, según corresponda — un solo campo, porque para efectos de la orden es indistinto cuál de los dos es. La restricción `UNIQUE (tipo_documento, numero_documento)` evita registrar el mismo documento dos veces. `ordenes.id_cliente` (Anexo anterior) apunta al `id` de esta tabla, sin `REFERENCES` entre bases de datos.
