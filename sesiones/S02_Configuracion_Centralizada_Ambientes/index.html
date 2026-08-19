@@ -1,0 +1,2584 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://262dist.github.io/pagatu/sesiones/S02_Configuracion_Centralizada_Ambientes/">
+      
+      
+        <link rel="prev" href="../S01_Construccion_Servicio_Base/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+  
+    <title>Pagatu - S2 - Gestión centralizada de configuración y ambientes</title>
+  
+
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#s2-gestion-centralizada-de-configuracion-y-ambientes" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Pagatu" class="md-header__button md-logo" aria-label="Pagatu" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Pagatu
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              S2 - Gestión centralizada de configuración y ambientes
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/262dist/pagatu" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    262dist/pagatu
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Pagatu" class="md-nav__button md-logo" aria-label="Pagatu" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Pagatu
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/262dist/pagatu" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    262dist/pagatu
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía de Proyecto Sello
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guía de Proyecto Sello
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía del proyecto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabos
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Silabos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabo 2026-1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabo 2026-2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I. Sistema distribuido base orientado a producción
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    I. Sistema distribuido base orientado a producción
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S01_Construccion_Servicio_Base/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S1 - Construcción de un servicio base para un sistema distribuido
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S2 - Gestión centralizada de configuración y ambientes
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S2 - Gestión centralizada de configuración y ambientes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introducción
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introducción">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-presentacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Presentación de la sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-indice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Índice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-proposito-de-aprendizaje" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Propósito de aprendizaje
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-producto-de-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Producto de sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-metodologia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Metodología
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-motivacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6 Motivación de la sesión
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.6 Motivación de la sesión">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#161-caso-el-valor-que-se-corrigio-en-un-servicio-y-se-olvido-en-el-otro" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6.1 Caso: el valor que se corrigió en un servicio y se olvidó en el otro
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-ubicacion-en-el-curso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.7 Ubicación en el curso
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-explica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Explica
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Explica">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-el-problema-de-la-configuracion-duplicada-entre-microservicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 El problema de la configuración duplicada entre microservicios
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-config-server-y-config-repo-dos-responsabilidades-distintas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Config Server y config-repo: dos responsabilidades distintas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-convencion-de-nombres-aplicacion-perfilyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Convención de nombres: {aplicación}-{perfil}.yml
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-config-server-en-dev-y-en-produccion-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Config Server en DEV y en producción local
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-observabilidad-diagnosticar-un-perfil-no-encontrado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Observabilidad: diagnosticar un perfil no encontrado
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-aplica-actividad-practica-guiada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Aplica: actividad práctica guiada
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Aplica: actividad práctica guiada">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-crear-la-carpeta-infra" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Crear la carpeta infra
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-crear-el-proyecto-pagatu-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Crear el proyecto pagatu-config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-habilitar-config-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Habilitar Config Server
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-configurar-pagatu-config-para-leer-config-repo-en-dev" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Configurar pagatu-config para leer config-repo en DEV
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-probar-pagatu-config-en-dev" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Probar pagatu-config en DEV
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-mover-la-configuracion-de-pagatu-catalogo-ms-a-config-repo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 Mover la configuración de pagatu-catalogo-ms a config-repo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-consultar-los-perfiles-por-http" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7 Consultar los perfiles por HTTP
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.7 Consultar los perfiles por HTTP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#371-probar-una-consulta-incorrecta-para-aprender-del-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7.1 Probar una consulta incorrecta para aprender del error
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#38-conectar-pagatu-catalogo-ms-como-config-client" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.8 Conectar pagatu-catalogo-ms como Config Client
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#39-levantar-pagatu-catalogo-ms-en-dev-con-configuracion-externa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.9 Levantar pagatu-catalogo-ms en DEV con configuración externa
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#310-dockerizar-pagatu-config-para-produccion-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.10 Dockerizar pagatu-config para producción local
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#311-compartir-red-entre-pagatu-config-y-pagatu-catalogo-ms-en-produccion-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.11 Compartir red entre pagatu-config y pagatu-catalogo-ms en producción local
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#312-probar-pagatu-config-y-pagatu-catalogo-ms-en-produccion-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.12 Probar pagatu-config y pagatu-catalogo-ms en producción local
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#313-revisar-logs-y-bajar-el-entorno" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.13 Revisar logs y bajar el entorno
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-crea-actividad-autonoma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Crea: actividad autónoma
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Crea: actividad autónoma">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-actividad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Actividad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Propósito
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-indicaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Indicaciones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3 Indicaciones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#431-estructura-del-informe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.1 Estructura del informe
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-criterios-minimos-de-aceptacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Criterios mínimos de aceptación
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-preguntas-de-defensa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 Preguntas de defensa
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-rubrica-de-evaluacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 Rúbrica de evaluación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-cierre" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Cierre
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bibliografia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bibliografía
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introducción
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introducción">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-presentacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Presentación de la sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-indice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Índice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-proposito-de-aprendizaje" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Propósito de aprendizaje
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-producto-de-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Producto de sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-metodologia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Metodología
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-motivacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6 Motivación de la sesión
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.6 Motivación de la sesión">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#161-caso-el-valor-que-se-corrigio-en-un-servicio-y-se-olvido-en-el-otro" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6.1 Caso: el valor que se corrigió en un servicio y se olvidó en el otro
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-ubicacion-en-el-curso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.7 Ubicación en el curso
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-explica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Explica
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Explica">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-el-problema-de-la-configuracion-duplicada-entre-microservicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 El problema de la configuración duplicada entre microservicios
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-config-server-y-config-repo-dos-responsabilidades-distintas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Config Server y config-repo: dos responsabilidades distintas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-convencion-de-nombres-aplicacion-perfilyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Convención de nombres: {aplicación}-{perfil}.yml
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-config-server-en-dev-y-en-produccion-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Config Server en DEV y en producción local
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-observabilidad-diagnosticar-un-perfil-no-encontrado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Observabilidad: diagnosticar un perfil no encontrado
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-aplica-actividad-practica-guiada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Aplica: actividad práctica guiada
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Aplica: actividad práctica guiada">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-crear-la-carpeta-infra" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Crear la carpeta infra
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-crear-el-proyecto-pagatu-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Crear el proyecto pagatu-config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-habilitar-config-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Habilitar Config Server
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-configurar-pagatu-config-para-leer-config-repo-en-dev" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Configurar pagatu-config para leer config-repo en DEV
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-probar-pagatu-config-en-dev" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Probar pagatu-config en DEV
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-mover-la-configuracion-de-pagatu-catalogo-ms-a-config-repo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 Mover la configuración de pagatu-catalogo-ms a config-repo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-consultar-los-perfiles-por-http" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7 Consultar los perfiles por HTTP
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.7 Consultar los perfiles por HTTP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#371-probar-una-consulta-incorrecta-para-aprender-del-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7.1 Probar una consulta incorrecta para aprender del error
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#38-conectar-pagatu-catalogo-ms-como-config-client" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.8 Conectar pagatu-catalogo-ms como Config Client
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#39-levantar-pagatu-catalogo-ms-en-dev-con-configuracion-externa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.9 Levantar pagatu-catalogo-ms en DEV con configuración externa
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#310-dockerizar-pagatu-config-para-produccion-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.10 Dockerizar pagatu-config para producción local
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#311-compartir-red-entre-pagatu-config-y-pagatu-catalogo-ms-en-produccion-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.11 Compartir red entre pagatu-config y pagatu-catalogo-ms en producción local
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#312-probar-pagatu-config-y-pagatu-catalogo-ms-en-produccion-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.12 Probar pagatu-config y pagatu-catalogo-ms en producción local
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#313-revisar-logs-y-bajar-el-entorno" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.13 Revisar logs y bajar el entorno
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-crea-actividad-autonoma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Crea: actividad autónoma
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Crea: actividad autónoma">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-actividad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Actividad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Propósito
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-indicaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Indicaciones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3 Indicaciones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#431-estructura-del-informe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.1 Estructura del informe
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-criterios-minimos-de-aceptacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Criterios mínimos de aceptación
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-preguntas-de-defensa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 Preguntas de defensa
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-rubrica-de-evaluacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 Rúbrica de evaluación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-cierre" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Cierre
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bibliografia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bibliografía
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="s2-gestion-centralizada-de-configuracion-y-ambientes">S2 - Gestión Centralizada de Configuración y Ambientes<a class="headerlink" href="#s2-gestion-centralizada-de-configuracion-y-ambientes" title="Permanent link">&para;</a></h1>
+<p><em>Por: Angel Sullon Macalupu @asullom - 2026</em></p>
+<h2 id="1-introduccion">1. Introducción<a class="headerlink" href="#1-introduccion" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 20 min.</p>
+<h3 id="11-presentacion-de-la-sesion">1.1 Presentación de la sesión<a class="headerlink" href="#11-presentacion-de-la-sesion" title="Permanent link">&para;</a></h3>
+<p><code>pagatu-catalogo-ms</code> guarda hoy su configuración en dos archivos propios: <code>application-dev.yml</code> y <code>application-prod.yml</code> (S1). Cuando <code>orden-ms</code> se sume al sistema (sección 4), va a necesitar prácticamente los mismos tipos de valores repetidos en sus propios archivos — con el riesgo real de que un ajuste se corrija en un servicio y se olvide en el otro. Esta sesión saca esa configuración de cada microservicio y la centraliza en un Config Server propio: <code>pagatu-config</code>. El porqué se desarrolla en 1.6, continuando el mismo camino hacia microservicios que empezó en S1.</p>
+<h3 id="12-indice">1.2 Índice<a class="headerlink" href="#12-indice" title="Permanent link">&para;</a></h3>
+<ol>
+<li>El problema de la configuración duplicada entre microservicios.</li>
+<li>Config Server y config-repo: dos responsabilidades distintas.</li>
+<li>Convención de nombres: <code>{aplicación}-{perfil}.yml</code>.</li>
+<li>Config Server en DEV y en producción local.</li>
+</ol>
+<h3 id="13-proposito-de-aprendizaje">1.3 Propósito de aprendizaje<a class="headerlink" href="#13-proposito-de-aprendizaje" title="Permanent link">&para;</a></h3>
+<p>Al concluir la clase, estarás en condiciones de:</p>
+<ul>
+<li><strong>Construir e implementar</strong> un Config Server (Spring Cloud Config) que centraliza la configuración de <code>pagatu-catalogo-ms</code> por ambiente, verificando las consultas por HTTP y migrando el microservicio de S1 para leer su configuración externa en DEV y en producción local.</li>
+</ul>
+<h3 id="14-producto-de-sesion">1.4 Producto de sesión<a class="headerlink" href="#14-producto-de-sesion" title="Permanent link">&para;</a></h3>
+<p><code>pagatu-config</code> operativo en <code>infra/config</code>, con <code>config-repo</code> local (<code>pagatu-catalogo-ms-dev.yml</code>, <code>pagatu-catalogo-ms-prod.yml</code>), consultado por HTTP en ambos perfiles, y <code>pagatu-catalogo-ms</code> migrado para leer su configuración desde <code>pagatu-config</code> en DEV y en producción local con Docker.</p>
+<h3 id="15-metodologia">1.5 Metodología<a class="headerlink" href="#15-metodologia" title="Permanent link">&para;</a></h3>
+<p><strong>Tabla 1. Metodología de la sesión</strong></p>
+<table>
+<thead>
+<tr>
+<th>Actividades a Realizar en el Periodo</th>
+<th>Orientaciones generales (Orientaciones Metodológicas)</th>
+<th>Material de estudio recomendado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Revisión previa individual</td>
+<td>Revisar <code>application-dev.yml</code> y <code>application-prod.yml</code> de <code>pagatu-catalogo-ms</code> (S1) y confirmar que el servicio sigue arrancando con Maven Wrapper. Trabajo individual, antes de clase; identificar qué valores son iguales y cuáles cambian entre DEV y PROD.</td>
+<td>Evidencia individual de S1, <code>application-dev.yml</code>/<code>application-prod.yml</code> actuales.</td>
+</tr>
+<tr>
+<td>Clase presencial</td>
+<td>Construcción guiada de <code>pagatu-config</code>, <code>config-repo</code> y migración de <code>pagatu-catalogo-ms</code> a Config Client; verificación por HTTP en DEV y en producción local. Trabajo individual, siguiendo al docente paso a paso; consulta inmediata ante un perfil no encontrado o un microservicio que no arranca.</td>
+<td>Pasos 3.1 a 3.13 de esta guía.</td>
+</tr>
+<tr>
+<td>Evaluación formativa</td>
+<td>Revisión en clase de <code>pagatu-config</code> respondiendo por HTTP en DEV y PROD local, y de <code>pagatu-catalogo-ms</code> arrancando con configuración externa. La evidencia se completa y sustenta de forma individual, fuera del aula, según los criterios mínimos de la sección 4.4.</td>
+<td>Indicaciones de entrega (4.3), rúbrica de evaluación (4.6).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="16-motivacion-de-la-sesion">1.6 Motivación de la sesión<a class="headerlink" href="#16-motivacion-de-la-sesion" title="Permanent link">&para;</a></h3>
+<h4 id="161-caso-el-valor-que-se-corrigio-en-un-servicio-y-se-olvido-en-el-otro">1.6.1 Caso: el valor que se corrigió en un servicio y se olvidó en el otro<a class="headerlink" href="#161-caso-el-valor-que-se-corrigio-en-un-servicio-y-se-olvido-en-el-otro" title="Permanent link">&para;</a></h4>
+<p>Retomando el caso de S1 (la plataforma de comercio electrónico que migró a microservicios): el equipo ya tiene <code>pagatu-catalogo-ms</code> funcionando, y empieza a construir <code>orden-ms</code>. Ambos necesitan las mismas categorías de valores — puerto, conexión a base de datos, nivel de log, qué expone Actuator — así que alguien copia <code>application-dev.yml</code> de uno al otro y ajusta lo necesario. Dos semanas después, el equipo detecta que en PROD <code>pagatu-catalogo-ms</code> expone <code>/actuator/metrics</code> pero <code>orden-ms</code> no: nadie decidió esa diferencia a propósito, un archivo se actualizó y el otro no. Con dos servicios el problema ya es real; con diez, es prácticamente imposible mantener la configuración sincronizada a mano.</p>
+<div class="highlight"><pre><span></span><code>¿Qué cambiaría si ningún microservicio guardara sus propios valores de
+ambiente, y todos los leyeran desde un único lugar central?
+</code></pre></div>
+<p><strong>Preguntas de análisis</strong></p>
+<p><strong>Activación de conocimientos previos</strong></p>
+<ol>
+<li>¿Qué pasa cuando dos archivos de configuración que deberían ser iguales entre sí se desincronizan sin que nadie lo note?</li>
+</ol>
+<p><strong>Comprensión de configuración centralizada</strong></p>
+<ol>
+<li>¿Qué diferencia hay entre que cada microservicio guarde su propia configuración y que la lea desde un servidor central?</li>
+<li>¿Por qué agregar más microservicios hace más urgente resolver este problema, no menos?</li>
+</ol>
+<h3 id="17-ubicacion-en-el-curso">1.7 Ubicación en el curso<a class="headerlink" href="#17-ubicacion-en-el-curso" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Unidad: U1 - Sistema distribuido base orientado a producción.</li>
+<li>Producto de unidad: sistema distribuido base funcional, configurable y preparado para múltiples instancias, ejecutable en desarrollo y producción local en paralelo.</li>
+<li>Producto del curso: Proyecto Sello: sistema distribuido de microservicios end-to-end, configurable, escalable, seguro, resiliente, consistente, observable, integrado con frontend y defendido técnicamente.</li>
+<li>Avance del producto en esta sesión: configuración externa por ambiente mediante Config Server, con <code>pagatu-catalogo-ms</code> migrado a Config Client.</li>
+</ul>
+<p><strong>Figura 1. Roadmap del producto de la unidad</strong></p>
+<pre class="mermaid"><code>flowchart TB
+    Cliente["Cliente de prueba - PowerShell / bash / Swagger"]
+    Gateway["Gateway - punto único de acceso - balanceo de carga"]
+    Catalogo["pagatu-catalogo-ms - construido en S1 - REST + BD + health"]
+    Orden["orden-ms - trabajo aplicado"]
+    Eureka["Registro de servicios - Eureka"]
+    Config["Servidor de configuración - pagatu-config - HOY"]
+    Repo[("Repositorio de configuración - pagatu-catalogo-ms-dev.yml / -prod.yml - HOY")]
+
+    Cliente --&gt; Gateway
+    Gateway --&gt; Catalogo
+    Gateway --&gt; Orden
+    Gateway -. descubre servicios .-&gt; Eureka
+    Catalogo -. registra instancia .-&gt; Eureka
+    Orden -. registra instancia .-&gt; Eureka
+    Catalogo -. carga configuración .-&gt; Config
+    Orden -. carga configuración .-&gt; Config
+    Config --&gt; Repo
+
+    classDef done fill:#e8f5e9,stroke:#2e7d32,color:#111;
+    classDef today fill:#ffe08a,stroke:#9a6b00,stroke-width:2px,color:#111;
+    class Catalogo done;
+    class Config,Repo today;</code></pre>
+<p>Hoy se construye <code>pagatu-config</code> y se migra <code>pagatu-catalogo-ms</code> para leer su configuración desde ahí. En las siguientes sesiones se agrega registro de servicios (Eureka), Gateway y balanceo — todos ellos, igual que <code>pagatu-catalogo-ms</code> hoy, consultarán su configuración al mismo Config Server.</p>
+<h2 id="2-explica">2. Explica<a class="headerlink" href="#2-explica" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 25 min.</p>
+<h3 id="21-el-problema-de-la-configuracion-duplicada-entre-microservicios">2.1 El problema de la configuración duplicada entre microservicios<a class="headerlink" href="#21-el-problema-de-la-configuracion-duplicada-entre-microservicios" title="Permanent link">&para;</a></h3>
+<p><code>pagatu-catalogo-ms</code> guarda hoy su configuración en dos archivos propios: <code>application-dev.yml</code> y <code>application-prod.yml</code> (S1, 3.2.3 y 3.6.3). Cuando <code>orden-ms</code> se construya (sección 4) va a necesitar prácticamente los mismos tipos de valores — puerto, conexión a base de datos, perfil de Flyway, qué expone Actuator — repetidos en sus propios archivos. El caso de 1.6.1 muestra qué pasa cuando eso crece sin control: cambios repetidos en muchos archivos, diferencias accidentales entre DEV y PROD, y ningún lugar único donde saber qué configuración usa cada servicio.</p>
+<h3 id="22-config-server-y-config-repo-dos-responsabilidades-distintas">2.2 Config Server y config-repo: dos responsabilidades distintas<a class="headerlink" href="#22-config-server-y-config-repo-dos-responsabilidades-distintas" title="Permanent link">&para;</a></h3>
+<p><strong>Config Server</strong> es el componente que entrega configuración por HTTP; <strong>config-repo</strong> es donde viven los archivos de configuración en sí. Aunque en este curso ambos van a convivir dentro de la misma carpeta del proyecto (<code>infra/config</code>), son responsabilidades lógicamente distintas: uno atiende peticiones, el otro almacena archivos.</p>
+<p><strong>Figura 2. Config Server y config-repo en DEV</strong></p>
+<pre class="mermaid"><code>flowchart LR
+    Client["Cliente - PowerShell / bash / navegador"]
+    Config["pagatu-config - Config Server - infra/config - localhost:18888"]
+    Repo["file:./config-repo - pagatu-catalogo-ms-dev.yml - pagatu-catalogo-ms-prod.yml"]
+    Catalogo["pagatu-catalogo-ms"]
+
+    Client --&gt;|"GET localhost:18888/pagatu-catalogo-ms/dev"| Config
+    Config --&gt;|"lee archivos"| Repo
+    Catalogo -. "spring.config.import - http://localhost:18888" .-&gt; Config
+
+    classDef server fill:#eef6ff,stroke:#2b6cb0,color:#111;
+    classDef repo fill:#fff4de,stroke:#b7791f,color:#111;
+    class Config,Catalogo server;
+    class Repo repo;</code></pre>
+<p>Conceptos de la sesión:</p>
+<ul>
+<li><strong>Config Server</strong>: componente que entrega configuración por HTTP.</li>
+<li><strong>Config repo</strong>: carpeta donde viven los archivos <code>*.yml</code> de configuración.</li>
+<li><strong>Perfil</strong>: variante de configuración, por ejemplo <code>dev</code> o <code>prod</code>.</li>
+<li><strong>Config Client</strong>: aplicación que lee su configuración desde Config Server (<code>pagatu-catalogo-ms</code>, desde 3.8).</li>
+</ul>
+<h3 id="23-convencion-de-nombres-aplicacion-perfilyml">2.3 Convención de nombres: <code>{aplicación}-{perfil}.yml</code><a class="headerlink" href="#23-convencion-de-nombres-aplicacion-perfilyml" title="Permanent link">&para;</a></h3>
+<p>Config Server busca el archivo de un servicio combinando <code>spring.application.name</code> con el perfil activo:</p>
+<div class="highlight"><pre><span></span><code>{spring.application.name}-{profile}.yml
+</code></pre></div>
+<p>Para <code>pagatu-catalogo-ms</code>:</p>
+<div class="highlight"><pre><span></span><code>pagatu-catalogo-ms-dev.yml
+pagatu-catalogo-ms-prod.yml
+</code></pre></div>
+<p><strong>Error frecuente</strong>: que <code>spring.application.name</code> no coincida exactamente con el nombre del archivo (por ejemplo, <code>catalogo-ms</code> en el código contra <code>pagatu-catalogo-ms-dev.yml</code> en el repo). Si no coinciden letra por letra, Config Server no encuentra ninguna configuración y el microservicio arranca con valores vacíos o falla.</p>
+<h3 id="24-config-server-en-dev-y-en-produccion-local">2.4 Config Server en DEV y en producción local<a class="headerlink" href="#24-config-server-en-dev-y-en-produccion-local" title="Permanent link">&para;</a></h3>
+<p><strong>Tabla 2. URLs de Config Server por ambiente</strong></p>
+<table>
+<thead>
+<tr>
+<th>Ambiente</th>
+<th>Componente</th>
+<th>URL o nombre</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DEV</td>
+<td>Config Server</td>
+<td><code>http://localhost:18888</code></td>
+</tr>
+<tr>
+<td>DEV</td>
+<td>Config de <code>pagatu-catalogo-ms</code></td>
+<td><code>http://localhost:18888/pagatu-catalogo-ms/dev</code></td>
+</tr>
+<tr>
+<td>PROD local</td>
+<td>Config Server desde el host</td>
+<td><code>http://localhost:28888</code></td>
+</tr>
+<tr>
+<td>PROD local</td>
+<td>Config Server desde otros contenedores</td>
+<td><code>http://pagatu-config:8888</code></td>
+</tr>
+<tr>
+<td>PROD local</td>
+<td>Config de <code>pagatu-catalogo-ms</code></td>
+<td><code>http://localhost:28888/pagatu-catalogo-ms/prod</code></td>
+</tr>
+</tbody>
+</table>
+<p>En DEV, <code>pagatu-config</code> corre con Maven Wrapper en el host, igual que <code>pagatu-catalogo-ms</code> (mismo patrón de S1). En PROD local corre como contenedor <code>pagatu-config</code>, dentro de una red Docker compartida con <code>pagatu-catalogo-ms</code> (3.11).</p>
+<p>El puerto sigue el mismo patrón ya establecido en S1 para distinguir DEV de PROD local sin chocar entre sí:</p>
+<p><strong>Tabla 3. Puertos de host por componente y ambiente</strong></p>
+<table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Puerto DEV (host)</th>
+<th>Puerto PROD local (host)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PostgreSQL</td>
+<td><code>15432</code></td>
+<td><code>25432</code></td>
+</tr>
+<tr>
+<td><code>pagatu-catalogo-ms</code></td>
+<td><code>8080</code></td>
+<td><code>28080</code> (no publicado por defecto, ver S1 Anexo)</td>
+</tr>
+<tr>
+<td><code>pagatu-config</code></td>
+<td><code>18888</code></td>
+<td><code>28888</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="25-observabilidad-diagnosticar-un-perfil-no-encontrado">2.5 Observabilidad: diagnosticar un perfil no encontrado<a class="headerlink" href="#25-observabilidad-diagnosticar-un-perfil-no-encontrado" title="Permanent link">&para;</a></h3>
+<p>En esta sesión la observabilidad se enfoca en confirmar que <code>pagatu-config</code> está activo y entrega la configuración esperada.</p>
+<p><strong>Tabla 4. Errores frecuentes y diagnóstico</strong></p>
+<table>
+<thead>
+<tr>
+<th>Problema</th>
+<th>Causa probable</th>
+<th>Solución</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>404 o respuesta vacía al consultar configuración</td>
+<td>Nombre de aplicación o perfil incorrecto</td>
+<td>Revisar que la URL coincida con <code>{app}-{profile}.yml</code></td>
+</tr>
+<tr>
+<td>Config Server no encuentra archivos</td>
+<td>Ruta de <code>config-repo</code> incorrecta</td>
+<td>En DEV revisar <code>file:./config-repo</code>; en PROD revisar <code>CONFIG_REPO_LOCATION</code></td>
+</tr>
+<tr>
+<td>Microservicio arranca con valores vacíos</td>
+<td>No importa Config Server</td>
+<td>Revisar <code>spring.config.import</code> en <code>application.yml</code></td>
+</tr>
+<tr>
+<td>Microservicio no arranca</td>
+<td>Config Server apagado o URL incorrecta</td>
+<td>Levantar Config Server primero y revisar <code>CONFIG_SERVER_URL</code></td>
+</tr>
+<tr>
+<td>Se consulta <code>prod</code> pero aparecen valores de <code>dev</code></td>
+<td>Perfil activo incorrecto</td>
+<td>Revisar <code>SPRING_PROFILES_ACTIVE</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-aplica-actividad-practica-guiada">3. Aplica: actividad práctica guiada<a class="headerlink" href="#3-aplica-actividad-practica-guiada" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 3h.</p>
+<p><strong>Actividad:</strong> construcción de <code>pagatu-config</code> y migración de <code>pagatu-catalogo-ms</code> a Config Client, verificado en DEV y en producción local.</p>
+<p><strong>Propósito de la actividad:</strong> que cada estudiante construya un Config Server operativo, mueva la configuración de <code>pagatu-catalogo-ms</code> hacia <code>config-repo</code>, y verifique que el microservicio sigue funcionando igual que en S1, ahora con configuración externa.</p>
+<p><strong>Orientaciones metodológicas:</strong> el docente guía la construcción de <code>pagatu-config</code> y la migración de <code>pagatu-catalogo-ms</code> paso a paso frente a la clase; los estudiantes replican cada paso en su propio equipo, verificando cada consulta HTTP antes de avanzar al siguiente paso.</p>
+<p><strong>Actividades para realizar:</strong></p>
+<ul>
+<li><strong>3.1</strong> Crear la carpeta <code>infra</code>.</li>
+<li><strong>3.2</strong> Crear el proyecto <code>pagatu-config</code>.</li>
+<li><strong>3.3</strong> Habilitar Config Server.</li>
+<li><strong>3.4</strong> Configurar <code>pagatu-config</code> para leer <code>config-repo</code> en DEV.</li>
+<li><strong>3.5</strong> Probar <code>pagatu-config</code> en DEV.</li>
+<li><strong>3.6</strong> Mover la configuración de <code>pagatu-catalogo-ms</code> a <code>config-repo</code>.</li>
+<li><strong>3.7</strong> Consultar los perfiles por HTTP.</li>
+<li><strong>3.8</strong> Conectar <code>pagatu-catalogo-ms</code> como Config Client.</li>
+<li><strong>3.9</strong> Levantar <code>pagatu-catalogo-ms</code> en DEV con configuración externa.</li>
+<li><strong>3.10</strong> Dockerizar <code>pagatu-config</code> para producción local.</li>
+<li><strong>3.11</strong> Compartir red entre <code>pagatu-config</code> y <code>pagatu-catalogo-ms</code> en producción local.</li>
+<li><strong>3.12</strong> Probar <code>pagatu-config</code> y <code>pagatu-catalogo-ms</code> en producción local.</li>
+<li><strong>3.13</strong> Revisar logs y bajar el entorno.</li>
+</ul>
+<h3 id="31-crear-la-carpeta-infra">3.1 Crear la carpeta <code>infra</code><a class="headerlink" href="#31-crear-la-carpeta-infra" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> carpeta <code>infra</code> preparada para alojar componentes de infraestructura del sistema.</p>
+<p>Desde la raíz del repositorio <code>pagatu</code>:</p>
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>infra
+mkdir<span class="w"> </span>infra/config
+</code></pre></div>
+<p>Estructura esperada al iniciar la sesión:</p>
+<div class="highlight"><pre><span></span><code>pagatu/
+├── infra/
+│   └── config/
+└── services/
+    └── pagatu-catalogo-ms/
+</code></pre></div>
+<h3 id="32-crear-el-proyecto-pagatu-config">3.2 Crear el proyecto <code>pagatu-config</code><a class="headerlink" href="#32-crear-el-proyecto-pagatu-config" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> proyecto Spring Boot <code>pagatu-config</code> creado dentro de <code>infra/config</code>.</p>
+<p>Desde VS Code, usa Spring Initializr (<code>Spring Initializr: Create a Maven Project</code>):</p>
+<p><strong>Tabla 5. Configuración del proyecto <code>pagatu-config</code> en Spring Initializr</strong></p>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Project</td>
+<td>Maven Project</td>
+</tr>
+<tr>
+<td>Spring Boot</td>
+<td><strong>4.0.7</strong></td>
+</tr>
+<tr>
+<td>Language</td>
+<td>Java</td>
+</tr>
+<tr>
+<td>Group Id</td>
+<td><code>pe.edu.upeu</code></td>
+</tr>
+<tr>
+<td>Artifact Id</td>
+<td><code>pagatu-config</code></td>
+</tr>
+<tr>
+<td>Package name</td>
+<td><code>pe.edu.upeu.config</code></td>
+</tr>
+<tr>
+<td>Packaging</td>
+<td>Jar</td>
+</tr>
+<tr>
+<td>Java</td>
+<td>21</td>
+</tr>
+<tr>
+<td>Dependencias</td>
+<td>Seleccionar dependencias del proyecto</td>
+</tr>
+<tr>
+<td>Ubicación sugerente</td>
+<td><code>infra/config</code></td>
+</tr>
+</tbody>
+</table>
+<p>Dependencias a seleccionar:</p>
+<p><strong>Tabla 6. Dependencias del proyecto <code>pagatu-config</code></strong></p>
+<table>
+<thead>
+<tr>
+<th>Grupo</th>
+<th>Dependencias</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Spring Cloud</td>
+<td>Config Server</td>
+<td>Entregar configuración externa por HTTP</td>
+</tr>
+<tr>
+<td>Ops</td>
+<td>Spring Boot Actuator</td>
+<td>Verificar health de <code>pagatu-config</code></td>
+</tr>
+</tbody>
+</table>
+<p>En <code>pom.xml</code>, la dependencia clave es:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-cloud-config-server<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div>
+<p>Spring Cloud necesita su propio BOM, con la versión compatible con Spring Boot 4.0.7 — <strong>Spring Cloud 2025.1.2</strong> (release <em>Oakwood</em>):</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;properties&gt;</span>
+<span class="w">    </span><span class="nt">&lt;java.version&gt;</span>21<span class="nt">&lt;/java.version&gt;</span>
+<span class="w">    </span><span class="nt">&lt;spring-cloud.version&gt;</span>2025.1.2<span class="nt">&lt;/spring-cloud.version&gt;</span>
+<span class="nt">&lt;/properties&gt;</span>
+
+<span class="nt">&lt;dependencyManagement&gt;</span>
+<span class="w">    </span><span class="nt">&lt;dependencies&gt;</span>
+<span class="w">        </span><span class="nt">&lt;dependency&gt;</span>
+<span class="w">            </span><span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">            </span><span class="nt">&lt;artifactId&gt;</span>spring-cloud-dependencies<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">            </span><span class="nt">&lt;version&gt;</span>${spring-cloud.version}<span class="nt">&lt;/version&gt;</span>
+<span class="w">            </span><span class="nt">&lt;type&gt;</span>pom<span class="nt">&lt;/type&gt;</span>
+<span class="w">            </span><span class="nt">&lt;scope&gt;</span>import<span class="nt">&lt;/scope&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/dependencies&gt;</span>
+<span class="nt">&lt;/dependencyManagement&gt;</span>
+</code></pre></div>
+<p><strong>Error frecuente</strong>: usar una versión de Spring Cloud anterior a 2025.1.x con Spring Boot 4. Las líneas de Spring Cloud anteriores (por ejemplo 2025.0.x) no son compatibles con Spring Boot 4.0.1 en adelante — el proyecto no compila o falla al arrancar con errores de beans que no encuentra.</p>
+<h3 id="33-habilitar-config-server">3.3 Habilitar Config Server<a class="headerlink" href="#33-habilitar-config-server" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> aplicación Spring Boot marcada como servidor de configuración.</p>
+<p>En la clase principal, agrega <code>@EnableConfigServer</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.config</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.boot.SpringApplication</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.boot.autoconfigure.SpringBootApplication</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.cloud.config.server.EnableConfigServer</span><span class="p">;</span>
+
+<span class="nd">@SpringBootApplication</span>
+<span class="nd">@EnableConfigServer</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">PagatuConfigApplication</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">SpringApplication</span><span class="p">.</span><span class="na">run</span><span class="p">(</span><span class="n">PagatuConfigApplication</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="34-configurar-pagatu-config-para-leer-config-repo-en-dev">3.4 Configurar <code>pagatu-config</code> para leer <code>config-repo</code> en DEV<a class="headerlink" href="#34-configurar-pagatu-config-para-leer-config-repo-en-dev" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> <code>config-repo</code> creado y <code>pagatu-config</code> configurado para leerlo en DEV.</p>
+<p>Crea la carpeta del repositorio local de configuración:</p>
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>infra/config/config-repo
+</code></pre></div>
+<p>En <code>infra/config/src/main/resources/application.yml</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">server</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">18888</span>
+
+<span class="nt">spring</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">application</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-config</span>
+<span class="w">  </span><span class="nt">profiles</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">active</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">native</span>
+<span class="w">  </span><span class="nt">cloud</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">config</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">server</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">native</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">search-locations</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${CONFIG_REPO_LOCATION:file:./config-repo}</span>
+
+<span class="nt">management</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">endpoints</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">web</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">exposure</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health,info,metrics</span>
+<span class="w">  </span><span class="nt">endpoint</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">health</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">show-details</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always</span>
+</code></pre></div>
+<p>En DEV no se define ninguna variable de entorno: se usa el valor por defecto, <code>file:./config-repo</code>. Eso significa que Maven debe ejecutarse parado exactamente en <code>infra/config</code>, no en la raíz del repositorio.</p>
+<h3 id="35-probar-pagatu-config-en-dev">3.5 Probar <code>pagatu-config</code> en DEV<a class="headerlink" href="#35-probar-pagatu-config-en-dev" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> <code>pagatu-config</code> ejecutando en <code>localhost:18888</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>infra/config
+mvnw<span class="w"> </span>spring-boot:run
+</code></pre></div>
+<p>Verifica health y metrics:</p>
+<p>PowerShell:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18888/actuator/health"</span>
+<span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18888/actuator/metrics"</span>
+</code></pre></div>
+<p>bash macOS/Linux:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:18888/actuator/health
+curl<span class="w"> </span>http://localhost:18888/actuator/metrics
+</code></pre></div>
+<p><code>config-repo</code> todavía está vacío, así que <code>pagatu-config</code> responde <code>UP</code>, pero cualquier consulta a <code>/pagatu-catalogo-ms/dev</code> va a devolver una configuración sin propiedades — eso se resuelve en el siguiente paso.</p>
+<h3 id="36-mover-la-configuracion-de-pagatu-catalogo-ms-a-config-repo">3.6 Mover la configuración de <code>pagatu-catalogo-ms</code> a <code>config-repo</code><a class="headerlink" href="#36-mover-la-configuracion-de-pagatu-catalogo-ms-a-config-repo" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> <code>pagatu-catalogo-ms-dev.yml</code> y <code>pagatu-catalogo-ms-prod.yml</code> creados en <code>config-repo</code>, con el mismo contenido que ya tenían <code>application-dev.yml</code> y <code>application-prod.yml</code> en S1.</p>
+<p>Crea, dentro de <code>infra/config/config-repo</code>:</p>
+<p><strong><code>pagatu-catalogo-ms-dev.yml</code></strong> (mismo contenido que <code>application-dev.yml</code> de S1):</p>
+<div class="highlight"><pre><span></span><code><span class="nt">server</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span>
+
+<span class="nt">spring</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">datasource</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jdbc:postgresql://localhost:15432/pagatu_catalogo_db</span>
+<span class="w">    </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
+<span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
+<span class="w">    </span><span class="nt">driver-class-name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">org.postgresql.Driver</span>
+<span class="w">  </span><span class="nt">flyway</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">locations</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">classpath:db/migration</span>
+<span class="w">  </span><span class="nt">jpa</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">hibernate</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">ddl-auto</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">validate</span>
+<span class="w">    </span><span class="nt">show-sql</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">properties</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">hibernate</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">format_sql</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">devtools</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">livereload</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="nt">springdoc</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">swagger-ui</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/swagger-ui.html</span>
+
+<span class="nt">logging</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">level</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">pe.edu.upeu.catalogo</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DEBUG</span>
+
+<span class="nt">management</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">endpoints</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">web</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">exposure</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health,info,metrics</span>
+<span class="w">  </span><span class="nt">endpoint</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">health</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">show-details</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always</span>
+</code></pre></div>
+<p><strong><code>pagatu-catalogo-ms-prod.yml</code></strong> (mismo contenido que <code>application-prod.yml</code> de S1):</p>
+<div class="highlight"><pre><span></span><code><span class="nt">server</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span>
+
+<span class="nt">spring</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">datasource</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}</span>
+<span class="w">    </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${DB_USER}</span>
+<span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${DB_PASS}</span>
+<span class="w">    </span><span class="nt">driver-class-name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">org.postgresql.Driver</span>
+<span class="w">  </span><span class="nt">flyway</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">locations</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">classpath:db/migration</span>
+<span class="w">  </span><span class="nt">jpa</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">hibernate</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">ddl-auto</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">validate</span>
+<span class="w">    </span><span class="nt">show-sql</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">    </span><span class="nt">properties</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">hibernate</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">format_sql</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+
+<span class="nt">springdoc</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">swagger-ui</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">  </span><span class="nt">api-docs</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+
+<span class="nt">management</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">endpoints</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">web</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">exposure</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health,info,metrics</span>
+<span class="w">  </span><span class="nt">endpoint</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">health</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">show-details</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">never</span>
+</code></pre></div>
+<p>El <code>server.port: 8080</code> se mantiene <strong>fijo</strong>, igual que en S1 — la segunda instancia de <code>pagatu-catalogo-ms</code> sigue tomando su puerto por argumento de línea de comandos (<code>--server.port=8081</code>, S1 3.4.1), no por puerto dinámico.</p>
+<h3 id="37-consultar-los-perfiles-por-http">3.7 Consultar los perfiles por HTTP<a class="headerlink" href="#37-consultar-los-perfiles-por-http" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> configuración externa consultada sin levantar <code>pagatu-catalogo-ms</code>.</p>
+<p>Con <code>pagatu-config</code> ejecutando (3.5):</p>
+<p>PowerShell:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18888/pagatu-catalogo-ms/dev"</span>
+<span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18888/pagatu-catalogo-ms/prod"</span>
+</code></pre></div>
+<p>bash macOS/Linux:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:18888/pagatu-catalogo-ms/dev
+curl<span class="w"> </span>http://localhost:18888/pagatu-catalogo-ms/prod
+</code></pre></div>
+<p>Resultado esperado:</p>
+<ul>
+<li>La respuesta indica <code>"name": "pagatu-catalogo-ms"</code>.</li>
+<li>La respuesta indica <code>"profiles": ["dev"]</code> (o <code>["prod"]</code> según la consulta).</li>
+<li>En <code>propertySources</code> aparece un archivo como <code>file:.../config-repo/pagatu-catalogo-ms-dev.yml</code>.</li>
+<li>Dentro de <code>source</code> se ven propiedades como <code>server.port</code>, <code>spring.datasource.url</code>, <code>spring.flyway.enabled</code>, <code>spring.jpa.hibernate.ddl-auto</code> y <code>management.endpoints.web.exposure.include</code>.</li>
+</ul>
+<p>Si <code>pagatu-config</code> no muestra esas propiedades, no continúes al siguiente paso — corrige primero el nombre del archivo, el perfil o la ruta de <code>config-repo</code>.</p>
+<h4 id="371-probar-una-consulta-incorrecta-para-aprender-del-error">3.7.1 Probar una consulta incorrecta para aprender del error<a class="headerlink" href="#371-probar-una-consulta-incorrecta-para-aprender-del-error" title="Permanent link">&para;</a></h4>
+<p>Consulta un nombre que no coincide con <code>spring.application.name</code>:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:18888/catalogo/dev
+</code></pre></div>
+<p>Resultado esperado: la consulta no devuelve la configuración de <code>pagatu-catalogo-ms-dev.yml</code>. El error conceptual es que <code>catalogo</code> no coincide con <code>pagatu-catalogo-ms</code> — este es justo el error frecuente de la Tabla 4.</p>
+<h3 id="38-conectar-pagatu-catalogo-ms-como-config-client">3.8 Conectar <code>pagatu-catalogo-ms</code> como Config Client<a class="headerlink" href="#38-conectar-pagatu-catalogo-ms-como-config-client" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> <code>pagatu-catalogo-ms</code> preparado para consumir configuración externa.</p>
+<p>Este paso tiene tres cambios: agregar Config Client al <code>pom.xml</code>, dejar <code>application.yml</code> minimalista, y retirar <code>application-dev.yml</code>/<code>application-prod.yml</code> (ya migrados en 3.6).</p>
+<p><strong>1. Declarar la versión de Spring Cloud y agregar el BOM en <code>services/pagatu-catalogo-ms/pom.xml</code>:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;properties&gt;</span>
+<span class="w">    </span><span class="nt">&lt;java.version&gt;</span>21<span class="nt">&lt;/java.version&gt;</span>
+<span class="w">    </span><span class="nt">&lt;spring-cloud.version&gt;</span>2025.1.2<span class="nt">&lt;/spring-cloud.version&gt;</span>
+<span class="nt">&lt;/properties&gt;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;dependencyManagement&gt;</span>
+<span class="w">    </span><span class="nt">&lt;dependencies&gt;</span>
+<span class="w">        </span><span class="nt">&lt;dependency&gt;</span>
+<span class="w">            </span><span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">            </span><span class="nt">&lt;artifactId&gt;</span>spring-cloud-dependencies<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">            </span><span class="nt">&lt;version&gt;</span>${spring-cloud.version}<span class="nt">&lt;/version&gt;</span>
+<span class="w">            </span><span class="nt">&lt;type&gt;</span>pom<span class="nt">&lt;/type&gt;</span>
+<span class="w">            </span><span class="nt">&lt;scope&gt;</span>import<span class="nt">&lt;/scope&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/dependencies&gt;</span>
+<span class="nt">&lt;/dependencyManagement&gt;</span>
+</code></pre></div>
+<p><strong>2. Agregar la dependencia de Config Client:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-config<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div>
+<p><strong>3. Dejar <code>services/pagatu-catalogo-ms/src/main/resources/application.yml</code> solo con lo esencial:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nt">spring</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">application</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-catalogo-ms</span>
+<span class="w">  </span><span class="nt">profiles</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">active</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dev</span>
+<span class="w">  </span><span class="nt">config</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">import</span><span class="p">:</span><span class="w"> </span><span class="s">"optional:configserver:${CONFIG_SERVER_URL:http://localhost:18888}"</span>
+</code></pre></div>
+<p><strong>4. Elimina <code>application-dev.yml</code> y <code>application-prod.yml</code></strong> de <code>services/pagatu-catalogo-ms/src/main/resources/</code> — su contenido ya vive en <code>config-repo</code> (3.6); mantenerlos ahí duplicaría exactamente el problema de 1.6.1.</p>
+<p>El prefijo <code>optional:</code> evita que <code>pagatu-catalogo-ms</code> falle al arrancar si <code>pagatu-config</code> está apagado — pero igual necesita una conexión real a PostgreSQL para funcionar, así que en la práctica sigue dependiendo de que <code>pagatu-config</code> esté disponible para recibir esos valores.</p>
+<h3 id="39-levantar-pagatu-catalogo-ms-en-dev-con-configuracion-externa">3.9 Levantar <code>pagatu-catalogo-ms</code> en DEV con configuración externa<a class="headerlink" href="#39-levantar-pagatu-catalogo-ms-en-dev-con-configuracion-externa" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> <code>pagatu-catalogo-ms</code> ejecutando con valores entregados por <code>pagatu-config</code>.</p>
+<p>Terminal 1 (Config Server):</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>infra/config
+mvnw<span class="w"> </span>spring-boot:run
+</code></pre></div>
+<p>Terminal 2 (base de datos + microservicio):</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>services/pagatu-catalogo-ms
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-dev.yml<span class="w"> </span>up<span class="w"> </span>-d
+mvnw<span class="w"> </span>spring-boot:run
+</code></pre></div>
+<p>Verifica en la consola de arranque:</p>
+<ul>
+<li>Nombre de aplicación <code>pagatu-catalogo-ms</code>.</li>
+<li>Perfil <code>dev</code>.</li>
+<li>Puerto <code>8080</code>.</li>
+<li>Conexión a PostgreSQL DEV.</li>
+<li>Configuración recibida desde <code>pagatu-config</code> (aparece un log de Spring Cloud Config indicando la fuente).</li>
+</ul>
+<p>Prueba que el CRUD de S1 sigue funcionando igual:</p>
+<p>PowerShell:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:8080/actuator/health"</span>
+<span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:8080/api/v1/categorias"</span>
+</code></pre></div>
+<p>bash macOS/Linux:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8080/actuator/health
+curl<span class="w"> </span>http://localhost:8080/api/v1/categorias
+</code></pre></div>
+<p>Resultado esperado: <code>/actuator/health</code> responde <code>UP</code>, <code>/api/v1/categorias</code> responde <code>200 OK</code> — el mismo comportamiento de S1, ahora con la configuración viniendo de <code>pagatu-config</code> en vez de un archivo local.</p>
+<p>Puedes iniciar también la segunda instancia (S1, 3.4.1), en otra terminal:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>services/pagatu-catalogo-ms
+mvnw<span class="w"> </span>spring-boot:run<span class="w"> </span><span class="s2">"-Dspring-boot.run.arguments=--server.port=8081"</span>
+</code></pre></div>
+<p>Ambas instancias leen la misma configuración centralizada desde <code>pagatu-config</code> y responden el mismo CRUD.</p>
+<h3 id="310-dockerizar-pagatu-config-para-produccion-local">3.10 Dockerizar <code>pagatu-config</code> para producción local<a class="headerlink" href="#310-dockerizar-pagatu-config-para-produccion-local" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> <code>pagatu-config</code> preparado para ejecutarse como contenedor.</p>
+<p><code>infra/config/Dockerfile</code> (mismo patrón multi-stage que el <code>Dockerfile</code> de <code>pagatu-catalogo-ms</code>, S1 3.6.1):</p>
+<div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">maven:3.9.9-eclipse-temurin-21</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="s">build</span>
+<span class="k">WORKDIR</span><span class="w"> </span><span class="s">/app</span>
+
+<span class="k">COPY</span><span class="w"> </span>pom.xml<span class="w"> </span>.
+<span class="k">RUN</span><span class="w"> </span>mvn<span class="w"> </span>-q<span class="w"> </span>-DskipTests<span class="w"> </span>dependency:go-offline
+
+<span class="k">COPY</span><span class="w"> </span>src<span class="w"> </span>./src
+<span class="k">RUN</span><span class="w"> </span>mvn<span class="w"> </span>-q<span class="w"> </span>clean<span class="w"> </span>package<span class="w"> </span>-DskipTests
+
+<span class="k">FROM</span><span class="w"> </span><span class="s">eclipse-temurin:21-jre</span>
+<span class="k">WORKDIR</span><span class="w"> </span><span class="s">/app</span>
+
+<span class="k">COPY</span><span class="w"> </span>--from<span class="o">=</span>build<span class="w"> </span>/app/target/*.jar<span class="w"> </span>app.jar
+
+<span class="k">EXPOSE</span><span class="w"> </span><span class="s">8888</span>
+
+<span class="k">ENTRYPOINT</span><span class="w"> </span><span class="p">[</span><span class="s2">"java"</span><span class="p">,</span><span class="w"> </span><span class="s2">"-jar"</span><span class="p">,</span><span class="w"> </span><span class="s2">"app.jar"</span><span class="p">]</span>
+</code></pre></div>
+<p><code>infra/compose.yml</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-infra-prod</span>
+
+<span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">config</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">build</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">context</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./config</span>
+<span class="w">      </span><span class="nt">dockerfile</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Dockerfile</span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-config</span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"28888:8888"</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./config/config-repo:/config-repo</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">SERVER_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8888</span>
+<span class="w">      </span><span class="nt">SPRING_PROFILES_ACTIVE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">native</span>
+<span class="w">      </span><span class="nt">CONFIG_REPO_LOCATION</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">file:/config-repo</span>
+<span class="w">    </span><span class="nt">networks</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-prod-net</span>
+
+<span class="nt">networks</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pagatu-prod-net</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-prod-net</span>
+</code></pre></div>
+<p>En PROD local, <code>pagatu-config</code> usa <code>file:/config-repo</code> (ruta dentro del contenedor) — el volumen monta <code>infra/config/config-repo</code> del host en <code>/config-repo</code> dentro del contenedor, así que los mismos archivos de 3.6 se reutilizan sin duplicarlos.</p>
+<h3 id="311-compartir-red-entre-pagatu-config-y-pagatu-catalogo-ms-en-produccion-local">3.11 Compartir red entre <code>pagatu-config</code> y <code>pagatu-catalogo-ms</code> en producción local<a class="headerlink" href="#311-compartir-red-entre-pagatu-config-y-pagatu-catalogo-ms-en-produccion-local" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> <code>pagatu-catalogo-ms</code> conectado a la misma red Docker que <code>pagatu-config</code>, además de su propia red con PostgreSQL.</p>
+<p><code>pagatu-config</code> vive en un <code>compose.yml</code> distinto (<code>infra/compose.yml</code>) al de <code>pagatu-catalogo-ms</code> (<code>services/pagatu-catalogo-ms/compose.yml</code>) — son dos proyectos Docker Compose separados. Para que uno resuelva al otro por nombre (<code>http://pagatu-config:8888</code>), ambos deben compartir una red Docker declarada como <strong>externa</strong> desde el lado que no la crea.</p>
+<p><code>infra/compose.yml</code> (3.10) <strong>crea</strong> la red <code>pagatu-prod-net</code>. En <code>services/pagatu-catalogo-ms/compose.yml</code>, agrega esa misma red como externa, sin dejar de tener su propia red interna con PostgreSQL:</p>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nt">pagatu-catalogo-ms</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.</span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
+<span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">postgres-catalogo</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">SPRING_PROFILES_ACTIVE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${SPRING_PROFILES_ACTIVE}</span>
+<span class="w">      </span><span class="nt">CONFIG_SERVER_URL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${CONFIG_SERVER_URL}</span>
+<span class="w">      </span><span class="nt">DB_HOST</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-postgres-catalogo</span>
+<span class="w">      </span><span class="nt">DB_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5432</span>
+<span class="w">      </span><span class="nt">DB_NAME</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${DB_NAME}</span>
+<span class="w">      </span><span class="nt">DB_USER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${DB_USER}</span>
+<span class="w">      </span><span class="nt">DB_PASS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${DB_PASS}</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./logs:/app/logs</span>
+<span class="w">    </span><span class="nt">networks</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-catalogo-int</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-prod-net</span>
+
+<span class="nt">networks</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pagatu-catalogo-int</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-catalogo-int</span>
+<span class="w">  </span><span class="nt">pagatu-prod-net</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">external</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</code></pre></div>
+<p><code>external: true</code> le dice a Compose "esta red ya existe, no la crees, solo únete" — si <code>pagatu-prod-net</code> no existe todavía (porque <code>infra</code> no se levantó primero), este <code>compose.yml</code> falla al arrancar con un error claro de red no encontrada. Ese es justo el orden que exige el siguiente paso.</p>
+<p>Agrega también <code>CONFIG_SERVER_URL</code> a <code>.env</code> y <code>.env.example</code> de <code>pagatu-catalogo-ms</code>:</p>
+<div class="highlight"><pre><span></span><code>SPRING_PROFILES_ACTIVE=prod
+CONFIG_SERVER_URL=http://pagatu-config:8888
+
+DB_NAME=pagatu_catalogo_db
+DB_USER=pagatu
+DB_PASS=pagatu
+</code></pre></div>
+<p><strong>Regla de orden de arranque en producción local:</strong></p>
+<div class="highlight"><pre><span></span><code>1. Levantar infra (crea pagatu-prod-net y pagatu-config)
+2. Levantar services/pagatu-catalogo-ms (se une a pagatu-prod-net ya creada)
+</code></pre></div>
+<h3 id="312-probar-pagatu-config-y-pagatu-catalogo-ms-en-produccion-local">3.12 Probar <code>pagatu-config</code> y <code>pagatu-catalogo-ms</code> en producción local<a class="headerlink" href="#312-probar-pagatu-config-y-pagatu-catalogo-ms-en-produccion-local" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> ambos componentes ejecutando en Docker, con <code>pagatu-catalogo-ms</code> leyendo su configuración desde <code>pagatu-config</code>.</p>
+<p>Primero, infraestructura:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>infra
+docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--build
+docker<span class="w"> </span>compose<span class="w"> </span>ps
+</code></pre></div>
+<p>Verifica <code>pagatu-config</code> en PROD local:</p>
+<p>PowerShell:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:28888/actuator/health"</span>
+<span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:28888/pagatu-catalogo-ms/prod"</span>
+</code></pre></div>
+<p>bash macOS/Linux:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:28888/actuator/health
+curl<span class="w"> </span>http://localhost:28888/pagatu-catalogo-ms/prod
+</code></pre></div>
+<p>Resultado esperado: <code>propertySources</code> debe apuntar a <code>file:/config-repo/pagatu-catalogo-ms-prod.yml</code>, con valores de PROD (<code>server.port: 8080</code>, <code>springdoc.swagger-ui.enabled: false</code>, etc.).</p>
+<p>Luego, el microservicio:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>services/pagatu-catalogo-ms
+docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--build<span class="w"> </span>--scale<span class="w"> </span>pagatu-catalogo-ms<span class="o">=</span><span class="m">2</span>
+</code></pre></div>
+<p>Verifica health y CRUD desde dentro de la red (mismo patrón de S1, 3.7.3-3.7.4):</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--network<span class="w"> </span>pagatu-catalogo-int<span class="w"> </span>curlimages/curl:8.10.1<span class="w"> </span>-s<span class="w"> </span>http://pagatu-catalogo-ms:8080/actuator/health
+docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--network<span class="w"> </span>pagatu-catalogo-int<span class="w"> </span>curlimages/curl:8.10.1<span class="w"> </span>-s<span class="w"> </span>http://pagatu-catalogo-ms:8080/api/v1/categorias
+</code></pre></div>
+<p>Resultado esperado:</p>
+<ul>
+<li><code>pagatu-catalogo-ms</code> arranca con perfil <code>prod</code>.</li>
+<li>El microservicio obtiene su configuración desde <code>http://pagatu-config:8888</code>.</li>
+<li><code>/actuator/health</code> responde <code>UP</code>.</li>
+<li><code>/api/v1/categorias</code> responde <code>200 OK</code>.</li>
+<li>Swagger no se prueba en PROD — sigue deshabilitado en <code>pagatu-catalogo-ms-prod.yml</code> (3.6), igual que en S1.</li>
+</ul>
+<h3 id="313-revisar-logs-y-bajar-el-entorno">3.13 Revisar logs y bajar el entorno<a class="headerlink" href="#313-revisar-logs-y-bajar-el-entorno" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> evidencia de logs revisada, entorno completo liberado.</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>ps
+</code></pre></div>
+<p>Revisa logs de <code>pagatu-config</code>:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>logs<span class="w"> </span>--tail<span class="o">=</span><span class="m">80</span><span class="w"> </span>config
+</code></pre></div>
+<p>(desde <code>infra</code>). Y de <code>pagatu-catalogo-ms</code> (desde <code>services/pagatu-catalogo-ms</code>):</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>logs<span class="w"> </span>--tail<span class="o">=</span><span class="m">80</span><span class="w"> </span>pagatu-catalogo-ms
+</code></pre></div>
+<p>Al terminar la evidencia, baja <strong>ambos</strong> entornos, en orden inverso al que los levantaste:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>services/pagatu-catalogo-ms
+docker<span class="w"> </span>compose<span class="w"> </span>down
+
+<span class="nb">cd</span><span class="w"> </span>../../infra
+docker<span class="w"> </span>compose<span class="w"> </span>down
+</code></pre></div>
+<p><strong>Evidencia de aprendizaje:</strong></p>
+<ul>
+<li><code>pagatu-config</code> operativo en DEV y en producción local, entregando <code>pagatu-catalogo-ms-dev.yml</code>/<code>-prod.yml</code> por HTTP.</li>
+<li><code>pagatu-catalogo-ms</code> migrado a Config Client, funcionando igual que en S1 en ambos ambientes.</li>
+<li>Red compartida (<code>pagatu-prod-net</code>) entre dos proyectos Docker Compose distintos, documentada y probada.</li>
+</ul>
+<h2 id="4-crea-actividad-autonoma">4. Crea: actividad autónoma<a class="headerlink" href="#4-crea-actividad-autonoma" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 4h fuera del aula.</p>
+<h3 id="41-actividad">4.1 Actividad<a class="headerlink" href="#41-actividad" title="Permanent link">&para;</a></h3>
+<p>Replicación autónoma del patrón de configuración centralizada en <code>orden-ms</code>, el microservicio construido de forma autónoma en S1 (4.1), documentada en evidencia individual.</p>
+<p>Completa y evidencia estas tareas:</p>
+<ol>
+<li>Crear <code>orden-ms-dev.yml</code> y <code>orden-ms-prod.yml</code> en <code>config-repo</code>, con los valores de ambiente de <code>orden-ms</code>.</li>
+<li>Conectar <code>orden-ms</code> como Config Client (mismo patrón de 3.8).</li>
+<li>Consultar por HTTP la configuración de <code>orden-ms</code> en <code>dev</code> y en <code>prod</code>.</li>
+<li>Verificar que <code>orden-ms</code> sigue funcionando igual que antes de la migración.</li>
+<li>Comparar <code>pagatu-catalogo-ms-dev.yml</code> con <code>pagatu-catalogo-ms-prod.yml</code> e identificar al menos un valor que antes estaba hardcodeado y ahora no.</li>
+<li>Explicar, con tus propias palabras, cómo Config Server separa código y configuración.</li>
+</ol>
+<h3 id="42-proposito">4.2 Propósito<a class="headerlink" href="#42-proposito" title="Permanent link">&para;</a></h3>
+<p>Que cada estudiante demuestre, de forma individual y fuera del aula, que puede reproducir el patrón construido en clase sin el acompañamiento del docente, aplicándolo sobre un microservicio distinto al trabajado en clase.</p>
+<h3 id="43-indicaciones">4.3 Indicaciones<a class="headerlink" href="#43-indicaciones" title="Permanent link">&para;</a></h3>
+<p>Entrega un PDF con el siguiente nombre:</p>
+<div class="highlight"><pre><span></span><code>S02_Equipo##_ApellidoNombre.pdf
+</code></pre></div>
+<p>Cada captura de pantalla del informe debe mostrar, sin recortar, el reloj del sistema (fecha y hora) y tu usuario o foto de perfil (Windows, VS Code o navegador) visibles en pantalla — es lo que permite verificar que la evidencia es tuya y que corresponde al momento real de tu trabajo.</p>
+<h4 id="431-estructura-del-informe">4.3.1 Estructura del informe<a class="headerlink" href="#431-estructura-del-informe" title="Permanent link">&para;</a></h4>
+<p><strong>Datos del estudiante</strong></p>
+<ul>
+<li>Nombre:</li>
+<li>Equipo:</li>
+<li>Sesión: S02 - Gestión Centralizada de Configuración y Ambientes</li>
+<li>Rol o aporte realizado:</li>
+<li>Link de GitHub:</li>
+</ul>
+<p><strong>Evidencia técnica</strong></p>
+<p>Incluye capturas o extractos con una breve explicación debajo de cada uno, organizados en los mismos 4 bloques de la rúbrica (4.6):</p>
+<ol>
+<li><em><code>pagatu-config</code> operativo</em><ul>
+<li>Captura de <code>pagatu-config</code> respondiendo <code>/actuator/health</code> en DEV y en producción local.</li>
+</ul>
+</li>
+<li><em>Configuración externa de <code>orden-ms</code></em><ul>
+<li><code>orden-ms-dev.yml</code> y <code>orden-ms-prod.yml</code> creados en <code>config-repo</code>.</li>
+<li>Consultas HTTP a <code>/orden-ms/dev</code> y <code>/orden-ms/prod</code>.</li>
+</ul>
+</li>
+<li><em><code>orden-ms</code> como Config Client funcional</em><ul>
+<li>Evidencia de <code>orden-ms</code> arrancando con configuración externa y respondiendo su propio health/endpoint.</li>
+</ul>
+</li>
+<li><em>Comparación DEV/PROD y comprensión</em><ul>
+<li>Comparación entre <code>pagatu-catalogo-ms-dev.yml</code> y <code>pagatu-catalogo-ms-prod.yml</code>, con el valor identificado en la tarea 5.</li>
+<li>Explicación propia de cómo Config Server separa código y configuración.</li>
+</ul>
+</li>
+</ol>
+<p><strong>Error o hallazgo</strong></p>
+<p>Describe un error real: un perfil no encontrado, un nombre de aplicación que no coincidió con el archivo, o un microservicio que no arrancó por no encontrar <code>pagatu-config</code>.</p>
+<p><strong>Reflexión técnica breve</strong></p>
+<p>Responde en 5 a 8 líneas:</p>
+<div class="highlight"><pre><span></span><code>¿Cómo ayuda Config Server cuando el sistema crece a muchos microservicios
+e instancias? Relaciona tu respuesta con el caso de 1.6.1.
+</code></pre></div>
+<h3 id="44-criterios-minimos-de-aceptacion">4.4 Criterios mínimos de aceptación<a class="headerlink" href="#44-criterios-minimos-de-aceptacion" title="Permanent link">&para;</a></h3>
+<p>La evidencia individual se considera completa si:</p>
+<ul>
+<li><code>pagatu-config</code> responde en DEV y en producción local, con evidencia real de ambos.</li>
+<li><code>orden-ms-dev.yml</code> y <code>orden-ms-prod.yml</code> existen en <code>config-repo</code>, con valores propios de <code>orden-ms</code>.</li>
+<li><code>orden-ms</code> arranca leyendo su configuración desde <code>pagatu-config</code>, no desde archivos locales.</li>
+<li>La comparación DEV/PROD identifica al menos un valor real, no genérico.</li>
+<li>Cada captura de la evidencia técnica muestra el reloj del sistema y el usuario/perfil visible, sin recortar.</li>
+<li>Las fechas y horas de las capturas son coherentes con el historial de commits de su repositorio en GitHub.</li>
+<li>Incluye un error o hallazgo técnico diagnosticado.</li>
+<li>Incluye la reflexión técnica breve solicitada.</li>
+</ul>
+<h3 id="45-preguntas-de-defensa">4.5 Preguntas de defensa<a class="headerlink" href="#45-preguntas-de-defensa" title="Permanent link">&para;</a></h3>
+<ol>
+<li>¿Qué problema resuelve la configuración centralizada?</li>
+<li>¿Qué diferencia hay entre Config Server y config-repo?</li>
+<li>¿Cómo se forma la URL <code>/{application}/{profile}</code>?</li>
+<li>¿Qué debe coincidir exactamente entre <code>spring.application.name</code> y los archivos de <code>config-repo</code>?</li>
+<li>¿Qué cambia entre DEV y producción local para <code>pagatu-config</code>?</li>
+<li>¿Cómo diagnosticas un perfil no encontrado?</li>
+<li>¿Por qué <code>pagatu-catalogo-ms</code> y <code>pagatu-config</code> necesitan compartir una red Docker en producción local?</li>
+</ol>
+<h3 id="46-rubrica-de-evaluacion">4.6 Rúbrica de evaluación<a class="headerlink" href="#46-rubrica-de-evaluacion" title="Permanent link">&para;</a></h3>
+<p><strong>Tabla 7. Rúbrica de evaluación</strong></p>
+<table>
+<thead>
+<tr>
+<th>Criterio</th>
+<th style="text-align: right;">Peso (%)</th>
+<th>A (20 pts)</th>
+<th>B (15 pts)</th>
+<th>C (10 pts)</th>
+<th>D (5 pts)</th>
+<th style="text-align: right;">Nivel obtenido</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. <code>pagatu-config</code> operativo*</td>
+<td style="text-align: right;">25</td>
+<td><code>pagatu-config</code> funcional en DEV y producción local, con health y perfiles correctos en ambos.</td>
+<td>Funcional en DEV, con evidencia parcial en producción local.</td>
+<td>Arranca pero sin verificación clara de health o perfiles.</td>
+<td>No evidencia <code>pagatu-config</code> funcionando.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>2. Configuración externa de <code>orden-ms</code>*</td>
+<td style="text-align: right;">25</td>
+<td><code>orden-ms-dev.yml</code>/<code>-prod.yml</code> completos, con diferencias claras entre ambientes.</td>
+<td>Archivos presentes con diferencias parciales.</td>
+<td>Un solo perfil o configuración incompleta.</td>
+<td>No evidencia separación entre código y configuración.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>3. <code>orden-ms</code> como Config Client*</td>
+<td style="text-align: right;">25</td>
+<td><code>orden-ms</code> arranca leyendo Config Server y responde funcionalmente en ambos ambientes.</td>
+<td>Arranca leyendo Config Server y responde en al menos un ambiente.</td>
+<td>Arranque parcial o sin prueba funcional.</td>
+<td>No demuestra conexión de <code>orden-ms</code> con <code>pagatu-config</code>.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>4. Comparación DEV/PROD y comprensión*</td>
+<td style="text-align: right;">25</td>
+<td>Comparación precisa con valor real identificado; explicación clara de Config Server.</td>
+<td>Comparación correcta con explicación básica.</td>
+<td>Comparación superficial o explicación imprecisa.</td>
+<td>No compara ni explica el patrón.</td>
+<td style="text-align: right;"></td>
+</tr>
+</tbody>
+</table>
+<p>* Agregado manual.</p>
+<p>Nota final = suma de (<code>Peso</code> / 100 × <code>Puntos del nivel obtenido</code>) = ____ / 20.</p>
+<p>Para usar la rúbrica con IA, solicita:</p>
+<div class="highlight"><pre><span></span><code>Evalúa el PDF usando la rúbrica de la sesión.
+Para cada criterio selecciona el nivel obtenido usando la escala A=20, B=15, C=10, D=5 puntos.
+Justifica brevemente cada nivel asignado.
+Verifica que cada captura muestre reloj del sistema y usuario/perfil visible, y que las fechas sean coherentes con el historial de commits de GitHub. Si falta esta evidencia o hay inconsistencias, indícalo explícitamente antes de calificar.
+Calcula la nota final con la fórmula: suma de (Peso/100 × Puntos del nivel obtenido), directamente sobre 20.
+Indica 2 fortalezas y 2 recomendaciones.
+</code></pre></div>
+<h2 id="5-cierre">5. Cierre<a class="headerlink" href="#5-cierre" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 5 min.</p>
+<p><strong>Resumen breve:</strong> hoy <code>pagatu-catalogo-ms</code> dejó de guardar su propia configuración: <code>pagatu-config</code> centraliza los valores de DEV y PROD en <code>config-repo</code>, y el microservicio los consume por HTTP en vez de leerlos de archivos locales — la base sobre la que, en las siguientes sesiones, se conectarán también Eureka, el Gateway y cada nuevo microservicio del sistema.</p>
+<p><strong>Dinámica participativa:</strong> cada estudiante comparte en una frase un error o hallazgo real que tuvo al migrar <code>pagatu-catalogo-ms</code> (o <code>orden-ms</code>) a Config Client.</p>
+<p><strong>Metacognición:</strong> ¿qué parte del patrón de configuración centralizada te costó más entender — la separación Config Server/config-repo, la convención de nombres, o la red compartida en producción local?</p>
+<p><strong>Proyección:</strong> en S3 se agrega el registro y descubrimiento dinámico de servicios con Eureka, sobre este mismo <code>pagatu-config</code> — cada microservicio que se registre en Eureka también consultará su configuración aquí, sin que el patrón de hoy cambie.</p>
+<h2 id="bibliografia">Bibliografía<a class="headerlink" href="#bibliografia" title="Permanent link">&para;</a></h2>
+<ul>
+<li>VMware Tanzu / Broadcom Inc. (2026). <em>Spring Cloud Config reference documentation</em>. https://docs.spring.io/spring-cloud-config/reference/</li>
+<li>VMware Tanzu / Broadcom Inc. (2026). <em>Spring Cloud 2025.1.2 (aka Oakwood) release notes</em>. https://spring.io/blog/2026/06/11/spring-cloud-2025-1-2-aka-oakwood-has-been-released/</li>
+<li>Broadcom Inc. (2025). <em>Spring Boot reference documentation</em> (versión 4.0.7). VMware Tanzu. https://docs.spring.io/spring-boot/index.html</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
