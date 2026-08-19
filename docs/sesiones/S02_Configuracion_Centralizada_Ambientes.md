@@ -35,7 +35,7 @@ Al concluir la clase, estarás en condiciones de:
 | Actividades a Realizar en el Periodo | Orientaciones generales (Orientaciones Metodológicas) | Material de estudio recomendado |
 |---|---|---|
 | Revisión previa individual | Revisar `application-dev.yml` y `application-prod.yml` de `pagatu-catalogo-ms` (S1) y confirmar que el servicio sigue arrancando con Maven Wrapper. Trabajo individual, antes de clase; identificar qué valores son iguales y cuáles cambian entre DEV y PROD. | Evidencia individual de S1, `application-dev.yml`/`application-prod.yml` actuales. |
-| Clase presencial | Construcción guiada de `pagatu-config`, `config-repo` y migración de `pagatu-catalogo-ms` a Config Client; verificación por HTTP en DEV y en producción local. Trabajo individual, siguiendo al docente paso a paso; consulta inmediata ante un perfil no encontrado o un microservicio que no arranca. | Pasos 3.1 a 3.13 de esta guía. |
+| Clase presencial | Construcción guiada de `pagatu-config`, `config-repo` y migración de `pagatu-catalogo-ms` a Config Client; verificación por HTTP en DEV y en producción local. Trabajo individual, siguiendo al docente paso a paso; consulta inmediata ante un perfil no encontrado o un microservicio que no arranca. | Pasos 3.1 a 3.14 de esta guía. |
 | Evaluación formativa | Revisión en clase de `pagatu-config` respondiendo por HTTP en DEV y PROD local, y de `pagatu-catalogo-ms` arrancando con configuración externa. La evidencia se completa y sustenta de forma individual, fuera del aula, según los criterios mínimos de la sección 4.4. | Indicaciones de entrega (4.3), rúbrica de evaluación (4.6). |
 
 ### 1.6 Motivación de la sesión
@@ -218,7 +218,7 @@ En esta sesión, `pagatu-config` implementa exactamente este patrón, con dos di
 - En vez de un repositorio Git remoto separado (el backend `git:` nativo de Spring Cloud Config, con su propia URL y credenciales) como *source of truth*, `config-repo` es una carpeta local dentro del propio proyecto — más simple para esta sesión, sin necesidad de gestionar un segundo repositorio. Ojo: esto **no** protege por sí solo las contraseñas de `config-repo` — como `pagatu` ya es un repositorio público en GitHub, cualquier archivo que se comitee ahí (local o no) queda visible igual. Los valores de esta sesión son de prueba (`pagatu`/`pagatu`); si más adelante se manejan credenciales reales, la protección real es la misma que ya usa `.env`/`.env.example` en `pagatu-catalogo-ms`: versionar solo plantillas y dejar el archivo con el valor real fuera de Git.
 - **Ninguno de los tres trade-offs de arriba se resuelve en esta sesión**: `pagatu-config` no tiene caché local en los clientes (si se cae, un servicio que todavía no arrancó no consigue su configuración), no cifra *secrets* (las contraseñas de PostgreSQL viajan en texto plano dentro de `config-repo`) y es, literalmente, el punto único de falla del sistema en esta unidad. Son simplificaciones deliberadas para esta sesión — no la forma en que un Config Server se protege en un sistema en producción real.
 
-Los servicios (`pagatu-catalogo-ms`, `orden-ms`) obtienen su configuración al arrancar (*pull on startup*, ver 3.9); la recarga en caliente (*hot reload*) queda fuera del alcance de esta sesión.
+Los servicios (`pagatu-catalogo-ms`, `orden-ms`) obtienen su configuración al arrancar (*pull on startup*, ver 3.10); la recarga en caliente (*hot reload*) queda fuera del alcance de esta sesión.
 
 #### 2.3.2 Configuración en DEV
 
@@ -251,7 +251,7 @@ localhost:18888
 config-repo: file:./config-repo
 ```
 
-Se muestran dos servicios (`pagatu-catalogo-ms` y `orden-ms`) para que se entienda que Config Server no es exclusivo de uno — cualquier microservicio que se sume al sistema consulta el mismo lugar. En esta sesión solo `pagatu-catalogo-ms` se migra en clase (3.8); `orden-ms` se conecta como trabajo autónomo (sección 4).
+Se muestran dos servicios (`pagatu-catalogo-ms` y `orden-ms`) para que se entienda que Config Server no es exclusivo de uno — cualquier microservicio que se sume al sistema consulta el mismo lugar. En esta sesión solo `pagatu-catalogo-ms` se migra en clase (3.9); `orden-ms` se conecta como trabajo autónomo (sección 4).
 
 #### 2.3.3 Configuración en PROD local
 
@@ -323,7 +323,7 @@ pagatu-catalogo-ms-prod.yml
 | PROD local | Config Server desde otros contenedores | `http://pagatu-config:8888` |
 | PROD local | Config de `pagatu-catalogo-ms` | `http://localhost:28888/pagatu-catalogo-ms/prod` |
 
-En DEV, `pagatu-config` corre con Maven Wrapper en el host, igual que `pagatu-catalogo-ms` (mismo patrón de S1). En PROD local corre como contenedor `pagatu-config`, dentro de una red Docker compartida con `pagatu-catalogo-ms` (3.11).
+En DEV, `pagatu-config` corre con Maven Wrapper en el host, igual que `pagatu-catalogo-ms` (mismo patrón de S1). En PROD local corre como contenedor `pagatu-config`, dentro de una red Docker compartida con `pagatu-catalogo-ms` (3.12).
 
 El puerto sigue el mismo patrón ya establecido en S1 para distinguir DEV de PROD local sin chocar entre sí:
 
@@ -349,7 +349,7 @@ En esta sesión la observabilidad se enfoca en confirmar que `pagatu-config` est
 | Microservicio no arranca | Config Server apagado o URL incorrecta | Levantar Config Server primero y revisar `CONFIG_SERVER_URL` |
 | Se consulta `prod` pero aparecen valores de `dev` | Perfil activo incorrecto | Revisar `SPRING_PROFILES_ACTIVE` |
 
-Antes de empezar la actividad guiada: si todavía no tienes `pagatu-orden-ms` creado (lo necesitarás en la sección 4, trabajo autónomo), revisa el **Anexo: crear el proyecto base de `pagatu-orden-ms`** al final de esta guía — sigue exactamente el mismo patrón de `pagatu-catalogo-ms` (S1). No es parte de los pasos 3.1-3.13 de abajo, que se enfocan solo en `pagatu-config` y en migrar `pagatu-catalogo-ms`.
+Antes de empezar la actividad guiada: si todavía no tienes `pagatu-orden-ms`/`pagatu-cliente-ms` creados (los necesitarás en la sección 4, trabajo autónomo), revisa el **Anexo: alcance por microservicio y proyecto base de `pagatu-orden-ms` y `pagatu-cliente-ms`** al final de esta guía — sigue exactamente el mismo patrón de `pagatu-catalogo-ms` (S1). No es parte de los pasos 3.2-3.14 de abajo, que se enfocan solo en `pagatu-config` y en migrar `pagatu-catalogo-ms` (3.1 sí es común: verificar que los tres microservicios ya arrancan).
 
 ## 3. Aplica: actividad práctica guiada
 
@@ -363,21 +363,34 @@ Tiempo: 3h.
 
 **Actividades para realizar:**
 
-- **3.1** Crear la carpeta `infra`.
-- **3.2** Crear el proyecto `pagatu-config`.
-- **3.3** Habilitar Config Server.
-- **3.4** Configurar `pagatu-config` para leer `config-repo` en DEV.
-- **3.5** Probar `pagatu-config` en DEV.
-- **3.6** Mover la configuración de `pagatu-catalogo-ms` a `config-repo`.
-- **3.7** Consultar los perfiles por HTTP.
-- **3.8** Conectar `pagatu-catalogo-ms` como Config Client.
-- **3.9** Levantar `pagatu-catalogo-ms` en DEV con configuración externa.
-- **3.10** Dockerizar `pagatu-config` para producción local.
-- **3.11** Compartir red entre `pagatu-config` y `pagatu-catalogo-ms` en producción local.
-- **3.12** Probar `pagatu-config` y `pagatu-catalogo-ms` en producción local.
-- **3.13** Revisar logs y bajar el entorno.
+- **3.1** Verificar el punto de partida.
+- **3.2** Crear la carpeta `infra`.
+- **3.3** Crear el proyecto `pagatu-config`.
+- **3.4** Habilitar Config Server.
+- **3.5** Configurar `pagatu-config` para leer `config-repo` en DEV.
+- **3.6** Probar `pagatu-config` en DEV.
+- **3.7** Mover la configuración de `pagatu-catalogo-ms` a `config-repo`.
+- **3.8** Consultar los perfiles por HTTP.
+- **3.9** Conectar `pagatu-catalogo-ms` como Config Client.
+- **3.10** Levantar `pagatu-catalogo-ms` en DEV con configuración externa.
+- **3.11** Dockerizar `pagatu-config` para producción local.
+- **3.12** Compartir red entre `pagatu-config` y `pagatu-catalogo-ms` en producción local.
+- **3.13** Probar `pagatu-config` y `pagatu-catalogo-ms` en producción local.
+- **3.14** Revisar logs y bajar el entorno.
 
-### 3.1 Crear la carpeta `infra`
+### 3.1 Verificar el punto de partida
+
+**Punto de partida común:** todo el equipo debe comenzar exactamente desde el mismo estado, no desde su propio avance individual. Clona la rama `s02-microservicios` (incluye `pagatu-catalogo-ms` tal como quedó en S1, más `pagatu-orden-ms` y `pagatu-cliente-ms` ya construidos según el Anexo de esta guía):
+
+```bash
+git clone --branch s02-microservicios https://github.com/262dist/pagatu.git
+```
+
+**Producto del paso:** confirmación de que los tres microservicios (`pagatu-catalogo-ms`, `pagatu-orden-ms`, `pagatu-cliente-ms`) ya existen en `services/` y arrancan de forma independiente en DEV, antes de tocar código nuevo.
+
+**Requisito antes de continuar:** levanta cada uno por separado (`docker compose -f compose-dev.yml up -d` + `.\mvnw.cmd spring-boot:run`, ver el `README.md` de cada carpeta) y confirma que `http://localhost:8080/actuator/health`, `http://localhost:8082/actuator/health` y `http://localhost:8084/actuator/health` responden `UP`. Si alguno falla, el problema es anterior a esta sesión (S1, o el Anexo de creación de `orden-ms`/`cliente-ms`), no de los pasos 3.2 en adelante.
+
+### 3.2 Crear la carpeta `infra`
 
 **Producto del paso:** carpeta `infra` preparada para alojar componentes de infraestructura del sistema.
 
@@ -398,7 +411,7 @@ pagatu/
     └── pagatu-catalogo-ms/
 ```
 
-### 3.2 Crear el proyecto `pagatu-config`
+### 3.3 Crear el proyecto `pagatu-config`
 
 **Producto del paso:** proyecto Spring Boot `pagatu-config` creado dentro de `infra/config`.
 
@@ -460,7 +473,7 @@ Spring Cloud necesita su propio BOM, con la versión compatible con Spring Boot 
 
 **Error frecuente**: usar una versión de Spring Cloud anterior a 2025.1.x con Spring Boot 4. Las líneas de Spring Cloud anteriores (por ejemplo 2025.0.x) no son compatibles con Spring Boot 4.0.1 en adelante — el proyecto no compila o falla al arrancar con errores de beans que no encuentra.
 
-### 3.3 Habilitar Config Server
+### 3.4 Habilitar Config Server
 
 **Producto del paso:** aplicación Spring Boot marcada como servidor de configuración.
 
@@ -483,7 +496,7 @@ public class PagatuConfigApplication {
 }
 ```
 
-### 3.4 Configurar `pagatu-config` para leer `config-repo` en DEV
+### 3.5 Configurar `pagatu-config` para leer `config-repo` en DEV
 
 **Producto del paso:** `config-repo` creado y `pagatu-config` configurado para leerlo en DEV.
 
@@ -522,7 +535,7 @@ management:
 
 En DEV no se define ninguna variable de entorno: se usa el valor por defecto, `file:./config-repo`. Eso significa que Maven debe ejecutarse parado exactamente en `infra/config`, no en la raíz del repositorio.
 
-### 3.5 Probar `pagatu-config` en DEV
+### 3.6 Probar `pagatu-config` en DEV
 
 **Producto del paso:** `pagatu-config` ejecutando en `localhost:18888`.
 
@@ -549,7 +562,7 @@ curl http://localhost:18888/actuator/metrics
 
 `config-repo` todavía está vacío, así que `pagatu-config` responde `UP`, pero cualquier consulta a `/pagatu-catalogo-ms/dev` va a devolver una configuración sin propiedades — eso se resuelve en el siguiente paso.
 
-### 3.6 Mover la configuración de `pagatu-catalogo-ms` a `config-repo`
+### 3.7 Mover la configuración de `pagatu-catalogo-ms` a `config-repo`
 
 **Producto del paso:** `pagatu-catalogo-ms-dev.yml` y `pagatu-catalogo-ms-prod.yml` creados en `config-repo`, con el mismo contenido que ya tenían `application-dev.yml` y `application-prod.yml` en S1.
 
@@ -642,11 +655,11 @@ management:
 
 El `server.port: 8080` se mantiene **fijo**, igual que en S1 — la segunda instancia de `pagatu-catalogo-ms` sigue tomando su puerto por argumento de línea de comandos (`--server.port=8081`, S1 3.4.1), no por puerto dinámico.
 
-### 3.7 Consultar los perfiles por HTTP
+### 3.8 Consultar los perfiles por HTTP
 
 **Producto del paso:** configuración externa consultada sin levantar `pagatu-catalogo-ms`.
 
-Con `pagatu-config` ejecutando (3.5):
+Con `pagatu-config` ejecutando (3.6):
 
 PowerShell:
 
@@ -671,7 +684,7 @@ Resultado esperado:
 
 Si `pagatu-config` no muestra esas propiedades, no continúes al siguiente paso — corrige primero el nombre del archivo, el perfil o la ruta de `config-repo`.
 
-#### 3.7.1 Probar una consulta incorrecta para aprender del error
+#### 3.8.1 Probar una consulta incorrecta para aprender del error
 
 Consulta un nombre que no coincide con `spring.application.name`:
 
@@ -681,7 +694,7 @@ curl http://localhost:18888/catalogo/dev
 
 Resultado esperado: la consulta no devuelve la configuración de `pagatu-catalogo-ms-dev.yml`. El error conceptual es que `catalogo` no coincide con `pagatu-catalogo-ms` — este es justo el error frecuente de la Tabla 4.
 
-### 3.8 Conectar `pagatu-catalogo-ms` como Config Client
+### 3.9 Conectar `pagatu-catalogo-ms` como Config Client
 
 **Producto del paso:** `pagatu-catalogo-ms` preparado para consumir configuración externa.
 
@@ -731,11 +744,11 @@ spring:
     import: "optional:configserver:${CONFIG_SERVER_URL:http://localhost:18888}"
 ```
 
-**4. Elimina `application-dev.yml` y `application-prod.yml`** de `services/pagatu-catalogo-ms/src/main/resources/` — su contenido ya vive en `config-repo` (3.6); mantenerlos ahí duplicaría exactamente el problema de 1.6.1.
+**4. Elimina `application-dev.yml` y `application-prod.yml`** de `services/pagatu-catalogo-ms/src/main/resources/` — su contenido ya vive en `config-repo` (3.7); mantenerlos ahí duplicaría exactamente el problema de 1.6.1.
 
 El prefijo `optional:` evita que `pagatu-catalogo-ms` falle al arrancar si `pagatu-config` está apagado — pero igual necesita una conexión real a PostgreSQL para funcionar, así que en la práctica sigue dependiendo de que `pagatu-config` esté disponible para recibir esos valores.
 
-### 3.9 Levantar `pagatu-catalogo-ms` en DEV con configuración externa
+### 3.10 Levantar `pagatu-catalogo-ms` en DEV con configuración externa
 
 **Producto del paso:** `pagatu-catalogo-ms` ejecutando con valores entregados por `pagatu-config`.
 
@@ -789,7 +802,7 @@ mvnw spring-boot:run "-Dspring-boot.run.arguments=--server.port=8081"
 
 Ambas instancias leen la misma configuración centralizada desde `pagatu-config` y responden el mismo CRUD.
 
-### 3.10 Dockerizar `pagatu-config` para producción local
+### 3.11 Dockerizar `pagatu-config` para producción local
 
 **Producto del paso:** `pagatu-config` preparado para ejecutarse como contenedor.
 
@@ -845,13 +858,13 @@ networks:
 
 En PROD local, `pagatu-config` usa `file:/config-repo` (ruta dentro del contenedor) — el volumen monta `infra/config/config-repo` del host en `/config-repo` dentro del contenedor, así que los mismos archivos de 3.6 se reutilizan sin duplicarlos.
 
-### 3.11 Compartir red entre `pagatu-config` y `pagatu-catalogo-ms` en producción local
+### 3.12 Compartir red entre `pagatu-config` y `pagatu-catalogo-ms` en producción local
 
 **Producto del paso:** `pagatu-catalogo-ms` conectado a la misma red Docker que `pagatu-config`, además de su propia red con PostgreSQL.
 
 `pagatu-config` vive en un `compose.yml` distinto (`infra/compose.yml`) al de `pagatu-catalogo-ms` (`services/pagatu-catalogo-ms/compose.yml`) — son dos proyectos Docker Compose separados. Para que uno resuelva al otro por nombre (`http://pagatu-config:8888`), ambos deben compartir una red Docker declarada como **externa** desde el lado que no la crea.
 
-`infra/compose.yml` (3.10) **crea** la red `pagatu-prod-net`. En `services/pagatu-catalogo-ms/compose.yml`, agrega esa misma red como externa, sin dejar de tener su propia red interna con PostgreSQL:
+`infra/compose.yml` (3.11) **crea** la red `pagatu-prod-net`. En `services/pagatu-catalogo-ms/compose.yml`, agrega esa misma red como externa, sin dejar de tener su propia red interna con PostgreSQL:
 
 ```yaml
   pagatu-catalogo-ms:
@@ -901,7 +914,7 @@ DB_PASS=pagatu
 2. Levantar services/pagatu-catalogo-ms (se une a pagatu-prod-net ya creada)
 ```
 
-### 3.12 Probar `pagatu-config` y `pagatu-catalogo-ms` en producción local
+### 3.13 Probar `pagatu-config` y `pagatu-catalogo-ms` en producción local
 
 **Producto del paso:** ambos componentes ejecutando en Docker, con `pagatu-catalogo-ms` leyendo su configuración desde `pagatu-config`.
 
@@ -951,9 +964,9 @@ Resultado esperado:
 - El microservicio obtiene su configuración desde `http://pagatu-config:8888`.
 - `/actuator/health` responde `UP`.
 - `/api/v1/categorias` responde `200 OK`.
-- Swagger no se prueba en PROD — sigue deshabilitado en `pagatu-catalogo-ms-prod.yml` (3.6), igual que en S1.
+- Swagger no se prueba en PROD — sigue deshabilitado en `pagatu-catalogo-ms-prod.yml` (3.7), igual que en S1.
 
-### 3.13 Revisar logs y bajar el entorno
+### 3.14 Revisar logs y bajar el entorno
 
 **Producto del paso:** evidencia de logs revisada, entorno completo liberado.
 
@@ -1129,7 +1142,7 @@ Tiempo: 5 min.
 
 ## Anexo: alcance por microservicio y proyecto base de `pagatu-orden-ms` y `pagatu-cliente-ms`
 
-Este anexo no es parte de los pasos 3.1-3.13 (que se enfocan solo en `pagatu-config` y en migrar `pagatu-catalogo-ms`). S02 es el momento del curso donde conviene delimitar, por escrito, qué le corresponde a cada microservicio a lo largo de todo el curso — sin modificar S01, que ya fue entregada.
+Este anexo no es parte de los pasos 3.2-3.14 (que se enfocan solo en `pagatu-config` y en migrar `pagatu-catalogo-ms`). S02 es el momento del curso donde conviene delimitar, por escrito, qué le corresponde a cada microservicio a lo largo de todo el curso — sin modificar S01, que ya fue entregada.
 
 **Error frecuente al crear un proyecto nuevo copiando de otro:** al generar `pagatu-orden-ms`/`pagatu-cliente-ms` con Spring Initializr, es tentador copiar archivos ya hechos de `pagatu-catalogo-ms` (`.env`, `compose.yml`, `application-dev.yml`, `ResourceNotFoundException`, `CorrelationIdFilter`, etc.) para no escribirlos de cero — es una práctica válida, pero cada archivo copiado hay que revisarlo con cuidado: nombre de base de datos, puertos, nombre de contenedor y, sobre todo, la línea `package` de cada clase Java (debe decir `pe.edu.upeu.orden...` o `pe.edu.upeu.cliente...`, no `pe.edu.upeu.catalogo...`) — si el `package` no coincide con la carpeta real del archivo, el proyecto no compila.
 
