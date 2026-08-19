@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>pe.edu.upeu</groupId>
-	<artifactId>pagatu-orden-ms</artifactId>
+	<artifactId>pagatu-cliente-ms</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>pagatu-orden-ms</name>
+	<name>pagatu-cliente-ms</name>
 	<description/>
 	<url/>
 	<licenses>
