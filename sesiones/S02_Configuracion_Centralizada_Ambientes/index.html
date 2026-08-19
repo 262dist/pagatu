@@ -1108,15 +1108,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#anexo-alcance-por-microservicio-y-proyecto-base-de-pagatu-orden-ms" class="md-nav__link">
+  <a href="#anexo-alcance-por-microservicio-y-proyecto-base-de-pagatu-orden-ms-y-pagatu-cliente-ms" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Anexo: alcance por microservicio y proyecto base de pagatu-orden-ms
+        Anexo: alcance por microservicio y proyecto base de pagatu-orden-ms y pagatu-cliente-ms
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Anexo: alcance por microservicio y proyecto base de pagatu-orden-ms">
+    <nav class="md-nav" aria-label="Anexo: alcance por microservicio y proyecto base de pagatu-orden-ms y pagatu-cliente-ms">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1776,15 +1776,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#anexo-alcance-por-microservicio-y-proyecto-base-de-pagatu-orden-ms" class="md-nav__link">
+  <a href="#anexo-alcance-por-microservicio-y-proyecto-base-de-pagatu-orden-ms-y-pagatu-cliente-ms" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Anexo: alcance por microservicio y proyecto base de pagatu-orden-ms
+        Anexo: alcance por microservicio y proyecto base de pagatu-orden-ms y pagatu-cliente-ms
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Anexo: alcance por microservicio y proyecto base de pagatu-orden-ms">
+    <nav class="md-nav" aria-label="Anexo: alcance por microservicio y proyecto base de pagatu-orden-ms y pagatu-cliente-ms">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -3059,8 +3059,9 @@ Indica 2 fortalezas y 2 recomendaciones.
 <li>SACAViX. (2026). <em>Catálogo de patrones</em>. SACAViX System Design. <a href="https://systemdesign.sacavix.com/patterns">https://systemdesign.sacavix.com/patterns</a></li>
 <li>SACAViX. (2026). <em>Centralized Configuration</em>. SACAViX System Design — Centralized Config. <a href="https://systemdesign.sacavix.com/patterns/centralized-config">https://systemdesign.sacavix.com/patterns/centralized-config</a></li>
 </ul>
-<h2 id="anexo-alcance-por-microservicio-y-proyecto-base-de-pagatu-orden-ms">Anexo: alcance por microservicio y proyecto base de <code>pagatu-orden-ms</code><a class="headerlink" href="#anexo-alcance-por-microservicio-y-proyecto-base-de-pagatu-orden-ms" title="Permanent link">&para;</a></h2>
+<h2 id="anexo-alcance-por-microservicio-y-proyecto-base-de-pagatu-orden-ms-y-pagatu-cliente-ms">Anexo: alcance por microservicio y proyecto base de <code>pagatu-orden-ms</code> y <code>pagatu-cliente-ms</code><a class="headerlink" href="#anexo-alcance-por-microservicio-y-proyecto-base-de-pagatu-orden-ms-y-pagatu-cliente-ms" title="Permanent link">&para;</a></h2>
 <p>Este anexo no es parte de los pasos 3.1-3.13 (que se enfocan solo en <code>pagatu-config</code> y en migrar <code>pagatu-catalogo-ms</code>). S02 es el momento del curso donde conviene delimitar, por escrito, qué le corresponde a cada microservicio a lo largo de todo el curso — sin modificar S01, que ya fue entregada.</p>
+<p><strong>Error frecuente al crear un proyecto nuevo copiando de otro:</strong> al generar <code>pagatu-orden-ms</code>/<code>pagatu-cliente-ms</code> con Spring Initializr, es tentador copiar archivos ya hechos de <code>pagatu-catalogo-ms</code> (<code>.env</code>, <code>compose.yml</code>, <code>application-dev.yml</code>, <code>ResourceNotFoundException</code>, <code>CorrelationIdFilter</code>, etc.) para no escribirlos de cero — es una práctica válida, pero cada archivo copiado hay que revisarlo con cuidado: nombre de base de datos, puertos, nombre de contenedor y, sobre todo, la línea <code>package</code> de cada clase Java (debe decir <code>pe.edu.upeu.orden...</code> o <code>pe.edu.upeu.cliente...</code>, no <code>pe.edu.upeu.catalogo...</code>) — si el <code>package</code> no coincide con la carpeta real del archivo, el proyecto no compila.</p>
 <h3 id="alcance-de-pagatu-catalogo-ms-por-sesion">Alcance de <code>pagatu-catalogo-ms</code>, por sesión<a class="headerlink" href="#alcance-de-pagatu-catalogo-ms-por-sesion" title="Permanent link">&para;</a></h3>
 <p><strong>S1 (ya entregado) — CRUD básico</strong></p>
 <ol>
@@ -3190,7 +3191,7 @@ Indica 2 fortalezas y 2 recomendaciones.
 </tr>
 <tr>
 <td>Dependencias</td>
-<td>Las mismas de <code>pagatu-catalogo-ms</code> (S1, Tabla 4): Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway.</td>
+<td>Las mismas de <code>pagatu-catalogo-ms</code> (S1, Tabla 4): Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway. <strong>Además</strong>, agrega MapStruct a mano en el <code>pom.xml</code> (S1, 3.5.20) — Spring Initializr no lo ofrece como opción, y sin él el proyecto no compila apenas escribas el primer <code>Mapper</code>.</td>
 </tr>
 <tr>
 <td>Ubicación sugerente</td>
@@ -3336,7 +3337,7 @@ Indica 2 fortalezas y 2 recomendaciones.
 </tr>
 <tr>
 <td>Dependencias</td>
-<td>Las mismas de <code>pagatu-catalogo-ms</code> (S1, Tabla 4): Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway.</td>
+<td>Las mismas de <code>pagatu-catalogo-ms</code> (S1, Tabla 4): Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway. <strong>Además</strong>, agrega MapStruct a mano en el <code>pom.xml</code> (S1, 3.5.20) — Spring Initializr no lo ofrece como opción, y sin él el proyecto no compila apenas escribas el primer <code>Mapper</code>.</td>
 </tr>
 <tr>
 <td>Ubicación sugerente</td>
@@ -3458,6 +3459,15 @@ Indica 2 fortalezas y 2 recomendaciones.
 </tbody>
 </table>
 <p><code>whatsapp</code> (opcional, no lo completa RENIEC/SUNAT — lo escribe el cliente) es el número al que se envía el comprobante de cada orden una vez confirmada; su uso real llega recién con la mensajería de S8, cuando <code>orden-ms</code> publique el evento correspondiente. <code>ordenes.id_cliente</code> (Anexo anterior) apunta al <code>id</code> de esta tabla, sin <code>REFERENCES</code> entre bases de datos.</p>
+<p><strong><code>services/pagatu-cliente-ms/src/main/resources/db/migration/V2__seed_clientes.sql</code></strong> (opcional, datos de prueba)</p>
+<p>Flyway también migra datos, no solo estructura — un archivo versionado más, con <code>INSERT</code> en vez de <code>CREATE TABLE</code>. Sirve para no estar registrando clientes a mano cada vez que reinicias la base de datos:</p>
+<div class="highlight"><pre><span></span><code><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">clientes</span><span class="w"> </span><span class="p">(</span><span class="n">tipo_persona</span><span class="p">,</span><span class="w"> </span><span class="n">dni</span><span class="p">,</span><span class="w"> </span><span class="n">ruc</span><span class="p">,</span><span class="w"> </span><span class="n">nombre_completo</span><span class="p">,</span><span class="w"> </span><span class="n">razon_social</span><span class="p">,</span><span class="w"> </span><span class="n">direccion</span><span class="p">,</span><span class="w"> </span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="n">whatsapp</span><span class="p">)</span>
+<span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="s1">'NATURAL'</span><span class="p">,</span><span class="w"> </span><span class="s1">'87654321'</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span><span class="s1">'Maria Torres Quispe'</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span><span class="s1">'Av. Los Olivos 123, Lima'</span><span class="p">,</span><span class="w"> </span><span class="s1">'maria.torres@example.com'</span><span class="p">,</span><span class="w"> </span><span class="s1">'999888777'</span><span class="p">);</span>
+
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">clientes</span><span class="w"> </span><span class="p">(</span><span class="n">tipo_persona</span><span class="p">,</span><span class="w"> </span><span class="n">dni</span><span class="p">,</span><span class="w"> </span><span class="n">ruc</span><span class="p">,</span><span class="w"> </span><span class="n">nombre_completo</span><span class="p">,</span><span class="w"> </span><span class="n">razon_social</span><span class="p">,</span><span class="w"> </span><span class="n">direccion</span><span class="p">,</span><span class="w"> </span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="n">whatsapp</span><span class="p">)</span>
+<span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="s1">'JURIDICA'</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span><span class="s1">'20123456789'</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span><span class="s1">'Comercial Andina S.A.C.'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Jr. Comercio 456, Lima'</span><span class="p">,</span><span class="w"> </span><span class="s1">'contacto@comercialandina.pe'</span><span class="p">,</span><span class="w"> </span><span class="s1">'988777666'</span><span class="p">);</span>
+</code></pre></div>
+<p>Igual que <code>V1</code>, una vez aplicado no se edita — si necesitas ajustar estos datos, agrega un <code>V3</code> nuevo. <code>pagatu-orden-ms</code> no tiene un <code>V2</code> propio: sus órdenes se crean desde las pruebas de la sesión (3.7 en adelante), referenciando estos <code>id</code> de <code>clientes</code> (normalmente <code>1</code> y <code>2</code>) y los <code>id</code> de <code>productos</code> sembrados en <code>pagatu-catalogo-ms</code> (S1).</p>
 <h3 id="tipo-de-comprobante-por-orden-boleta-simple-boleta-con-dni-o-factura">Tipo de comprobante por orden: boleta simple, boleta con DNI o factura<a class="headerlink" href="#tipo-de-comprobante-por-orden-boleta-simple-boleta-con-dni-o-factura" title="Permanent link">&para;</a></h3>
 <p>Elegir el comprobante es una decisión <strong>de cada orden</strong>, no del perfil del cliente — la misma persona puede pedir boleta simple una vez y factura la siguiente. Por eso este campo vive en <code>ordenes</code> (<code>pagatu-orden-ms</code>), no en <code>clientes</code>.</p>
 <p><strong>Tabla 14. Tipos de comprobante y qué exigen del cliente</strong></p>
