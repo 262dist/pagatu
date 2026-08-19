@@ -171,7 +171,7 @@ Según el catálogo de patrones SACAViX System Design (2026), **Centralized Conf
 
 ```mermaid
 flowchart LR
-    Git[("Git Repository")]
+    Git[("Git Repository / local repo")]
     Config["Config Server"]
     A["Service A"]
     B["Service B"]
