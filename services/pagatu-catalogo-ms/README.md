@@ -23,7 +23,7 @@ docker compose -f compose-dev.yml up -d
 .\mvnw.cmd spring-boot:run
 ```
 
-La aplicación queda en `http://localhost:8080`. PostgreSQL DEV en `localhost:15432` (`pagatu_catalogo_db`).
+La aplicación queda en `http://localhost:8080` (Swagger: `http://localhost:8080/swagger-ui.html`). PostgreSQL DEV en `localhost:15432` (`pagatu_catalogo_db`).
 
 ## Variables de entorno
 
