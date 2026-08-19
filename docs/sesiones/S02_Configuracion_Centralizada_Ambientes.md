@@ -128,7 +128,7 @@ Config Server no es una idea suelta: es uno de varios **patrones de arquitectura
 | Sincronización | 5 | Distributed Lock, Leader Election, Barrier / Rendezvous, Distributed Sequence Number, Distributed Semaphore. |
 | Anti-patrones | 8 | Shared Database, Distributed Monolith, Chatty API, God Service, Shared Infrastructure, Nano-services, Everything-is-a-Service, Anemic Domain Model. |
 
-*Nota.* Adaptado de *Catálogo de patrones*, por SACAViX, 2026, SACAViX System Design (https://systemdesign.sacavix.com/patterns).
+*Nota.* Adaptado de *Catálogo de patrones*, por SACAViX, 2026, SACAViX System Design (<https://systemdesign.sacavix.com/patterns>).
 
 El patrón de esta sesión, **Centralized Configuration**, está clasificado dentro de **Gobernanza** — no de "Infraestructura", que ya no existe como categoría separada en la versión actual del catálogo.
 
@@ -185,6 +185,8 @@ flowchart LR
     Config -->|"pull on startup"| C
     Config -.->|"hot reload"| C
 ```
+
+*Nota.* Adaptado de *Centralized Configuration*, por SACAViX, 2026, SACAViX System Design — Centralized Config (<https://systemdesign.sacavix.com/patterns/centralized-config>).
 
 Casos de uso del patrón, según el catálogo:
 
