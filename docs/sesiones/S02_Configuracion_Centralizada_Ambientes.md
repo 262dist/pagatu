@@ -5,7 +5,7 @@
 ## 1. Introducción
 
 Tiempo: 20 min.
-
+ 
 ### 1.1 Presentación de la sesión
 
 `pagatu-catalogo-ms` guarda hoy su configuración en dos archivos propios: `application-dev.yml` y `application-prod.yml` (S1). Cuando `orden-ms` se sume al sistema (sección 4), va a necesitar prácticamente los mismos tipos de valores repetidos en sus propios archivos — con el riesgo real de que un ajuste se corrija en un servicio y se olvide en el otro. Esta sesión saca esa configuración de cada microservicio y la centraliza en un Config Server propio: `pagatu-config`. El porqué se desarrolla en 1.6, continuando el mismo camino hacia microservicios que empezó en S1.
@@ -13,9 +13,10 @@ Tiempo: 20 min.
 ### 1.2 Índice
 
 1. El problema de la configuración duplicada entre microservicios.
-2. Config Server y config-repo: dos responsabilidades distintas.
-3. Convención de nombres: `{aplicación}-{perfil}.yml`.
-4. Config Server en DEV y en producción local.
+2. Panorama de patrones de arquitectura de microservicios.
+3. Config Server y config-repo: dos responsabilidades distintas.
+4. Convención de nombres: `{aplicación}-{perfil}.yml`.
+5. Config Server en DEV y en producción local.
 
 ### 1.3 Propósito de aprendizaje
 
@@ -39,25 +40,28 @@ Al concluir la clase, estarás en condiciones de:
 
 ### 1.6 Motivación de la sesión
 
-#### 1.6.1 Caso: el valor que se corrigió en un servicio y se olvidó en el otro
+#### 1.6.1 Caso: la configuración que no crece igual que el sistema
 
-Retomando el caso de S1 (la plataforma de comercio electrónico que migró a microservicios): el equipo ya tiene `pagatu-catalogo-ms` funcionando, y empieza a construir `orden-ms`. Ambos necesitan las mismas categorías de valores — puerto, conexión a base de datos, nivel de log, qué expone Actuator — así que alguien copia `application-dev.yml` de uno al otro y ajusta lo necesario. Dos semanas después, el equipo detecta que en PROD `pagatu-catalogo-ms` expone `/actuator/metrics` pero `orden-ms` no: nadie decidió esa diferencia a propósito, un archivo se actualizó y el otro no. Con dos servicios el problema ya es real; con diez, es prácticamente imposible mantener la configuración sincronizada a mano.
+Retomando el caso de S1 (la plataforma de comercio electrónico que migró a microservicios): el equipo sigue creciendo, y con él, el número de servicios, cada uno con su propia configuración por ambiente. Un día alguien necesita cambiar un solo valor — un tiempo de espera, un límite de reintentos — y descubre que no basta con editar un archivo: hay que recompilar, generar un nuevo build y volver a desplegar el servicio, solo para que ese cambio tome efecto. Con un servicio es una molestia; con varios corriendo a la vez, cada ajuste menor se convierte en un ciclo completo de despliegue — y tarde o temprano alguien copia mal un valor entre dos servicios sin que nadie lo note, hasta que falla en el peor momento.
 
-```text
-¿Qué cambiaría si ningún microservicio guardara sus propios valores de
-ambiente, y todos los leyeran desde un único lugar central?
-```
+Esto no es un problema exclusivo de `pagatu`: con decenas de microservicios, gestionar la configuración individualmente en cada uno se vuelve inmanejable:
+
+- Cada ajuste de configuración exige recompilar y volver a desplegar el servicio.
+- Diferencias accidentales entre DEV y PROD, o valores hardcodeados.
+- Ningún lugar único donde saber qué configuración usa cada servicio.
+- Mayor riesgo de errores al levantar varias instancias a la vez.
+
+Con dos servicios el problema ya es real; con diez, es prácticamente imposible mantener la configuración sincronizada a mano.
 
 **Preguntas de análisis**
 
 **Activación de conocimientos previos**
 
-1. ¿Qué pasa cuando dos archivos de configuración que deberían ser iguales entre sí se desincronizan sin que nadie lo note?
+1. En S1 configuraste el mismo usuario y contraseña de PostgreSQL en dos archivos distintos: `compose-dev.yml` y `application-dev.yml`. ¿Qué hubiera pasado si cambiabas ese valor en uno de los dos y te olvidabas del otro?
 
 **Comprensión de configuración centralizada**
 
-1. ¿Qué diferencia hay entre que cada microservicio guarde su propia configuración y que la lea desde un servidor central?
-2. ¿Por qué agregar más microservicios hace más urgente resolver este problema, no menos?
+1. ¿Cómo hacemos que los servicios lean su configuración desde un punto central sin recompilar ni duplicar valores?
 
 ### 1.7 Ubicación en el curso
 
@@ -104,27 +108,181 @@ Tiempo: 25 min.
 
 `pagatu-catalogo-ms` guarda hoy su configuración en dos archivos propios: `application-dev.yml` y `application-prod.yml` (S1, 3.2.3 y 3.6.3). Cuando `orden-ms` se construya (sección 4) va a necesitar prácticamente los mismos tipos de valores — puerto, conexión a base de datos, perfil de Flyway, qué expone Actuator — repetidos en sus propios archivos. El caso de 1.6.1 muestra qué pasa cuando eso crece sin control: cambios repetidos en muchos archivos, diferencias accidentales entre DEV y PROD, y ningún lugar único donde saber qué configuración usa cada servicio.
 
-### 2.2 Config Server y config-repo: dos responsabilidades distintas
+### 2.2 Panorama de patrones de arquitectura de microservicios
+
+Config Server no es una idea suelta: es uno de varios **patrones de arquitectura de microservicios** ya catalogados y documentados, agrupados por el problema que resuelven. El catálogo de SACAViX System Design (2026) organiza cerca de 95 patrones en 11 categorías:
+
+**Tabla 2. Catálogo de patrones de arquitectura de microservicios, por categoría**
+
+| Categoría | Cantidad | Patrones |
+|---|---:|---|
+| Fundamentales | 11 | API Gateway, Backend for Frontend, Strangler Fig, Sidecar Pattern, Service Registry, GraphQL Gateway, Anti-corruption Layer, Modular Monolith, Hexagonal Architecture, Service Mesh, Load Balancing. |
+| Comunicación | 15 | Synchronous REST, Asynchronous Messaging, Event-Driven Architecture, Event Notification, Event-Carried State Transfer, Message Broker, Webhook, gRPC Communication, API Composition, Request-Reply Pattern, Publish-Subscribe, Message Filtering/Routing, Idempotency Key Pattern, Idempotent Consumer, Fire and Forget. |
+| Datos | 10 | Event Sourcing, Saga Pattern, CQRS, Database per Service, Change Data Capture, Outbox Pattern, Polyglot Persistence, Transactional Log Tailing, Pulling Publisher, Two-Phase Commit. |
+| Resiliencia | 10 | Circuit Breaker, Bulkhead, Retry Pattern, Timeout Pattern, Rate Limiting, Chaos Engineering, Caching Strategies, Fallback Pattern, Graceful Degradation, Backpressure. |
+| Observabilidad | 9 | Distributed Tracing, Structured Logging, Metrics & Monitoring, Health Checks, Alerting & On-Call, Synthetic Monitoring, Error Tracking, Correlation ID, Audit Logging. |
+| Seguridad | 5 | Zero Trust Security, OAuth2 / OpenID Connect, Secret Management, RBAC / Control de Acceso, API Key Management. |
+| DevOps / Deployment | 8 | Blue-Green Deployment, Canary Deployment, Infrastructure as Code, Feature Toggles, Rolling Deployment, GitOps, CI/CD Pipeline, Trunk-Based Development. |
+| Gobernanza | 7 | API Versioning, Contract Testing, Service Chassis, Schema Registry, Developer Portal, Schema Evolution, **Centralized Configuration**. |
+| Escalabilidad | 7 | Materialized View, Database Sharding, Index Pattern, Read Replicas, Queue-Based Load Leveling, Consistent Hashing, Cell-Based Architecture. |
+| Sincronización | 5 | Distributed Lock, Leader Election, Barrier / Rendezvous, Distributed Sequence Number, Distributed Semaphore. |
+| Anti-patrones | 8 | Shared Database, Distributed Monolith, Chatty API, God Service, Shared Infrastructure, Nano-services, Everything-is-a-Service, Anemic Domain Model. |
+
+*Nota.* Adaptado de *Catálogo de patrones*, por SACAViX, 2026, SACAViX System Design (https://systemdesign.sacavix.com/patterns).
+
+El patrón de esta sesión, **Centralized Configuration**, está clasificado dentro de **Gobernanza** — no de "Infraestructura", que ya no existe como categoría separada en la versión actual del catálogo.
+
+Ubicando lo ya construido y lo que viene en el curso dentro de este mismo catálogo:
+
+**Tabla 3. Patrones del catálogo ya trabajados o próximos en el curso**
+
+| Categoría | Patrón | Dónde aparece |
+|---|---|---|
+| Fundamentales | Service Registry | S3 — Eureka. |
+| Fundamentales | API Gateway | S4 — punto único de acceso. |
+| Fundamentales | Load Balancing | S4 — distribución de tráfico entre instancias. |
+| Fundamentales | Backend for Frontend | S11 — integración con cliente frontend vía Gateway. |
+| Comunicación | Publish-Subscribe | S8 — mensajería asíncrona entre servicios. |
+| Comunicación | Idempotent Consumer | S9 — idempotencia en procesos de negocio distribuidos. |
+| Datos | Database per Service | S1 — cada microservicio con su propia PostgreSQL. |
+| Datos | Saga Pattern | S9 — consistencia eventual y compensación en procesos de negocio. |
+| Resiliencia | Circuit Breaker | S6 — comunicación síncrona resiliente. |
+| Seguridad | RBAC / Control de Acceso | S7 — seguridad distribuida y control de acceso (JWT propio, roles, Gateway como Resource Server). |
+| Observabilidad | Distributed Tracing, Structured Logging, Metrics & Monitoring, Health Checks | S10 — observabilidad y diagnóstico. |
+| Gobernanza | **Centralized Configuration** | **S2 (hoy)** — `pagatu-config` y `config-repo`. |
+
+No todos los patrones del catálogo entran en el alcance del curso (por ejemplo, Database Sharding o CQRS no se trabajan) — el catálogo sirve para ubicar cada sesión dentro de un mapa más amplio, no como lista obligatoria.
+
+### 2.3 Config Server y config-repo: dos responsabilidades distintas
 
 **Config Server** es el componente que entrega configuración por HTTP; **config-repo** es donde viven los archivos de configuración en sí. Aunque en este curso ambos van a convivir dentro de la misma carpeta del proyecto (`infra/config`), son responsabilidades lógicamente distintas: uno atiende peticiones, el otro almacena archivos.
 
-**Figura 2. Config Server y config-repo en DEV**
+#### 2.3.1 Qué es el patrón de Configuración Centralizada
+
+Según el catálogo de patrones SACAViX System Design (2026), **Centralized Configuration** es el patrón que centraliza la configuración de todos los microservicios en un repositorio o servicio dedicado, permitiendo gestión, versionado y actualización de configuración sin redespliegues.
+
+**Problema:** con decenas de microservicios, gestionar configuración individualmente en cada servicio es inmanejable. Los cambios de configuración requieren redespliegues y es difícil mantener consistencia entre entornos.
+
+**Contexto:** sistemas con múltiples microservicios que necesitan configuración externalizada, especialmente cuando hay múltiples entornos (dev, staging, prod) con diferentes configuraciones.
+
+**Cómo funciona:** un Config Service centraliza toda la configuración. Los servicios obtienen su configuración al arrancar desde el Config Service. Los cambios de configuración pueden propagarse sin redespliegue. La configuración queda versionada en Git.
+
+**Figura 2. Patrón de Configuración Centralizada**
+
+```mermaid
+flowchart LR
+    Git[("Git Repository")]
+    Config["Config Server"]
+    A["Service A"]
+    B["Service B"]
+    C["Service C"]
+
+    Git -->|"source of truth"| Config
+    Config -->|"pull on startup"| A
+    Config -.->|"hot reload"| A
+    Config -->|"pull on startup"| B
+    Config -.->|"hot reload"| B
+    Config -->|"pull on startup"| C
+    Config -.->|"hot reload"| C
+```
+
+Casos de uso del patrón, según el catálogo:
+
+- Feature flags que deben cambiar sin redespliegue.
+- Configuración de conexiones a bases de datos por entorno.
+- Parámetros de lógica de negocio que cambian frecuentemente (timeouts, límites).
+
+Trade-offs a considerar:
+
+- El Config Service se vuelve un componente crítico (*single point of failure*).
+- Latencia adicional al arranque mientras se obtiene la configuración.
+- Configuración sensible requiere cifrado y gestión de *secrets*.
+
+Errores comunes al implementarlo:
+
+- No implementar caché local en los servicios (dependencia total del Config Service).
+- Mezclar *secrets* y configuración normal sin seguridad adecuada.
+- No versionar los cambios de configuración.
+
+**Tabla 4. Madurez y atributos de calidad del patrón**
+
+| Aspecto | Detalle |
+|---|---|
+| Nivel de madurez | Básico-Intermedio — relativamente simple de implementar con herramientas existentes. |
+| Atributos de calidad | Mantenibilidad, Operabilidad, Deployabilidad. |
+
+En esta sesión, `pagatu-config` implementa exactamente este patrón, con dos diferencias que conviene tener presentes desde ya:
+
+- En vez de un repositorio Git remoto como *source of truth*, `config-repo` es una carpeta local dentro del propio proyecto — sigue cumpliendo ese mismo rol, pero versionada junto con el resto del código de `pagatu`, no en un repositorio Git separado.
+- **Ninguno de los tres trade-offs de arriba se resuelve en esta sesión**: `pagatu-config` no tiene caché local en los clientes (si se cae, un servicio que todavía no arrancó no consigue su configuración), no cifra *secrets* (las contraseñas de PostgreSQL viajan en texto plano dentro de `config-repo`) y es, literalmente, el punto único de falla del sistema en esta unidad. Son simplificaciones deliberadas para esta sesión — no la forma en que un Config Server se protege en un sistema en producción real.
+
+Los servicios (`pagatu-catalogo-ms`, `orden-ms`) obtienen su configuración al arrancar (*pull on startup*, ver 3.9); la recarga en caliente (*hot reload*) queda fuera del alcance de esta sesión.
+
+#### 2.3.2 Configuración en DEV
+
+**Figura 3. Config Server y config-repo en DEV**
 
 ```mermaid
 flowchart LR
     Client["Cliente - PowerShell / bash / navegador"]
     Config["pagatu-config - Config Server - infra/config - localhost:18888"]
-    Repo["file:./config-repo - pagatu-catalogo-ms-dev.yml - pagatu-catalogo-ms-prod.yml"]
+    Repo["file:./config-repo - pagatu-catalogo-ms-dev.yml - pagatu-catalogo-ms-prod.yml - orden-ms-dev.yml - orden-ms-prod.yml"]
     Catalogo["pagatu-catalogo-ms"]
+    Orden["orden-ms"]
 
     Client -->|"GET localhost:18888/pagatu-catalogo-ms/dev"| Config
+    Client -->|"GET localhost:18888/orden-ms/dev"| Config
     Config -->|"lee archivos"| Repo
     Catalogo -. "spring.config.import - http://localhost:18888" .-> Config
+    Orden -. "spring.config.import - http://localhost:18888" .-> Config
 
     classDef server fill:#eef6ff,stroke:#2b6cb0,color:#111;
     classDef repo fill:#fff4de,stroke:#b7791f,color:#111;
-    class Config,Catalogo server;
+    class Config,Catalogo,Orden server;
     class Repo repo;
+```
+
+En DEV, `pagatu-config` corre con Maven Wrapper en el host:
+
+```text
+localhost:18888
+config-repo: file:./config-repo
+```
+
+Se muestran dos servicios (`pagatu-catalogo-ms` y `orden-ms`) para que se entienda que Config Server no es exclusivo de uno — cualquier microservicio que se sume al sistema consulta el mismo lugar. En esta sesión solo `pagatu-catalogo-ms` se migra en clase (3.8); `orden-ms` se conecta como trabajo autónomo (sección 4).
+
+#### 2.3.3 Configuración en PROD local
+
+**Figura 4. Config Server y config-repo en producción local**
+
+```mermaid
+flowchart LR
+    Client["Cliente - PowerShell / bash"]
+    subgraph Docker["Docker Network: pagatu-prod-net"]
+        Config["pagatu-config - Config Server - 8888 interno"]
+        Repo["file:/config-repo - pagatu-catalogo-ms-prod.yml - orden-ms-prod.yml"]
+        Catalogo["pagatu-catalogo-ms"]
+        Orden["orden-ms"]
+    end
+
+    Client -->|"GET localhost:28888/pagatu-catalogo-ms/prod"| Config
+    Client -->|"GET localhost:28888/orden-ms/prod"| Config
+    Config -->|"lee archivos"| Repo
+    Catalogo -. "spring.config.import - http://pagatu-config:8888" .-> Config
+    Orden -. "spring.config.import - http://pagatu-config:8888" .-> Config
+
+    classDef server fill:#eef6ff,stroke:#2b6cb0,color:#111;
+    classDef repo fill:#fff4de,stroke:#b7791f,color:#111;
+    class Config,Catalogo,Orden server;
+    class Repo repo;
+```
+
+En PROD local, `pagatu-config` corre como contenedor:
+
+```text
+host: localhost:28888
+docker interno: pagatu-config:8888
+CONFIG_REPO_LOCATION=file:/config-repo
 ```
 
 Conceptos de la sesión:
@@ -134,7 +292,7 @@ Conceptos de la sesión:
 - **Perfil**: variante de configuración, por ejemplo `dev` o `prod`.
 - **Config Client**: aplicación que lee su configuración desde Config Server (`pagatu-catalogo-ms`, desde 3.8).
 
-### 2.3 Convención de nombres: `{aplicación}-{perfil}.yml`
+### 2.4 Convención de nombres: `{aplicación}-{perfil}.yml`
 
 Config Server busca el archivo de un servicio combinando `spring.application.name` con el perfil activo:
 
@@ -151,9 +309,9 @@ pagatu-catalogo-ms-prod.yml
 
 **Error frecuente**: que `spring.application.name` no coincida exactamente con el nombre del archivo (por ejemplo, `catalogo-ms` en el código contra `pagatu-catalogo-ms-dev.yml` en el repo). Si no coinciden letra por letra, Config Server no encuentra ninguna configuración y el microservicio arranca con valores vacíos o falla.
 
-### 2.4 Config Server en DEV y en producción local
+### 2.5 Config Server en DEV y en producción local
 
-**Tabla 2. URLs de Config Server por ambiente**
+**Tabla 5. URLs de Config Server por ambiente**
 
 | Ambiente | Componente | URL o nombre |
 |---|---|---|
@@ -167,7 +325,7 @@ En DEV, `pagatu-config` corre con Maven Wrapper en el host, igual que `pagatu-ca
 
 El puerto sigue el mismo patrón ya establecido en S1 para distinguir DEV de PROD local sin chocar entre sí:
 
-**Tabla 3. Puertos de host por componente y ambiente**
+**Tabla 6. Puertos de host por componente y ambiente**
 
 | Componente | Puerto DEV (host) | Puerto PROD local (host) |
 |---|---|---|
@@ -175,11 +333,11 @@ El puerto sigue el mismo patrón ya establecido en S1 para distinguir DEV de PRO
 | `pagatu-catalogo-ms` | `8080` | `28080` (no publicado por defecto, ver S1 Anexo) |
 | `pagatu-config` | `18888` | `28888` |
 
-### 2.5 Observabilidad: diagnosticar un perfil no encontrado
+### 2.6 Observabilidad: diagnosticar un perfil no encontrado
 
 En esta sesión la observabilidad se enfoca en confirmar que `pagatu-config` está activo y entrega la configuración esperada.
 
-**Tabla 4. Errores frecuentes y diagnóstico**
+**Tabla 7. Errores frecuentes y diagnóstico**
 
 | Problema | Causa probable | Solución |
 |---|---|---|
@@ -242,7 +400,7 @@ pagatu/
 
 Desde VS Code, usa Spring Initializr (`Spring Initializr: Create a Maven Project`):
 
-**Tabla 5. Configuración del proyecto `pagatu-config` en Spring Initializr**
+**Tabla 8. Configuración del proyecto `pagatu-config` en Spring Initializr**
 
 | Campo | Valor |
 |---|---|
@@ -259,7 +417,7 @@ Desde VS Code, usa Spring Initializr (`Spring Initializr: Create a Maven Project
 
 Dependencias a seleccionar:
 
-**Tabla 6. Dependencias del proyecto `pagatu-config`**
+**Tabla 9. Dependencias del proyecto `pagatu-config`**
 
 | Grupo | Dependencias | Propósito |
 |---|---|---|
@@ -921,7 +1079,7 @@ La evidencia individual se considera completa si:
 
 ### 4.6 Rúbrica de evaluación
 
-**Tabla 7. Rúbrica de evaluación**
+**Tabla 10. Rúbrica de evaluación**
 
 | Criterio | Peso (%) | A (20 pts) | B (15 pts) | C (10 pts) | D (5 pts) | Nivel obtenido |
 |---|---:|---|---|---|---|---:|
@@ -962,3 +1120,5 @@ Tiempo: 5 min.
 - VMware Tanzu / Broadcom Inc. (2026). *Spring Cloud Config reference documentation*. https://docs.spring.io/spring-cloud-config/reference/
 - VMware Tanzu / Broadcom Inc. (2026). *Spring Cloud 2025.1.2 (aka Oakwood) release notes*. https://spring.io/blog/2026/06/11/spring-cloud-2025-1-2-aka-oakwood-has-been-released/
 - Broadcom Inc. (2025). *Spring Boot reference documentation* (versión 4.0.7). VMware Tanzu. https://docs.spring.io/spring-boot/index.html
+- SACAViX. (2026). *Catálogo de patrones*. SACAViX System Design. https://systemdesign.sacavix.com/patterns
+- SACAViX. (2026). *Centralized Configuration*. SACAViX System Design — Centralized Config. https://systemdesign.sacavix.com/patterns/centralized-config
