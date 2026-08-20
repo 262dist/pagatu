@@ -398,15 +398,15 @@ Desde la raíz del repositorio `pagatu`:
 
 ```bash
 mkdir infra
-mkdir infra/pagatu-config
 ```
+
+`infra/pagatu-config` no se crea a mano — nace en el siguiente paso, cuando Spring Initializr genera el proyecto directamente ahí.
 
 Estructura esperada al iniciar la sesión:
 
 ```text
 pagatu/
 ├── infra/
-│   └── pagatu-config/
 └── services/
     └── pagatu-catalogo-ms/
 ```
