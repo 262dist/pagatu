@@ -1931,7 +1931,7 @@
 <li><strong>Construir e implementar</strong> un Config Server (Spring Cloud Config) que centraliza la configuración de <code>pagatu-catalogo-ms</code> por ambiente, verificando las consultas por HTTP y migrando el microservicio de S1 para leer su configuración externa en DEV y en producción local.</li>
 </ul>
 <h3 id="14-producto-de-sesion">1.4 Producto de sesión<a class="headerlink" href="#14-producto-de-sesion" title="Permanent link">&para;</a></h3>
-<p><code>pagatu-config</code> operativo en <code>infra/config</code>, con <code>config-repo</code> local (<code>pagatu-catalogo-ms-dev.yml</code>, <code>pagatu-catalogo-ms-prod.yml</code>), consultado por HTTP en ambos perfiles, y <code>pagatu-catalogo-ms</code> migrado para leer su configuración desde <code>pagatu-config</code> en DEV y en producción local con Docker.</p>
+<p><code>pagatu-config</code> operativo en <code>infra/pagatu-config</code>, con <code>config-repo</code> local (<code>pagatu-catalogo-ms-dev.yml</code>, <code>pagatu-catalogo-ms-prod.yml</code>), consultado por HTTP en ambos perfiles, y <code>pagatu-catalogo-ms</code> migrado para leer su configuración desde <code>pagatu-config</code> en DEV y en producción local con Docker.</p>
 <h3 id="15-metodologia">1.5 Metodología<a class="headerlink" href="#15-metodologia" title="Permanent link">&para;</a></h3>
 <p><strong>Tabla 1. Metodología de la sesión</strong></p>
 <table>
@@ -2162,7 +2162,7 @@
 </table>
 <p>No todos los patrones del catálogo entran en el alcance del curso (por ejemplo, Database Sharding o CQRS no se trabajan) — el catálogo sirve para ubicar cada sesión dentro de un mapa más amplio, no como lista obligatoria.</p>
 <h3 id="23-config-server-y-config-repo-dos-responsabilidades-distintas">2.3 Config Server y config-repo: dos responsabilidades distintas<a class="headerlink" href="#23-config-server-y-config-repo-dos-responsabilidades-distintas" title="Permanent link">&para;</a></h3>
-<p><strong>Config Server</strong> es el componente que entrega configuración por HTTP; <strong>config-repo</strong> es donde viven los archivos de configuración en sí. Aunque en este curso ambos van a convivir dentro de la misma carpeta del proyecto (<code>infra/config</code>), son responsabilidades lógicamente distintas: uno atiende peticiones, el otro almacena archivos.</p>
+<p><strong>Config Server</strong> es el componente que entrega configuración por HTTP; <strong>config-repo</strong> es donde viven los archivos de configuración en sí. Aunque en este curso ambos van a convivir dentro de la misma carpeta del proyecto (<code>infra/pagatu-config</code>), son responsabilidades lógicamente distintas: uno atiende peticiones, el otro almacena archivos.</p>
 <h4 id="231-que-es-el-patron-de-configuracion-centralizada">2.3.1 Qué es el patrón de Configuración Centralizada<a class="headerlink" href="#231-que-es-el-patron-de-configuracion-centralizada" title="Permanent link">&para;</a></h4>
 <p>Según el catálogo de patrones SACAViX System Design (2026), <strong>Centralized Configuration</strong> es el patrón que centraliza la configuración de todos los microservicios en un repositorio o servicio dedicado, permitiendo gestión, versionado y actualización de configuración sin redespliegues.</p>
 <p><strong>Problema:</strong> con decenas de microservicios, gestionar configuración individualmente en cada servicio es inmanejable. Los cambios de configuración requieren redespliegues y es difícil mantener consistencia entre entornos.</p>
@@ -2231,7 +2231,7 @@
 <p><strong>Figura 3. Config Server y config-repo en DEV</strong></p>
 <pre class="mermaid"><code>flowchart LR
     Client["Cliente - PowerShell / bash / navegador"]
-    Config["pagatu-config - Config Server - infra/config - localhost:18888"]
+    Config["pagatu-config - Config Server - infra/pagatu-config - localhost:18888"]
     Repo["file:./config-repo - pagatu-catalogo-ms-dev.yml - pagatu-catalogo-ms-prod.yml - orden-ms-dev.yml - orden-ms-prod.yml"]
     Catalogo["pagatu-catalogo-ms"]
     Orden["orden-ms"]
@@ -2432,17 +2432,17 @@ pagatu-catalogo-ms-prod.yml
 <p><strong>Producto del paso:</strong> carpeta <code>infra</code> preparada para alojar componentes de infraestructura del sistema.</p>
 <p>Desde la raíz del repositorio <code>pagatu</code>:</p>
 <div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>infra
-mkdir<span class="w"> </span>infra/config
+mkdir<span class="w"> </span>infra/pagatu-config
 </code></pre></div>
 <p>Estructura esperada al iniciar la sesión:</p>
 <div class="highlight"><pre><span></span><code>pagatu/
 ├── infra/
-│   └── config/
+│   └── pagatu-config/
 └── services/
     └── pagatu-catalogo-ms/
 </code></pre></div>
 <h3 id="33-crear-el-proyecto-pagatu-config">3.3 Crear el proyecto <code>pagatu-config</code><a class="headerlink" href="#33-crear-el-proyecto-pagatu-config" title="Permanent link">&para;</a></h3>
-<p><strong>Producto del paso:</strong> proyecto Spring Boot <code>pagatu-config</code> creado dentro de <code>infra/config</code>.</p>
+<p><strong>Producto del paso:</strong> proyecto Spring Boot <code>pagatu-config</code> creado dentro de <code>infra/pagatu-config</code>.</p>
 <p>Desde VS Code, usa Spring Initializr (<code>Spring Initializr: Create a Maven Project</code>):</p>
 <p><strong>Tabla 8. Configuración del proyecto <code>pagatu-config</code> en Spring Initializr</strong></p>
 <table>
@@ -2491,7 +2491,7 @@ mkdir<span class="w"> </span>infra/config
 </tr>
 <tr>
 <td>Ubicación sugerente</td>
-<td><code>infra/config</code></td>
+<td><code>infra/pagatu-config</code></td>
 </tr>
 </tbody>
 </table>
@@ -2564,9 +2564,9 @@ mkdir<span class="w"> </span>infra/config
 <h3 id="35-configurar-pagatu-config-para-leer-config-repo-en-dev">3.5 Configurar <code>pagatu-config</code> para leer <code>config-repo</code> en DEV<a class="headerlink" href="#35-configurar-pagatu-config-para-leer-config-repo-en-dev" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> <code>config-repo</code> creado y <code>pagatu-config</code> configurado para leerlo en DEV.</p>
 <p>Crea la carpeta del repositorio local de configuración:</p>
-<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>infra/config/config-repo
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>infra/pagatu-config/config-repo
 </code></pre></div>
-<p>En <code>infra/config/src/main/resources/application.yml</code>:</p>
+<p>En <code>infra/pagatu-config/src/main/resources/application.yml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">server</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">18888</span>
 
@@ -2590,10 +2590,10 @@ mkdir<span class="w"> </span>infra/config
 <span class="w">    </span><span class="nt">health</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">show-details</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always</span>
 </code></pre></div>
-<p>En DEV no se define ninguna variable de entorno: se usa el valor por defecto, <code>file:./config-repo</code>. Eso significa que Maven debe ejecutarse parado exactamente en <code>infra/config</code>, no en la raíz del repositorio.</p>
+<p>En DEV no se define ninguna variable de entorno: se usa el valor por defecto, <code>file:./config-repo</code>. Eso significa que Maven debe ejecutarse parado exactamente en <code>infra/pagatu-config</code>, no en la raíz del repositorio.</p>
 <h3 id="36-probar-pagatu-config-en-dev">3.6 Probar <code>pagatu-config</code> en DEV<a class="headerlink" href="#36-probar-pagatu-config-en-dev" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> <code>pagatu-config</code> ejecutando en <code>localhost:18888</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>infra/config
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>infra/pagatu-config
 mvnw<span class="w"> </span>spring-boot:run
 </code></pre></div>
 <p>Verifica health y metrics:</p>
@@ -2608,7 +2608,7 @@ curl<span class="w"> </span>http://localhost:18888/actuator/metrics
 <p><code>config-repo</code> todavía está vacío, así que <code>pagatu-config</code> responde <code>UP</code>, pero cualquier consulta a <code>/pagatu-catalogo-ms/dev</code> va a devolver una configuración sin propiedades — eso se resuelve en el siguiente paso.</p>
 <h3 id="37-mover-la-configuracion-de-pagatu-catalogo-ms-a-config-repo">3.7 Mover la configuración de <code>pagatu-catalogo-ms</code> a <code>config-repo</code><a class="headerlink" href="#37-mover-la-configuracion-de-pagatu-catalogo-ms-a-config-repo" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> <code>pagatu-catalogo-ms-dev.yml</code> y <code>pagatu-catalogo-ms-prod.yml</code> creados en <code>config-repo</code>, con el mismo contenido que ya tenían <code>application-dev.yml</code> y <code>application-prod.yml</code> en S1.</p>
-<p>Crea, dentro de <code>infra/config/config-repo</code>:</p>
+<p>Crea, dentro de <code>infra/pagatu-config/config-repo</code>:</p>
 <p><strong><code>pagatu-catalogo-ms-dev.yml</code></strong> (mismo contenido que <code>application-dev.yml</code> de S1):</p>
 <div class="highlight"><pre><span></span><code><span class="nt">server</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span>
@@ -2754,7 +2754,7 @@ curl<span class="w"> </span>http://localhost:18888/pagatu-catalogo-ms/prod
 <h3 id="310-levantar-pagatu-catalogo-ms-en-dev-con-configuracion-externa">3.10 Levantar <code>pagatu-catalogo-ms</code> en DEV con configuración externa<a class="headerlink" href="#310-levantar-pagatu-catalogo-ms-en-dev-con-configuracion-externa" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> <code>pagatu-catalogo-ms</code> ejecutando con valores entregados por <code>pagatu-config</code>.</p>
 <p>Terminal 1 (Config Server):</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>infra/config
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>infra/pagatu-config
 mvnw<span class="w"> </span>spring-boot:run
 </code></pre></div>
 <p>Terminal 2 (base de datos + microservicio):</p>
@@ -2787,7 +2787,7 @@ mvnw<span class="w"> </span>spring-boot:run<span class="w"> </span><span class="
 <p>Ambas instancias leen la misma configuración centralizada desde <code>pagatu-config</code> y responden el mismo CRUD.</p>
 <h3 id="311-dockerizar-pagatu-config-para-produccion-local">3.11 Dockerizar <code>pagatu-config</code> para producción local<a class="headerlink" href="#311-dockerizar-pagatu-config-para-produccion-local" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> <code>pagatu-config</code> preparado para ejecutarse como contenedor.</p>
-<p><code>infra/config/Dockerfile</code> (mismo patrón multi-stage que el <code>Dockerfile</code> de <code>pagatu-catalogo-ms</code>, S1 3.6.1):</p>
+<p><code>infra/pagatu-config/Dockerfile</code> (mismo patrón multi-stage que el <code>Dockerfile</code> de <code>pagatu-catalogo-ms</code>, S1 3.6.1):</p>
 <div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">maven:3.9.9-eclipse-temurin-21</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="s">build</span>
 <span class="k">WORKDIR</span><span class="w"> </span><span class="s">/app</span>
 
@@ -2810,16 +2810,16 @@ mvnw<span class="w"> </span>spring-boot:run<span class="w"> </span><span class="
 <div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-infra-prod</span>
 
 <span class="nt">services</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">config</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pagatu-config</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">build</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">context</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./config</span>
+<span class="w">      </span><span class="nt">context</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./pagatu-config</span>
 <span class="w">      </span><span class="nt">dockerfile</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Dockerfile</span>
 <span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-config</span>
 <span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
 <span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"28888:8888"</span>
 <span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./config/config-repo:/config-repo</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./pagatu-config/config-repo:/config-repo</span>
 <span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">SERVER_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8888</span>
 <span class="w">      </span><span class="nt">SPRING_PROFILES_ACTIVE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">native</span>
@@ -2831,7 +2831,7 @@ mvnw<span class="w"> </span>spring-boot:run<span class="w"> </span><span class="
 <span class="w">  </span><span class="nt">pagatu-prod-net</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-prod-net</span>
 </code></pre></div>
-<p>En PROD local, <code>pagatu-config</code> usa <code>file:/config-repo</code> (ruta dentro del contenedor) — el volumen monta <code>infra/config/config-repo</code> del host en <code>/config-repo</code> dentro del contenedor, así que los mismos archivos de 3.6 se reutilizan sin duplicarlos.</p>
+<p>En PROD local, <code>pagatu-config</code> usa <code>file:/config-repo</code> (ruta dentro del contenedor) — el volumen monta <code>infra/pagatu-config/config-repo</code> del host en <code>/config-repo</code> dentro del contenedor, así que los mismos archivos de 3.6 se reutilizan sin duplicarlos.</p>
 <h3 id="312-compartir-red-entre-pagatu-config-y-pagatu-catalogo-ms-en-produccion-local">3.12 Compartir red entre <code>pagatu-config</code> y <code>pagatu-catalogo-ms</code> en producción local<a class="headerlink" href="#312-compartir-red-entre-pagatu-config-y-pagatu-catalogo-ms-en-produccion-local" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> <code>pagatu-catalogo-ms</code> conectado a la misma red Docker que <code>pagatu-config</code>, además de su propia red con PostgreSQL.</p>
 <p><code>pagatu-config</code> vive en un <code>compose.yml</code> distinto (<code>infra/compose.yml</code>) al de <code>pagatu-catalogo-ms</code> (<code>services/pagatu-catalogo-ms/compose.yml</code>) — son dos proyectos Docker Compose separados. Para que uno resuelva al otro por nombre (<code>http://pagatu-config:8888</code>), ambos deben compartir una red Docker declarada como <strong>externa</strong> desde el lado que no la crea.</p>
