@@ -26,7 +26,7 @@ Al concluir la clase, estarás en condiciones de:
 
 ### 1.4 Producto de sesión
 
-`pagatu-config` operativo en `infra/config`, con `config-repo` local (`pagatu-catalogo-ms-dev.yml`, `pagatu-catalogo-ms-prod.yml`), consultado por HTTP en ambos perfiles, y `pagatu-catalogo-ms` migrado para leer su configuración desde `pagatu-config` en DEV y en producción local con Docker.
+`pagatu-config` operativo en `infra/pagatu-config`, con `config-repo` local (`pagatu-catalogo-ms-dev.yml`, `pagatu-catalogo-ms-prod.yml`), consultado por HTTP en ambos perfiles, y `pagatu-catalogo-ms` migrado para leer su configuración desde `pagatu-config` en DEV y en producción local con Docker.
 
 ### 1.5 Metodología
 
@@ -155,7 +155,7 @@ No todos los patrones del catálogo entran en el alcance del curso (por ejemplo,
 
 ### 2.3 Config Server y config-repo: dos responsabilidades distintas
 
-**Config Server** es el componente que entrega configuración por HTTP; **config-repo** es donde viven los archivos de configuración en sí. Aunque en este curso ambos van a convivir dentro de la misma carpeta del proyecto (`infra/config`), son responsabilidades lógicamente distintas: uno atiende peticiones, el otro almacena archivos.
+**Config Server** es el componente que entrega configuración por HTTP; **config-repo** es donde viven los archivos de configuración en sí. Aunque en este curso ambos van a convivir dentro de la misma carpeta del proyecto (`infra/pagatu-config`), son responsabilidades lógicamente distintas: uno atiende peticiones, el otro almacena archivos.
 
 #### 2.3.1 Qué es el patrón de Configuración Centralizada
 
@@ -227,7 +227,7 @@ Los servicios (`pagatu-catalogo-ms`, `orden-ms`) obtienen su configuración al a
 ```mermaid
 flowchart LR
     Client["Cliente - PowerShell / bash / navegador"]
-    Config["pagatu-config - Config Server - infra/config - localhost:18888"]
+    Config["pagatu-config - Config Server - infra/pagatu-config - localhost:18888"]
     Repo["file:./config-repo - pagatu-catalogo-ms-dev.yml - pagatu-catalogo-ms-prod.yml - orden-ms-dev.yml - orden-ms-prod.yml"]
     Catalogo["pagatu-catalogo-ms"]
     Orden["orden-ms"]
@@ -398,7 +398,7 @@ Desde la raíz del repositorio `pagatu`:
 
 ```bash
 mkdir infra
-mkdir infra/config
+mkdir infra/pagatu-config
 ```
 
 Estructura esperada al iniciar la sesión:
@@ -406,14 +406,14 @@ Estructura esperada al iniciar la sesión:
 ```text
 pagatu/
 ├── infra/
-│   └── config/
+│   └── pagatu-config/
 └── services/
     └── pagatu-catalogo-ms/
 ```
 
 ### 3.3 Crear el proyecto `pagatu-config`
 
-**Producto del paso:** proyecto Spring Boot `pagatu-config` creado dentro de `infra/config`.
+**Producto del paso:** proyecto Spring Boot `pagatu-config` creado dentro de `infra/pagatu-config`.
 
 Desde VS Code, usa Spring Initializr (`Spring Initializr: Create a Maven Project`):
 
@@ -430,7 +430,7 @@ Desde VS Code, usa Spring Initializr (`Spring Initializr: Create a Maven Project
 | Packaging | Jar |
 | Java | 21 |
 | Dependencias | Seleccionar dependencias del proyecto |
-| Ubicación sugerente | `infra/config` |
+| Ubicación sugerente | `infra/pagatu-config` |
 
 Dependencias a seleccionar:
 
@@ -503,10 +503,10 @@ public class PagatuConfigApplication {
 Crea la carpeta del repositorio local de configuración:
 
 ```bash
-mkdir infra/config/config-repo
+mkdir infra/pagatu-config/config-repo
 ```
 
-En `infra/config/src/main/resources/application.yml`:
+En `infra/pagatu-config/src/main/resources/application.yml`:
 
 ```yaml
 server:
@@ -533,14 +533,14 @@ management:
       show-details: always
 ```
 
-En DEV no se define ninguna variable de entorno: se usa el valor por defecto, `file:./config-repo`. Eso significa que Maven debe ejecutarse parado exactamente en `infra/config`, no en la raíz del repositorio.
+En DEV no se define ninguna variable de entorno: se usa el valor por defecto, `file:./config-repo`. Eso significa que Maven debe ejecutarse parado exactamente en `infra/pagatu-config`, no en la raíz del repositorio.
 
 ### 3.6 Probar `pagatu-config` en DEV
 
 **Producto del paso:** `pagatu-config` ejecutando en `localhost:18888`.
 
 ```bash
-cd infra/config
+cd infra/pagatu-config
 mvnw spring-boot:run
 ```
 
@@ -566,7 +566,7 @@ curl http://localhost:18888/actuator/metrics
 
 **Producto del paso:** `pagatu-catalogo-ms-dev.yml` y `pagatu-catalogo-ms-prod.yml` creados en `config-repo`, con el mismo contenido que ya tenían `application-dev.yml` y `application-prod.yml` en S1.
 
-Crea, dentro de `infra/config/config-repo`:
+Crea, dentro de `infra/pagatu-config/config-repo`:
 
 **`pagatu-catalogo-ms-dev.yml`** (mismo contenido que `application-dev.yml` de S1):
 
@@ -755,7 +755,7 @@ El prefijo `optional:` evita que `pagatu-catalogo-ms` falle al arrancar si `paga
 Terminal 1 (Config Server):
 
 ```bash
-cd infra/config
+cd infra/pagatu-config
 mvnw spring-boot:run
 ```
 
@@ -806,7 +806,7 @@ Ambas instancias leen la misma configuración centralizada desde `pagatu-config`
 
 **Producto del paso:** `pagatu-config` preparado para ejecutarse como contenedor.
 
-`infra/config/Dockerfile` (mismo patrón multi-stage que el `Dockerfile` de `pagatu-catalogo-ms`, S1 3.6.1):
+`infra/pagatu-config/Dockerfile` (mismo patrón multi-stage que el `Dockerfile` de `pagatu-catalogo-ms`, S1 3.6.1):
 
 ```dockerfile
 FROM maven:3.9.9-eclipse-temurin-21 AS build
@@ -834,16 +834,16 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 name: pagatu-infra-prod
 
 services:
-  config:
+  pagatu-config:
     build:
-      context: ./config
+      context: ./pagatu-config
       dockerfile: Dockerfile
     container_name: pagatu-config
     restart: unless-stopped
     ports:
       - "28888:8888"
     volumes:
-      - ./config/config-repo:/config-repo
+      - ./pagatu-config/config-repo:/config-repo
     environment:
       SERVER_PORT: 8888
       SPRING_PROFILES_ACTIVE: native
@@ -856,7 +856,7 @@ networks:
     name: pagatu-prod-net
 ```
 
-En PROD local, `pagatu-config` usa `file:/config-repo` (ruta dentro del contenedor) — el volumen monta `infra/config/config-repo` del host en `/config-repo` dentro del contenedor, así que los mismos archivos de 3.6 se reutilizan sin duplicarlos.
+En PROD local, `pagatu-config` usa `file:/config-repo` (ruta dentro del contenedor) — el volumen monta `infra/pagatu-config/config-repo` del host en `/config-repo` dentro del contenedor, así que los mismos archivos de 3.6 se reutilizan sin duplicarlos.
 
 ### 3.12 Compartir red entre `pagatu-config` y `pagatu-catalogo-ms` en producción local
 
