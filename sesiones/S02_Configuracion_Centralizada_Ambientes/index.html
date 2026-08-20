@@ -2432,12 +2432,11 @@ pagatu-catalogo-ms-prod.yml
 <p><strong>Producto del paso:</strong> carpeta <code>infra</code> preparada para alojar componentes de infraestructura del sistema.</p>
 <p>Desde la raíz del repositorio <code>pagatu</code>:</p>
 <div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>infra
-mkdir<span class="w"> </span>infra/pagatu-config
 </code></pre></div>
+<p><code>infra/pagatu-config</code> no se crea a mano — nace en el siguiente paso, cuando Spring Initializr genera el proyecto directamente ahí.</p>
 <p>Estructura esperada al iniciar la sesión:</p>
 <div class="highlight"><pre><span></span><code>pagatu/
 ├── infra/
-│   └── pagatu-config/
 └── services/
     └── pagatu-catalogo-ms/
 </code></pre></div>
