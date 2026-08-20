@@ -380,10 +380,10 @@ Tiempo: 3h.
 
 ### 3.1 Verificar el punto de partida
 
-**Punto de partida común:** todo el equipo debe comenzar exactamente desde el mismo estado, no desde su propio avance individual. Clona la rama `s02-microservicios` (incluye `pagatu-catalogo-ms` tal como quedó en S1, más `pagatu-orden-ms` y `pagatu-cliente-ms` ya construidos según el Anexo de esta guía):
+**Punto de partida común:** todo el equipo debe comenzar exactamente desde el mismo estado, no desde su propio avance individual. Clona la rama `s02-config-server-ini` (incluye `pagatu-catalogo-ms` tal como quedó en S1, más `pagatu-orden-ms` y `pagatu-cliente-ms` ya construidos según el Anexo de esta guía — el estado justo antes de construir `pagatu-config`):
 
 ```bash
-git clone --branch s02-microservicios https://github.com/262dist/pagatu.git
+git clone --branch s02-config-server-ini https://github.com/262dist/pagatu.git
 ```
 
 **Producto del paso:** confirmación de que los tres microservicios (`pagatu-catalogo-ms`, `pagatu-orden-ms`, `pagatu-cliente-ms`) ya existen en `services/` y arrancan de forma independiente en DEV, antes de tocar código nuevo.
