@@ -16,17 +16,17 @@ Tiempo: 20 min.
 2. Panorama de patrones de arquitectura de microservicios.
 3. Config Server y config-repo: dos responsabilidades distintas.
 4. Convención de nombres: `{aplicación}-{perfil}.yml`.
-5. Config Server en DEV y en producción local.
+5. Config Server en DEV (y, de forma opcional, en producción local).
 
 ### 1.3 Propósito de aprendizaje
 
 Al concluir la clase, estarás en condiciones de:
 
-- **Construir e implementar** un Config Server (Spring Cloud Config) que centraliza la configuración de `pagatu-catalogo-ms` por ambiente, verificando las consultas por HTTP y migrando el microservicio de S1 para leer su configuración externa en DEV y en producción local.
+- **Construir e implementar** un Config Server (Spring Cloud Config) que centraliza la configuración de `pagatu-catalogo-ms` por ambiente, verificando las consultas por HTTP y migrando el microservicio de S1 para leer su configuración externa en DEV (opcionalmente también en producción local).
 
 ### 1.4 Producto de sesión
 
-`pagatu-config` operativo en `infra/pagatu-config`, con `config-repo` local (`pagatu-catalogo-ms-dev.yml`, `pagatu-catalogo-ms-prod.yml`), consultado por HTTP en ambos perfiles, y `pagatu-catalogo-ms` migrado para leer su configuración desde `pagatu-config` en DEV y en producción local con Docker.
+`pagatu-config` operativo en `infra/pagatu-config`, con `config-repo` local (`pagatu-catalogo-ms-dev.yml`, `pagatu-catalogo-ms-prod.yml`), consultado por HTTP en ambos perfiles, y `pagatu-catalogo-ms` migrado para leer su configuración desde `pagatu-config` en DEV. De forma opcional, también en producción local con Docker.
 
 ### 1.5 Metodología
 
@@ -35,8 +35,8 @@ Al concluir la clase, estarás en condiciones de:
 | Actividades a Realizar en el Periodo | Orientaciones generales (Orientaciones Metodológicas) | Material de estudio recomendado |
 |---|---|---|
 | Revisión previa individual | Revisar `application-dev.yml` y `application-prod.yml` de `pagatu-catalogo-ms` (S1) y confirmar que el servicio sigue arrancando con Maven Wrapper. Trabajo individual, antes de clase; identificar qué valores son iguales y cuáles cambian entre DEV y PROD. | Evidencia individual de S1, `application-dev.yml`/`application-prod.yml` actuales. |
-| Clase presencial | Construcción guiada de `pagatu-config`, `config-repo` y migración de `pagatu-catalogo-ms` a Config Client; verificación por HTTP en DEV y en producción local. Trabajo individual, siguiendo al docente paso a paso; consulta inmediata ante un perfil no encontrado o un microservicio que no arranca. | Pasos 3.1 a 3.14 de esta guía. |
-| Evaluación formativa | Revisión en clase de `pagatu-config` respondiendo por HTTP en DEV y PROD local, y de `pagatu-catalogo-ms` arrancando con configuración externa. La evidencia se completa y sustenta de forma individual, fuera del aula, según los criterios mínimos de la sección 4.4. | Indicaciones de entrega (4.3), rúbrica de evaluación (4.6). |
+| Clase presencial | Construcción guiada de `pagatu-config`, `config-repo` y migración de `pagatu-catalogo-ms` a Config Client; verificación por HTTP en DEV. Trabajo individual, siguiendo al docente paso a paso; consulta inmediata ante un perfil no encontrado o un microservicio que no arranca. Producción local con Docker (3.11-3.14) es alcance opcional: no es necesario completarla para cerrar la sesión. | Pasos 3.1 a 3.14 de esta guía. |
+| Evaluación formativa | Revisión en clase de `pagatu-config` respondiendo por HTTP en DEV, y de `pagatu-catalogo-ms` arrancando con configuración externa. La evidencia se completa y sustenta de forma individual, fuera del aula, según los criterios mínimos de la sección 4.4 — solo DEV es requisito; producción local suma como evidencia adicional opcional. | Indicaciones de entrega (4.3), rúbrica de evaluación (4.6). |
 
 ### 1.6 Motivación de la sesión
 
@@ -349,13 +349,13 @@ En esta sesión la observabilidad se enfoca en confirmar que `pagatu-config` est
 | Microservicio no arranca | Config Server apagado o URL incorrecta | Levantar Config Server primero y revisar `CONFIG_SERVER_URL` |
 | Se consulta `prod` pero aparecen valores de `dev` | Perfil activo incorrecto | Revisar `SPRING_PROFILES_ACTIVE` |
 
-Antes de empezar la actividad guiada: si todavía no tienes `pagatu-orden-ms`/`pagatu-cliente-ms` creados (los necesitarás en la sección 4, trabajo autónomo), revisa el **Anexo: alcance por microservicio y proyecto base de `pagatu-orden-ms` y `pagatu-cliente-ms`** al final de esta guía — sigue exactamente el mismo patrón de `pagatu-catalogo-ms` (S1). No es parte de los pasos 3.2-3.14 de abajo, que se enfocan solo en `pagatu-config` y en migrar `pagatu-catalogo-ms` (3.1 sí es común: verificar que los tres microservicios ya arrancan).
+Antes de empezar la actividad guiada: si todavía no tienes `pagatu-orden-ms`/`pagatu-cliente-ms` creados (los necesitarás en la sección 4, trabajo autónomo), revisa el **Anexo: alcance por microservicio y proyecto base de `pagatu-orden-ms` y `pagatu-cliente-ms`** al final de esta guía — sigue exactamente el mismo patrón de `pagatu-catalogo-ms` (S1). No es parte de los pasos 3.2-3.14 de abajo, que se enfocan solo en `pagatu-config` y en migrar `pagatu-catalogo-ms` (3.1 solo verifica `pagatu-catalogo-ms`).
 
 ## 3. Aplica: actividad práctica guiada
 
 Tiempo: 3h.
 
-**Actividad:** construcción de `pagatu-config` y migración de `pagatu-catalogo-ms` a Config Client, verificado en DEV y en producción local.
+**Actividad:** construcción de `pagatu-config` y migración de `pagatu-catalogo-ms` a Config Client, verificado en DEV (y, de forma opcional, en producción local).
 
 **Propósito de la actividad:** que cada estudiante construya un Config Server operativo, mueva la configuración de `pagatu-catalogo-ms` hacia `config-repo`, y verifique que el microservicio sigue funcionando igual que en S1, ahora con configuración externa.
 
@@ -373,22 +373,24 @@ Tiempo: 3h.
 - **3.8** Consultar los perfiles por HTTP.
 - **3.9** Conectar `pagatu-catalogo-ms` como Config Client.
 - **3.10** Levantar `pagatu-catalogo-ms` en DEV con configuración externa.
-- **3.11** Dockerizar `pagatu-config` para producción local.
-- **3.12** Compartir red entre `pagatu-config` y `pagatu-catalogo-ms` en producción local.
-- **3.13** Probar `pagatu-config` y `pagatu-catalogo-ms` en producción local.
-- **3.14** Revisar logs y bajar el entorno.
+- **3.11** Dockerizar `pagatu-config` para producción local (opcional).
+- **3.12** Compartir red entre `pagatu-config` y `pagatu-catalogo-ms` en producción local (opcional).
+- **3.13** Probar `pagatu-config` y `pagatu-catalogo-ms` en producción local (opcional).
+- **3.14** Revisar logs y bajar el entorno (opcional).
 
 ### 3.1 Verificar el punto de partida
 
-**Punto de partida común:** todo el equipo debe comenzar exactamente desde el mismo estado, no desde su propio avance individual. Clona la rama `s02-pre-config-server` (incluye `pagatu-catalogo-ms` tal como quedó en S1, más `pagatu-orden-ms` y `pagatu-cliente-ms` ya construidos según el Anexo de esta guía — el estado justo antes de construir `pagatu-config`):
+**Punto de partida común:** todo el equipo debe comenzar exactamente desde el mismo estado, no desde su propio avance individual. Clona la rama `s01-servicio-base` (el snapshot de cierre de S1 — incluye `pagatu-catalogo-ms` tal como quedó esa sesión):
 
 ```bash
-git clone --branch s02-pre-config-server https://github.com/262dist/pagatu.git
+git clone --branch s01-servicio-base https://github.com/262dist/pagatu.git
 ```
 
-**Producto del paso:** confirmación de que los tres microservicios (`pagatu-catalogo-ms`, `pagatu-orden-ms`, `pagatu-cliente-ms`) ya existen en `services/` y arrancan de forma independiente en DEV, antes de tocar código nuevo.
+**Producto del paso:** confirmación de que `pagatu-catalogo-ms` ya existe en `services/` y arranca de forma independiente en DEV, antes de tocar código nuevo.
 
-**Requisito antes de continuar:** levanta cada uno por separado (`docker compose -f compose-dev.yml up -d` + `.\mvnw.cmd spring-boot:run`, ver el `README.md` de cada carpeta) y confirma que `http://localhost:8080/actuator/health`, `http://localhost:8082/actuator/health` y `http://localhost:8084/actuator/health` responden `UP`. Si alguno falla, el problema es anterior a esta sesión (S1, o el Anexo de creación de `orden-ms`/`cliente-ms`), no de los pasos 3.2 en adelante.
+**Requisito antes de continuar:** levanta `pagatu-catalogo-ms` (`docker compose -f compose-dev.yml up -d` + `.\mvnw.cmd spring-boot:run`, ver el `README.md` de la carpeta) y confirma que `http://localhost:8080/actuator/health` responde `UP`. Si falla, el problema es anterior a esta sesión (S1), no de los pasos 3.2 en adelante.
+
+`pagatu-orden-ms`/`pagatu-cliente-ms` (Anexo de esta guía) **no** son prerrequisito de los pasos 3.2-3.14: esos solo trabajan sobre `pagatu-config` y `pagatu-catalogo-ms`. Constrúyelos en paralelo o después, como preparación para la actividad autónoma (sección 4) — no bloquean el avance de la clase.
 
 ### 3.2 Crear la carpeta `infra`
 
@@ -821,7 +823,10 @@ mvnw spring-boot:run "-Dspring-boot.run.arguments=--server.port=8081"
 
 Ambas instancias leen la misma configuración centralizada desde `pagatu-config` y responden el mismo CRUD.
 
-### 3.11 Dockerizar `pagatu-config` para producción local
+### 3.11 Dockerizar `pagatu-config` para producción local (opcional)
+
+!!! note "3.11 a 3.14 son opcionales"
+    El alcance evaluado de S2 termina en 3.10 (`pagatu-catalogo-ms` como Config Client, funcionando en DEV). Producción local con Docker (3.11-3.14) es contenido adicional — profundiza la ejecución reproducible del patrón, pero no es necesario completarlo para que la sesión se considere lograda, y por capacidad de cómputo de las laptops del curso no se exige para la evaluación (4.4, 4.6). Si te queda tiempo en clase o quieres profundizar por tu cuenta, adelante.
 
 **Producto del paso:** `pagatu-config` preparado para ejecutarse como contenedor.
 
@@ -877,7 +882,7 @@ networks:
 
 En PROD local, `pagatu-config` usa `file:/config-repo` (ruta dentro del contenedor) — el volumen monta `infra/pagatu-config/config-repo` del host en `/config-repo` dentro del contenedor, así que los mismos archivos de 3.6 se reutilizan sin duplicarlos.
 
-### 3.12 Compartir red entre `pagatu-config` y `pagatu-catalogo-ms` en producción local
+### 3.12 Compartir red entre `pagatu-config` y `pagatu-catalogo-ms` en producción local (opcional)
 
 **Producto del paso:** `pagatu-catalogo-ms` conectado a la misma red Docker que `pagatu-config`, además de su propia red con PostgreSQL.
 
@@ -933,7 +938,7 @@ DB_PASS=pagatu
 2. Levantar services/pagatu-catalogo-ms (se une a pagatu-prod-net ya creada)
 ```
 
-### 3.13 Probar `pagatu-config` y `pagatu-catalogo-ms` en producción local
+### 3.13 Probar `pagatu-config` y `pagatu-catalogo-ms` en producción local (opcional)
 
 **Producto del paso:** ambos componentes ejecutando en Docker, con `pagatu-catalogo-ms` leyendo su configuración desde `pagatu-config`.
 
@@ -985,7 +990,7 @@ Resultado esperado:
 - `/api/v1/categorias` responde `200 OK`.
 - Swagger no se prueba en PROD — sigue deshabilitado en `pagatu-catalogo-ms-prod.yml` (3.7), igual que en S1.
 
-### 3.14 Revisar logs y bajar el entorno
+### 3.14 Revisar logs y bajar el entorno (opcional)
 
 **Producto del paso:** evidencia de logs revisada, entorno completo liberado.
 
@@ -1017,9 +1022,9 @@ docker compose down
 
 **Evidencia de aprendizaje:**
 
-- `pagatu-config` operativo en DEV y en producción local, entregando `pagatu-catalogo-ms-dev.yml`/`-prod.yml` por HTTP.
-- `pagatu-catalogo-ms` migrado a Config Client, funcionando igual que en S1 en ambos ambientes.
-- Red compartida (`pagatu-prod-net`) entre dos proyectos Docker Compose distintos, documentada y probada.
+- `pagatu-config` operativo en DEV, entregando `pagatu-catalogo-ms-dev.yml`/`-prod.yml` por HTTP.
+- `pagatu-catalogo-ms` migrado a Config Client, funcionando igual que en S1.
+- (Opcional) `pagatu-config` y `pagatu-catalogo-ms` operativos también en producción local, con la red compartida (`pagatu-prod-net`) entre los dos proyectos Docker Compose documentada y probada.
 
 ## 4. Crea: actividad autónoma
 
@@ -1027,20 +1032,23 @@ Tiempo: 4h fuera del aula.
 
 ### 4.1 Actividad
 
-Replicación autónoma del patrón de configuración centralizada en `orden-ms`, el microservicio construido de forma autónoma en S1 (4.1), documentada en evidencia individual.
+Replicación autónoma del patrón de configuración centralizada en otro microservicio del dominio (por ejemplo, `orden-ms` — ver Anexo), documentada en evidencia individual.
 
 Completa y evidencia estas tareas:
 
-1. Crear `orden-ms-dev.yml` y `orden-ms-prod.yml` en `config-repo`, con los valores de ambiente de `orden-ms`.
-2. Conectar `orden-ms` como Config Client (mismo patrón de 3.8).
-3. Consultar por HTTP la configuración de `orden-ms` en `dev` y en `prod`.
-4. Verificar que `orden-ms` sigue funcionando igual que antes de la migración.
+1. Crear `orden-ms-dev.yml` y `orden-ms-prod.yml` en `config-repo`, con los valores de ambiente del microservicio replicado.
+2. Conectar el microservicio replicado como Config Client (mismo patrón de 3.8).
+3. Consultar por HTTP su configuración en `dev` y en `prod`.
+4. Verificar que sigue funcionando igual que antes de la migración.
 5. Comparar `pagatu-catalogo-ms-dev.yml` con `pagatu-catalogo-ms-prod.yml` e identificar al menos un valor que antes estaba hardcodeado y ahora no.
 6. Explicar, con tus propias palabras, cómo Config Server separa código y configuración.
+7. (Opcional) Ejecutar `pagatu-config` y el microservicio replicado en producción local con Docker.
 
 ### 4.2 Propósito
 
 Que cada estudiante demuestre, de forma individual y fuera del aula, que puede reproducir el patrón construido en clase sin el acompañamiento del docente, aplicándolo sobre un microservicio distinto al trabajado en clase.
+
+Esta actividad autónoma se desarrolla sobre el proyecto de fin de curso del equipo. El producto de la unidad se construye por acumulación de los avances de cada sesión; por eso, la evidencia de esta sesión debe incorporarse a la documentación del proyecto y quedar trazable en GitHub.
 
 ### 4.3 Indicaciones
 
@@ -1067,12 +1075,13 @@ Cada captura de pantalla del informe debe mostrar, sin recortar, el reloj del si
 Incluye capturas o extractos con una breve explicación debajo de cada uno, organizados en los mismos 4 bloques de la rúbrica (4.6):
 
 1. *`pagatu-config` operativo*
-    - Captura de `pagatu-config` respondiendo `/actuator/health` en DEV y en producción local.
-2. *Configuración externa de `orden-ms`*
+    - Captura de `pagatu-config` respondiendo `/actuator/health` en DEV.
+    - (Opcional) Lo mismo en producción local.
+2. *Configuración externa del microservicio replicado (p. ej. `orden-ms`)*
     - `orden-ms-dev.yml` y `orden-ms-prod.yml` creados en `config-repo`.
     - Consultas HTTP a `/orden-ms/dev` y `/orden-ms/prod`.
-3. *`orden-ms` como Config Client funcional*
-    - Evidencia de `orden-ms` arrancando con configuración externa y respondiendo su propio health/endpoint.
+3. *Microservicio replicado como Config Client funcional*
+    - Evidencia del microservicio replicado arrancando con configuración externa y respondiendo su propio health/endpoint en DEV.
 4. *Comparación DEV/PROD y comprensión*
     - Comparación entre `pagatu-catalogo-ms-dev.yml` y `pagatu-catalogo-ms-prod.yml`, con el valor identificado en la tarea 5.
     - Explicación propia de cómo Config Server separa código y configuración.
@@ -1094,14 +1103,17 @@ e instancias? Relaciona tu respuesta con el caso de 1.6.1.
 
 La evidencia individual se considera completa si:
 
-- `pagatu-config` responde en DEV y en producción local, con evidencia real de ambos.
-- `orden-ms-dev.yml` y `orden-ms-prod.yml` existen en `config-repo`, con valores propios de `orden-ms`.
-- `orden-ms` arranca leyendo su configuración desde `pagatu-config`, no desde archivos locales.
+- `pagatu-config` responde en DEV, con evidencia real.
+- `orden-ms-dev.yml` y `orden-ms-prod.yml` (o los del microservicio replicado) existen en `config-repo`, con valores propios de ese microservicio.
+- El microservicio replicado arranca leyendo su configuración desde `pagatu-config`, no desde archivos locales.
 - La comparación DEV/PROD identifica al menos un valor real, no genérico.
+- (Opcional) `pagatu-config` y el microservicio replicado ejecutan en producción local con Docker.
 - Cada captura de la evidencia técnica muestra el reloj del sistema y el usuario/perfil visible, sin recortar.
 - Las fechas y horas de las capturas son coherentes con el historial de commits de su repositorio en GitHub.
 - Incluye un error o hallazgo técnico diagnosticado.
 - Incluye la reflexión técnica breve solicitada.
+
+Producción local con Docker (3.11-3.14) es opcional: si se incluye, suma como evidencia adicional, pero su ausencia no hace que la entrega se considere incompleta.
 
 ### 4.5 Preguntas de defensa
 
@@ -1109,8 +1121,11 @@ La evidencia individual se considera completa si:
 2. ¿Qué diferencia hay entre Config Server y config-repo?
 3. ¿Cómo se forma la URL `/{application}/{profile}`?
 4. ¿Qué debe coincidir exactamente entre `spring.application.name` y los archivos de `config-repo`?
-5. ¿Qué cambia entre DEV y producción local para `pagatu-config`?
-6. ¿Cómo diagnosticas un perfil no encontrado?
+5. ¿Cómo diagnosticas un perfil no encontrado?
+
+Si completaste la parte opcional de 3.11-3.14:
+
+6. ¿Qué cambia entre DEV y producción local para `pagatu-config`?
 7. ¿Por qué `pagatu-catalogo-ms` y `pagatu-config` necesitan compartir una red Docker en producción local?
 
 ### 4.6 Rúbrica de evaluación
@@ -1119,12 +1134,14 @@ La evidencia individual se considera completa si:
 
 | Criterio | Peso (%) | A (20 pts) | B (15 pts) | C (10 pts) | D (5 pts) | Nivel obtenido |
 |---|---:|---|---|---|---|---:|
-| 1. `pagatu-config` operativo* | 25 | `pagatu-config` funcional en DEV y producción local, con health y perfiles correctos en ambos. | Funcional en DEV, con evidencia parcial en producción local. | Arranca pero sin verificación clara de health o perfiles. | No evidencia `pagatu-config` funcionando. | |
-| 2. Configuración externa de `orden-ms`* | 25 | `orden-ms-dev.yml`/`-prod.yml` completos, con diferencias claras entre ambientes. | Archivos presentes con diferencias parciales. | Un solo perfil o configuración incompleta. | No evidencia separación entre código y configuración. | |
-| 3. `orden-ms` como Config Client* | 25 | `orden-ms` arranca leyendo Config Server y responde funcionalmente en ambos ambientes. | Arranca leyendo Config Server y responde en al menos un ambiente. | Arranque parcial o sin prueba funcional. | No demuestra conexión de `orden-ms` con `pagatu-config`. | |
+| 1. `pagatu-config` operativo* | 25 | `pagatu-config` funcional en DEV, con health y perfiles correctos. | Funcional en DEV, con verificación parcial de health o perfiles. | Arranca pero sin verificación clara de health o perfiles. | No evidencia `pagatu-config` funcionando. | |
+| 2. Configuración externa del microservicio replicado (p. ej. `orden-ms`)* | 25 | `-dev.yml`/`-prod.yml` completos, con diferencias claras entre ambientes. | Archivos presentes con diferencias parciales. | Un solo perfil o configuración incompleta. | No evidencia separación entre código y configuración. | |
+| 3. Microservicio replicado como Config Client* | 25 | Arranca leyendo Config Server y responde funcionalmente en DEV. | Arranca leyendo Config Server, con respuesta parcial. | Arranque parcial o sin prueba funcional. | No demuestra conexión con `pagatu-config`. | |
 | 4. Comparación DEV/PROD y comprensión* | 25 | Comparación precisa con valor real identificado; explicación clara de Config Server. | Comparación correcta con explicación básica. | Comparación superficial o explicación imprecisa. | No compara ni explica el patrón. | |
 
 \* Agregado manual.
+
+Producción local con Docker (3.11-3.14) es opcional y no es necesario para alcanzar el nivel A en ningún criterio. Si el estudiante lo evidencia, el docente puede considerarlo un plus dentro del criterio 1, a su criterio.
 
 Nota final = suma de (`Peso` / 100 × `Puntos del nivel obtenido`) = ____ / 20.
 
