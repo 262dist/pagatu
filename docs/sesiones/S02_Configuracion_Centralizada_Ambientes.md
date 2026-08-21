@@ -561,7 +561,23 @@ curl http://localhost:18888/actuator/health
 curl http://localhost:18888/actuator/metrics
 ```
 
-`config-repo` todavía está vacío, así que `pagatu-config` responde `UP`, pero cualquier consulta a `/pagatu-catalogo-ms/dev` va a devolver una configuración sin propiedades — eso se resuelve en el siguiente paso.
+Confirma el "antes": `config-repo` todavía está vacío, así que `pagatu-config` responde `UP`, pero la configuración de `pagatu-catalogo-ms` todavía no tiene ninguna propiedad real:
+
+PowerShell:
+
+```powershell
+Invoke-RestMethod -Method Get -Uri "http://localhost:18888/pagatu-catalogo-ms/dev"
+Invoke-RestMethod -Method Get -Uri "http://localhost:18888/pagatu-catalogo-ms/prod"
+```
+
+bash macOS/Linux:
+
+```bash
+curl http://localhost:18888/pagatu-catalogo-ms/dev
+curl http://localhost:18888/pagatu-catalogo-ms/prod
+```
+
+Ambas responden `200 OK` con `"propertySources": []` (vacío) — `pagatu-config` sabe responder por ese nombre y ese perfil, pero no tiene nada que servir todavía, porque `config-repo` no tiene ningún archivo `pagatu-catalogo-ms-*.yml`. 3.7 crea esos archivos, y 3.8 corre exactamente estos mismos dos comandos otra vez — compara ahí: `propertySources` ya no estará vacío, va a traer las propiedades reales de `dev`/`prod`.
 
 ### 3.7 Mover la configuración de `pagatu-catalogo-ms` a `config-repo`
 
@@ -659,6 +675,8 @@ El `server.port: 8080` se mantiene **fijo**, igual que en S1 — la segunda inst
 ### 3.8 Consultar los perfiles por HTTP
 
 **Producto del paso:** configuración externa consultada sin levantar `pagatu-catalogo-ms`.
+
+Son los mismos dos comandos que ya corriste en 3.6, antes de que `config-repo` tuviera contenido — ahí `propertySources` salió vacío; ahora, con `pagatu-catalogo-ms-dev.yml`/`pagatu-catalogo-ms-prod.yml` ya creados (3.7), la respuesta trae las propiedades reales.
 
 Con `pagatu-config` ejecutando (3.6):
 
