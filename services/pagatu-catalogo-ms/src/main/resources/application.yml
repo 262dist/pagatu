@@ -3,3 +3,5 @@ spring:
     name: pagatu-catalogo-ms
   profiles:
     active: dev
+  config:
+    import: "optional:configserver:${CONFIG_SERVER_URL:http://localhost:18888}"
