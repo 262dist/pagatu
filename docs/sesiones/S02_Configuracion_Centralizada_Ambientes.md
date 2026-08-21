@@ -439,6 +439,7 @@ Dependencias a seleccionar:
 | Grupo | Dependencias | Propósito |
 |---|---|---|
 | Spring Cloud | Config Server | Entregar configuración externa por HTTP |
+| Productividad | Spring Boot DevTools | Facilitar ejecución en desarrollo (reinicio automático al cambiar `config-repo`/código) |
 | Ops | Spring Boot Actuator | Verificar health de `pagatu-config` |
 
 En `pom.xml`, la dependencia clave es:
