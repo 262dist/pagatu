@@ -29,9 +29,10 @@ services:
       postgres-catalogo:
         condition: service_healthy
     #ports:
-    #  - "28080:8080"    
+    #  - "28080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
       DB_HOST: pagatu-postgres-catalogo
       DB_PORT: 5432
       DB_NAME: ${DB_NAME}
@@ -41,6 +42,7 @@ services:
       - ./logs:/app/logs
     networks:
       - pagatu-catalogo-int
+      - pagatu-prod-net
 
 volumes:
   pagatu_catalogo_data:
@@ -48,3 +50,5 @@ volumes:
 networks:
   pagatu-catalogo-int:
     name: pagatu-catalogo-int
+  pagatu-prod-net:
+    external: true

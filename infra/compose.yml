@@ -1,0 +1,23 @@
+name: pagatu-infra-prod
+
+services:
+  pagatu-config:
+    build:
+      context: ./pagatu-config
+      dockerfile: Dockerfile
+    container_name: pagatu-config
+    restart: unless-stopped
+    ports:
+      - "28888:8888"
+    volumes:
+      - ./pagatu-config/config-repo:/config-repo
+    environment:
+      SERVER_PORT: 8888
+      SPRING_PROFILES_ACTIVE: native
+      CONFIG_REPO_LOCATION: file:/config-repo
+    networks:
+      - pagatu-prod-net
+
+networks:
+  pagatu-prod-net:
+    name: pagatu-prod-net
