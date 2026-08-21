@@ -2609,7 +2609,16 @@ mvnw<span class="w"> </span>spring-boot:run
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:18888/actuator/health
 curl<span class="w"> </span>http://localhost:18888/actuator/metrics
 </code></pre></div>
-<p><code>config-repo</code> todavía está vacío, así que <code>pagatu-config</code> responde <code>UP</code>, pero cualquier consulta a <code>/pagatu-catalogo-ms/dev</code> va a devolver una configuración sin propiedades — eso se resuelve en el siguiente paso.</p>
+<p>Confirma el "antes": <code>config-repo</code> todavía está vacío, así que <code>pagatu-config</code> responde <code>UP</code>, pero la configuración de <code>pagatu-catalogo-ms</code> todavía no tiene ninguna propiedad real:</p>
+<p>PowerShell:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18888/pagatu-catalogo-ms/dev"</span>
+<span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18888/pagatu-catalogo-ms/prod"</span>
+</code></pre></div>
+<p>bash macOS/Linux:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:18888/pagatu-catalogo-ms/dev
+curl<span class="w"> </span>http://localhost:18888/pagatu-catalogo-ms/prod
+</code></pre></div>
+<p>Ambas responden <code>200 OK</code> con <code>"propertySources": []</code> (vacío) — <code>pagatu-config</code> sabe responder por ese nombre y ese perfil, pero no tiene nada que servir todavía, porque <code>config-repo</code> no tiene ningún archivo <code>pagatu-catalogo-ms-*.yml</code>. 3.7 crea esos archivos, y 3.8 corre exactamente estos mismos dos comandos otra vez — compara ahí: <code>propertySources</code> ya no estará vacío, va a traer las propiedades reales de <code>dev</code>/<code>prod</code>.</p>
 <h3 id="37-mover-la-configuracion-de-pagatu-catalogo-ms-a-config-repo">3.7 Mover la configuración de <code>pagatu-catalogo-ms</code> a <code>config-repo</code><a class="headerlink" href="#37-mover-la-configuracion-de-pagatu-catalogo-ms-a-config-repo" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> <code>pagatu-catalogo-ms-dev.yml</code> y <code>pagatu-catalogo-ms-prod.yml</code> creados en <code>config-repo</code>, con el mismo contenido que ya tenían <code>application-dev.yml</code> y <code>application-prod.yml</code> en S1.</p>
 <p>Crea, dentro de <code>infra/pagatu-config/config-repo</code>:</p>
@@ -2695,6 +2704,7 @@ curl<span class="w"> </span>http://localhost:18888/actuator/metrics
 <p>El <code>server.port: 8080</code> se mantiene <strong>fijo</strong>, igual que en S1 — la segunda instancia de <code>pagatu-catalogo-ms</code> sigue tomando su puerto por argumento de línea de comandos (<code>--server.port=8081</code>, S1 3.4.1), no por puerto dinámico.</p>
 <h3 id="38-consultar-los-perfiles-por-http">3.8 Consultar los perfiles por HTTP<a class="headerlink" href="#38-consultar-los-perfiles-por-http" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> configuración externa consultada sin levantar <code>pagatu-catalogo-ms</code>.</p>
+<p>Son los mismos dos comandos que ya corriste en 3.6, antes de que <code>config-repo</code> tuviera contenido — ahí <code>propertySources</code> salió vacío; ahora, con <code>pagatu-catalogo-ms-dev.yml</code>/<code>pagatu-catalogo-ms-prod.yml</code> ya creados (3.7), la respuesta trae las propiedades reales.</p>
 <p>Con <code>pagatu-config</code> ejecutando (3.6):</p>
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18888/pagatu-catalogo-ms/dev"</span>
