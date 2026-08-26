@@ -484,6 +484,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="proyecto-sello/alcance-microservicios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Alcance por microservicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -913,8 +941,8 @@ técnicamente.
 <tr>
 <td>S2</td>
 <td>Gestión centralizada de configuración y ambientes.</td>
-<td><code>catalogo-ms</code> + <code>orden-ms</code> (nuevo, esqueleto) + <code>cliente-ms</code> (nuevo, autónomo)</td>
-<td>Config Server + config-repo; se usa <code>orden-ms</code> mínimo (CRUD simple) para tener un segundo servicio que también lea del Config Server. Como trabajo autónomo, se construye <code>pagatu-cliente-ms</code>: perfil del cliente (DNI/RUC, nombre/razón social) con autocompletado vía RENIEC/SUNAT; <code>orden-ms</code> referencia su <code>id_cliente</code> sin llave foránea.</td>
+<td><code>catalogo-ms</code></td>
+<td>Config Server + config-repo; <code>pagatu-catalogo-ms</code> migrado a Config Client en DEV (y, opcionalmente, en producción local). <code>orden-ms</code> y <code>cliente-ms</code> no se construyen en esta sesión — quedan como trabajo autónomo (ver <a href="proyecto-sello/alcance-microservicios/">Alcance por microservicio</a>): un CRUD básico para <code>orden-ms</code>, y para <code>cliente-ms</code> además el autocompletado vía RENIEC/SUNAT; <code>orden-ms</code> referenciará su <code>id_cliente</code> sin llave foránea.</td>
 </tr>
 <tr>
 <td>S3</td>

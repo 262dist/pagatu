@@ -1,0 +1,1388 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://262dist.github.io/pagatu/proyecto-sello/alcance-microservicios/">
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../../silabo_dist_2026_1/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+  
+    <title>Pagatu - Alcance por microservicio</title>
+  
+
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#alcance-por-microservicio-y-proyecto-base-de-pagatu-orden-ms-y-pagatu-cliente-ms" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Pagatu" class="md-header__button md-logo" aria-label="Pagatu" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Pagatu
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Alcance por microservicio
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/262dist/pagatu" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    262dist/pagatu
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Pagatu" class="md-nav__button md-logo" aria-label="Pagatu" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Pagatu
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/262dist/pagatu" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    262dist/pagatu
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía de Proyecto Sello
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guía de Proyecto Sello
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía del proyecto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Alcance por microservicio
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Alcance por microservicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#alcance-de-pagatu-catalogo-ms-por-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alcance de pagatu-catalogo-ms, por sesión
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alcance-de-pagatu-orden-ms-por-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alcance de pagatu-orden-ms, por sesión
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alcance-de-pagatu-cliente-ms-por-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alcance de pagatu-cliente-ms, por sesión
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crear-el-proyecto-base-de-pagatu-orden-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Crear el proyecto base de pagatu-orden-ms
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crear-el-proyecto-base-de-pagatu-cliente-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Crear el proyecto base de pagatu-cliente-ms
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tipo-de-comprobante-por-orden-boleta-simple-boleta-con-dni-o-factura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tipo de comprobante por orden: boleta simple, boleta con DNI o factura
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metodo-de-pago-por-orden" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Método de pago por orden
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabos
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Silabos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabo 2026-1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabo 2026-2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I. Sistema distribuido base orientado a producción
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    I. Sistema distribuido base orientado a producción
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sesiones/S01_Construccion_Servicio_Base/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S1 - Construcción de un servicio base para un sistema distribuido
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sesiones/S02_Configuracion_Centralizada_Ambientes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S2 - Gestión centralizada de configuración y ambientes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#alcance-de-pagatu-catalogo-ms-por-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alcance de pagatu-catalogo-ms, por sesión
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alcance-de-pagatu-orden-ms-por-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alcance de pagatu-orden-ms, por sesión
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alcance-de-pagatu-cliente-ms-por-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alcance de pagatu-cliente-ms, por sesión
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crear-el-proyecto-base-de-pagatu-orden-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Crear el proyecto base de pagatu-orden-ms
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crear-el-proyecto-base-de-pagatu-cliente-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Crear el proyecto base de pagatu-cliente-ms
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tipo-de-comprobante-por-orden-boleta-simple-boleta-con-dni-o-factura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tipo de comprobante por orden: boleta simple, boleta con DNI o factura
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metodo-de-pago-por-orden" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Método de pago por orden
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="alcance-por-microservicio-y-proyecto-base-de-pagatu-orden-ms-y-pagatu-cliente-ms">Alcance por microservicio y proyecto base de <code>pagatu-orden-ms</code> y <code>pagatu-cliente-ms</code><a class="headerlink" href="#alcance-por-microservicio-y-proyecto-base-de-pagatu-orden-ms-y-pagatu-cliente-ms" title="Permanent link">&para;</a></h1>
+<p>Este documento delimita, por escrito, qué le corresponde a cada microservicio de <code>pagatu</code> a lo largo de <strong>todo el curso</strong> — no es el contenido de una sola sesión. Sirve para que, en cualquier momento del semestre, cualquier integrante del equipo pueda ubicar qué historia de usuario pertenece a qué microservicio y en qué sesión se construye, sin tener que revisar guía por guía.</p>
+<p>No sustituye ninguna guía de sesión ya entregada (S1, S2): las historias marcadas como "ya entregado" o con una sesión concreta se implementan cuando esa sesión llega, siguiendo su propia guía — este documento solo ubica el mapa completo.</p>
+<p><strong>Error frecuente al crear un proyecto nuevo copiando de otro:</strong> al generar <code>pagatu-orden-ms</code>/<code>pagatu-cliente-ms</code> con Spring Initializr, es tentador copiar archivos ya hechos de <code>pagatu-catalogo-ms</code> (<code>.env</code>, <code>compose.yml</code>, <code>application-dev.yml</code>, <code>ResourceNotFoundException</code>, <code>CorrelationIdFilter</code>, etc.) para no escribirlos de cero — es una práctica válida, pero cada archivo copiado hay que revisarlo con cuidado: nombre de base de datos, puertos, nombre de contenedor y, sobre todo, la línea <code>package</code> de cada clase Java (debe decir <code>pe.edu.upeu.orden...</code> o <code>pe.edu.upeu.cliente...</code>, no <code>pe.edu.upeu.catalogo...</code>) — si el <code>package</code> no coincide con la carpeta real del archivo, el proyecto no compila.</p>
+<h2 id="alcance-de-pagatu-catalogo-ms-por-sesion">Alcance de <code>pagatu-catalogo-ms</code>, por sesión<a class="headerlink" href="#alcance-de-pagatu-catalogo-ms-por-sesion" title="Permanent link">&para;</a></h2>
+<p><strong>S1 (ya entregado) — CRUD básico</strong></p>
+<ol>
+<li>Como cliente, quiero consultar el catálogo de categorías y productos disponibles, para elegir qué comprar.</li>
+<li>Como administrador, quiero crear, actualizar y eliminar categorías y productos, para mantener el catálogo actualizado.</li>
+</ol>
+<p><strong>S3 — descubrimiento de servicios</strong></p>
+<ol>
+<li>Como sistema, quiero que <code>pagatu-catalogo-ms</code> se registre automáticamente en Eureka al arrancar, para que otros servicios (Gateway, <code>orden-ms</code>) lo encuentren sin conocer su dirección de antemano.</li>
+</ol>
+<p><strong>S4 — punto único de acceso</strong></p>
+<ol>
+<li>Como cliente, quiero acceder al catálogo a través de un único punto de entrada (Gateway), sin necesitar conocer la URL directa de <code>pagatu-catalogo-ms</code>.</li>
+<li>Como sistema, quiero que el tráfico se reparta entre varias instancias de <code>pagatu-catalogo-ms</code>, para soportar más carga sin caerse.</li>
+</ol>
+<p><strong>S6 — comunicación resiliente (consumido por <code>orden-ms</code>)</strong></p>
+<ol>
+<li>Como sistema (<code>orden-ms</code>), quiero consultar un producto por id en <code>pagatu-catalogo-ms</code> de forma confiable, para validar que existe y su precio antes de crear una orden.</li>
+</ol>
+<p><strong>S7 — seguridad</strong></p>
+<ol>
+<li>Como administrador autenticado, quiero ser el único que puede crear, editar o eliminar categorías y productos, para que usuarios sin permiso no alteren el catálogo.</li>
+<li>Como cliente, quiero poder consultar el catálogo sin restricciones, para explorar productos libremente.</li>
+</ol>
+<p><strong>S9 — consistencia distribuida (pendiente de decidir)</strong></p>
+<ol>
+<li>Como sistema, quiero descontar stock de un producto cuando se confirma una orden, para no vender más unidades de las disponibles. La columna <code>stock</code> ya se agregó a <code>productos</code> desde el <code>V1</code> (S1) — lo que falta construir en S9 es la operación de descuento segura entre <code>orden-ms</code> y <code>pagatu-catalogo-ms</code> (<code>UPDATE ... WHERE stock &gt;= cantidad</code>, idempotencia, compensación si la orden se cancela).</li>
+</ol>
+<p><strong>S10 — observabilidad</strong></p>
+<ol>
+<li>Como equipo de operaciones, quiero ver métricas, logs y el estado de salud de <code>pagatu-catalogo-ms</code> en un panel, para detectar problemas antes de que afecten a los clientes.</li>
+</ol>
+<p><strong>S11 — integración frontend</strong></p>
+<ol>
+<li>Como cliente, quiero navegar el catálogo desde la aplicación web, para explorar y elegir productos antes de comprar.</li>
+</ol>
+<h2 id="alcance-de-pagatu-orden-ms-por-sesion">Alcance de <code>pagatu-orden-ms</code>, por sesión<a class="headerlink" href="#alcance-de-pagatu-orden-ms-por-sesion" title="Permanent link">&para;</a></h2>
+<p><strong>Pendiente de construir — CRUD básico</strong></p>
+<ol>
+<li>Como cliente, quiero crear una orden con los productos que quiero comprar (cantidad y precio de cada uno), para registrar mi intención de compra.</li>
+<li>Como cliente, quiero consultar el detalle de una orden por su id, para verificar qué pedí y cuánto voy a pagar.</li>
+<li>Como cliente o administrador, quiero listar las órdenes existentes, para revisar el historial de pedidos.</li>
+<li>Como administrador, quiero cambiar el estado de una orden (confirmar o cancelar), para reflejar su avance real.</li>
+</ol>
+<p><strong>S6 — comunicación resiliente</strong></p>
+<ol>
+<li>Como sistema, quiero validar que cada producto de la orden exista y tenga el precio vigente en <code>pagatu-catalogo-ms</code> antes de crearla, para no aceptar pedidos con productos inexistentes o precios desactualizados.</li>
+<li>Como sistema, quiero responder con un mensaje claro (no un error genérico) si <code>pagatu-catalogo-ms</code> no responde, para no dejar al cliente esperando indefinidamente (Circuit Breaker).</li>
+</ol>
+<p><strong>S7 — seguridad</strong></p>
+<ol>
+<li>Como cliente autenticado, quiero que solo yo pueda ver mis propias órdenes, para que otros usuarios no accedan a mi información.</li>
+<li>Como administrador, quiero ver y gestionar todas las órdenes del sistema, para operar el negocio.</li>
+</ol>
+<p><code>ordenes.id_cliente</code> ya nace como <code>BIGINT</code>, sin <code>REFERENCES</code> — apunta a <code>pagatu-cliente-ms</code> (un microservicio con su propia base de datos, ver <a href="../../"><code>docs/index.md</code></a>), igual que <code>id_producto</code> no referencia a <code>pagatu-catalogo-ms</code>. Mientras no exista login, se completa con un valor de prueba; desde S7 se poblará con el id que venga del JWT ya validado, en vez de confiar en lo que el cliente mande en el request. <code>pagatu-cliente-ms</code> guarda el perfil del cliente (DNI/RUC, nombre o razón social) y lo autocompleta consultando RENIEC o SUNAT según el tipo de documento — ver <a href="../../"><code>docs/index.md</code></a>, tabla de U2 (fila S7) y diagrama C4 nivel 2.</p>
+<p><strong>S8 — mensajería asíncrona</strong></p>
+<ol>
+<li>Como sistema, quiero publicar un evento cuando se crea una orden, para que <code>pago-ms</code> se entere y procese el cobro sin que <code>orden-ms</code> tenga que llamarlo directamente.</li>
+</ol>
+<p><strong>S9 — consistencia distribuida</strong></p>
+<ol>
+<li>Como cliente, quiero que si envío la misma solicitud de compra dos veces por error (doble clic, reintento de red), no se creen dos órdenes duplicadas (idempotencia).</li>
+<li>Como sistema, quiero poder revertir/cancelar una orden automáticamente si el pago asociado falla, para mantener consistencia entre orden y pago (compensación).</li>
+</ol>
+<p><strong>S11 — integración frontend</strong></p>
+<ol>
+<li>Como cliente, quiero ver mis órdenes y su estado desde la aplicación web, para hacer seguimiento de mis compras.</li>
+</ol>
+<h2 id="alcance-de-pagatu-cliente-ms-por-sesion">Alcance de <code>pagatu-cliente-ms</code>, por sesión<a class="headerlink" href="#alcance-de-pagatu-cliente-ms-por-sesion" title="Permanent link">&para;</a></h2>
+<p><strong>Pendiente de construir (trabajo autónomo, sin fecha fija de sesión) — CRUD y autocompletado con RENIEC/SUNAT</strong></p>
+<ol>
+<li>Como cliente, quiero registrar mi documento de identidad (DNI o RUC), para que el sistema autocomplete mis datos sin que tenga que tipearlos.</li>
+<li>Como sistema, quiero consultar RENIEC con el DNI de una persona natural, para obtener su nombre completo y autocompletar el perfil.</li>
+<li>Como sistema, quiero consultar SUNAT con el RUC de una persona jurídica, para obtener su razón social y autocompletar el perfil.</li>
+<li>Como cliente, quiero consultar mi propio perfil, para verificar que mis datos estén correctos.</li>
+</ol>
+<p><strong>S10 — observabilidad</strong></p>
+<ol>
+<li>Como equipo de operaciones, quiero ver métricas, logs y el estado de salud de <code>pagatu-cliente-ms</code> en un panel, para detectar problemas (incluidas fallas de RENIEC/SUNAT) antes de que afecten a los clientes.</li>
+</ol>
+<p><strong>S11 — integración frontend</strong></p>
+<ol>
+<li>Como cliente, quiero completar mi perfil desde la aplicación web con solo mi DNI o RUC, para no llenar el formulario a mano.</li>
+</ol>
+<p>Las historias 1-4 de <code>pagatu-cliente-ms</code> no tienen una sesión de guía dedicada todavía — se construyen como trabajo autónomo, en el mismo momento que el equipo decida levantar <code>pagatu-orden-ms</code> (ambos microservicios nuevos se scaffoldan juntos, siguiendo la sección siguiente). Las de S10 y S11 quedan como delimitación de alcance para más adelante, sin implementarse todavía.</p>
+<h2 id="crear-el-proyecto-base-de-pagatu-orden-ms">Crear el proyecto base de <code>pagatu-orden-ms</code><a class="headerlink" href="#crear-el-proyecto-base-de-pagatu-orden-ms" title="Permanent link">&para;</a></h2>
+<p><strong>Tabla 1. Configuración del proyecto <code>pagatu-orden-ms</code> en Spring Initializr</strong></p>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Project</td>
+<td>Maven Project</td>
+</tr>
+<tr>
+<td>Spring Boot</td>
+<td><strong>4.0.7</strong></td>
+</tr>
+<tr>
+<td>Language</td>
+<td>Java</td>
+</tr>
+<tr>
+<td>Group Id</td>
+<td><code>pe.edu.upeu</code></td>
+</tr>
+<tr>
+<td>Artifact Id</td>
+<td><code>pagatu-orden-ms</code></td>
+</tr>
+<tr>
+<td>Package name</td>
+<td><code>pe.edu.upeu.orden</code></td>
+</tr>
+<tr>
+<td>Packaging</td>
+<td>Jar</td>
+</tr>
+<tr>
+<td>Java</td>
+<td>21</td>
+</tr>
+<tr>
+<td>Dependencias</td>
+<td>Las mismas de <code>pagatu-catalogo-ms</code> (S1, Tabla 4): Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway. <strong>Además</strong>, agrega MapStruct a mano en el <code>pom.xml</code> (S1, 3.5.20) — Spring Initializr no lo ofrece como opción, y sin él el proyecto no compila apenas escribas el primer <code>Mapper</code>.</td>
+</tr>
+<tr>
+<td>Ubicación sugerente</td>
+<td><code>services/pagatu-orden-ms</code></td>
+</tr>
+</tbody>
+</table>
+<p>El puerto de base de datos (<code>15434</code> DEV / <code>25434</code> PROD local) sigue la misma numeración ya reservada para <code>orden_db</code> en la arquitectura del proyecto (<a href="../../"><code>docs/index.md</code></a>), distinta de <code>pagatu_catalogo_db</code> (<code>15432</code>/<code>25432</code>) para que ambos puedan correr al mismo tiempo. El puerto de aplicación en DEV (<code>8082</code>, fijo) sigue el mismo criterio de S1 (puerto fijo, sin argumento) — distinto de <code>8080</code>, que ya usa <code>pagatu-catalogo-ms</code>.</p>
+<p><strong><code>services/pagatu-orden-ms/compose-dev.yml</code></strong></p>
+<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-orden-dev</span>
+
+<span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">postgres-orden-dev</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres:16-alpine</span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-postgres-orden-dev</span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">POSTGRES_DB</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu_orden_db</span>
+<span class="w">      </span><span class="nt">POSTGRES_USER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
+<span class="w">      </span><span class="nt">POSTGRES_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"15434:5432"</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu_orden_dev_data:/var/lib/postgresql/data</span>
+
+<span class="nt">volumes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pagatu_orden_dev_data</span><span class="p">:</span>
+</code></pre></div>
+<p><strong><code>services/pagatu-orden-ms/src/main/resources/application.yml</code></strong></p>
+<div class="highlight"><pre><span></span><code><span class="nt">spring</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">application</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-orden-ms</span>
+<span class="w">  </span><span class="nt">profiles</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">active</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dev</span>
+</code></pre></div>
+<p><strong><code>services/pagatu-orden-ms/src/main/resources/application-dev.yml</code></strong></p>
+<div class="highlight"><pre><span></span><code><span class="nt">server</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8082</span>
+
+<span class="nt">spring</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">datasource</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jdbc:postgresql://localhost:15434/pagatu_orden_db</span>
+<span class="w">    </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
+<span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
+<span class="w">    </span><span class="nt">driver-class-name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">org.postgresql.Driver</span>
+<span class="w">  </span><span class="nt">flyway</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">locations</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">classpath:db/migration</span>
+<span class="w">  </span><span class="nt">jpa</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">hibernate</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">ddl-auto</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">validate</span>
+<span class="w">    </span><span class="nt">show-sql</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">properties</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">hibernate</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">format_sql</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">devtools</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">livereload</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="nt">springdoc</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">swagger-ui</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/swagger-ui.html</span>
+
+<span class="nt">logging</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">level</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">pe.edu.upeu.orden</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DEBUG</span>
+
+<span class="nt">management</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">endpoints</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">web</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">exposure</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health,info,metrics</span>
+<span class="w">  </span><span class="nt">endpoint</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">health</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">show-details</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always</span>
+</code></pre></div>
+<p><strong><code>services/pagatu-orden-ms/src/main/resources/db/migration/V1__create_orden_tables.sql</code></strong></p>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">ordenes</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="nb">BIGINT</span><span class="w"> </span><span class="k">GENERATED</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">IDENTITY</span><span class="p">,</span>
+<span class="w">    </span><span class="n">id_cliente</span><span class="w"> </span><span class="nb">BIGINT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">fecha_creacion</span><span class="w"> </span><span class="k">TIMESTAMP</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="n">now</span><span class="p">(),</span>
+<span class="w">    </span><span class="n">estado</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="s1">'PENDIENTE'</span><span class="p">,</span>
+<span class="w">    </span><span class="n">tipo_comprobante</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="s1">'BOLETA_SIMPLE'</span><span class="p">,</span>
+<span class="w">    </span><span class="n">metodo_pago</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">momento_pago</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="s1">'ADELANTADO'</span><span class="p">,</span>
+<span class="w">    </span><span class="n">total</span><span class="w"> </span><span class="nb">NUMERIC</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">orden_detalles</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="nb">BIGINT</span><span class="w"> </span><span class="k">GENERATED</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">IDENTITY</span><span class="p">,</span>
+<span class="w">    </span><span class="n">id_orden</span><span class="w"> </span><span class="nb">BIGINT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">ordenes</span><span class="p">(</span><span class="n">id</span><span class="p">),</span>
+<span class="w">    </span><span class="n">id_producto</span><span class="w"> </span><span class="nb">BIGINT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">cantidad</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">precio_unitario</span><span class="w"> </span><span class="nb">NUMERIC</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<span class="p">);</span>
+</code></pre></div>
+<p><code>id_orden</code> sí es una llave foránea normal (<code>REFERENCES ordenes(id)</code>), porque <code>ordenes</code> y <code>orden_detalles</code> viven en la misma base de datos de <code>pagatu-orden-ms</code>. <code>id_producto</code> e <code>id_cliente</code>, en cambio, <strong>no</strong> llevan <code>REFERENCES</code> — el producto vive en la base de datos de <code>pagatu-catalogo-ms</code> y el cliente en la de <code>pagatu-cliente-ms</code> (otro microservicio, con su propia base de datos), cada uno un microservicio distinto; validar que existan es responsabilidad del código (una consulta HTTP al microservicio correspondiente), no de una llave foránea entre bases de datos separadas. <code>id_cliente</code> se completa con el id de un cliente ya registrado en <code>pagatu-cliente-ms</code> (probado a mano, sin login todavía); recién desde S7 ese valor se derivará automáticamente del JWT en vez de venir en el request.</p>
+<h2 id="crear-el-proyecto-base-de-pagatu-cliente-ms">Crear el proyecto base de <code>pagatu-cliente-ms</code><a class="headerlink" href="#crear-el-proyecto-base-de-pagatu-cliente-ms" title="Permanent link">&para;</a></h2>
+<p><strong>Tabla 2. Configuración del proyecto <code>pagatu-cliente-ms</code> en Spring Initializr</strong></p>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Project</td>
+<td>Maven Project</td>
+</tr>
+<tr>
+<td>Spring Boot</td>
+<td><strong>4.0.7</strong></td>
+</tr>
+<tr>
+<td>Language</td>
+<td>Java</td>
+</tr>
+<tr>
+<td>Group Id</td>
+<td><code>pe.edu.upeu</code></td>
+</tr>
+<tr>
+<td>Artifact Id</td>
+<td><code>pagatu-cliente-ms</code></td>
+</tr>
+<tr>
+<td>Package name</td>
+<td><code>pe.edu.upeu.cliente</code></td>
+</tr>
+<tr>
+<td>Packaging</td>
+<td>Jar</td>
+</tr>
+<tr>
+<td>Java</td>
+<td>21</td>
+</tr>
+<tr>
+<td>Dependencias</td>
+<td>Las mismas de <code>pagatu-catalogo-ms</code> (S1, Tabla 4): Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway. <strong>Además</strong>, agrega MapStruct a mano en el <code>pom.xml</code> (S1, 3.5.20) — Spring Initializr no lo ofrece como opción, y sin él el proyecto no compila apenas escribas el primer <code>Mapper</code>.</td>
+</tr>
+<tr>
+<td>Ubicación sugerente</td>
+<td><code>services/pagatu-cliente-ms</code></td>
+</tr>
+</tbody>
+</table>
+<p>El puerto de base de datos (<code>15433</code> DEV / <code>25433</code> PROD local) es el que ya estaba reservado para <code>cliente_db</code> en la arquitectura del proyecto (<a href="../../"><code>docs/index.md</code></a>) — el hueco entre <code>auth_db</code> (<code>15431</code>) y <code>orden_db</code> (<code>15434</code>). El puerto de aplicación en DEV es <code>8084</code>, fijo, distinto de <code>8080</code> (<code>pagatu-catalogo-ms</code>) y <code>8082</code> (<code>pagatu-orden-ms</code>); se deja <code>8081</code> y <code>8083</code> sin usar, por si se necesitan para segundas instancias o para <code>auth-ms</code>.</p>
+<p><strong><code>services/pagatu-cliente-ms/compose-dev.yml</code></strong></p>
+<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-cliente-dev</span>
+
+<span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">postgres-cliente-dev</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres:16-alpine</span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-postgres-cliente-dev</span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">POSTGRES_DB</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu_cliente_db</span>
+<span class="w">      </span><span class="nt">POSTGRES_USER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
+<span class="w">      </span><span class="nt">POSTGRES_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"15433:5432"</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu_cliente_dev_data:/var/lib/postgresql/data</span>
+
+<span class="nt">volumes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pagatu_cliente_dev_data</span><span class="p">:</span>
+</code></pre></div>
+<p><strong><code>services/pagatu-cliente-ms/src/main/resources/application.yml</code></strong></p>
+<div class="highlight"><pre><span></span><code><span class="nt">spring</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">application</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-cliente-ms</span>
+<span class="w">  </span><span class="nt">profiles</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">active</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dev</span>
+</code></pre></div>
+<p><strong><code>services/pagatu-cliente-ms/src/main/resources/application-dev.yml</code></strong></p>
+<div class="highlight"><pre><span></span><code><span class="nt">server</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8084</span>
+
+<span class="nt">spring</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">datasource</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jdbc:postgresql://localhost:15433/pagatu_cliente_db</span>
+<span class="w">    </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
+<span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
+<span class="w">    </span><span class="nt">driver-class-name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">org.postgresql.Driver</span>
+<span class="w">  </span><span class="nt">flyway</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">locations</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">classpath:db/migration</span>
+<span class="w">  </span><span class="nt">jpa</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">hibernate</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">ddl-auto</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">validate</span>
+<span class="w">    </span><span class="nt">show-sql</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">properties</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">hibernate</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">format_sql</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">devtools</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">livereload</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="nt">springdoc</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">swagger-ui</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/swagger-ui.html</span>
+
+<span class="nt">logging</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">level</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">pe.edu.upeu.cliente</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DEBUG</span>
+
+<span class="nt">management</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">endpoints</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">web</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">exposure</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health,info,metrics</span>
+<span class="w">  </span><span class="nt">endpoint</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">health</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">show-details</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always</span>
+</code></pre></div>
+<p><strong><code>services/pagatu-cliente-ms/src/main/resources/db/migration/V1__create_cliente_tables.sql</code></strong></p>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">clientes</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="nb">BIGINT</span><span class="w"> </span><span class="k">GENERATED</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">IDENTITY</span><span class="p">,</span>
+<span class="w">    </span><span class="n">tipo_persona</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">dni</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span>
+<span class="w">    </span><span class="n">ruc</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">11</span><span class="p">),</span>
+<span class="w">    </span><span class="n">nombre_completo</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span>
+<span class="w">    </span><span class="n">razon_social</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span>
+<span class="w">    </span><span class="n">direccion</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span>
+<span class="w">    </span><span class="n">email</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">150</span><span class="p">),</span>
+<span class="w">    </span><span class="n">whatsapp</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">),</span>
+<span class="w">    </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">),</span>
+<span class="w">    </span><span class="k">UNIQUE</span><span class="w"> </span><span class="p">(</span><span class="n">dni</span><span class="p">),</span>
+<span class="w">    </span><span class="k">UNIQUE</span><span class="w"> </span><span class="p">(</span><span class="n">ruc</span><span class="p">)</span>
+<span class="p">);</span>
+</code></pre></div>
+<p>Una persona natural puede tener <strong>solo DNI</strong>, o <strong>DNI y RUC a la vez</strong> (un negocio unipersonal, por ejemplo un independiente que emite factura a su propio nombre) — por eso <code>dni</code> y <code>ruc</code> son dos columnas separadas y ambas opcionales, en vez del <code>tipo_documento</code>/<code>numero_documento</code> mutuamente excluyentes de una versión anterior. Una persona jurídica (empresa) solo tiene <code>ruc</code> y <code>razon_social</code>; no tiene <code>dni</code> propio (el DNI de su representante legal es otro dato, fuera de este alcance).</p>
+<p><strong>Tabla 3. Reglas de <code>tipo_persona</code> en <code>clientes</code></strong></p>
+<table>
+<thead>
+<tr>
+<th><code>tipo_persona</code></th>
+<th>Documentos</th>
+<th>Autocompletado</th>
+<th>Campo de nombre usado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NATURAL</code></td>
+<td><code>dni</code> obligatorio; <code>ruc</code> opcional</td>
+<td>RENIEC (por <code>dni</code>); SUNAT (por <code>ruc</code>, si lo tiene)</td>
+<td><code>nombre_completo</code></td>
+</tr>
+<tr>
+<td><code>JURIDICA</code></td>
+<td><code>ruc</code> obligatorio; <code>dni</code> queda <code>NULL</code></td>
+<td>SUNAT (por <code>ruc</code>)</td>
+<td><code>razon_social</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>whatsapp</code> (opcional, no lo completa RENIEC/SUNAT — lo escribe el cliente) es el número al que se envía el comprobante de cada orden una vez confirmada; su uso real llega recién con la mensajería de S8, cuando <code>orden-ms</code> publique el evento correspondiente. <code>ordenes.id_cliente</code> apunta al <code>id</code> de esta tabla, sin <code>REFERENCES</code> entre bases de datos.</p>
+<p><strong><code>services/pagatu-cliente-ms/src/main/resources/db/migration/V2__seed_clientes.sql</code></strong> (opcional, datos de prueba)</p>
+<p>Flyway también migra datos, no solo estructura — un archivo versionado más, con <code>INSERT</code> en vez de <code>CREATE TABLE</code>. Sirve para no estar registrando clientes a mano cada vez que reinicias la base de datos:</p>
+<div class="highlight"><pre><span></span><code><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">clientes</span><span class="w"> </span><span class="p">(</span><span class="n">tipo_persona</span><span class="p">,</span><span class="w"> </span><span class="n">dni</span><span class="p">,</span><span class="w"> </span><span class="n">ruc</span><span class="p">,</span><span class="w"> </span><span class="n">nombre_completo</span><span class="p">,</span><span class="w"> </span><span class="n">razon_social</span><span class="p">,</span><span class="w"> </span><span class="n">direccion</span><span class="p">,</span><span class="w"> </span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="n">whatsapp</span><span class="p">)</span>
+<span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="s1">'NATURAL'</span><span class="p">,</span><span class="w"> </span><span class="s1">'87654321'</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span><span class="s1">'Maria Torres Quispe'</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span><span class="s1">'Av. Los Olivos 123, Lima'</span><span class="p">,</span><span class="w"> </span><span class="s1">'maria.torres@example.com'</span><span class="p">,</span><span class="w"> </span><span class="s1">'999888777'</span><span class="p">);</span>
+
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">clientes</span><span class="w"> </span><span class="p">(</span><span class="n">tipo_persona</span><span class="p">,</span><span class="w"> </span><span class="n">dni</span><span class="p">,</span><span class="w"> </span><span class="n">ruc</span><span class="p">,</span><span class="w"> </span><span class="n">nombre_completo</span><span class="p">,</span><span class="w"> </span><span class="n">razon_social</span><span class="p">,</span><span class="w"> </span><span class="n">direccion</span><span class="p">,</span><span class="w"> </span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="n">whatsapp</span><span class="p">)</span>
+<span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="s1">'JURIDICA'</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span><span class="s1">'20123456789'</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span><span class="s1">'Comercial Andina S.A.C.'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Jr. Comercio 456, Lima'</span><span class="p">,</span><span class="w"> </span><span class="s1">'contacto@comercialandina.pe'</span><span class="p">,</span><span class="w"> </span><span class="s1">'988777666'</span><span class="p">);</span>
+
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">clientes</span><span class="w"> </span><span class="p">(</span><span class="n">tipo_persona</span><span class="p">,</span><span class="w"> </span><span class="n">dni</span><span class="p">,</span><span class="w"> </span><span class="n">ruc</span><span class="p">,</span><span class="w"> </span><span class="n">nombre_completo</span><span class="p">,</span><span class="w"> </span><span class="n">razon_social</span><span class="p">,</span><span class="w"> </span><span class="n">direccion</span><span class="p">,</span><span class="w"> </span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="n">whatsapp</span><span class="p">)</span>
+<span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="s1">'NATURAL'</span><span class="p">,</span><span class="w"> </span><span class="s1">'45678912'</span><span class="p">,</span><span class="w"> </span><span class="s1">'10456789123'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Jose Ramirez Lopez'</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span><span class="s1">'Calle Las Flores 789, Arequipa'</span><span class="p">,</span><span class="w"> </span><span class="s1">'jose.ramirez@example.com'</span><span class="p">,</span><span class="w"> </span><span class="s1">'977666555'</span><span class="p">);</span>
+
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">clientes</span><span class="w"> </span><span class="p">(</span><span class="n">tipo_persona</span><span class="p">,</span><span class="w"> </span><span class="n">dni</span><span class="p">,</span><span class="w"> </span><span class="n">ruc</span><span class="p">,</span><span class="w"> </span><span class="n">nombre_completo</span><span class="p">,</span><span class="w"> </span><span class="n">razon_social</span><span class="p">,</span><span class="w"> </span><span class="n">direccion</span><span class="p">,</span><span class="w"> </span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="n">whatsapp</span><span class="p">)</span>
+<span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="s1">'JURIDICA'</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span><span class="s1">'20567891234'</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span><span class="s1">'Distribuidora del Sur E.I.R.L.'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Av. Ejercito 321, Arequipa'</span><span class="p">,</span><span class="w"> </span><span class="s1">'ventas@distribuidorasur.pe'</span><span class="p">,</span><span class="w"> </span><span class="s1">'966555444'</span><span class="p">);</span>
+</code></pre></div>
+<p>Este cuarto cliente (<code>NATURAL</code> con <code>dni</code> <strong>y</strong> <code>ruc</code>) es justo el caso de una persona natural con negocio propio, que puede pedir boleta con su DNI o factura con su RUC según la orden.</p>
+<p>Igual que <code>V1</code>, una vez aplicado no se edita — si necesitas ajustar estos datos, agrega un <code>V3</code> nuevo. <code>pagatu-orden-ms</code> también tiene su propio <code>V2__seed_ordenes.sql</code>, con órdenes de ejemplo referenciando estos <code>id</code> de <code>clientes</code> y los <code>id</code> de <code>productos</code> sembrados en <code>pagatu-catalogo-ms</code> (S1) — sin llave foránea entre microservicios, así que ese <code>V2</code> de <code>orden-ms</code> solo funciona si los seeds de <code>cliente-ms</code> y <code>catalogo-ms</code> ya se aplicaron antes.</p>
+<h2 id="tipo-de-comprobante-por-orden-boleta-simple-boleta-con-dni-o-factura">Tipo de comprobante por orden: boleta simple, boleta con DNI o factura<a class="headerlink" href="#tipo-de-comprobante-por-orden-boleta-simple-boleta-con-dni-o-factura" title="Permanent link">&para;</a></h2>
+<p>Elegir el comprobante es una decisión <strong>de cada orden</strong>, no del perfil del cliente — la misma persona puede pedir boleta simple una vez y factura la siguiente. Por eso este campo vive en <code>ordenes</code> (<code>pagatu-orden-ms</code>), no en <code>clientes</code>.</p>
+<p><strong>Tabla 4. Tipos de comprobante y qué exigen del cliente</strong></p>
+<table>
+<thead>
+<tr>
+<th><code>tipo_comprobante</code></th>
+<th>Requiere</th>
+<th>Uso típico</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BOLETA_SIMPLE</code></td>
+<td>Nada — ni DNI ni RUC</td>
+<td>Compra rápida, sin identificar al cliente.</td>
+</tr>
+<tr>
+<td><code>BOLETA_CON_DNI</code></td>
+<td>El cliente debe tener <code>dni</code> registrado en <code>pagatu-cliente-ms</code></td>
+<td>El cliente quiere su DNI impreso en la boleta (garantía, seguimiento).</td>
+</tr>
+<tr>
+<td><code>FACTURA</code></td>
+<td>El cliente debe tener <code>ruc</code> registrado en <code>pagatu-cliente-ms</code></td>
+<td>El cliente (persona natural con RUC, o persona jurídica) necesita crédito fiscal / gasto deducible.</td>
+</tr>
+</tbody>
+</table>
+<p>La columna <code>tipo_comprobante</code> ya está en <code>ordenes</code> (ver <code>V1__create_orden_tables.sql</code>, arriba en este mismo documento). Validar que el cliente realmente tenga <code>dni</code> (para <code>BOLETA_CON_DNI</code>) o <code>ruc</code> (para <code>FACTURA</code>) antes de crear la orden es responsabilidad del código — una consulta a <code>pagatu-cliente-ms</code> — no de una restricción SQL entre bases de datos distintas.</p>
+<h2 id="metodo-de-pago-por-orden">Método de pago por orden<a class="headerlink" href="#metodo-de-pago-por-orden" title="Permanent link">&para;</a></h2>
+<p><code>pagatu</code> es comercio electrónico, así que la orden también registra con qué método el cliente eligió pagar — el procesamiento real de ese pago (confirmar, rechazar, reintentar) es trabajo de <code>pago-ms</code>, recién en S8; hoy solo se deja registrado el método elegido en <code>ordenes.metodo_pago</code>.</p>
+<p>"Contra entrega" no es un método de pago — es <strong>cuándo</strong> se paga. El repartidor puede cobrar en efectivo, por Yape/Plin (QR) o incluso por transferencia al momento de la entrega; el medio sigue siendo uno de los mismos de siempre. Por eso <code>pagatu</code> separa dos columnas: <strong>con qué</strong> se paga (<code>metodo_pago</code>) y <strong>cuándo</strong> se paga (<code>momento_pago</code>).</p>
+<p><strong>Tabla 5. Métodos de pago considerados para <code>pagatu</code></strong></p>
+<table>
+<thead>
+<tr>
+<th><code>metodo_pago</code></th>
+<th>Descripción</th>
+<th>Nota</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TARJETA</code></td>
+<td>Tarjeta de crédito o débito (Visa, Mastercard), vía pasarela de pagos.</td>
+<td>Es el nodo "Pasarela de pagos externa" que ya está en el C4 nivel 1 y 2 (<a href="../../"><code>docs/index.md</code></a>); en la práctica solo aplica cuando <code>momento_pago = ADELANTADO</code>.</td>
+</tr>
+<tr>
+<td><code>YAPE_PLIN</code></td>
+<td>Billetera digital (Yape o Plin) por QR.</td>
+<td>Funciona tanto adelantado como al momento de la entrega.</td>
+</tr>
+<tr>
+<td><code>TRANSFERENCIA</code></td>
+<td>Transferencia bancaria directa.</td>
+<td>El cliente paga fuera del sistema y sube o registra un comprobante; también puede hacerse al recibir el pedido.</td>
+</tr>
+<tr>
+<td><code>PAGO_EFECTIVO</code></td>
+<td>Efectivo — en un agente/punto físico afiliado si es adelantado, o directo al repartidor si es contra entrega.</td>
+<td>Útil para clientes sin tarjeta ni banca digital.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Tabla 6. <code>momento_pago</code>: cuándo se paga</strong></p>
+<table>
+<thead>
+<tr>
+<th><code>momento_pago</code></th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ADELANTADO</code></td>
+<td>El cliente paga al crear la orden, antes del despacho — <code>pago-ms</code> procesa el pago de inmediato (S8-S9).</td>
+</tr>
+<tr>
+<td><code>CONTRA_ENTREGA</code></td>
+<td>El cliente paga cuando recibe el pedido, con cualquiera de los métodos de la Tabla 5 (excepto <code>TARJETA</code>, en la práctica — no suele haber POS físico con el repartidor).</td>
+</tr>
+</tbody>
+</table>
+<p><code>metodo_pago</code> y <code>momento_pago</code> son obligatorios desde el diseño (<code>NOT NULL</code>) porque, a diferencia del comprobante, en comercio electrónico real casi nunca se permite crear una orden sin saber cómo y cuándo se va a pagar. Validar reglas como "<code>TARJETA</code> no aplica a <code>CONTRA_ENTREGA</code>" es trabajo del código en <code>pago-ms</code> (S8), no una restricción SQL de este documento.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
