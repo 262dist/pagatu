@@ -1,0 +1,2619 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://262dist.github.io/pagatu/sesiones/S03_Registro_Descubrimiento_Ejecucion_Concurrente/">
+      
+      
+        <link rel="prev" href="../S02_Configuracion_Centralizada_Ambientes/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+  
+    <title>Pagatu - S3 - Registro, descubrimiento y ejecución concurrente de servicios</title>
+  
+
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#s3-registro-descubrimiento-y-ejecucion-concurrente-de-servicios" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Pagatu" class="md-header__button md-logo" aria-label="Pagatu" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Pagatu
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              S3 - Registro, descubrimiento y ejecución concurrente de servicios
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/262dist/pagatu" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    262dist/pagatu
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Pagatu" class="md-nav__button md-logo" aria-label="Pagatu" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Pagatu
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/262dist/pagatu" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    262dist/pagatu
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía de Proyecto Sello
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guía de Proyecto Sello
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía del proyecto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/alcance-microservicios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Alcance por microservicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabos
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Silabos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabo 2026-1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabo 2026-2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I. Sistema distribuido base orientado a producción
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    I. Sistema distribuido base orientado a producción
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S01_Construccion_Servicio_Base/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S1 - Construcción de un servicio base para un sistema distribuido
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S02_Configuracion_Centralizada_Ambientes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S2 - Gestión centralizada de configuración y ambientes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S3 - Registro, descubrimiento y ejecución concurrente de servicios
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S3 - Registro, descubrimiento y ejecución concurrente de servicios
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introducción
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introducción">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-presentacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Presentación de la sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-indice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Índice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-proposito-de-aprendizaje" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Propósito de aprendizaje
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-producto-de-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Producto de sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-metodologia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Metodología
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-motivacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6 Motivación de la sesión
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.6 Motivación de la sesión">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#161-caso-el-puerto-que-ya-no-alcanza" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6.1 Caso: el puerto que ya no alcanza
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-ubicacion-en-el-curso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.7 Ubicación en el curso
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-explica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Explica
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Explica">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-arquitectura-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Arquitectura de la sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-registro-de-servicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Registro de servicios
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-el-patron-service-registry-en-la-arquitectura-de-microservicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 El patrón Service Registry en la arquitectura de microservicios
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-descubrimiento-de-servicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Descubrimiento de servicios
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-ejecucion-concurrente-de-servicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Ejecución concurrente de servicios
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-aplica-actividad-practica-guiada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Aplica: actividad práctica guiada
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Aplica: actividad práctica guiada">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-verificar-el-punto-de-partida" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Verificar el punto de partida
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-crear-el-proyecto-pagatu-eureka" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Crear el proyecto pagatu-eureka
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-habilitar-eureka-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Habilitar Eureka Server
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-configurar-pagatu-eureka-como-config-client" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Configurar pagatu-eureka como Config Client
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-crear-la-configuracion-de-pagatu-eureka-en-config-repo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Crear la configuración de pagatu-eureka en config-repo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-probar-pagatu-eureka-en-dev" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 Probar pagatu-eureka en DEV
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-conectar-pagatu-catalogo-ms-como-cliente-eureka" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7 Conectar pagatu-catalogo-ms como cliente Eureka
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#38-levantar-pagatu-catalogo-ms-y-verificar-el-registro" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.8 Levantar pagatu-catalogo-ms y verificar el registro
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#39-levantar-una-segunda-instancia-y-verificar-multiples-instancias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.9 Levantar una segunda instancia y verificar múltiples instancias
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#310-exponer-metricas-de-pagatu-catalogo-ms-para-prometheus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.10 Exponer métricas de pagatu-catalogo-ms para Prometheus
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#311-crear-pagatu-observability-con-prometheus-descubrimiento-via-eureka" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.11 Crear pagatu-observability con Prometheus (descubrimiento vía Eureka)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#312-verificar-targets-descubiertos-y-metricas-recolectadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.12 Verificar targets descubiertos y métricas recolectadas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#313-enviar-logs-de-pagatu-catalogo-ms-a-loki" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.13 Enviar logs de pagatu-catalogo-ms a Loki
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#314-verificar-logs-en-loki" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.14 Verificar logs en Loki
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#315-registro-en-produccion-local-opcional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.15 Registro en producción local (opcional)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-crea-actividad-autonoma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Crea: actividad autónoma
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Crea: actividad autónoma">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-actividad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Actividad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Propósito
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-indicaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Indicaciones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3 Indicaciones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#431-estructura-del-informe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.1 Estructura del informe
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-criterios-minimos-de-aceptacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Criterios mínimos de aceptación
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-preguntas-de-defensa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 Preguntas de defensa
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-rubrica-de-evaluacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 Rúbrica de evaluación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-cierre" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Cierre
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bibliografia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bibliografía
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introducción
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introducción">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-presentacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Presentación de la sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-indice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Índice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-proposito-de-aprendizaje" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Propósito de aprendizaje
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-producto-de-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Producto de sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-metodologia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Metodología
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-motivacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6 Motivación de la sesión
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.6 Motivación de la sesión">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#161-caso-el-puerto-que-ya-no-alcanza" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6.1 Caso: el puerto que ya no alcanza
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-ubicacion-en-el-curso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.7 Ubicación en el curso
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-explica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Explica
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Explica">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-arquitectura-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Arquitectura de la sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-registro-de-servicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Registro de servicios
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-el-patron-service-registry-en-la-arquitectura-de-microservicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 El patrón Service Registry en la arquitectura de microservicios
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-descubrimiento-de-servicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Descubrimiento de servicios
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-ejecucion-concurrente-de-servicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Ejecución concurrente de servicios
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-aplica-actividad-practica-guiada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Aplica: actividad práctica guiada
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Aplica: actividad práctica guiada">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-verificar-el-punto-de-partida" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Verificar el punto de partida
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-crear-el-proyecto-pagatu-eureka" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Crear el proyecto pagatu-eureka
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-habilitar-eureka-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Habilitar Eureka Server
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-configurar-pagatu-eureka-como-config-client" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Configurar pagatu-eureka como Config Client
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-crear-la-configuracion-de-pagatu-eureka-en-config-repo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Crear la configuración de pagatu-eureka en config-repo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-probar-pagatu-eureka-en-dev" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 Probar pagatu-eureka en DEV
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-conectar-pagatu-catalogo-ms-como-cliente-eureka" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7 Conectar pagatu-catalogo-ms como cliente Eureka
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#38-levantar-pagatu-catalogo-ms-y-verificar-el-registro" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.8 Levantar pagatu-catalogo-ms y verificar el registro
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#39-levantar-una-segunda-instancia-y-verificar-multiples-instancias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.9 Levantar una segunda instancia y verificar múltiples instancias
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#310-exponer-metricas-de-pagatu-catalogo-ms-para-prometheus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.10 Exponer métricas de pagatu-catalogo-ms para Prometheus
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#311-crear-pagatu-observability-con-prometheus-descubrimiento-via-eureka" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.11 Crear pagatu-observability con Prometheus (descubrimiento vía Eureka)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#312-verificar-targets-descubiertos-y-metricas-recolectadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.12 Verificar targets descubiertos y métricas recolectadas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#313-enviar-logs-de-pagatu-catalogo-ms-a-loki" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.13 Enviar logs de pagatu-catalogo-ms a Loki
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#314-verificar-logs-en-loki" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.14 Verificar logs en Loki
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#315-registro-en-produccion-local-opcional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.15 Registro en producción local (opcional)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-crea-actividad-autonoma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Crea: actividad autónoma
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Crea: actividad autónoma">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-actividad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Actividad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Propósito
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-indicaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Indicaciones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3 Indicaciones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#431-estructura-del-informe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.1 Estructura del informe
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-criterios-minimos-de-aceptacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Criterios mínimos de aceptación
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-preguntas-de-defensa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 Preguntas de defensa
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-rubrica-de-evaluacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 Rúbrica de evaluación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-cierre" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Cierre
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bibliografia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bibliografía
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="s3-registro-descubrimiento-y-ejecucion-concurrente-de-servicios">S3 - Registro, Descubrimiento y Ejecución Concurrente de Servicios<a class="headerlink" href="#s3-registro-descubrimiento-y-ejecucion-concurrente-de-servicios" title="Permanent link">&para;</a></h1>
+<p><em>Por: Angel Sullon Macalupu @asullom - 2026</em></p>
+<h2 id="1-introduccion">1. Introducción<a class="headerlink" href="#1-introduccion" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 20 min.</p>
+<h3 id="11-presentacion-de-la-sesion">1.1 Presentación de la sesión<a class="headerlink" href="#11-presentacion-de-la-sesion" title="Permanent link">&para;</a></h3>
+<p>Hasta ahora, cualquier cliente que necesitaba llamar a un microservicio tenía que conocer de antemano su host y su puerto exactos — una URL fija, escrita a mano en la configuración. Eso funciona con un servicio y una instancia, pero deja de funcionar en cuanto aparece una segunda instancia del mismo servicio, o un servicio nuevo que nadie anticipó. Esta sesión resuelve exactamente eso: un servidor de registro donde cada microservicio anuncia su propia existencia al arrancar, y cualquier otro componente lo encuentra por nombre lógico, sin conocer su dirección de antemano — incluso cuando hay varias instancias corriendo a la vez.</p>
+<h3 id="12-indice">1.2 Índice<a class="headerlink" href="#12-indice" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Registro de servicios.</li>
+<li>El patrón Service Registry en la arquitectura de microservicios.</li>
+<li>Descubrimiento de servicios.</li>
+<li>Ejecución concurrente de servicios.</li>
+</ol>
+<h3 id="13-proposito-de-aprendizaje">1.3 Propósito de aprendizaje<a class="headerlink" href="#13-proposito-de-aprendizaje" title="Permanent link">&para;</a></h3>
+<p>Al concluir la clase, estarás en condiciones de:</p>
+<ul>
+<li><strong>Incorporar</strong> un servidor de registro y descubrimiento de servicios, conectar un microservicio como cliente, y verificar múltiples instancias activas del mismo servicio localizables por nombre lógico, sin que el cliente necesite conocer el puerto de cada una.</li>
+</ul>
+<h3 id="14-producto-de-sesion">1.4 Producto de sesión<a class="headerlink" href="#14-producto-de-sesion" title="Permanent link">&para;</a></h3>
+<p><code>pagatu-eureka</code> operativo en <code>infra/pagatu-eureka</code>, con <code>pagatu-catalogo-ms</code> registrado como cliente Eureka y ejecutando dos instancias simultáneas (puerto fijo <code>8080</code>/<code>8081</code>, igual que desde S1), visibles por nombre lógico en el dashboard — sin que ningún cliente necesite memorizar en qué puerto responde cada una. De forma opcional (según los recursos de cómputo disponibles), también Prometheus y Loki en pie en <code>infra/pagatu-observability</code>, recolectando métricas y logs de esas mismas instancias — Prometheus las encuentra preguntándole a <code>pagatu-eureka</code>, no por una lista de direcciones escrita a mano.</p>
+<h3 id="15-metodologia">1.5 Metodología<a class="headerlink" href="#15-metodologia" title="Permanent link">&para;</a></h3>
+<p><strong>Tabla 1. Metodología de la sesión</strong></p>
+<table>
+<thead>
+<tr>
+<th>Actividades a Realizar en el Periodo</th>
+<th>Orientaciones generales (Orientaciones Metodológicas)</th>
+<th>Material de estudio recomendado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Revisión previa individual</td>
+<td>Confirmar que <code>pagatu-config</code> y <code>pagatu-catalogo-ms</code> (S2) siguen arrancando en DEV. Trabajo individual, antes de clase; identificar qué pasaría si <code>pagatu-catalogo-ms</code> necesitara dos instancias corriendo a la vez hoy mismo, con el puerto <code>8080</code> fijo que usa desde S1.</td>
+<td>Evidencia individual de S2, <code>pagatu-catalogo-ms-dev.yml</code> actual.</td>
+</tr>
+<tr>
+<td>Clase presencial</td>
+<td>Construcción guiada de <code>pagatu-eureka</code> y conexión de <code>pagatu-catalogo-ms</code> como cliente, con dos instancias verificadas en el dashboard. Trabajo individual, siguiendo al docente paso a paso; consulta inmediata ante un servicio que no aparece registrado. Quien cuente con los recursos de cómputo puede continuar con Prometheus y Loki (3.10-3.14, opcional) y con producción local (3.15, opcional).</td>
+<td>Pasos 3.1 a 3.9 de esta guía (3.10-3.15 son opcionales).</td>
+</tr>
+<tr>
+<td>Evaluación formativa</td>
+<td>Revisión en clase de <code>pagatu-eureka</code> respondiendo por HTTP y de dos instancias de <code>pagatu-catalogo-ms</code> visibles en el dashboard. La evidencia se completa y sustenta de forma individual, fuera del aula, según los criterios mínimos de la sección 4.4.</td>
+<td>Indicaciones de entrega (4.3), rúbrica de evaluación (4.6).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="16-motivacion-de-la-sesion">1.6 Motivación de la sesión<a class="headerlink" href="#16-motivacion-de-la-sesion" title="Permanent link">&para;</a></h3>
+<h4 id="161-caso-el-puerto-que-ya-no-alcanza">1.6.1 Caso: el puerto que ya no alcanza<a class="headerlink" href="#161-caso-el-puerto-que-ya-no-alcanza" title="Permanent link">&para;</a></h4>
+<p><code>pagatu-catalogo-ms</code> arranca hoy en el puerto <code>8080</code>, fijo — S1 (3.4.1) ya mostró que una segunda instancia necesita que alguien le pase <code>--server.port=8081</code> a mano, y que cualquier cliente que quiera repartir tráfico entre ambas tiene que conocer los dos puertos de antemano. Eso todavía es manejable con dos instancias de un solo servicio. El problema real aparece cuando el sistema crece: varios microservicios, cada uno con varias instancias, y nadie escribiendo a mano una lista de puertos que cambia cada vez que algo se reinicia, se cae o se agrega.</p>
+<p>La solución no es "recordar mejor" las direcciones — es que ningún cliente necesite conocerlas: cada instancia se anuncia sola al arrancar, en un lugar único, con un nombre lógico (<code>pagatu-catalogo-ms</code>, no <code>localhost:8080</code>); quien la necesite pregunta por ese nombre, no por una dirección fija.</p>
+<p><strong>Preguntas de análisis</strong></p>
+<p><strong>Activación de conocimientos previos</strong></p>
+<ol>
+<li>En S1 (3.4.1), la segunda instancia de <code>pagatu-catalogo-ms</code> necesitó un puerto distinto pasado a mano (<code>--server.port=8081</code>). ¿Qué tendría que hacer un cliente para repartir peticiones entre esa instancia y la original, hoy, sin ningún componente nuevo?</li>
+</ol>
+<p><strong>Comprensión de registro y descubrimiento</strong></p>
+<ol>
+<li>¿Qué diferencia hay entre conocer la dirección de un servicio y conocer su nombre lógico?</li>
+<li>Si dos instancias del mismo microservicio ya corren en puertos distintos (8080 y 8081), ¿qué falta para que un cliente no tenga que memorizar cuál es cuál?</li>
+</ol>
+<h3 id="17-ubicacion-en-el-curso">1.7 Ubicación en el curso<a class="headerlink" href="#17-ubicacion-en-el-curso" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Unidad: U1 - Sistema distribuido base orientado a producción.</li>
+<li>Producto de unidad: sistema distribuido base funcional, configurable y preparado para múltiples instancias.</li>
+<li>Producto del curso: sistema distribuido de microservicios end-to-end, configurable, escalable, seguro, resiliente, consistente, observable, integrado con frontend y defendido técnicamente.</li>
+<li>Avance del producto en esta sesión: registro y descubrimiento de servicios operativo, con <code>pagatu-catalogo-ms</code> ejecutando múltiples instancias localizables por nombre lógico.</li>
+</ul>
+<p><strong>Figura 1. Roadmap del producto de la unidad</strong></p>
+<pre class="mermaid"><code>flowchart TB
+    Cliente["Cliente de prueba - PowerShell / bash / Swagger"]
+    Gateway["Gateway - punto único de acceso - balanceo de carga"]
+    Catalogo["pagatu-catalogo-ms - construido en S1 - REST + BD + health"]
+    Orden["pagatu-orden-ms - trabajo aplicado"]
+    Eureka["Registro de servicios - pagatu-eureka - HOY"]
+    Config["Servidor de configuración - pagatu-config - construido en S2"]
+    Repo[("Repositorio de configuración - config-repo")]
+
+    Cliente --&gt; Gateway
+    Gateway --&gt; Catalogo
+    Gateway --&gt; Orden
+    Gateway -. descubre servicios .-&gt; Eureka
+    Catalogo -. registra instancia .-&gt; Eureka
+    Orden -. registra instancia .-&gt; Eureka
+    Catalogo -. carga configuración .-&gt; Config
+    Orden -. carga configuración .-&gt; Config
+    Eureka -. carga configuración .-&gt; Config
+    Config --&gt; Repo
+
+    classDef done fill:#e8f5e9,stroke:#2e7d32,color:#111;
+    classDef today fill:#ffe08a,stroke:#9a6b00,stroke-width:2px,color:#111;
+    class Catalogo,Config done;
+    class Eureka today;</code></pre>
+<p>Hoy se construye <code>pagatu-eureka</code> y se conecta <code>pagatu-catalogo-ms</code> como cliente. <code>pagatu-orden-ms</code> (todavía sin Config Client ni Eureka Client) se conecta como trabajo autónomo (sección 4) — el mismo patrón, aplicado sobre el segundo microservicio.</p>
+<h2 id="2-explica">2. Explica<a class="headerlink" href="#2-explica" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 20 min.</p>
+<h3 id="21-arquitectura-de-la-sesion">2.1 Arquitectura de la sesión<a class="headerlink" href="#21-arquitectura-de-la-sesion" title="Permanent link">&para;</a></h3>
+<p><strong>Figura 2. Registro y descubrimiento en DEV</strong></p>
+<pre class="mermaid"><code>flowchart TB
+    Cliente["Cliente&lt;br/&gt;PowerShell / bash / navegador"]
+    Eureka["Eureka Server&lt;br/&gt;localhost:18761"]
+    I1["pagatu-catalogo-ms&lt;br/&gt;instancia 1, puerto 8080"]
+    I2["pagatu-catalogo-ms&lt;br/&gt;instancia 2, puerto 8081"]
+    Config["Config Server&lt;br/&gt;localhost:18888"]
+
+    Cliente --&gt;|"GET localhost:18761"| Eureka
+    Cliente --&gt;|"GET localhost:8080/api/v1/categorias"| I1
+
+    I1 -. "registra instancia&lt;br/&gt;http://localhost:18761/eureka" .-&gt; Eureka
+    I2 -. "registra instancia&lt;br/&gt;http://localhost:18761/eureka" .-&gt; Eureka
+
+    I1 -. "spring.config.import&lt;br/&gt;http://localhost:18888" .-&gt; Config
+    I2 -. "spring.config.import&lt;br/&gt;http://localhost:18888" .-&gt; Config
+    Eureka -. "spring.config.import&lt;br/&gt;http://localhost:18888" .-&gt; Config</code></pre>
+<p>En DEV, los componentes principales corren con Maven en el host:</p>
+<div class="highlight"><pre><span></span><code>Config Server: http://localhost:18888
+Eureka Server: http://localhost:18761
+Microservicios: puerto fijo por instancia (8080, 8081, ...)
+</code></pre></div>
+<p>Lectura del diagrama: el cliente ya no necesita saber en qué puerto responde <code>pagatu-catalogo-ms</code> — cada instancia se anuncia a <code>pagatu-eureka</code> al arrancar, y es Eureka quien resuelve el nombre lógico (<code>pagatu-catalogo-ms</code>) a una dirección real, en el momento en que alguien pregunta. La configuración de los tres componentes (incluido el propio <code>pagatu-eureka</code>) sigue viniendo de <code>pagatu-config</code>, exactamente como desde S2 — registro y configuración son dos preguntas distintas, a dos servidores distintos. Este diagrama es el mapa que guía el resto de la explicación: cada apartado siguiente desarrolla uno de sus componentes, en el mismo orden del Índice (1.2).</p>
+<h3 id="22-registro-de-servicios">2.2 Registro de servicios<a class="headerlink" href="#22-registro-de-servicios" title="Permanent link">&para;</a></h3>
+<p><strong>Registro de servicios</strong>: el componente (<code>pagatu-eureka</code>, un <strong>Eureka Server</strong>) donde cada microservicio anuncia su propia existencia al arrancar — nombre lógico, dirección real y un <strong>heartbeat</strong> periódico que confirma que la instancia sigue viva. Si una instancia deja de enviar heartbeat (se cayó, se apagó), Eureka la retira del registro después de un tiempo, sin que nadie tenga que notificarlo a mano.</p>
+<p><strong>Error frecuente</strong>: pensar que Eureka "descubre" servicios activamente, buscándolos en la red. Es al revés — cada instancia se registra por su cuenta, empujando la información hacia Eureka (<em>self-registration</em>); Eureka nunca sale a buscar quién está corriendo.</p>
+<h3 id="23-el-patron-service-registry-en-la-arquitectura-de-microservicios">2.3 El patrón Service Registry en la arquitectura de microservicios<a class="headerlink" href="#23-el-patron-service-registry-en-la-arquitectura-de-microservicios" title="Permanent link">&para;</a></h3>
+<p>Lo construido en 2.2 no es una solución aislada de <code>pagatu</code> — es la implementación de <strong>Service Registry</strong> (también llamado <em>Service Discovery</em>), uno de los patrones de arquitectura de microservicios más conocidos.</p>
+<p><strong>Problema que resuelve:</strong> en un sistema con varios microservicios, cada uno con varias instancias que pueden aparecer, moverse o desaparecer en cualquier momento, ningún cliente puede mantener a mano una lista actualizada de direcciones válidas. Codificar esas direcciones de forma fija hace que el sistema deje de tolerar cambios de escala sin intervención manual.</p>
+<p><strong>Contexto en el que aplica:</strong> sistemas distribuidos donde el número de instancias de un mismo servicio varía (por escalado, caídas o despliegues), y donde ningún cliente puede asumir una dirección fija de antemano.</p>
+<p><strong>Cómo funciona:</strong> cada instancia se registra a sí misma ante un servidor de registro al arrancar (<em>self-registration</em>, ya visto en 2.2) y renueva su registro periódicamente mediante <em>heartbeat</em>. Quien necesita comunicarse con el servicio consulta al registro por su nombre lógico, en vez de guardar una dirección fija (<em>client-side</em> o <em>server-side discovery</em>, según quién resuelva la dirección — en esta sesión, cada cliente de Eureka la resuelve del lado del cliente).</p>
+<p><strong>Casos de uso típicos:</strong></p>
+<ul>
+<li>Servicios que escalan horizontalmente, con instancias que aparecen y desaparecen sin aviso previo.</li>
+<li>Entornos donde las direcciones de red no son estables (contenedores, orquestadores, nube).</li>
+<li>Un Gateway o balanceador que necesita repartir tráfico entre todas las instancias vivas de un servicio (adelanto de S4).</li>
+</ul>
+<p><strong>Trade-offs a considerar:</strong></p>
+<ul>
+<li>El propio servidor de registro se vuelve un componente crítico: si no está disponible, ningún cliente nuevo puede descubrir instancias (aunque las ya conectadas suelen seguir funcionando con lo último que resolvieron).</li>
+<li>Hay una ventana de tiempo entre que una instancia se cae y el registro deja de anunciarla (mientras vence su último <em>heartbeat</em>).</li>
+</ul>
+<p><strong>Errores comunes al implementarlo:</strong></p>
+<ul>
+<li>Reutilizar el mismo puerto en dos instancias que deben correr a la vez sin coordinarlas (el error que evita asignar puertos distintos a mano en 2.5/3.9).</li>
+<li>Asumir que una instancia que aparece en el registro sigue necesariamente viva en este instante exacto — el registro refleja el último <em>heartbeat</em> recibido, no el estado en tiempo real.</li>
+</ul>
+<p><code>pagatu-eureka</code> es la implementación concreta de este patrón para el curso; en la Figura 2 ya se ve funcionando junto al resto del sistema.</p>
+<h3 id="24-descubrimiento-de-servicios">2.4 Descubrimiento de servicios<a class="headerlink" href="#24-descubrimiento-de-servicios" title="Permanent link">&para;</a></h3>
+<p><strong>Descubrimiento de servicios</strong>: la capacidad de encontrar una instancia real preguntando solo por su nombre lógico (<code>spring.application.name</code>, el mismo que ya identifica a cada microservicio en <code>pagatu-config</code> desde S2), sin conocer host ni puerto de antemano. Quien pregunta puede ser otro microservicio, o — a partir de S4 — el Gateway, que reparte tráfico entre todas las instancias que Eureka le devuelva para ese nombre.</p>
+<p>El nombre lógico es literalmente el mismo dato que ya existe desde S2: <code>spring.application.name</code> identifica al microservicio ante <code>pagatu-config</code> (<code>/pagatu-catalogo-ms/dev</code>) y, desde hoy, también ante <code>pagatu-eureka</code> — un solo nombre, dos usos.</p>
+<p><strong>Descubrimiento aplicado a observabilidad</strong>: quien pregunta por el registro de Eureka no tiene que ser otro microservicio. Prometheus (una herramienta de monitoreo, no un microservicio propio del negocio) puede usar a <code>pagatu-eureka</code> exactamente igual — como fuente de descubrimiento (<code>eureka_sd_configs</code>) — para encontrar qué instancias existen y de dónde recolectar sus métricas, sin que nadie mantenga a mano una lista de direcciones que cambia cada vez que se agrega o se cae una instancia. Es el mismo mecanismo de descubrimiento de esta sección, aplicado a un consumidor distinto del registro.</p>
+<h3 id="25-ejecucion-concurrente-de-servicios">2.5 Ejecución concurrente de servicios<a class="headerlink" href="#25-ejecucion-concurrente-de-servicios" title="Permanent link">&para;</a></h3>
+<p><strong>Ejecución concurrente</strong>: varias instancias del mismo microservicio corriendo a la vez, cada una anunciándose a Eureka bajo el mismo nombre lógico. En DEV, cada instancia sigue arrancando con un puerto fijo asignado a mano (<code>8080</code>, <code>8081</code>, ...) — el mismo mecanismo de S1 (3.4.1) —, porque varias instancias comparten el mismo host y necesitan puertos distintos para no chocar entre sí. Lo que cambia hoy no es cómo se elige el puerto, sino que ya nadie fuera de la propia instancia necesita conocerlo: cada una se registra con su dirección real, y quien la busca pregunta por el nombre lógico, no por el puerto.</p>
+<p><strong>Tabla 2. Antes (S1-S2) vs. hoy: cómo se identifica una instancia</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Antes (S1-S2)</th>
+<th>Hoy (con Eureka)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Segunda instancia</td>
+<td>Necesita <code>--server.port=8081</code> a mano (S1, 3.4.1)</td>
+<td>Mismo mecanismo: puerto distinto a mano (3.9)</td>
+</tr>
+<tr>
+<td>Cómo la encuentra un cliente</td>
+<td>Conociendo el puerto exacto de antemano</td>
+<td>Preguntando a Eureka por el nombre lógico <code>pagatu-catalogo-ms</code></td>
+</tr>
+<tr>
+<td>Qué pasa si se cae</td>
+<td>El cliente sigue intentando la misma dirección, sin saber que ya no responde</td>
+<td>Eureka deja de devolverla después de perder su heartbeat</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Error frecuente</strong>: pensar que Eureka exige puertos asignados automáticamente por el sistema operativo. No es así — lo que exige es que cada instancia tenga un puerto <em>distinto</em>, elegido de la forma que sea (a mano en DEV, aislado por contenedor en PROD); lo nuevo es que ese puerto deja de ser algo que el cliente necesita memorizar.</p>
+<h2 id="3-aplica-actividad-practica-guiada">3. Aplica: actividad práctica guiada<a class="headerlink" href="#3-aplica-actividad-practica-guiada" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 2h.</p>
+<p><strong>Actividad:</strong> construcción de <code>pagatu-eureka</code> y conexión de <code>pagatu-catalogo-ms</code> como cliente, verificado con dos instancias simultáneas en el dashboard (Producto de la sesión en 1.4).</p>
+<p><strong>Propósito de la actividad:</strong> que cada estudiante levante un servidor de registro real, conecte un microservicio existente como cliente, y verifique — con evidencia, no de memoria — que dos instancias del mismo servicio son localizables por nombre lógico.</p>
+<p><strong>Orientaciones metodológicas:</strong> el docente guía la construcción de <code>pagatu-eureka</code> y la conexión de <code>pagatu-catalogo-ms</code> paso a paso frente a la clase; los estudiantes replican cada paso en su propio equipo, verificando el dashboard antes de avanzar al siguiente paso.</p>
+<p><strong>Actividades para realizar:</strong></p>
+<ul>
+<li><strong>3.1</strong> Verificar el punto de partida.</li>
+<li><strong>3.2</strong> Crear el proyecto <code>pagatu-eureka</code>.</li>
+<li><strong>3.3</strong> Habilitar Eureka Server.</li>
+<li><strong>3.4</strong> Configurar <code>pagatu-eureka</code> como Config Client.</li>
+<li><strong>3.5</strong> Crear la configuración de <code>pagatu-eureka</code> en <code>config-repo</code>.</li>
+<li><strong>3.6</strong> Probar <code>pagatu-eureka</code> en DEV.</li>
+<li><strong>3.7</strong> Conectar <code>pagatu-catalogo-ms</code> como cliente Eureka.</li>
+<li><strong>3.8</strong> Levantar <code>pagatu-catalogo-ms</code> y verificar el registro.</li>
+<li><strong>3.9</strong> Levantar una segunda instancia y verificar múltiples instancias.</li>
+<li><strong>3.10</strong> Exponer métricas de <code>pagatu-catalogo-ms</code> para Prometheus (opcional).</li>
+<li><strong>3.11</strong> Crear <code>pagatu-observability</code> con Prometheus (descubrimiento vía Eureka) (opcional).</li>
+<li><strong>3.12</strong> Verificar targets descubiertos y métricas recolectadas (opcional).</li>
+<li><strong>3.13</strong> Enviar logs de <code>pagatu-catalogo-ms</code> a Loki (opcional).</li>
+<li><strong>3.14</strong> Verificar logs en Loki (opcional).</li>
+<li><strong>3.15</strong> Registro en producción local (opcional).</li>
+</ul>
+<h3 id="31-verificar-el-punto-de-partida">3.1 Verificar el punto de partida<a class="headerlink" href="#31-verificar-el-punto-de-partida" title="Permanent link">&para;</a></h3>
+<p><strong>Punto de partida común:</strong> todo el equipo debe comenzar exactamente desde el mismo estado, no desde su propio avance individual. Clona la rama <code>s02-configuracion-centralizada</code> (el snapshot de cierre de S2 — incluye <code>pagatu-config</code> y <code>pagatu-catalogo-ms</code> migrado a Config Client):</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>--branch<span class="w"> </span>s02-configuracion-centralizada<span class="w"> </span>https://github.com/262dist/pagatu.git
+</code></pre></div>
+<p><strong>Producto del paso:</strong> confirmación de que <code>pagatu-config</code> y <code>pagatu-catalogo-ms</code> siguen funcionando en DEV, antes de tocar código nuevo.</p>
+<p><strong>Requisito antes de continuar:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>infra/pagatu-config
+mvnw<span class="w"> </span>spring-boot:run
+</code></pre></div>
+<p>En otra terminal:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>services/pagatu-catalogo-ms
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-dev.yml<span class="w"> </span>up<span class="w"> </span>-d
+mvnw<span class="w"> </span>spring-boot:run
+</code></pre></div>
+<p>Confirma que <code>http://localhost:8080/actuator/health</code> responde <code>UP</code>, con configuración recibida desde <code>pagatu-config</code>. Si falla, el problema es anterior a esta sesión (S1-S2), no de los pasos 3.2 en adelante.</p>
+<h3 id="32-crear-el-proyecto-pagatu-eureka">3.2 Crear el proyecto <code>pagatu-eureka</code><a class="headerlink" href="#32-crear-el-proyecto-pagatu-eureka" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> proyecto Spring Boot <code>pagatu-eureka</code> creado dentro de <code>infra/pagatu-eureka</code>.</p>
+<p>Desde VS Code, usa Spring Initializr (<code>Spring Initializr: Create a Maven Project</code>):</p>
+<p><strong>Tabla 3. Configuración del proyecto <code>pagatu-eureka</code> en Spring Initializr</strong></p>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Project</td>
+<td>Maven Project</td>
+</tr>
+<tr>
+<td>Spring Boot</td>
+<td><strong>4.0.7</strong></td>
+</tr>
+<tr>
+<td>Language</td>
+<td>Java</td>
+</tr>
+<tr>
+<td>Group Id</td>
+<td><code>pe.edu.upeu</code></td>
+</tr>
+<tr>
+<td>Artifact Id</td>
+<td><code>pagatu-eureka</code></td>
+</tr>
+<tr>
+<td>Package name</td>
+<td><code>pe.edu.upeu.eureka</code></td>
+</tr>
+<tr>
+<td>Packaging</td>
+<td>Jar</td>
+</tr>
+<tr>
+<td>Java</td>
+<td>21</td>
+</tr>
+<tr>
+<td>Ubicación sugerente</td>
+<td><code>infra/pagatu-eureka</code></td>
+</tr>
+</tbody>
+</table>
+<p>Dependencias a seleccionar:</p>
+<p><strong>Tabla 4. Dependencias del proyecto <code>pagatu-eureka</code></strong></p>
+<table>
+<thead>
+<tr>
+<th>Grupo</th>
+<th>Dependencias</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Spring Cloud</td>
+<td>Eureka Server</td>
+<td>Registro y descubrimiento de servicios</td>
+</tr>
+<tr>
+<td>Spring Cloud</td>
+<td>Config Client</td>
+<td>Leer configuración desde <code>pagatu-config</code></td>
+</tr>
+<tr>
+<td>Ops</td>
+<td>Spring Boot Actuator</td>
+<td>Verificar health de <code>pagatu-eureka</code></td>
+</tr>
+<tr>
+<td>Productividad</td>
+<td>Spring Boot DevTools</td>
+<td>Facilitar ejecución en desarrollo</td>
+</tr>
+</tbody>
+</table>
+<p>En <code>pom.xml</code>, la dependencia clave:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-netflix-eureka-server<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div>
+<p>Mismo BOM de Spring Cloud que ya usa <code>pagatu-config</code> (S2, 3.3) — <strong>Spring Cloud 2025.1.2</strong> (<em>Oakwood</em>):</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;properties&gt;</span>
+<span class="w">    </span><span class="nt">&lt;java.version&gt;</span>21<span class="nt">&lt;/java.version&gt;</span>
+<span class="w">    </span><span class="nt">&lt;spring-cloud.version&gt;</span>2025.1.2<span class="nt">&lt;/spring-cloud.version&gt;</span>
+<span class="nt">&lt;/properties&gt;</span>
+
+<span class="nt">&lt;dependencyManagement&gt;</span>
+<span class="w">    </span><span class="nt">&lt;dependencies&gt;</span>
+<span class="w">        </span><span class="nt">&lt;dependency&gt;</span>
+<span class="w">            </span><span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">            </span><span class="nt">&lt;artifactId&gt;</span>spring-cloud-dependencies<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">            </span><span class="nt">&lt;version&gt;</span>${spring-cloud.version}<span class="nt">&lt;/version&gt;</span>
+<span class="w">            </span><span class="nt">&lt;type&gt;</span>pom<span class="nt">&lt;/type&gt;</span>
+<span class="w">            </span><span class="nt">&lt;scope&gt;</span>import<span class="nt">&lt;/scope&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/dependencies&gt;</span>
+<span class="nt">&lt;/dependencyManagement&gt;</span>
+</code></pre></div>
+<h3 id="33-habilitar-eureka-server">3.3 Habilitar Eureka Server<a class="headerlink" href="#33-habilitar-eureka-server" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> aplicación Spring Boot marcada como servidor de registro.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.eureka</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.boot.SpringApplication</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.boot.autoconfigure.SpringBootApplication</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.cloud.netflix.eureka.server.EnableEurekaServer</span><span class="p">;</span>
+
+<span class="nd">@SpringBootApplication</span>
+<span class="nd">@EnableEurekaServer</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">PagatuEurekaApplication</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">SpringApplication</span><span class="p">.</span><span class="na">run</span><span class="p">(</span><span class="n">PagatuEurekaApplication</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="34-configurar-pagatu-eureka-como-config-client">3.4 Configurar <code>pagatu-eureka</code> como Config Client<a class="headerlink" href="#34-configurar-pagatu-eureka-como-config-client" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> <code>pagatu-eureka</code> preparado para leer su propia configuración desde <code>pagatu-config</code> — el mismo patrón que ya sigue <code>pagatu-catalogo-ms</code> desde S2, aplicado ahora a este componente nuevo.</p>
+<p>En <code>infra/pagatu-eureka/src/main/resources/application.yml</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">spring</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">application</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-eureka</span>
+<span class="w">  </span><span class="nt">profiles</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">active</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dev</span>
+<span class="w">  </span><span class="nt">config</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">import</span><span class="p">:</span><span class="w"> </span><span class="s">"optional:configserver:${CONFIG_SERVER_URL:http://localhost:18888}"</span>
+</code></pre></div>
+<p><code>pagatu-eureka</code> no es una excepción al patrón de S2 — es la confirmación de que cualquier componente nuevo del sistema, incluida la propia infraestructura, consulta <code>pagatu-config</code> de la misma forma.</p>
+<h3 id="35-crear-la-configuracion-de-pagatu-eureka-en-config-repo">3.5 Crear la configuración de <code>pagatu-eureka</code> en <code>config-repo</code><a class="headerlink" href="#35-crear-la-configuracion-de-pagatu-eureka-en-config-repo" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> <code>pagatu-eureka-dev.yml</code> y <code>pagatu-eureka-prod.yml</code> creados en <code>config-repo</code>.</p>
+<p><strong><code>infra/pagatu-config/config-repo/pagatu-eureka-dev.yml</code></strong></p>
+<div class="highlight"><pre><span></span><code><span class="nt">server</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">18761</span>
+
+<span class="nt">eureka</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">client</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">register-with-eureka</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">    </span><span class="nt">fetch-registry</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+
+<span class="nt">management</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">endpoints</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">web</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">exposure</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health,info,metrics</span>
+<span class="w">  </span><span class="nt">endpoint</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">health</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">show-details</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always</span>
+</code></pre></div>
+<p><strong><code>infra/pagatu-config/config-repo/pagatu-eureka-prod.yml</code></strong></p>
+<div class="highlight"><pre><span></span><code><span class="nt">server</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8761</span>
+
+<span class="nt">eureka</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">client</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">register-with-eureka</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">    </span><span class="nt">fetch-registry</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+
+<span class="nt">management</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">endpoints</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">web</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">exposure</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health,info,metrics</span>
+<span class="w">  </span><span class="nt">endpoint</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">health</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">show-details</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">never</span>
+</code></pre></div>
+<p><code>register-with-eureka: false</code> y <code>fetch-registry: false</code> porque <code>pagatu-eureka</code> es el propio servidor de registro — no tiene sentido que se registre a sí mismo como si fuera un cliente más.</p>
+<h3 id="36-probar-pagatu-eureka-en-dev">3.6 Probar <code>pagatu-eureka</code> en DEV<a class="headerlink" href="#36-probar-pagatu-eureka-en-dev" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> <code>pagatu-eureka</code> ejecutando en <code>localhost:18761</code>, con configuración recibida desde <code>pagatu-config</code>.</p>
+<p>Con <code>pagatu-config</code> ya ejecutando (3.1):</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>infra/pagatu-eureka
+mvnw<span class="w"> </span>spring-boot:run
+</code></pre></div>
+<p>Verifica:</p>
+<p>PowerShell:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18761/actuator/health"</span>
+</code></pre></div>
+<p>bash macOS/Linux:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:18761/actuator/health
+</code></pre></div>
+<p>Abre el dashboard en el navegador:</p>
+<div class="highlight"><pre><span></span><code>http://localhost:18761
+</code></pre></div>
+<p>Resultado esperado: el dashboard carga, con la sección "Instances currently registered with Eureka" vacía todavía — nada se ha conectado como cliente hasta este punto.</p>
+<h3 id="37-conectar-pagatu-catalogo-ms-como-cliente-eureka">3.7 Conectar <code>pagatu-catalogo-ms</code> como cliente Eureka<a class="headerlink" href="#37-conectar-pagatu-catalogo-ms-como-cliente-eureka" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> <code>pagatu-catalogo-ms</code> preparado para registrarse en <code>pagatu-eureka</code>, manteniendo puerto fijo en DEV (igual que desde S1).</p>
+<p><strong>1. Agregar la dependencia de Eureka Client</strong> en <code>services/pagatu-catalogo-ms/pom.xml</code> (la versión y el BOM de Spring Cloud ya están ahí desde S2, 3.9):</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-netflix-eureka-client<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div>
+<p><strong>2. Agregar la configuración de Eureka en <code>config-repo/pagatu-catalogo-ms-dev.yml</code></strong> (junto a lo que ya existe desde S2 — <code>server.port: 8080</code> se queda tal cual está, no se toca):</p>
+<div class="highlight"><pre><span></span><code><span class="nt">eureka</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">instance</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">instance-id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${spring.application.name}:${server.port}</span>
+<span class="w">  </span><span class="nt">client</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">service-url</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">defaultZone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://localhost:18761/eureka</span>
+</code></pre></div>
+<p>En DEV seguimos con puerto fijo, igual que desde S1 — lo único nuevo es que ahora ese puerto (<code>instance-id</code>) queda anunciado a <code>pagatu-eureka</code>. Para la segunda instancia (3.9) se sigue el mismo mecanismo ya usado en S1 (3.4.1): pasar un puerto distinto por línea de comandos (<code>--server.port=8081</code>), no un puerto asignado al azar.</p>
+<p><strong>Error frecuente</strong>: olvidar el override de puerto al levantar la segunda instancia. Sin <code>--server.port=8081</code>, la segunda instancia intenta usar el mismo <code>8080</code> fijo de <code>config-repo</code> y no llega a arrancar (<code>Address already in use</code>).</p>
+<p><strong>3. Agregar la configuración equivalente en <code>config-repo/pagatu-catalogo-ms-prod.yml</code>:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nt">eureka</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">instance</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">instance-id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${spring.application.name}:${random.value}</span>
+<span class="w">  </span><span class="nt">client</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">service-url</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">defaultZone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://pagatu-eureka:8761/eureka</span>
+</code></pre></div>
+<p>En PROD local, a diferencia de DEV, el <code>instance-id</code> sí necesita un componente aleatorio (<code>${random.value}</code>): con <code>docker compose --scale</code>, todas las réplicas comparten el mismo <code>server.port</code> fijo dentro de su propio contenedor — sin ese valor aleatorio, dos réplicas se registrarían con el mismo <code>instance-id</code> y Eureka las trataría como una sola.</p>
+<h3 id="38-levantar-pagatu-catalogo-ms-y-verificar-el-registro">3.8 Levantar <code>pagatu-catalogo-ms</code> y verificar el registro<a class="headerlink" href="#38-levantar-pagatu-catalogo-ms-y-verificar-el-registro" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> <code>pagatu-catalogo-ms</code> visible en el dashboard de <code>pagatu-eureka</code>, respondiendo en el puerto fijo de siempre (<code>8080</code>).</p>
+<p>Con <code>pagatu-config</code> y <code>pagatu-eureka</code> ya ejecutando (3.1, 3.6):</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>services/pagatu-catalogo-ms
+mvnw<span class="w"> </span>spring-boot:run
+</code></pre></div>
+<p>Abre el dashboard:</p>
+<div class="highlight"><pre><span></span><code>http://localhost:18761
+</code></pre></div>
+<p>Resultado esperado: aparece <code>PAGATU-CATALOGO-MS</code> en "Instances currently registered with Eureka", con un <code>Status</code> de <code>UP</code> y una dirección que incluye el puerto <code>8080</code>.</p>
+<p>Verifica que el CRUD de S1-S2 sigue funcionando, en el mismo puerto de siempre:</p>
+<p>PowerShell:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:8080/api/v1/categorias"</span>
+</code></pre></div>
+<p>bash macOS/Linux:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8080/api/v1/categorias
+</code></pre></div>
+<h3 id="39-levantar-una-segunda-instancia-y-verificar-multiples-instancias">3.9 Levantar una segunda instancia y verificar múltiples instancias<a class="headerlink" href="#39-levantar-una-segunda-instancia-y-verificar-multiples-instancias" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> dos instancias de <code>pagatu-catalogo-ms</code> registradas a la vez, cada una en su propio puerto fijo (<code>8080</code> y <code>8081</code>).</p>
+<p>En otra terminal, sin detener la primera instancia, pasa un puerto distinto por línea de comandos (mismo mecanismo de S1, 3.4.1):</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>services/pagatu-catalogo-ms
+mvnw<span class="w"> </span>spring-boot:run<span class="w"> </span><span class="s2">"-Dspring-boot.run.arguments=--server.port=8081"</span>
+</code></pre></div>
+<p>Refresca el dashboard:</p>
+<div class="highlight"><pre><span></span><code>http://localhost:18761
+</code></pre></div>
+<p>Resultado esperado: <code>PAGATU-CATALOGO-MS</code> ahora lista <strong>dos</strong> direcciones distintas, <code>localhost:8080</code> y <code>localhost:8081</code> — el mismo nombre lógico, dos instancias con puerto fijo conocido de antemano, cada una anunciada a Eureka.</p>
+<p><strong>Tabla 5. Verificación de múltiples instancias antes de continuar</strong></p>
+<table>
+<thead>
+<tr>
+<th>Verificación</th>
+<th>Resultado esperado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Consola de arranque de cada instancia</td>
+<td>Una en <code>8080</code>, la otra en <code>8081</code></td>
+</tr>
+<tr>
+<td>Dashboard de <code>pagatu-eureka</code></td>
+<td>Dos entradas para <code>PAGATU-CATALOGO-MS</code>, ambas <code>UP</code></td>
+</tr>
+<tr>
+<td><code>GET /api/v1/categorias</code> contra <code>8080</code> y contra <code>8081</code></td>
+<td><code>200 OK</code> en ambas instancias, de forma independiente</td>
+</tr>
+<tr>
+<td>Detener una instancia (Ctrl+C)</td>
+<td>Tras perder su heartbeat, esa entrada desaparece del dashboard sin intervención manual</td>
+</tr>
+</tbody>
+</table>
+<h3 id="310-exponer-metricas-de-pagatu-catalogo-ms-para-prometheus">3.10 Exponer métricas de <code>pagatu-catalogo-ms</code> para Prometheus<a class="headerlink" href="#310-exponer-metricas-de-pagatu-catalogo-ms-para-prometheus" title="Permanent link">&para;</a></h3>
+<div class="admonition note">
+<p class="admonition-title">3.10 a 3.14 son opcionales</p>
+<p>El alcance evaluado de S3 termina en 3.9 (dos instancias de <code>pagatu-catalogo-ms</code> registradas en DEV, 2.2-2.4). Levantar Prometheus, Loki y Promtail junto con Eureka, dos instancias de <code>pagatu-catalogo-ms</code> y <code>pagatu-config</code> a la vez puede exigir más memoria y CPU de la que tiene la laptop de un estudiante — por eso estos cinco pasos quedan como contenido adicional, no como requisito para cerrar la sesión ni para la evaluación (4.4, 4.6). Quien pueda completarlos, sustenta la aplicación práctica de 2.3 (Service Registry aplicado a un consumidor distinto del registro) con evidencia real, no solo en teoría.</p>
+</div>
+<p><strong>Producto del paso:</strong> <code>pagatu-catalogo-ms</code> exponiendo un endpoint de métricas en formato Prometheus.</p>
+<p>Agrega la dependencia en <code>services/pagatu-catalogo-ms/pom.xml</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;groupId&gt;</span>io.micrometer<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>micrometer-registry-prometheus<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;scope&gt;</span>runtime<span class="nt">&lt;/scope&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div>
+<p>En <code>config-repo/pagatu-catalogo-ms-dev.yml</code>, agrega <code>prometheus</code> a los endpoints ya expuestos desde S1:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">management</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">endpoints</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">web</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">exposure</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health,info,metrics,prometheus</span>
+</code></pre></div>
+<p>Reinicia ambas instancias de <code>pagatu-catalogo-ms</code> (3.8, 3.9) y verifica, contra cada puerto real:</p>
+<p>PowerShell:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:&lt;puerto&gt;/actuator/prometheus"</span>
+</code></pre></div>
+<p>bash macOS/Linux:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:&lt;puerto&gt;/actuator/prometheus
+</code></pre></div>
+<p>Resultado esperado: una respuesta en texto plano, con métricas como <code>process_uptime_seconds</code> o <code>http_server_requests_seconds_count</code>.</p>
+<h3 id="311-crear-pagatu-observability-con-prometheus-descubrimiento-via-eureka">3.11 Crear <code>pagatu-observability</code> con Prometheus (descubrimiento vía Eureka)<a class="headerlink" href="#311-crear-pagatu-observability-con-prometheus-descubrimiento-via-eureka" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> Prometheus corriendo en Docker, configurado para descubrir instancias preguntándole a <code>pagatu-eureka</code> — no con una lista de direcciones escrita a mano.</p>
+<p>Crea <code>infra/pagatu-observability/prometheus/prometheus.yml</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">global</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">scrape_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">15s</span>
+
+<span class="nt">scrape_configs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="s">"pagatu-microservicios"</span>
+<span class="w">    </span><span class="nt">eureka_sd_configs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">server</span><span class="p">:</span><span class="w"> </span><span class="s">"http://host.docker.internal:18761/eureka"</span>
+<span class="w">    </span><span class="nt">metrics_path</span><span class="p">:</span><span class="w"> </span><span class="s">"/actuator/prometheus"</span>
+<span class="w">    </span><span class="nt">relabel_configs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">source_labels</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">__meta_eureka_app_name</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">target_label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">application</span>
+</code></pre></div>
+<p><code>eureka_sd_configs</code> es la pieza clave: Prometheus consulta el registro de <code>pagatu-eureka</code> igual que lo haría cualquier otro cliente de descubrimiento (2.3), y ajusta su lista de <em>targets</em> automáticamente cada vez que una instancia aparece o desaparece del registro.</p>
+<p>Crea <code>infra/pagatu-observability/compose-dev.yml</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pagatu-prometheus</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prom/prometheus:latest</span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-prometheus</span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"29090:9090"</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro</span>
+<span class="w">    </span><span class="nt">extra_hosts</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"host.docker.internal:host-gateway"</span>
+</code></pre></div>
+<p><code>extra_hosts</code> con <code>host-gateway</code> es necesario en Linux para que <code>host.docker.internal</code> resuelva al host — en Docker Desktop (Windows/macOS) ya funciona sin esa línea, pero dejarla no daña nada.</p>
+<p>Levanta el contenedor:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>infra/pagatu-observability
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-dev.yml<span class="w"> </span>up<span class="w"> </span>-d
+</code></pre></div>
+<h3 id="312-verificar-targets-descubiertos-y-metricas-recolectadas">3.12 Verificar targets descubiertos y métricas recolectadas<a class="headerlink" href="#312-verificar-targets-descubiertos-y-metricas-recolectadas" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> confirmación de que Prometheus descubrió, por su cuenta, las dos instancias de <code>pagatu-catalogo-ms</code> ya registradas en Eureka (3.9).</p>
+<p>Abre en el navegador:</p>
+<div class="highlight"><pre><span></span><code>http://localhost:29090/targets
+</code></pre></div>
+<p>Resultado esperado: dos <em>targets</em> bajo el job <code>pagatu-microservicios</code>, uno por instancia de <code>pagatu-catalogo-ms</code>, ambos en estado <code>UP</code> — ninguno escrito a mano en <code>prometheus.yml</code>.</p>
+<p><strong>Tabla 6. Verificación de observabilidad antes de continuar</strong></p>
+<table>
+<thead>
+<tr>
+<th>Verificación</th>
+<th>Resultado esperado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET /actuator/prometheus</code> en cada instancia</td>
+<td>Métricas en texto plano, <code>200 OK</code></td>
+</tr>
+<tr>
+<td><code>http://localhost:29090/targets</code></td>
+<td>Dos targets <code>pagatu-microservicios</code>, ambos <code>UP</code>, sin configuración manual de direcciones</td>
+</tr>
+<tr>
+<td>Detener una instancia de <code>pagatu-catalogo-ms</code></td>
+<td>El target correspondiente pasa a <code>DOWN</code> tras el siguiente scrape, sin editar <code>prometheus.yml</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Error frecuente</strong>: si los targets aparecen en <code>0/0</code> o vacíos, la causa más común es que <code>host.docker.internal</code> no resuelve desde el contenedor de Prometheus — revisa <code>extra_hosts</code> en <code>compose-dev.yml</code>, o reemplaza temporalmente por la IP real del host en <code>prometheus.yml</code> para descartar el problema.</p>
+<h3 id="313-enviar-logs-de-pagatu-catalogo-ms-a-loki">3.13 Enviar logs de <code>pagatu-catalogo-ms</code> a Loki<a class="headerlink" href="#313-enviar-logs-de-pagatu-catalogo-ms-a-loki" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> <code>pagatu-catalogo-ms</code> escribiendo sus logs a un archivo, y Promtail enviando ese archivo a Loki.</p>
+<p>En <code>config-repo/pagatu-catalogo-ms-dev.yml</code>, agrega:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">logging</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">file</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">logs/pagatu-catalogo-ms.log</span>
+</code></pre></div>
+<p>Reinicia ambas instancias (3.8, 3.9) — ambas escriben, por simplicidad, al mismo archivo dentro de <code>services/pagatu-catalogo-ms/logs/</code>.</p>
+<p>Crea <code>infra/pagatu-observability/promtail/promtail-config.yml</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">server</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">http_listen_port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9080</span>
+
+<span class="nt">positions</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">filename</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/tmp/positions.yaml</span>
+
+<span class="nt">clients</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://pagatu-loki:3100/loki/api/v1/push</span>
+
+<span class="nt">scrape_configs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-catalogo-ms</span>
+<span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">localhost</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">application</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-catalogo-ms</span>
+<span class="w">          </span><span class="nt">__path__</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/log/pagatu-catalogo-ms/*.log</span>
+</code></pre></div>
+<p>Agrega Loki y Promtail a <code>infra/pagatu-observability/compose-dev.yml</code> (junto a <code>pagatu-prometheus</code>, 3.11):</p>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nt">pagatu-loki</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">grafana/loki:latest</span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-loki</span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"23100:3100"</span>
+
+<span class="w">  </span><span class="nt">pagatu-promtail</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">grafana/promtail:latest</span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-promtail</span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./promtail/promtail-config.yml:/etc/promtail/config.yml:ro</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">../../services/pagatu-catalogo-ms/logs:/var/log/pagatu-catalogo-ms:ro</span>
+<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-config.file=/etc/promtail/config.yml</span>
+<span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-loki</span>
+</code></pre></div>
+<p>Vuelve a levantar el stack con el archivo actualizado:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>infra/pagatu-observability
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-dev.yml<span class="w"> </span>up<span class="w"> </span>-d
+</code></pre></div>
+<p><strong>Error frecuente</strong>: si ambas instancias de <code>pagatu-catalogo-ms</code> corren desde la misma carpeta <code>services/pagatu-catalogo-ms</code>, comparten el mismo archivo de log — las líneas de las dos instancias quedan entremezcladas en <code>pagatu-catalogo-ms.log</code>. Para esta sesión es una simplificación aceptada; no es necesario separar los archivos por instancia.</p>
+<h3 id="314-verificar-logs-en-loki">3.14 Verificar logs en Loki<a class="headerlink" href="#314-verificar-logs-en-loki" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> confirmación de que los logs de <code>pagatu-catalogo-ms</code> llegan a Loki, sin revisar el archivo local a mano.</p>
+<p>Consulta directamente a Loki (reemplaza el rango de tiempo si tu consulta no devuelve nada):</p>
+<p>PowerShell:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:23100/loki/api/v1/query_range?query={application=</span><span class="se">`"</span><span class="s2">pagatu-catalogo-ms</span><span class="se">`"</span><span class="s2">}"</span>
+</code></pre></div>
+<p>bash macOS/Linux:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-G<span class="w"> </span>http://localhost:23100/loki/api/v1/query_range<span class="w"> </span>--data-urlencode<span class="w"> </span><span class="s1">'query={application="pagatu-catalogo-ms"}'</span>
+</code></pre></div>
+<p>Resultado esperado: una respuesta JSON con líneas de log reales de <code>pagatu-catalogo-ms</code> (por ejemplo, el mensaje de arranque de Tomcat en el puerto <code>8080</code> u <code>8081</code>).</p>
+<h3 id="315-registro-en-produccion-local-opcional">3.15 Registro en producción local (opcional)<a class="headerlink" href="#315-registro-en-produccion-local-opcional" title="Permanent link">&para;</a></h3>
+<div class="admonition note">
+<p class="admonition-title">3.15 es opcional</p>
+<p>El alcance evaluado de S3 termina en 3.9 (dos instancias de <code>pagatu-catalogo-ms</code> registradas en DEV, 2.2-2.4) — igual que 3.10 a 3.14 (Prometheus/Loki), producción local con Docker es contenido adicional, no un requisito para cerrar la sesión ni para la evaluación (4.4, 4.6).</p>
+</div>
+<p><strong>Producto del paso:</strong> <code>pagatu-eureka</code> y <code>pagatu-catalogo-ms</code> operativos en Docker, dentro de la misma red compartida ya establecida en S2 (<code>pagatu-prod-net</code>).</p>
+<p>Agrega <code>pagatu-eureka</code> a <code>infra/compose.yml</code> (junto a <code>pagatu-config</code>, S2 3.11):</p>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nt">pagatu-eureka</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">build</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">context</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./pagatu-eureka</span>
+<span class="w">      </span><span class="nt">dockerfile</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Dockerfile</span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-eureka</span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"28761:8761"</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">SPRING_PROFILES_ACTIVE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prod</span>
+<span class="w">      </span><span class="nt">CONFIG_SERVER_URL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://pagatu-config:8888</span>
+<span class="w">    </span><span class="nt">networks</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-prod-net</span>
+</code></pre></div>
+<p><code>infra/pagatu-eureka/Dockerfile</code> (mismo patrón multi-stage que <code>pagatu-config</code>, S2 3.11).</p>
+<p>Levanta infraestructura y microservicio, en ese orden (mismo criterio de S2, 3.12):</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>infra
+docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--build
+docker<span class="w"> </span>compose<span class="w"> </span>ps
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>../services/pagatu-catalogo-ms
+docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--build<span class="w"> </span>--scale<span class="w"> </span>pagatu-catalogo-ms<span class="o">=</span><span class="m">2</span>
+</code></pre></div>
+<p>Verifica:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:28761/actuator/health"</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>http://localhost:28761
+</code></pre></div>
+<p>Resultado esperado: <code>pagatu-eureka</code> responde en <code>28761</code>, y las instancias de <code>pagatu-catalogo-ms</code> aparecen registradas usando <code>http://pagatu-eureka:8761/eureka</code> (la URL interna de la red Docker, no la de host).</p>
+<p>Al terminar, baja ambos entornos en orden inverso (mismo patrón de S2, 3.14):</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>services/pagatu-catalogo-ms
+docker<span class="w"> </span>compose<span class="w"> </span>down
+
+<span class="nb">cd</span><span class="w"> </span>../../infra
+docker<span class="w"> </span>compose<span class="w"> </span>down
+</code></pre></div>
+<p><strong>Evidencia de aprendizaje:</strong></p>
+<ul>
+<li><code>pagatu-eureka</code> operativo en DEV, leyendo su configuración desde <code>pagatu-config</code>.</li>
+<li><code>pagatu-catalogo-ms</code> registrado con puerto fijo, visible en el dashboard.</li>
+<li>Dos instancias simultáneas de <code>pagatu-catalogo-ms</code>, verificadas de forma independiente.</li>
+<li>(Opcional) Prometheus y Loki recolectando métricas y logs de esas instancias, descubiertas vía Eureka.</li>
+<li>(Opcional) <code>pagatu-eureka</code> y <code>pagatu-catalogo-ms</code> operativos también en producción local.</li>
+</ul>
+<h2 id="4-crea-actividad-autonoma">4. Crea: actividad autónoma<a class="headerlink" href="#4-crea-actividad-autonoma" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 3h fuera del aula.</p>
+<h3 id="41-actividad">4.1 Actividad<a class="headerlink" href="#41-actividad" title="Permanent link">&para;</a></h3>
+<p>Conexión autónoma de <code>pagatu-orden-ms</code> al sistema de registro y descubrimiento, documentada en evidencia individual.</p>
+<p><code>pagatu-orden-ms</code> todavía no tiene Config Client (S2 lo dejó como trabajo autónomo) ni Eureka Client — este trabajo autónomo hace las dos cosas juntas, en el mismo orden en que ya se hicieron para <code>pagatu-catalogo-ms</code> (S2 y S3, respectivamente). Si tu equipo ya migró <code>pagatu-orden-ms</code> a Config Client como parte del trabajo autónomo de S2, salta directo al paso 3 de la lista siguiente.</p>
+<p>Completa y evidencia estas tareas:</p>
+<ol>
+<li>Migrar <code>pagatu-orden-ms</code> a Config Client (mismo patrón de S2, 3.9): mover <code>application-dev.yml</code>/<code>application-prod.yml</code> a <code>config-repo</code> como <code>orden-ms-dev.yml</code>/<code>orden-ms-prod.yml</code>, y dejar <code>application.yml</code> minimalista.</li>
+<li>Verificar por HTTP que <code>pagatu-config</code> entrega la configuración de <code>orden-ms</code> en <code>dev</code> y en <code>prod</code>.</li>
+<li>Agregar Eureka Client a <code>pagatu-orden-ms</code>, manteniendo su puerto fijo de DEV (<code>orden-ms-dev.yml</code>) tal como quedó en el paso 1 — mismo patrón de 3.7, <code>instance-id: ${spring.application.name}:${server.port}</code>.</li>
+<li>Levantar <code>pagatu-orden-ms</code> y verificar que se registra en <code>pagatu-eureka</code> con ese puerto fijo.</li>
+<li>Levantar una segunda instancia de <code>pagatu-orden-ms</code>, pasando un puerto distinto por línea de comandos (mismo mecanismo de 3.9), y verificar ambas en el dashboard.</li>
+<li>Explicar, con tus propias palabras, por qué el cliente ya no necesita conocer el puerto de ninguna de las dos instancias de <code>pagatu-orden-ms</code>, aunque ambos sean fijos y elegidos a mano.</li>
+</ol>
+<p><strong>Opcional</strong> (solo si completaste 3.10 a 3.14 con <code>pagatu-catalogo-ms</code>, y tu equipo cuenta con los recursos de cómputo):</p>
+<ol>
+<li>Agregar <code>micrometer-registry-prometheus</code> y el endpoint <code>prometheus</code> a <code>pagatu-orden-ms</code> (mismo patrón de 3.10), y verificar que aparece como target nuevo en <code>http://localhost:29090/targets</code> <strong>sin tocar <code>prometheus.yml</code></strong> — el descubrimiento vía Eureka ya cubre cualquier servicio que se registre, no solo <code>pagatu-catalogo-ms</code>.</li>
+<li>Agregar <code>logging.file.name</code> a la configuración de <code>pagatu-orden-ms</code> (mismo patrón de 3.13) y verificar sus logs en Loki con una consulta filtrando <code>application="pagatu-orden-ms"</code>.</li>
+</ol>
+<h3 id="42-proposito">4.2 Propósito<a class="headerlink" href="#42-proposito" title="Permanent link">&para;</a></h3>
+<p>Que cada estudiante demuestre, de forma individual y fuera del aula, que puede reproducir el patrón de registro y descubrimiento construido en clase sin el acompañamiento del docente, aplicándolo sobre un microservicio que todavía no lo tenía.</p>
+<p>Esta actividad autónoma se desarrolla sobre el proyecto de fin de curso del equipo. El producto de la unidad se construye por acumulación de los avances de cada sesión; por eso, la evidencia de esta sesión debe incorporarse a la documentación del proyecto y quedar trazable en GitHub.</p>
+<h3 id="43-indicaciones">4.3 Indicaciones<a class="headerlink" href="#43-indicaciones" title="Permanent link">&para;</a></h3>
+<p>Entrega un PDF con el siguiente nombre:</p>
+<div class="highlight"><pre><span></span><code>S03_Equipo##_ApellidoNombre.pdf
+</code></pre></div>
+<p>Cada captura de pantalla del informe debe mostrar, sin recortar, el reloj del sistema (fecha y hora) y tu usuario o foto de perfil (Windows, VS Code o navegador) visibles en pantalla — es lo que permite verificar que la evidencia es tuya y que corresponde al momento real de tu trabajo.</p>
+<h4 id="431-estructura-del-informe">4.3.1 Estructura del informe<a class="headerlink" href="#431-estructura-del-informe" title="Permanent link">&para;</a></h4>
+<p><strong>Datos del estudiante</strong></p>
+<ul>
+<li>Nombre:</li>
+<li>Equipo:</li>
+<li>Sesión: S03 - Registro, Descubrimiento y Ejecución Concurrente de Servicios</li>
+<li>Rol o aporte realizado:</li>
+<li>Link de GitHub:</li>
+</ul>
+<p><strong>Evidencia técnica</strong></p>
+<p>Incluye capturas o extractos con una breve explicación debajo de cada uno, organizados en los mismos 4 bloques de la rúbrica (4.6):</p>
+<ol>
+<li><em><code>pagatu-eureka</code> operativo</em><ul>
+<li>Captura del dashboard con <code>pagatu-catalogo-ms</code> registrado (trabajo de clase).</li>
+</ul>
+</li>
+<li><em><code>pagatu-orden-ms</code> migrado a Config Client</em><ul>
+<li><code>orden-ms-dev.yml</code>/<code>orden-ms-prod.yml</code> en <code>config-repo</code>, con consulta HTTP verificada.</li>
+</ul>
+</li>
+<li><em><code>pagatu-orden-ms</code> registrado con múltiples instancias</em><ul>
+<li>Dos instancias de <code>pagatu-orden-ms</code> visibles en el dashboard, cada una con su propio puerto fijo.</li>
+</ul>
+</li>
+<li><em>Comprensión del patrón</em><ul>
+<li>Explicación propia de por qué el cliente ya no necesita conocer el puerto de cada instancia, aunque ambos sean fijos.</li>
+</ul>
+</li>
+</ol>
+<p><strong>Opcional</strong> (si tu equipo completó Prometheus/Loki, 3.10-3.14):</p>
+<ol>
+<li><em>Prometheus y Loki extendidos a <code>pagatu-orden-ms</code></em><ul>
+<li>Captura de <code>pagatu-orden-ms</code> como target nuevo en Prometheus (sin editar <code>prometheus.yml</code>), y de una consulta a Loki con logs propios de <code>pagatu-orden-ms</code>.</li>
+</ul>
+</li>
+</ol>
+<p><strong>Error o hallazgo</strong></p>
+<p>Describe un error real: un servicio que no aparecía registrado, un puerto fijo que impidió una segunda instancia, o un nombre lógico que no coincidió entre <code>config-repo</code> y Eureka.</p>
+<p><strong>Reflexión técnica breve</strong></p>
+<p>Responde en 5 a 8 líneas:</p>
+<div class="highlight"><pre><span></span><code>¿Por qué el registro y descubrimiento de servicios es un prerrequisito para
+el Gateway y el balanceo de carga que se construyen en S4?
+</code></pre></div>
+<p><strong>Anexo: Feedback de la sesión</strong></p>
+<p>Pega esta página como la última hoja del PDF, con tus respuestas.</p>
+<ol>
+<li>¿Cuál es el aprendizaje más importante que te llevas de la clase de hoy?</li>
+<li>¿Qué punto de la clase te resultó más confuso o te dejó con dudas?</li>
+<li>¿Tienes alguna pregunta que te gustaría que sea respondida la siguiente clase?</li>
+<li>Sobre tu nivel de comprensión de la clase de hoy, marca una opción:<ul>
+<li>¡Entendido! - Lo domino y podría explicarlo.</li>
+<li>Más o menos. - Entendí la idea general, pero tengo dudas.</li>
+<li>Necesito ayuda. - Me siento perdido/a con este tema.</li>
+</ul>
+</li>
+<li>¿Cómo puedo ayudarte a comprender mejor el tema?</li>
+<li>Pensando en tu participación y esfuerzo en la clase de hoy, ¿cómo te autoevaluarías? Marca una opción:<ul>
+<li>Muy Comprometido/a: Me esforcé al máximo.</li>
+<li>Comprometido/a: Sé que podría haberme esforzado un poco más.</li>
+<li>Poco Comprometido/a: Hoy no di mi mejor esfuerzo.</li>
+</ul>
+</li>
+<li>Mi satisfacción con la clase fue... (califica del 1 al 10, donde 1 es insatisfecho y 10 es muy satisfecho).</li>
+</ol>
+<h3 id="44-criterios-minimos-de-aceptacion">4.4 Criterios mínimos de aceptación<a class="headerlink" href="#44-criterios-minimos-de-aceptacion" title="Permanent link">&para;</a></h3>
+<p>La evidencia individual se considera completa si:</p>
+<ul>
+<li>El archivo respeta el nombre solicitado.</li>
+<li><code>pagatu-eureka</code> responde en DEV, con <code>pagatu-catalogo-ms</code> registrado (evidencia de clase).</li>
+<li><code>pagatu-orden-ms</code> tiene su configuración externalizada en <code>config-repo</code> (<code>dev</code> y <code>prod</code>).</li>
+<li><code>pagatu-orden-ms</code> se registra en <code>pagatu-eureka</code> con al menos una instancia visible.</li>
+<li>Se evidencian dos instancias de <code>pagatu-orden-ms</code> con puertos fijos distintos, o se justifica explícitamente por qué no se logró.</li>
+<li>Cada captura de la evidencia técnica muestra el reloj del sistema y el usuario/perfil visible, sin recortar.</li>
+<li>Las fechas y horas de las capturas son coherentes con el historial de commits de su repositorio en GitHub.</li>
+<li>Incluye un error o hallazgo técnico diagnosticado.</li>
+<li>Incluye la reflexión técnica breve solicitada.</li>
+<li>Incluye el Anexo de feedback de la sesión respondido, como última página del PDF.</li>
+</ul>
+<h3 id="45-preguntas-de-defensa">4.5 Preguntas de defensa<a class="headerlink" href="#45-preguntas-de-defensa" title="Permanent link">&para;</a></h3>
+<ol>
+<li>¿Por qué <code>pagatu-eureka</code> no se registra a sí mismo (<code>register-with-eureka: false</code>)?</li>
+<li>¿Qué pasaría si intentaras levantar la segunda instancia de <code>pagatu-catalogo-ms</code> sin el override <code>--server.port=8081</code>?</li>
+<li>¿Cómo verificaste que <code>pagatu-orden-ms</code> quedó correctamente registrado, y no solo que el proceso arrancó?</li>
+<li>¿Qué le pasa a una instancia en el dashboard de Eureka si dejas de enviarle heartbeat (por ejemplo, la detienes con Ctrl+C)?</li>
+<li>¿Por qué el nombre lógico (<code>spring.application.name</code>) es el mismo dato que ya usa <code>pagatu-config</code> desde S2?</li>
+<li>Además de un microservicio, ¿qué otro tipo de componente podría usar el registro de Eureka para descubrir instancias, sin que nadie le escriba direcciones a mano? (ver 2.3)</li>
+</ol>
+<h3 id="46-rubrica-de-evaluacion">4.6 Rúbrica de evaluación<a class="headerlink" href="#46-rubrica-de-evaluacion" title="Permanent link">&para;</a></h3>
+<p><strong>Tabla 7. Rúbrica de evaluación</strong></p>
+<table>
+<thead>
+<tr>
+<th>Criterio</th>
+<th style="text-align: right;">Peso (%)</th>
+<th>A (20 pts)</th>
+<th>B (15 pts)</th>
+<th>C (10 pts)</th>
+<th>D (5 pts)</th>
+<th style="text-align: right;">Nivel obtenido</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. <code>pagatu-eureka</code> operativo*</td>
+<td style="text-align: right;">25</td>
+<td><code>pagatu-eureka</code> funcional en DEV, con <code>pagatu-catalogo-ms</code> registrado y verificado en el dashboard.</td>
+<td>Funcional en DEV, con verificación parcial del dashboard.</td>
+<td>Arranca pero sin verificación clara del registro.</td>
+<td>No evidencia <code>pagatu-eureka</code> funcionando.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>2. <code>pagatu-orden-ms</code> migrado a Config Client*</td>
+<td style="text-align: right;">25</td>
+<td><code>orden-ms-dev.yml</code>/<code>orden-ms-prod.yml</code> completos y verificados por HTTP.</td>
+<td>Archivos presentes con verificación parcial.</td>
+<td>Migración incompleta o sin verificar.</td>
+<td>No evidencia migración a Config Client.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>3. <code>pagatu-orden-ms</code> con múltiples instancias*</td>
+<td style="text-align: right;">25</td>
+<td>Dos instancias registradas, con puertos fijos distintos verificados.</td>
+<td>Una instancia registrada correctamente.</td>
+<td>Registro parcial o sin verificar el puerto de cada instancia.</td>
+<td>No evidencia registro de <code>pagatu-orden-ms</code>.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>4. Comprensión del patrón*</td>
+<td style="text-align: right;">25</td>
+<td>Explicación clara y correcta de registro, descubrimiento y por qué el cliente no necesita conocer el puerto (patrón Service Registry, 2.3).</td>
+<td>Explicación correcta con detalles menores.</td>
+<td>Explicación superficial o imprecisa.</td>
+<td>No explica el patrón.</td>
+<td style="text-align: right;"></td>
+</tr>
+</tbody>
+</table>
+<p>* Agregado manual.</p>
+<p>Nota final = suma de (<code>Peso</code> / 100 × <code>Puntos del nivel obtenido</code>) = ____ / 20.</p>
+<p><strong>Bonificación opcional</strong> (no forma parte de los 100 puntos anteriores; súmala solo si el criterio 1-4 ya llegó a A): +2 puntos si se evidencia Prometheus y Loki operativos, con targets descubiertos vía Eureka (3.10-3.14) para <code>pagatu-catalogo-ms</code> y, si además se hizo en <code>pagatu-orden-ms</code> (4.1, ítems opcionales 7-8), +2 puntos adicionales.</p>
+<p>Para usar la rúbrica con IA, solicita:</p>
+<div class="highlight"><pre><span></span><code>Evalúa el PDF usando la rúbrica de la sesión.
+Para cada criterio selecciona el nivel obtenido usando la escala A=20, B=15, C=10, D=5 puntos.
+Justifica brevemente cada nivel asignado.
+Verifica que cada captura muestre reloj del sistema y usuario/perfil visible, y que las fechas sean coherentes con el historial de commits de GitHub. Si falta esta evidencia o hay inconsistencias, indícalo explícitamente antes de calificar.
+Calcula la nota final con la fórmula: suma de (Peso/100 × Puntos del nivel obtenido), directamente sobre 20.
+Indica 2 fortalezas y 2 recomendaciones.
+</code></pre></div>
+<h2 id="5-cierre">5. Cierre<a class="headerlink" href="#5-cierre" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 5 min.</p>
+<p><strong>Resumen breve:</strong> hoy el cliente de <code>pagatu-catalogo-ms</code> dejó de necesitar el puerto exacto de cada instancia — <code>pagatu-eureka</code> centraliza el registro, cada instancia (con su puerto fijo, <code>8080</code>/<code>8081</code>, igual que desde S1) se anuncia sola al arrancar, y dos instancias simultáneas quedaron verificadas por nombre lógico, no por dirección memorizada de antemano. Quien tuvo los recursos de cómputo para completarlo, vio además a Prometheus y Loki recolectando métricas y logs de esas mismas instancias, encontrándolas por descubrimiento — no por una lista escrita a mano.</p>
+<p><strong>Dinámica participativa:</strong> en una ronda rápida, cada estudiante comparte en una frase qué vio cambiar en el dashboard de Eureka al detener una instancia con Ctrl+C.</p>
+<p><strong>Metacognición:</strong> ¿qué parte de la sesión te costó más entender — que el cliente ya no necesite conocer el puerto, el heartbeat, o que el mismo registro de Eureka sirva para que un microservicio encuentre a otro y para que una herramienta como Prometheus encuentre a ambos?</p>
+<p><strong>Proyección:</strong> en S4 se agrega el Gateway, sobre este mismo <code>pagatu-eureka</code> — el punto único de acceso que reparte tráfico entre todas las instancias que Eureka ya sabe encontrar. Para quien ya tenga Prometheus y Loki en pie desde hoy, se agrega Grafana con paneles que visualizan lo que ambos vienen recolectando.</p>
+<h2 id="bibliografia">Bibliografía<a class="headerlink" href="#bibliografia" title="Permanent link">&para;</a></h2>
+<ul>
+<li>VMware Tanzu / Broadcom Inc. (2026). <em>Spring Cloud Netflix reference documentation</em>. <a href="https://docs.spring.io/spring-cloud-netflix/reference/">https://docs.spring.io/spring-cloud-netflix/reference/</a></li>
+<li>Netflix. (2024). <em>Eureka Wiki</em>. <a href="https://github.com/Netflix/eureka/wiki">https://github.com/Netflix/eureka/wiki</a></li>
+<li>VMware Tanzu / Broadcom Inc. (2026). <em>Spring Cloud 2025.1.2 (aka Oakwood) release notes</em>. <a href="https://spring.io/blog/2026/06/11/spring-cloud-2025-1-2-aka-oakwood-has-been-released/">https://spring.io/blog/2026/06/11/spring-cloud-2025-1-2-aka-oakwood-has-been-released/</a></li>
+<li>Prometheus Authors. (2026). <em>Eureka service discovery configuration</em>. <a href="https://prometheus.io/docs/prometheus/latest/configuration/configuration/#eureka_sd_config">https://prometheus.io/docs/prometheus/latest/configuration/configuration/#eureka_sd_config</a></li>
+<li>Grafana Labs. (2026). <em>Loki documentation</em>. <a href="https://grafana.com/docs/loki/latest/">https://grafana.com/docs/loki/latest/</a></li>
+<li>Grafana Labs. (2026). <em>Promtail documentation</em>. <a href="https://grafana.com/docs/loki/latest/send-data/promtail/">https://grafana.com/docs/loki/latest/send-data/promtail/</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

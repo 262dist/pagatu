@@ -14,6 +14,8 @@
         <link rel="prev" href="../S01_Construccion_Servicio_Base/">
       
       
+        <link rel="next" href="../S03_Registro_Descubrimiento_Ejecucion_Concurrente/">
+      
       
         
       
@@ -727,10 +729,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#21-el-problema-de-la-configuracion-duplicada-entre-microservicios" class="md-nav__link">
+  <a href="#21-arquitectura-de-la-sesion" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.1 El problema de la configuración duplicada entre microservicios
+        2.1 Arquitectura de la sesión
       
     </span>
   </a>
@@ -738,10 +740,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#22-panorama-de-patrones-de-arquitectura-de-microservicios" class="md-nav__link">
+  <a href="#22-el-problema-de-la-configuracion-duplicada-entre-microservicios" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.2 Panorama de patrones de arquitectura de microservicios
+        2.2 El problema de la configuración duplicada entre microservicios
       
     </span>
   </a>
@@ -749,22 +751,33 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#23-config-server-y-config-repo-dos-responsabilidades-distintas" class="md-nav__link">
+  <a href="#23-panorama-de-patrones-de-arquitectura-de-microservicios" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.3 Config Server y config-repo: dos responsabilidades distintas
+        2.3 Panorama de patrones de arquitectura de microservicios
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2.3 Config Server y config-repo: dos responsabilidades distintas">
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-config-server-y-config-repo-dos-responsabilidades-distintas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Config Server y config-repo: dos responsabilidades distintas
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.4 Config Server y config-repo: dos responsabilidades distintas">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#231-que-es-el-patron-de-configuracion-centralizada" class="md-nav__link">
+  <a href="#241-que-es-el-patron-de-configuracion-centralizada" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.3.1 Qué es el patrón de Configuración Centralizada
+        2.4.1 Qué es el patrón de Configuración Centralizada
       
     </span>
   </a>
@@ -772,10 +785,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#232-configuracion-en-dev" class="md-nav__link">
+  <a href="#242-configuracion-en-dev" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.3.2 Configuración en DEV
+        2.4.2 Configuración en DEV
       
     </span>
   </a>
@@ -783,10 +796,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#233-configuracion-en-prod-local" class="md-nav__link">
+  <a href="#243-configuracion-en-prod-local" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.3.3 Configuración en PROD local
+        2.4.3 Configuración en PROD local
       
     </span>
   </a>
@@ -799,10 +812,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#24-convencion-de-nombres-aplicacion-perfilyml" class="md-nav__link">
+  <a href="#25-convencion-de-nombres-aplicacion-perfilyml" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.4 Convención de nombres: {aplicación}-{perfil}.yml
+        2.5 Convención de nombres: {aplicación}-{perfil}.yml
       
     </span>
   </a>
@@ -810,10 +823,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#25-config-server-en-dev-y-en-produccion-local" class="md-nav__link">
+  <a href="#26-config-server-en-dev-y-en-produccion-local" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.5 Config Server en DEV y en producción local
+        2.6 Config Server en DEV y en producción local
       
     </span>
   </a>
@@ -821,10 +834,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#26-observabilidad-diagnosticar-un-perfil-no-encontrado" class="md-nav__link">
+  <a href="#27-observabilidad-diagnosticar-un-perfil-no-encontrado" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.6 Observabilidad: diagnosticar un perfil no encontrado
+        2.7 Observabilidad: diagnosticar un perfil no encontrado
       
     </span>
   </a>
@@ -1155,6 +1168,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S03_Registro_Descubrimiento_Ejecucion_Concurrente/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S3 - Registro, descubrimiento y ejecución concurrente de servicios
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1312,10 +1353,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#21-el-problema-de-la-configuracion-duplicada-entre-microservicios" class="md-nav__link">
+  <a href="#21-arquitectura-de-la-sesion" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.1 El problema de la configuración duplicada entre microservicios
+        2.1 Arquitectura de la sesión
       
     </span>
   </a>
@@ -1323,10 +1364,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#22-panorama-de-patrones-de-arquitectura-de-microservicios" class="md-nav__link">
+  <a href="#22-el-problema-de-la-configuracion-duplicada-entre-microservicios" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.2 Panorama de patrones de arquitectura de microservicios
+        2.2 El problema de la configuración duplicada entre microservicios
       
     </span>
   </a>
@@ -1334,22 +1375,33 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#23-config-server-y-config-repo-dos-responsabilidades-distintas" class="md-nav__link">
+  <a href="#23-panorama-de-patrones-de-arquitectura-de-microservicios" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.3 Config Server y config-repo: dos responsabilidades distintas
+        2.3 Panorama de patrones de arquitectura de microservicios
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2.3 Config Server y config-repo: dos responsabilidades distintas">
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-config-server-y-config-repo-dos-responsabilidades-distintas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Config Server y config-repo: dos responsabilidades distintas
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.4 Config Server y config-repo: dos responsabilidades distintas">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#231-que-es-el-patron-de-configuracion-centralizada" class="md-nav__link">
+  <a href="#241-que-es-el-patron-de-configuracion-centralizada" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.3.1 Qué es el patrón de Configuración Centralizada
+        2.4.1 Qué es el patrón de Configuración Centralizada
       
     </span>
   </a>
@@ -1357,10 +1409,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#232-configuracion-en-dev" class="md-nav__link">
+  <a href="#242-configuracion-en-dev" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.3.2 Configuración en DEV
+        2.4.2 Configuración en DEV
       
     </span>
   </a>
@@ -1368,10 +1420,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#233-configuracion-en-prod-local" class="md-nav__link">
+  <a href="#243-configuracion-en-prod-local" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.3.3 Configuración en PROD local
+        2.4.3 Configuración en PROD local
       
     </span>
   </a>
@@ -1384,10 +1436,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#24-convencion-de-nombres-aplicacion-perfilyml" class="md-nav__link">
+  <a href="#25-convencion-de-nombres-aplicacion-perfilyml" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.4 Convención de nombres: {aplicación}-{perfil}.yml
+        2.5 Convención de nombres: {aplicación}-{perfil}.yml
       
     </span>
   </a>
@@ -1395,10 +1447,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#25-config-server-en-dev-y-en-produccion-local" class="md-nav__link">
+  <a href="#26-config-server-en-dev-y-en-produccion-local" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.5 Config Server en DEV y en producción local
+        2.6 Config Server en DEV y en producción local
       
     </span>
   </a>
@@ -1406,10 +1458,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#26-observabilidad-diagnosticar-un-perfil-no-encontrado" class="md-nav__link">
+  <a href="#27-observabilidad-diagnosticar-un-perfil-no-encontrado" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2.6 Observabilidad: diagnosticar un perfil no encontrado
+        2.7 Observabilidad: diagnosticar un perfil no encontrado
       
     </span>
   </a>
@@ -1854,9 +1906,33 @@
 <p>Hoy se construye <code>pagatu-config</code> y se migra <code>pagatu-catalogo-ms</code> para leer su configuración desde ahí. En las siguientes sesiones se agrega registro de servicios (Eureka), Gateway y balanceo — todos ellos, igual que <code>pagatu-catalogo-ms</code> hoy, consultarán su configuración al mismo Config Server.</p>
 <h2 id="2-explica">2. Explica<a class="headerlink" href="#2-explica" title="Permanent link">&para;</a></h2>
 <p>Tiempo: 25 min.</p>
-<h3 id="21-el-problema-de-la-configuracion-duplicada-entre-microservicios">2.1 El problema de la configuración duplicada entre microservicios<a class="headerlink" href="#21-el-problema-de-la-configuracion-duplicada-entre-microservicios" title="Permanent link">&para;</a></h3>
+<h3 id="21-arquitectura-de-la-sesion">2.1 Arquitectura de la sesión<a class="headerlink" href="#21-arquitectura-de-la-sesion" title="Permanent link">&para;</a></h3>
+<p><strong>Figura 2. Config Server y config-repo en DEV</strong></p>
+<pre class="mermaid"><code>flowchart LR
+    Client["Cliente - PowerShell / bash / navegador"]
+    Config["pagatu-config - Config Server - infra/pagatu-config - localhost:18888"]
+    Repo["file:./config-repo - pagatu-catalogo-ms-dev.yml - pagatu-catalogo-ms-prod.yml - orden-ms-dev.yml - orden-ms-prod.yml"]
+    Catalogo["pagatu-catalogo-ms"]
+    Orden["orden-ms"]
+
+    Client --&gt;|"GET localhost:18888/pagatu-catalogo-ms/dev"| Config
+    Client --&gt;|"GET localhost:18888/orden-ms/dev"| Config
+    Config --&gt;|"lee archivos"| Repo
+    Catalogo -. "spring.config.import - http://localhost:18888" .-&gt; Config
+    Orden -. "spring.config.import - http://localhost:18888" .-&gt; Config
+
+    classDef server fill:#eef6ff,stroke:#2b6cb0,color:#111;
+    classDef repo fill:#fff4de,stroke:#b7791f,color:#111;
+    class Config,Catalogo,Orden server;
+    class Repo repo;</code></pre>
+<p>En DEV, <code>pagatu-config</code> corre con Maven Wrapper en el host:</p>
+<div class="highlight"><pre><span></span><code>localhost:18888
+config-repo: file:./config-repo
+</code></pre></div>
+<p>Lectura del diagrama: <code>pagatu-config</code> deja de ser un archivo dentro de cada microservicio y pasa a ser un servicio propio, con su propio repositorio de configuración (<code>config-repo</code>) — cualquier microservicio que se sume al sistema (<code>orden-ms</code>, y luego cualquier otro) consulta el mismo lugar por HTTP, en vez de traer sus valores embebidos en el build. Este diagrama es el mapa que guía el resto de la explicación: cada apartado siguiente desarrolla uno de sus componentes, en el mismo orden del Índice (1.2).</p>
+<h3 id="22-el-problema-de-la-configuracion-duplicada-entre-microservicios">2.2 El problema de la configuración duplicada entre microservicios<a class="headerlink" href="#22-el-problema-de-la-configuracion-duplicada-entre-microservicios" title="Permanent link">&para;</a></h3>
 <p><code>pagatu-catalogo-ms</code> guarda hoy su configuración en dos archivos propios: <code>application-dev.yml</code> y <code>application-prod.yml</code> (S1, 3.2.3 y 3.6.3). Cuando <code>orden-ms</code> se construya (sección 4) va a necesitar prácticamente los mismos tipos de valores — puerto, conexión a base de datos, perfil de Flyway, qué expone Actuator — repetidos en sus propios archivos. El caso de 1.6.1 muestra qué pasa cuando eso crece sin control: cambios repetidos en muchos archivos, diferencias accidentales entre DEV y PROD, y ningún lugar único donde saber qué configuración usa cada servicio.</p>
-<h3 id="22-panorama-de-patrones-de-arquitectura-de-microservicios">2.2 Panorama de patrones de arquitectura de microservicios<a class="headerlink" href="#22-panorama-de-patrones-de-arquitectura-de-microservicios" title="Permanent link">&para;</a></h3>
+<h3 id="23-panorama-de-patrones-de-arquitectura-de-microservicios">2.3 Panorama de patrones de arquitectura de microservicios<a class="headerlink" href="#23-panorama-de-patrones-de-arquitectura-de-microservicios" title="Permanent link">&para;</a></h3>
 <p>Config Server no es una idea suelta: es uno de varios <strong>patrones de arquitectura de microservicios</strong> ya catalogados y documentados, agrupados por el problema que resuelven. El catálogo de SACAViX System Design (2026) organiza cerca de 95 patrones en 11 categorías:</p>
 <p><strong>Tabla 2. Catálogo de patrones de arquitectura de microservicios, por categoría</strong></p>
 <table>
@@ -2001,14 +2077,14 @@
 </tbody>
 </table>
 <p>No todos los patrones del catálogo entran en el alcance del curso (por ejemplo, Database Sharding o CQRS no se trabajan) — el catálogo sirve para ubicar cada sesión dentro de un mapa más amplio, no como lista obligatoria.</p>
-<h3 id="23-config-server-y-config-repo-dos-responsabilidades-distintas">2.3 Config Server y config-repo: dos responsabilidades distintas<a class="headerlink" href="#23-config-server-y-config-repo-dos-responsabilidades-distintas" title="Permanent link">&para;</a></h3>
+<h3 id="24-config-server-y-config-repo-dos-responsabilidades-distintas">2.4 Config Server y config-repo: dos responsabilidades distintas<a class="headerlink" href="#24-config-server-y-config-repo-dos-responsabilidades-distintas" title="Permanent link">&para;</a></h3>
 <p><strong>Config Server</strong> es el componente que entrega configuración por HTTP; <strong>config-repo</strong> es donde viven los archivos de configuración en sí. Aunque en este curso ambos van a convivir dentro de la misma carpeta del proyecto (<code>infra/pagatu-config</code>), son responsabilidades lógicamente distintas: uno atiende peticiones, el otro almacena archivos.</p>
-<h4 id="231-que-es-el-patron-de-configuracion-centralizada">2.3.1 Qué es el patrón de Configuración Centralizada<a class="headerlink" href="#231-que-es-el-patron-de-configuracion-centralizada" title="Permanent link">&para;</a></h4>
+<h4 id="241-que-es-el-patron-de-configuracion-centralizada">2.4.1 Qué es el patrón de Configuración Centralizada<a class="headerlink" href="#241-que-es-el-patron-de-configuracion-centralizada" title="Permanent link">&para;</a></h4>
 <p>Según el catálogo de patrones SACAViX System Design (2026), <strong>Centralized Configuration</strong> es el patrón que centraliza la configuración de todos los microservicios en un repositorio o servicio dedicado, permitiendo gestión, versionado y actualización de configuración sin redespliegues.</p>
 <p><strong>Problema:</strong> con decenas de microservicios, gestionar configuración individualmente en cada servicio es inmanejable. Los cambios de configuración requieren redespliegues y es difícil mantener consistencia entre entornos.</p>
 <p><strong>Contexto:</strong> sistemas con múltiples microservicios que necesitan configuración externalizada, especialmente cuando hay múltiples entornos (dev, staging, prod) con diferentes configuraciones.</p>
 <p><strong>Cómo funciona:</strong> un Config Service centraliza toda la configuración. Los servicios obtienen su configuración al arrancar desde el Config Service. Los cambios de configuración pueden propagarse sin redespliegue. La configuración queda versionada en Git.</p>
-<p><strong>Figura 2. Patrón de Configuración Centralizada</strong></p>
+<p><strong>Figura 3. Patrón de Configuración Centralizada</strong></p>
 <pre class="mermaid"><code>flowchart LR
     Git[("Git Repository / local repo")]
     Config["Config Server"]
@@ -2067,31 +2143,9 @@
 <li><strong>Ninguno de los tres trade-offs de arriba se resuelve en esta sesión</strong>: <code>pagatu-config</code> no tiene caché local en los clientes (si se cae, un servicio que todavía no arrancó no consigue su configuración), no cifra <em>secrets</em> (las contraseñas de PostgreSQL viajan en texto plano dentro de <code>config-repo</code>) y es, literalmente, el punto único de falla del sistema en esta unidad. Son simplificaciones deliberadas para esta sesión — no la forma en que un Config Server se protege en un sistema en producción real.</li>
 </ul>
 <p>Los servicios (<code>pagatu-catalogo-ms</code>, <code>orden-ms</code>) obtienen su configuración al arrancar (<em>pull on startup</em>, ver 3.10); la recarga en caliente (<em>hot reload</em>) queda fuera del alcance de esta sesión.</p>
-<h4 id="232-configuracion-en-dev">2.3.2 Configuración en DEV<a class="headerlink" href="#232-configuracion-en-dev" title="Permanent link">&para;</a></h4>
-<p><strong>Figura 3. Config Server y config-repo en DEV</strong></p>
-<pre class="mermaid"><code>flowchart LR
-    Client["Cliente - PowerShell / bash / navegador"]
-    Config["pagatu-config - Config Server - infra/pagatu-config - localhost:18888"]
-    Repo["file:./config-repo - pagatu-catalogo-ms-dev.yml - pagatu-catalogo-ms-prod.yml - orden-ms-dev.yml - orden-ms-prod.yml"]
-    Catalogo["pagatu-catalogo-ms"]
-    Orden["orden-ms"]
-
-    Client --&gt;|"GET localhost:18888/pagatu-catalogo-ms/dev"| Config
-    Client --&gt;|"GET localhost:18888/orden-ms/dev"| Config
-    Config --&gt;|"lee archivos"| Repo
-    Catalogo -. "spring.config.import - http://localhost:18888" .-&gt; Config
-    Orden -. "spring.config.import - http://localhost:18888" .-&gt; Config
-
-    classDef server fill:#eef6ff,stroke:#2b6cb0,color:#111;
-    classDef repo fill:#fff4de,stroke:#b7791f,color:#111;
-    class Config,Catalogo,Orden server;
-    class Repo repo;</code></pre>
-<p>En DEV, <code>pagatu-config</code> corre con Maven Wrapper en el host:</p>
-<div class="highlight"><pre><span></span><code>localhost:18888
-config-repo: file:./config-repo
-</code></pre></div>
-<p>Se muestran dos servicios (<code>pagatu-catalogo-ms</code> y <code>orden-ms</code>) para que se entienda que Config Server no es exclusivo de uno — cualquier microservicio que se sume al sistema consulta el mismo lugar. En esta sesión solo <code>pagatu-catalogo-ms</code> se migra en clase (3.9); <code>orden-ms</code> se conecta como trabajo autónomo (sección 4).</p>
-<h4 id="233-configuracion-en-prod-local">2.3.3 Configuración en PROD local<a class="headerlink" href="#233-configuracion-en-prod-local" title="Permanent link">&para;</a></h4>
+<h4 id="242-configuracion-en-dev">2.4.2 Configuración en DEV<a class="headerlink" href="#242-configuracion-en-dev" title="Permanent link">&para;</a></h4>
+<p>Ver Figura 2 (2.1): en DEV, <code>pagatu-config</code> corre con Maven Wrapper en el host, en <code>localhost:18888</code>, leyendo <code>config-repo</code> desde <code>file:./config-repo</code>. Se muestran dos servicios (<code>pagatu-catalogo-ms</code> y <code>orden-ms</code>) para que se entienda que Config Server no es exclusivo de uno — cualquier microservicio que se sume al sistema consulta el mismo lugar. En esta sesión solo <code>pagatu-catalogo-ms</code> se migra en clase (3.9); <code>orden-ms</code> se conecta como trabajo autónomo (sección 4).</p>
+<h4 id="243-configuracion-en-prod-local">2.4.3 Configuración en PROD local<a class="headerlink" href="#243-configuracion-en-prod-local" title="Permanent link">&para;</a></h4>
 <p><strong>Figura 4. Config Server y config-repo en producción local</strong></p>
 <pre class="mermaid"><code>flowchart LR
     Client["Cliente - PowerShell / bash"]
@@ -2124,7 +2178,7 @@ CONFIG_REPO_LOCATION=file:/config-repo
 <li><strong>Perfil</strong>: variante de configuración, por ejemplo <code>dev</code> o <code>prod</code>.</li>
 <li><strong>Config Client</strong>: aplicación que lee su configuración desde Config Server (<code>pagatu-catalogo-ms</code>, desde 3.8).</li>
 </ul>
-<h3 id="24-convencion-de-nombres-aplicacion-perfilyml">2.4 Convención de nombres: <code>{aplicación}-{perfil}.yml</code><a class="headerlink" href="#24-convencion-de-nombres-aplicacion-perfilyml" title="Permanent link">&para;</a></h3>
+<h3 id="25-convencion-de-nombres-aplicacion-perfilyml">2.5 Convención de nombres: <code>{aplicación}-{perfil}.yml</code><a class="headerlink" href="#25-convencion-de-nombres-aplicacion-perfilyml" title="Permanent link">&para;</a></h3>
 <p>Config Server busca el archivo de un servicio combinando <code>spring.application.name</code> con el perfil activo:</p>
 <div class="highlight"><pre><span></span><code>{spring.application.name}-{profile}.yml
 </code></pre></div>
@@ -2133,7 +2187,7 @@ CONFIG_REPO_LOCATION=file:/config-repo
 pagatu-catalogo-ms-prod.yml
 </code></pre></div>
 <p><strong>Error frecuente</strong>: que <code>spring.application.name</code> no coincida exactamente con el nombre del archivo (por ejemplo, <code>catalogo-ms</code> en el código contra <code>pagatu-catalogo-ms-dev.yml</code> en el repo). Si no coinciden letra por letra, Config Server no encuentra ninguna configuración y el microservicio arranca con valores vacíos o falla.</p>
-<h3 id="25-config-server-en-dev-y-en-produccion-local">2.5 Config Server en DEV y en producción local<a class="headerlink" href="#25-config-server-en-dev-y-en-produccion-local" title="Permanent link">&para;</a></h3>
+<h3 id="26-config-server-en-dev-y-en-produccion-local">2.6 Config Server en DEV y en producción local<a class="headerlink" href="#26-config-server-en-dev-y-en-produccion-local" title="Permanent link">&para;</a></h3>
 <p><strong>Tabla 5. URLs de Config Server por ambiente</strong></p>
 <table>
 <thead>
@@ -2200,7 +2254,7 @@ pagatu-catalogo-ms-prod.yml
 </tr>
 </tbody>
 </table>
-<h3 id="26-observabilidad-diagnosticar-un-perfil-no-encontrado">2.6 Observabilidad: diagnosticar un perfil no encontrado<a class="headerlink" href="#26-observabilidad-diagnosticar-un-perfil-no-encontrado" title="Permanent link">&para;</a></h3>
+<h3 id="27-observabilidad-diagnosticar-un-perfil-no-encontrado">2.7 Observabilidad: diagnosticar un perfil no encontrado<a class="headerlink" href="#27-observabilidad-diagnosticar-un-perfil-no-encontrado" title="Permanent link">&para;</a></h3>
 <p>En esta sesión la observabilidad se enfoca en confirmar que <code>pagatu-config</code> está activo y entrega la configuración esperada.</p>
 <p><strong>Tabla 7. Errores frecuentes y diagnóstico</strong></p>
 <table>

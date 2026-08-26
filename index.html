@@ -732,6 +732,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="sesiones/S03_Registro_Descubrimiento_Ejecucion_Concurrente/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S3 - Registro, descubrimiento y ejecución concurrente de servicios
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -948,13 +976,13 @@ técnicamente.
 <td>S3</td>
 <td>Registro, descubrimiento y ejecución concurrente de servicios.</td>
 <td><code>catalogo-ms</code>, <code>orden-ms</code></td>
-<td>Eureka; ambos servicios se registran; múltiples instancias de <code>catalogo-ms</code> visibles en el dashboard de Eureka. Se levantan Prometheus y Loki para empezar a recolectar métricas y logs de esas instancias.</td>
+<td>Eureka (<code>pagatu-eureka</code>); en clase, <code>catalogo-ms</code> se registra con múltiples instancias visibles en el dashboard. Como trabajo autónomo, <code>orden-ms</code> se migra a Config Client (pendiente desde S2) y se conecta a Eureka con el mismo patrón. De forma opcional (según recursos de cómputo del equipo), se levantan también Prometheus y Loki, descubriendo instancias vía Eureka.</td>
 </tr>
 <tr>
 <td>S4</td>
 <td>Punto único de acceso y distribución de tráfico.</td>
 <td><code>catalogo-ms</code>, <code>orden-ms</code></td>
-<td>Gateway enruta a ambos; balanceo de carga entre instancias. Se agrega Grafana con paneles básicos sobre las métricas y logs que ya recolectan Prometheus y Loki desde S3.</td>
+<td>Gateway enruta a ambos; balanceo de carga entre instancias. Se completan Prometheus y Loki (si el equipo no los levantó ya en S3, opcional) y se agrega Grafana con paneles básicos sobre esas métricas y logs.</td>
 </tr>
 <tr>
 <td>S5</td>
@@ -1164,7 +1192,7 @@ flowchart LR
 <li>Los microservicios se ejecutan en DEV con Maven y bases de datos en Docker; al cierre de cada sesión se valida producción local con Docker.</li>
 <li>Las pruebas de API se realizan con PowerShell o bash/curl, sin depender de Postman.</li>
 <li>Los flujos asincronos usan mensajería para coordinar ordenes y pagos.</li>
-<li><code>/actuator/health</code> existe desde S1. El stack de observabilidad (Prometheus, Loki, Grafana) se levanta ya en S3-S4 sobre <code>catalogo-ms</code>/<code>orden-ms</code>, para tener evidencia visual de operación desde la sustentación de S5; en S10 se extiende a <code>auth-ms</code>, <code>cliente-ms</code>, <code>orden-ms</code> y <code>pago-ms</code> con paneles de diagnóstico y alertas sobre todo el sistema.</li>
+<li><code>/actuator/health</code> existe desde S1. El stack de observabilidad (Prometheus, Loki, Grafana) se levanta sobre <code>catalogo-ms</code>/<code>orden-ms</code> a más tardar en S4 (Prometheus/Loki son opcionales ya en S3, según recursos de cómputo), para tener evidencia visual de operación desde la sustentación de S5; en S10 se extiende a <code>auth-ms</code>, <code>cliente-ms</code>, <code>orden-ms</code> y <code>pago-ms</code> con paneles de diagnóstico y alertas sobre todo el sistema.</li>
 <li><code>pagatu-cliente-ms</code> (autónomo, desde S2) guarda el perfil del cliente (DNI/RUC, nombre/razón social) y lo autocompleta consultando RENIEC (personas naturales) o SUNAT (personas jurídicas) por el número de documento — el sistema no vive aislado, se integra con servicios externos del Estado peruano igual que con la pasarela de pagos. Desde S7, <code>orden-ms</code> deja de confiar en el <code>id_cliente</code> que el request declara y lo toma del JWT ya validado.</li>
 <li>El frontend <code>clients/pagatu-ng</code> (Angular 21) consume el sistema mediante Gateway.</li>
 <li>El producto final se valida end-to-end, se estabiliza y se defiende técnicamente.</li>
@@ -1174,6 +1202,7 @@ flowchart LR
 <li><a href="silabo_dist_2026_2/">Sílabo 2026-2</a></li>
 <li><a href="sesiones/S01_Construccion_Servicio_Base/">S1 - Construcción de un servicio base</a></li>
 <li><a href="sesiones/S02_Configuracion_Centralizada_Ambientes/">S2 - Gestión centralizada de configuración y ambientes</a></li>
+<li><a href="sesiones/S03_Registro_Descubrimiento_Ejecucion_Concurrente/">S3 - Registro, descubrimiento y ejecución concurrente de servicios</a></li>
 <li><a href="proyecto-sello/">Guía de Proyecto Sello</a></li>
 </ul>
 
