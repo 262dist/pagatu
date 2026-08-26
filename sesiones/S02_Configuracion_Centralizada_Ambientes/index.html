@@ -2492,8 +2492,8 @@ pagatu-catalogo-ms-prod.yml
 <p>En DEV no se define ninguna variable de entorno: se usa el valor por defecto, <code>file:./config-repo</code>. Eso significa que Maven debe ejecutarse parado exactamente en <code>infra/pagatu-config</code>, no en la raíz del repositorio.</p>
 <h3 id="36-probar-pagatu-config-en-dev">3.6 Probar <code>pagatu-config</code> en DEV<a class="headerlink" href="#36-probar-pagatu-config-en-dev" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> <code>pagatu-config</code> ejecutando en <code>localhost:18888</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>infra/pagatu-config
-mvnw<span class="w"> </span>spring-boot:run
+<div class="highlight"><pre><span></span><code><span class="nb">cd </span><span class="n">infra</span><span class="p">/</span><span class="n">pagatu-config</span>
+<span class="p">.\</span><span class="n">mvnw</span><span class="p">.</span><span class="n">cmd</span> <span class="n">spring-boot</span><span class="p">:</span><span class="n">run</span>
 </code></pre></div>
 <p>Verifica health y metrics:</p>
 <p>PowerShell:</p>
@@ -2663,13 +2663,13 @@ curl<span class="w"> </span>http://localhost:18888/pagatu-catalogo-ms/prod
 <h3 id="310-levantar-pagatu-catalogo-ms-en-dev-con-configuracion-externa">3.10 Levantar <code>pagatu-catalogo-ms</code> en DEV con configuración externa<a class="headerlink" href="#310-levantar-pagatu-catalogo-ms-en-dev-con-configuracion-externa" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> <code>pagatu-catalogo-ms</code> ejecutando con valores entregados por <code>pagatu-config</code>.</p>
 <p>Terminal 1 (Config Server):</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>infra/pagatu-config
-mvnw<span class="w"> </span>spring-boot:run
+<div class="highlight"><pre><span></span><code><span class="nb">cd </span><span class="n">infra</span><span class="p">/</span><span class="n">pagatu-config</span>
+<span class="p">.\</span><span class="n">mvnw</span><span class="p">.</span><span class="n">cmd</span> <span class="n">spring-boot</span><span class="p">:</span><span class="n">run</span>
 </code></pre></div>
 <p>Terminal 2 (base de datos + microservicio):</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>services/pagatu-catalogo-ms
-docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-dev.yml<span class="w"> </span>up<span class="w"> </span>-d
-mvnw<span class="w"> </span>spring-boot:run
+<div class="highlight"><pre><span></span><code><span class="nb">cd </span><span class="n">services</span><span class="p">/</span><span class="n">pagatu-catalogo-ms</span>
+<span class="n">docker</span> <span class="n">compose</span> <span class="o">-f</span> <span class="n">compose-dev</span><span class="p">.</span><span class="n">yml</span> <span class="n">up</span> <span class="n">-d</span>
+<span class="p">.\</span><span class="n">mvnw</span><span class="p">.</span><span class="n">cmd</span> <span class="n">spring-boot</span><span class="p">:</span><span class="n">run</span>
 </code></pre></div>
 <p>Verifica en la consola de arranque:</p>
 <ul>
@@ -2690,8 +2690,8 @@ curl<span class="w"> </span>http://localhost:8080/api/v1/categorias
 </code></pre></div>
 <p>Resultado esperado: <code>/actuator/health</code> responde <code>UP</code>, <code>/api/v1/categorias</code> responde <code>200 OK</code> — el mismo comportamiento de S1, ahora con la configuración viniendo de <code>pagatu-config</code> en vez de un archivo local.</p>
 <p>Puedes iniciar también la segunda instancia (S1, 3.4.1), en otra terminal:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>services/pagatu-catalogo-ms
-mvnw<span class="w"> </span>spring-boot:run<span class="w"> </span><span class="s2">"-Dspring-boot.run.arguments=--server.port=8081"</span>
+<div class="highlight"><pre><span></span><code><span class="nb">cd </span><span class="n">services</span><span class="p">/</span><span class="n">pagatu-catalogo-ms</span>
+<span class="p">.\</span><span class="n">mvnw</span><span class="p">.</span><span class="n">cmd</span> <span class="n">spring-boot</span><span class="p">:</span><span class="n">run</span> <span class="s2">"-Dspring-boot.run.arguments=--server.port=8081"</span>
 </code></pre></div>
 <p>Ambas instancias leen la misma configuración centralizada desde <code>pagatu-config</code> y responden el mismo CRUD.</p>
 <h3 id="311-dockerizar-pagatu-config-para-produccion-local-opcional">3.11 Dockerizar <code>pagatu-config</code> para producción local (opcional)<a class="headerlink" href="#311-dockerizar-pagatu-config-para-produccion-local-opcional" title="Permanent link">&para;</a></h3>
