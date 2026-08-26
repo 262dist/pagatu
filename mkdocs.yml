@@ -15,6 +15,7 @@ nav:
   - I. Sistema distribuido base orientado a producción:
       - S1 - Construcción de un servicio base para un sistema distribuido: sesiones/S01_Construccion_Servicio_Base.md
       - S2 - Gestión centralizada de configuración y ambientes: sesiones/S02_Configuracion_Centralizada_Ambientes.md
+      - S3 - Registro, descubrimiento y ejecución concurrente de servicios: sesiones/S03_Registro_Descubrimiento_Ejecucion_Concurrente.md
 
 theme:
   name: material

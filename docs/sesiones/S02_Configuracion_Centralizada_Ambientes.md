@@ -104,11 +104,44 @@ Hoy se construye `pagatu-config` y se migra `pagatu-catalogo-ms` para leer su co
 
 Tiempo: 25 min.
 
-### 2.1 El problema de la configuración duplicada entre microservicios
+### 2.1 Arquitectura de la sesión
+
+**Figura 2. Config Server y config-repo en DEV**
+
+```mermaid
+flowchart LR
+    Client["Cliente - PowerShell / bash / navegador"]
+    Config["pagatu-config - Config Server - infra/pagatu-config - localhost:18888"]
+    Repo["file:./config-repo - pagatu-catalogo-ms-dev.yml - pagatu-catalogo-ms-prod.yml - orden-ms-dev.yml - orden-ms-prod.yml"]
+    Catalogo["pagatu-catalogo-ms"]
+    Orden["orden-ms"]
+
+    Client -->|"GET localhost:18888/pagatu-catalogo-ms/dev"| Config
+    Client -->|"GET localhost:18888/orden-ms/dev"| Config
+    Config -->|"lee archivos"| Repo
+    Catalogo -. "spring.config.import - http://localhost:18888" .-> Config
+    Orden -. "spring.config.import - http://localhost:18888" .-> Config
+
+    classDef server fill:#eef6ff,stroke:#2b6cb0,color:#111;
+    classDef repo fill:#fff4de,stroke:#b7791f,color:#111;
+    class Config,Catalogo,Orden server;
+    class Repo repo;
+```
+
+En DEV, `pagatu-config` corre con Maven Wrapper en el host:
+
+```text
+localhost:18888
+config-repo: file:./config-repo
+```
+
+Lectura del diagrama: `pagatu-config` deja de ser un archivo dentro de cada microservicio y pasa a ser un servicio propio, con su propio repositorio de configuración (`config-repo`) — cualquier microservicio que se sume al sistema (`orden-ms`, y luego cualquier otro) consulta el mismo lugar por HTTP, en vez de traer sus valores embebidos en el build. Este diagrama es el mapa que guía el resto de la explicación: cada apartado siguiente desarrolla uno de sus componentes, en el mismo orden del Índice (1.2).
+
+### 2.2 El problema de la configuración duplicada entre microservicios
 
 `pagatu-catalogo-ms` guarda hoy su configuración en dos archivos propios: `application-dev.yml` y `application-prod.yml` (S1, 3.2.3 y 3.6.3). Cuando `orden-ms` se construya (sección 4) va a necesitar prácticamente los mismos tipos de valores — puerto, conexión a base de datos, perfil de Flyway, qué expone Actuator — repetidos en sus propios archivos. El caso de 1.6.1 muestra qué pasa cuando eso crece sin control: cambios repetidos en muchos archivos, diferencias accidentales entre DEV y PROD, y ningún lugar único donde saber qué configuración usa cada servicio.
 
-### 2.2 Panorama de patrones de arquitectura de microservicios
+### 2.3 Panorama de patrones de arquitectura de microservicios
 
 Config Server no es una idea suelta: es uno de varios **patrones de arquitectura de microservicios** ya catalogados y documentados, agrupados por el problema que resuelven. El catálogo de SACAViX System Design (2026) organiza cerca de 95 patrones en 11 categorías:
 
@@ -153,11 +186,11 @@ Ubicando lo ya construido y lo que viene en el curso dentro de este mismo catál
 
 No todos los patrones del catálogo entran en el alcance del curso (por ejemplo, Database Sharding o CQRS no se trabajan) — el catálogo sirve para ubicar cada sesión dentro de un mapa más amplio, no como lista obligatoria.
 
-### 2.3 Config Server y config-repo: dos responsabilidades distintas
+### 2.4 Config Server y config-repo: dos responsabilidades distintas
 
 **Config Server** es el componente que entrega configuración por HTTP; **config-repo** es donde viven los archivos de configuración en sí. Aunque en este curso ambos van a convivir dentro de la misma carpeta del proyecto (`infra/pagatu-config`), son responsabilidades lógicamente distintas: uno atiende peticiones, el otro almacena archivos.
 
-#### 2.3.1 Qué es el patrón de Configuración Centralizada
+#### 2.4.1 Qué es el patrón de Configuración Centralizada
 
 Según el catálogo de patrones SACAViX System Design (2026), **Centralized Configuration** es el patrón que centraliza la configuración de todos los microservicios en un repositorio o servicio dedicado, permitiendo gestión, versionado y actualización de configuración sin redespliegues.
 
@@ -167,7 +200,7 @@ Según el catálogo de patrones SACAViX System Design (2026), **Centralized Conf
 
 **Cómo funciona:** un Config Service centraliza toda la configuración. Los servicios obtienen su configuración al arrancar desde el Config Service. Los cambios de configuración pueden propagarse sin redespliegue. La configuración queda versionada en Git.
 
-**Figura 2. Patrón de Configuración Centralizada**
+**Figura 3. Patrón de Configuración Centralizada**
 
 ```mermaid
 flowchart LR
@@ -220,40 +253,11 @@ En esta sesión, `pagatu-config` implementa exactamente este patrón, con dos di
 
 Los servicios (`pagatu-catalogo-ms`, `orden-ms`) obtienen su configuración al arrancar (*pull on startup*, ver 3.10); la recarga en caliente (*hot reload*) queda fuera del alcance de esta sesión.
 
-#### 2.3.2 Configuración en DEV
+#### 2.4.2 Configuración en DEV
 
-**Figura 3. Config Server y config-repo en DEV**
+Ver Figura 2 (2.1): en DEV, `pagatu-config` corre con Maven Wrapper en el host, en `localhost:18888`, leyendo `config-repo` desde `file:./config-repo`. Se muestran dos servicios (`pagatu-catalogo-ms` y `orden-ms`) para que se entienda que Config Server no es exclusivo de uno — cualquier microservicio que se sume al sistema consulta el mismo lugar. En esta sesión solo `pagatu-catalogo-ms` se migra en clase (3.9); `orden-ms` se conecta como trabajo autónomo (sección 4).
 
-```mermaid
-flowchart LR
-    Client["Cliente - PowerShell / bash / navegador"]
-    Config["pagatu-config - Config Server - infra/pagatu-config - localhost:18888"]
-    Repo["file:./config-repo - pagatu-catalogo-ms-dev.yml - pagatu-catalogo-ms-prod.yml - orden-ms-dev.yml - orden-ms-prod.yml"]
-    Catalogo["pagatu-catalogo-ms"]
-    Orden["orden-ms"]
-
-    Client -->|"GET localhost:18888/pagatu-catalogo-ms/dev"| Config
-    Client -->|"GET localhost:18888/orden-ms/dev"| Config
-    Config -->|"lee archivos"| Repo
-    Catalogo -. "spring.config.import - http://localhost:18888" .-> Config
-    Orden -. "spring.config.import - http://localhost:18888" .-> Config
-
-    classDef server fill:#eef6ff,stroke:#2b6cb0,color:#111;
-    classDef repo fill:#fff4de,stroke:#b7791f,color:#111;
-    class Config,Catalogo,Orden server;
-    class Repo repo;
-```
-
-En DEV, `pagatu-config` corre con Maven Wrapper en el host:
-
-```text
-localhost:18888
-config-repo: file:./config-repo
-```
-
-Se muestran dos servicios (`pagatu-catalogo-ms` y `orden-ms`) para que se entienda que Config Server no es exclusivo de uno — cualquier microservicio que se sume al sistema consulta el mismo lugar. En esta sesión solo `pagatu-catalogo-ms` se migra en clase (3.9); `orden-ms` se conecta como trabajo autónomo (sección 4).
-
-#### 2.3.3 Configuración en PROD local
+#### 2.4.3 Configuración en PROD local
 
 **Figura 4. Config Server y config-repo en producción local**
 
@@ -294,7 +298,7 @@ Conceptos de la sesión:
 - **Perfil**: variante de configuración, por ejemplo `dev` o `prod`.
 - **Config Client**: aplicación que lee su configuración desde Config Server (`pagatu-catalogo-ms`, desde 3.8).
 
-### 2.4 Convención de nombres: `{aplicación}-{perfil}.yml`
+### 2.5 Convención de nombres: `{aplicación}-{perfil}.yml`
 
 Config Server busca el archivo de un servicio combinando `spring.application.name` con el perfil activo:
 
@@ -311,7 +315,7 @@ pagatu-catalogo-ms-prod.yml
 
 **Error frecuente**: que `spring.application.name` no coincida exactamente con el nombre del archivo (por ejemplo, `catalogo-ms` en el código contra `pagatu-catalogo-ms-dev.yml` en el repo). Si no coinciden letra por letra, Config Server no encuentra ninguna configuración y el microservicio arranca con valores vacíos o falla.
 
-### 2.5 Config Server en DEV y en producción local
+### 2.6 Config Server en DEV y en producción local
 
 **Tabla 5. URLs de Config Server por ambiente**
 
@@ -335,7 +339,7 @@ El puerto sigue el mismo patrón ya establecido en S1 para distinguir DEV de PRO
 | `pagatu-catalogo-ms` | `8080` | `28080` (no publicado por defecto, ver S1 Anexo) |
 | `pagatu-config` | `18888` | `28888` |
 
-### 2.6 Observabilidad: diagnosticar un perfil no encontrado
+### 2.7 Observabilidad: diagnosticar un perfil no encontrado
 
 En esta sesión la observabilidad se enfoca en confirmar que `pagatu-config` está activo y entrega la configuración esperada.
 
