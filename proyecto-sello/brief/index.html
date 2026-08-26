@@ -876,7 +876,7 @@
 <li>Nombre del equipo:</li>
 <li>Sección:</li>
 <li>Repositorio (URL):</li>
-<li>Topics del repositorio configurados (sí/no):</li>
+<li>Topics del repositorio configurados (sí/no) — incluye <code>grupo-&lt;numero&gt;-&lt;nombre-proyecto&gt;</code> (ver <a href="../">Guía del Proyecto Sello</a>, sección 5):</li>
 </ul>
 <p><strong>Integrantes:</strong></p>
 <table>
@@ -907,13 +907,11 @@
 </table>
 <h2 id="2-dominio-del-proyecto">2. Dominio del proyecto<a class="headerlink" href="#2-dominio-del-proyecto" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Nombre del proyecto (coincide con <code>grupo-&lt;numero&gt;-&lt;nombre-proyecto&gt;</code> en los topics):</li>
+<li>Nombre del proyecto:</li>
 <li>Problema o necesidad que resuelve (2-4 líneas):</li>
-<li>Rubro o nicho de comercio electrónico (breve — ej. ropa, comida, servicios, entradas: el "qué se vende"):</li>
-<li>Flujo de negocio de extremo a extremo (breve — el proceso que atraviesa varios microservicios: catálogo → orden → <strong>pago</strong>, igual que en <code>pagatu</code>):</li>
+<li>Dominio de negocio (breve — rubro o nicho de comercio electrónico, ej. ropa, comida, servicios, entradas, y el flujo de extremo a extremo: catálogo → orden → pago, igual que en <code>pagatu</code>):</li>
 <li>Usuarios / actores principales (roles que interactúan con el sistema):</li>
-<li><strong>Servicio externo real</strong>: el proyecto debe integrar al menos un servicio externo <strong>real</strong>, no simulado (la API real, no un mock) — de preferencia una pasarela de pagos, por ser la más cercana al flujo de <code>pagatu</code> (<a href="https://www.mercadopago.com.pe/developers">Mercado Pago</a> recomendado por económico, cuenta sandbox gratuita); si el rubro no encaja bien con pagos en línea, puede ser cualquier otro servicio externo real de complejidad equivalente — Google Maps/geolocalización, predicción de tiempos de entrega, un LLM (recomendaciones, chatbot, búsqueda semántica), etc. Indica cuál y por qué:</li>
-<li>Otros sistemas externos reales adicionales, si los hay (ej. RENIEC/SUNAT como <code>pagatu</code> con <code>cliente-ms</code>, envío de correos/SMS, etc.):</li>
+<li>Servicio externo real que integra el proyecto (la API real, no simulada) — de preferencia una pasarela de pagos (ej. Mercado Pago, económica y con sandbox gratuito); si el rubro no encaja con pagos en línea, puede ser otro servicio externo real de complejidad equivalente (Google Maps, predicción de tiempos, un LLM, RENIEC/SUNAT, etc.). Indica cuál:</li>
 <li>¿Continúa un proyecto de un ciclo anterior, o es un dominio nuevo? Si continúa, indicar cuál:</li>
 </ul>
 <h2 id="3-microservicios-previstos-y-alcance-esperado">3. Microservicios previstos y alcance esperado<a class="headerlink" href="#3-microservicios-previstos-y-alcance-esperado" title="Permanent link">&para;</a></h2>
