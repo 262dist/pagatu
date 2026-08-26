@@ -869,12 +869,11 @@
 
 <h1 id="brief-tecnico-del-proyecto-sello">Brief Técnico del Proyecto Sello<a class="headerlink" href="#brief-tecnico-del-proyecto-sello" title="Permanent link">&para;</a></h1>
 <p>Este documento es el hito de <strong>S2</strong> del cronograma (ver <a href="../">Guía del Proyecto Sello</a>, sección 4): el punto donde el equipo declara, por escrito, qué sistema distribuido va a construir durante el ciclo — antes de avanzar a S3 (registro y descubrimiento). No reemplaza el informe final; es la ficha corta que fija el rumbo desde el principio.</p>
-<p><code>pagatu</code> es un entorno integrado para construir un sistema distribuido de <strong>comercio electrónico</strong> — ese es el dominio del proyecto, no uno libre. Las guías de S1 en adelante muestran <strong>cómo</strong> se construye cada capacidad distribuida (Config Server, Eureka, Gateway, seguridad, mensajería, observabilidad) sobre ese dominio. Tu equipo <strong>adapta</strong> el mismo sistema a su propio proyecto final: un rubro o nicho propio de comercio electrónico (no necesariamente el mismo catálogo de <code>pagatu</code>, y no necesariamente con los mismos nombres de microservicio <code>catalogo-ms</code>/<code>orden-ms</code>/etc.), pero manteniendo el mismo flujo de negocio de fondo — catálogo, orden y <strong>pago real</strong>, no simulado (ver sección 2). El repositorio se identifica con su propio <code>grupo-&lt;numero&gt;-&lt;nombre-proyecto&gt;</code> en los topics (ver <a href="../">Guía del Proyecto Sello</a>, sección 5).</p>
+<p><code>pagatu</code> es un entorno integrado para construir un sistema distribuido de <strong>comercio electrónico</strong> — ese es el dominio del proyecto, no uno libre. Las guías de S1 en adelante muestran <strong>cómo</strong> se construye cada capacidad distribuida (Config Server, Eureka, Gateway, seguridad, mensajería, observabilidad) sobre ese dominio. Tu equipo <strong>adapta</strong> el mismo sistema a su propio proyecto final: un rubro o nicho propio de comercio electrónico (no necesariamente el mismo catálogo de <code>pagatu</code>, y no necesariamente con los mismos nombres de microservicio <code>catalogo-ms</code>/<code>orden-ms</code>/etc.), pero manteniendo el mismo flujo de negocio de fondo — catálogo, orden y al menos un <strong>servicio externo real</strong>, no simulado (de preferencia pagos en línea; ver sección 2). El repositorio se identifica con su propio <code>grupo-&lt;numero&gt;-&lt;nombre-proyecto&gt;</code> en los topics (ver <a href="../">Guía del Proyecto Sello</a>, sección 5).</p>
 <p>Cada equipo llena una sola copia de este brief, la publica en su repositorio (o en su MkDocs) y la actualiza solo si el alcance cambia de verdad — no en cada sesión.</p>
 <h2 id="1-datos-del-equipo">1. Datos del equipo<a class="headerlink" href="#1-datos-del-equipo" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Nombre del equipo:</li>
-<li>Nombre del proyecto (coincide con <code>grupo-&lt;numero&gt;-&lt;nombre-proyecto&gt;</code> en los topics):</li>
 <li>Sección:</li>
 <li>Repositorio (URL):</li>
 <li>Topics del repositorio configurados (sí/no):</li>
@@ -908,12 +907,13 @@
 </table>
 <h2 id="2-dominio-del-proyecto">2. Dominio del proyecto<a class="headerlink" href="#2-dominio-del-proyecto" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Rubro o nicho de comercio electrónico (ej. ropa, comida, servicios, entradas — el "qué se vende"):</li>
+<li>Nombre del proyecto (coincide con <code>grupo-&lt;numero&gt;-&lt;nombre-proyecto&gt;</code> en los topics):</li>
 <li>Problema o necesidad que resuelve (2-4 líneas):</li>
+<li>Rubro o nicho de comercio electrónico (breve — ej. ropa, comida, servicios, entradas: el "qué se vende"):</li>
 <li>Flujo de negocio de extremo a extremo (breve — el proceso que atraviesa varios microservicios: catálogo → orden → <strong>pago</strong>, igual que en <code>pagatu</code>):</li>
 <li>Usuarios / actores principales (roles que interactúan con el sistema):</li>
-<li><strong>Pasarela de pagos</strong>: el proyecto debe integrar pagos en línea <strong>reales</strong>, no simulados — de preferencia <a href="https://www.mercadopago.com.pe/developers">Mercado Pago</a> (Checkout Pro o Checkout API, cuenta de pruebas/sandbox gratuita), por ser la más económica y accesible para un proyecto académico; puede usarse otra pasarela (Stripe, Culqi, etc.) si el equipo tiene una razón concreta. Indica cuál:</li>
-<li>Otros sistemas externos <strong>reales</strong> con los que interactúa (mismo criterio que la pasarela de pagos — se integra la API real, no se simula): por ejemplo RENIEC/SUNAT (como <code>pagatu</code> con <code>cliente-ms</code>), Google Maps/geolocalización (dirección de entrega, distancia, tiempo estimado), un servicio de predicción de tiempos de entrega, un LLM (recomendaciones, chatbot de soporte, búsqueda semántica del catálogo), envío de correos/SMS, u otro que encaje con el rubro elegido:</li>
+<li><strong>Servicio externo real</strong>: el proyecto debe integrar al menos un servicio externo <strong>real</strong>, no simulado (la API real, no un mock) — de preferencia una pasarela de pagos, por ser la más cercana al flujo de <code>pagatu</code> (<a href="https://www.mercadopago.com.pe/developers">Mercado Pago</a> recomendado por económico, cuenta sandbox gratuita); si el rubro no encaja bien con pagos en línea, puede ser cualquier otro servicio externo real de complejidad equivalente — Google Maps/geolocalización, predicción de tiempos de entrega, un LLM (recomendaciones, chatbot, búsqueda semántica), etc. Indica cuál y por qué:</li>
+<li>Otros sistemas externos reales adicionales, si los hay (ej. RENIEC/SUNAT como <code>pagatu</code> con <code>cliente-ms</code>, envío de correos/SMS, etc.):</li>
 <li>¿Continúa un proyecto de un ciclo anterior, o es un dominio nuevo? Si continúa, indicar cuál:</li>
 </ul>
 <h2 id="3-microservicios-previstos-y-alcance-esperado">3. Microservicios previstos y alcance esperado<a class="headerlink" href="#3-microservicios-previstos-y-alcance-esperado" title="Permanent link">&para;</a></h2>
