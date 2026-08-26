@@ -2,14 +2,13 @@
 
 Este documento es el hito de **S2** del cronograma (ver [Guía del Proyecto Sello](index.md), sección 4): el punto donde el equipo declara, por escrito, qué sistema distribuido va a construir durante el ciclo — antes de avanzar a S3 (registro y descubrimiento). No reemplaza el informe final; es la ficha corta que fija el rumbo desde el principio.
 
-`pagatu` es un entorno integrado para construir un sistema distribuido de **comercio electrónico** — ese es el dominio del proyecto, no uno libre. Las guías de S1 en adelante muestran **cómo** se construye cada capacidad distribuida (Config Server, Eureka, Gateway, seguridad, mensajería, observabilidad) sobre ese dominio. Tu equipo **adapta** el mismo sistema a su propio proyecto final: un rubro o nicho propio de comercio electrónico (no necesariamente el mismo catálogo de `pagatu`, y no necesariamente con los mismos nombres de microservicio `catalogo-ms`/`orden-ms`/etc.), pero manteniendo el mismo flujo de negocio de fondo — catálogo, orden y **pago real**, no simulado (ver sección 2). El repositorio se identifica con su propio `grupo-<numero>-<nombre-proyecto>` en los topics (ver [Guía del Proyecto Sello](index.md), sección 5).
+`pagatu` es un entorno integrado para construir un sistema distribuido de **comercio electrónico** — ese es el dominio del proyecto, no uno libre. Las guías de S1 en adelante muestran **cómo** se construye cada capacidad distribuida (Config Server, Eureka, Gateway, seguridad, mensajería, observabilidad) sobre ese dominio. Tu equipo **adapta** el mismo sistema a su propio proyecto final: un rubro o nicho propio de comercio electrónico (no necesariamente el mismo catálogo de `pagatu`, y no necesariamente con los mismos nombres de microservicio `catalogo-ms`/`orden-ms`/etc.), pero manteniendo el mismo flujo de negocio de fondo — catálogo, orden y al menos un **servicio externo real**, no simulado (de preferencia pagos en línea; ver sección 2). El repositorio se identifica con su propio `grupo-<numero>-<nombre-proyecto>` en los topics (ver [Guía del Proyecto Sello](index.md), sección 5).
 
 Cada equipo llena una sola copia de este brief, la publica en su repositorio (o en su MkDocs) y la actualiza solo si el alcance cambia de verdad — no en cada sesión.
 
 ## 1. Datos del equipo
 
 - Nombre del equipo:
-- Nombre del proyecto (coincide con `grupo-<numero>-<nombre-proyecto>` en los topics):
 - Sección:
 - Repositorio (URL):
 - Topics del repositorio configurados (sí/no):
@@ -25,12 +24,13 @@ Cada equipo llena una sola copia de este brief, la publica en su repositorio (o 
 
 ## 2. Dominio del proyecto
 
-- Rubro o nicho de comercio electrónico (ej. ropa, comida, servicios, entradas — el "qué se vende"):
+- Nombre del proyecto (coincide con `grupo-<numero>-<nombre-proyecto>` en los topics):
 - Problema o necesidad que resuelve (2-4 líneas):
+- Rubro o nicho de comercio electrónico (breve — ej. ropa, comida, servicios, entradas: el "qué se vende"):
 - Flujo de negocio de extremo a extremo (breve — el proceso que atraviesa varios microservicios: catálogo → orden → **pago**, igual que en `pagatu`):
 - Usuarios / actores principales (roles que interactúan con el sistema):
-- **Pasarela de pagos**: el proyecto debe integrar pagos en línea **reales**, no simulados — de preferencia [Mercado Pago](https://www.mercadopago.com.pe/developers) (Checkout Pro o Checkout API, cuenta de pruebas/sandbox gratuita), por ser la más económica y accesible para un proyecto académico; puede usarse otra pasarela (Stripe, Culqi, etc.) si el equipo tiene una razón concreta. Indica cuál:
-- Otros sistemas externos **reales** con los que interactúa (mismo criterio que la pasarela de pagos — se integra la API real, no se simula): por ejemplo RENIEC/SUNAT (como `pagatu` con `cliente-ms`), Google Maps/geolocalización (dirección de entrega, distancia, tiempo estimado), un servicio de predicción de tiempos de entrega, un LLM (recomendaciones, chatbot de soporte, búsqueda semántica del catálogo), envío de correos/SMS, u otro que encaje con el rubro elegido:
+- **Servicio externo real**: el proyecto debe integrar al menos un servicio externo **real**, no simulado (la API real, no un mock) — de preferencia una pasarela de pagos, por ser la más cercana al flujo de `pagatu` ([Mercado Pago](https://www.mercadopago.com.pe/developers) recomendado por económico, cuenta sandbox gratuita); si el rubro no encaja bien con pagos en línea, puede ser cualquier otro servicio externo real de complejidad equivalente — Google Maps/geolocalización, predicción de tiempos de entrega, un LLM (recomendaciones, chatbot, búsqueda semántica), etc. Indica cuál y por qué:
+- Otros sistemas externos reales adicionales, si los hay (ej. RENIEC/SUNAT como `pagatu` con `cliente-ms`, envío de correos/SMS, etc.):
 - ¿Continúa un proyecto de un ciclo anterior, o es un dominio nuevo? Si continúa, indicar cuál:
 
 ## 3. Microservicios previstos y alcance esperado
