@@ -19,7 +19,7 @@ pagatu/
 │   ├── pagatu-catalogo-ms/   # Categorías y productos (S1)
 │   ├── pagatu-orden-ms/      # Órdenes de compra (S2)
 │   └── pagatu-cliente-ms/    # Perfil de cliente + RENIEC/SUNAT (S2)
-├── infra/                    # Config Server, Eureka, Gateway (pendiente de crear)
+├── infra/                    # Config Server (S2, listo); Eureka (S3) y Gateway (S4), pendientes
 └── clients/                  # Frontend Angular (pendiente, desde S11)
 ```
 
