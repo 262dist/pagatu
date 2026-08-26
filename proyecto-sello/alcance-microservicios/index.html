@@ -386,39 +386,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#alcance-de-pagatu-catalogo-ms-por-sesion" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Alcance de pagatu-catalogo-ms, por sesión
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#alcance-de-pagatu-orden-ms-por-sesion" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Alcance de pagatu-orden-ms, por sesión
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#alcance-de-pagatu-cliente-ms-por-sesion" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Alcance de pagatu-cliente-ms, por sesión
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#crear-el-proyecto-base-de-pagatu-orden-ms" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -725,39 +692,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#alcance-de-pagatu-catalogo-ms-por-sesion" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Alcance de pagatu-catalogo-ms, por sesión
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#alcance-de-pagatu-orden-ms-por-sesion" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Alcance de pagatu-orden-ms, por sesión
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#alcance-de-pagatu-cliente-ms-por-sesion" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Alcance de pagatu-cliente-ms, por sesión
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#crear-el-proyecto-base-de-pagatu-orden-ms" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -822,94 +756,6 @@
 
 
 <h1 id="alcance-por-microservicio-y-proyecto-base-de-pagatu-orden-ms-y-pagatu-cliente-ms">Alcance por microservicio y proyecto base de <code>pagatu-orden-ms</code> y <code>pagatu-cliente-ms</code><a class="headerlink" href="#alcance-por-microservicio-y-proyecto-base-de-pagatu-orden-ms-y-pagatu-cliente-ms" title="Permanent link">&para;</a></h1>
-<p>Este documento delimita, por escrito, qué le corresponde a cada microservicio de <code>pagatu</code> a lo largo de <strong>todo el curso</strong> — no es el contenido de una sola sesión. Sirve para que, en cualquier momento del semestre, cualquier integrante del equipo pueda ubicar qué historia de usuario pertenece a qué microservicio y en qué sesión se construye, sin tener que revisar guía por guía.</p>
-<p>No sustituye ninguna guía de sesión ya entregada (S1, S2): las historias marcadas como "ya entregado" o con una sesión concreta se implementan cuando esa sesión llega, siguiendo su propia guía — este documento solo ubica el mapa completo.</p>
-<p><strong>Error frecuente al crear un proyecto nuevo copiando de otro:</strong> al generar <code>pagatu-orden-ms</code>/<code>pagatu-cliente-ms</code> con Spring Initializr, es tentador copiar archivos ya hechos de <code>pagatu-catalogo-ms</code> (<code>.env</code>, <code>compose.yml</code>, <code>application-dev.yml</code>, <code>ResourceNotFoundException</code>, <code>CorrelationIdFilter</code>, etc.) para no escribirlos de cero — es una práctica válida, pero cada archivo copiado hay que revisarlo con cuidado: nombre de base de datos, puertos, nombre de contenedor y, sobre todo, la línea <code>package</code> de cada clase Java (debe decir <code>pe.edu.upeu.orden...</code> o <code>pe.edu.upeu.cliente...</code>, no <code>pe.edu.upeu.catalogo...</code>) — si el <code>package</code> no coincide con la carpeta real del archivo, el proyecto no compila.</p>
-<h2 id="alcance-de-pagatu-catalogo-ms-por-sesion">Alcance de <code>pagatu-catalogo-ms</code>, por sesión<a class="headerlink" href="#alcance-de-pagatu-catalogo-ms-por-sesion" title="Permanent link">&para;</a></h2>
-<p><strong>S1 (ya entregado) — CRUD básico</strong></p>
-<ol>
-<li>Como cliente, quiero consultar el catálogo de categorías y productos disponibles, para elegir qué comprar.</li>
-<li>Como administrador, quiero crear, actualizar y eliminar categorías y productos, para mantener el catálogo actualizado.</li>
-</ol>
-<p><strong>S3 — descubrimiento de servicios</strong></p>
-<ol>
-<li>Como sistema, quiero que <code>pagatu-catalogo-ms</code> se registre automáticamente en Eureka al arrancar, para que otros servicios (Gateway, <code>orden-ms</code>) lo encuentren sin conocer su dirección de antemano.</li>
-</ol>
-<p><strong>S4 — punto único de acceso</strong></p>
-<ol>
-<li>Como cliente, quiero acceder al catálogo a través de un único punto de entrada (Gateway), sin necesitar conocer la URL directa de <code>pagatu-catalogo-ms</code>.</li>
-<li>Como sistema, quiero que el tráfico se reparta entre varias instancias de <code>pagatu-catalogo-ms</code>, para soportar más carga sin caerse.</li>
-</ol>
-<p><strong>S6 — comunicación resiliente (consumido por <code>orden-ms</code>)</strong></p>
-<ol>
-<li>Como sistema (<code>orden-ms</code>), quiero consultar un producto por id en <code>pagatu-catalogo-ms</code> de forma confiable, para validar que existe y su precio antes de crear una orden.</li>
-</ol>
-<p><strong>S7 — seguridad</strong></p>
-<ol>
-<li>Como administrador autenticado, quiero ser el único que puede crear, editar o eliminar categorías y productos, para que usuarios sin permiso no alteren el catálogo.</li>
-<li>Como cliente, quiero poder consultar el catálogo sin restricciones, para explorar productos libremente.</li>
-</ol>
-<p><strong>S9 — consistencia distribuida (pendiente de decidir)</strong></p>
-<ol>
-<li>Como sistema, quiero descontar stock de un producto cuando se confirma una orden, para no vender más unidades de las disponibles. La columna <code>stock</code> ya se agregó a <code>productos</code> desde el <code>V1</code> (S1) — lo que falta construir en S9 es la operación de descuento segura entre <code>orden-ms</code> y <code>pagatu-catalogo-ms</code> (<code>UPDATE ... WHERE stock &gt;= cantidad</code>, idempotencia, compensación si la orden se cancela).</li>
-</ol>
-<p><strong>S10 — observabilidad</strong></p>
-<ol>
-<li>Como equipo de operaciones, quiero ver métricas, logs y el estado de salud de <code>pagatu-catalogo-ms</code> en un panel, para detectar problemas antes de que afecten a los clientes.</li>
-</ol>
-<p><strong>S11 — integración frontend</strong></p>
-<ol>
-<li>Como cliente, quiero navegar el catálogo desde la aplicación web, para explorar y elegir productos antes de comprar.</li>
-</ol>
-<h2 id="alcance-de-pagatu-orden-ms-por-sesion">Alcance de <code>pagatu-orden-ms</code>, por sesión<a class="headerlink" href="#alcance-de-pagatu-orden-ms-por-sesion" title="Permanent link">&para;</a></h2>
-<p><strong>Pendiente de construir — CRUD básico</strong></p>
-<ol>
-<li>Como cliente, quiero crear una orden con los productos que quiero comprar (cantidad y precio de cada uno), para registrar mi intención de compra.</li>
-<li>Como cliente, quiero consultar el detalle de una orden por su id, para verificar qué pedí y cuánto voy a pagar.</li>
-<li>Como cliente o administrador, quiero listar las órdenes existentes, para revisar el historial de pedidos.</li>
-<li>Como administrador, quiero cambiar el estado de una orden (confirmar o cancelar), para reflejar su avance real.</li>
-</ol>
-<p><strong>S6 — comunicación resiliente</strong></p>
-<ol>
-<li>Como sistema, quiero validar que cada producto de la orden exista y tenga el precio vigente en <code>pagatu-catalogo-ms</code> antes de crearla, para no aceptar pedidos con productos inexistentes o precios desactualizados.</li>
-<li>Como sistema, quiero responder con un mensaje claro (no un error genérico) si <code>pagatu-catalogo-ms</code> no responde, para no dejar al cliente esperando indefinidamente (Circuit Breaker).</li>
-</ol>
-<p><strong>S7 — seguridad</strong></p>
-<ol>
-<li>Como cliente autenticado, quiero que solo yo pueda ver mis propias órdenes, para que otros usuarios no accedan a mi información.</li>
-<li>Como administrador, quiero ver y gestionar todas las órdenes del sistema, para operar el negocio.</li>
-</ol>
-<p><code>ordenes.id_cliente</code> ya nace como <code>BIGINT</code>, sin <code>REFERENCES</code> — apunta a <code>pagatu-cliente-ms</code> (un microservicio con su propia base de datos, ver <a href="../../"><code>docs/index.md</code></a>), igual que <code>id_producto</code> no referencia a <code>pagatu-catalogo-ms</code>. Mientras no exista login, se completa con un valor de prueba; desde S7 se poblará con el id que venga del JWT ya validado, en vez de confiar en lo que el cliente mande en el request. <code>pagatu-cliente-ms</code> guarda el perfil del cliente (DNI/RUC, nombre o razón social) y lo autocompleta consultando RENIEC o SUNAT según el tipo de documento — ver <a href="../../"><code>docs/index.md</code></a>, tabla de U2 (fila S7) y diagrama C4 nivel 2.</p>
-<p><strong>S8 — mensajería asíncrona</strong></p>
-<ol>
-<li>Como sistema, quiero publicar un evento cuando se crea una orden, para que <code>pago-ms</code> se entere y procese el cobro sin que <code>orden-ms</code> tenga que llamarlo directamente.</li>
-</ol>
-<p><strong>S9 — consistencia distribuida</strong></p>
-<ol>
-<li>Como cliente, quiero que si envío la misma solicitud de compra dos veces por error (doble clic, reintento de red), no se creen dos órdenes duplicadas (idempotencia).</li>
-<li>Como sistema, quiero poder revertir/cancelar una orden automáticamente si el pago asociado falla, para mantener consistencia entre orden y pago (compensación).</li>
-</ol>
-<p><strong>S11 — integración frontend</strong></p>
-<ol>
-<li>Como cliente, quiero ver mis órdenes y su estado desde la aplicación web, para hacer seguimiento de mis compras.</li>
-</ol>
-<h2 id="alcance-de-pagatu-cliente-ms-por-sesion">Alcance de <code>pagatu-cliente-ms</code>, por sesión<a class="headerlink" href="#alcance-de-pagatu-cliente-ms-por-sesion" title="Permanent link">&para;</a></h2>
-<p><strong>Pendiente de construir (trabajo autónomo, sin fecha fija de sesión) — CRUD y autocompletado con RENIEC/SUNAT</strong></p>
-<ol>
-<li>Como cliente, quiero registrar mi documento de identidad (DNI o RUC), para que el sistema autocomplete mis datos sin que tenga que tipearlos.</li>
-<li>Como sistema, quiero consultar RENIEC con el DNI de una persona natural, para obtener su nombre completo y autocompletar el perfil.</li>
-<li>Como sistema, quiero consultar SUNAT con el RUC de una persona jurídica, para obtener su razón social y autocompletar el perfil.</li>
-<li>Como cliente, quiero consultar mi propio perfil, para verificar que mis datos estén correctos.</li>
-</ol>
-<p><strong>S10 — observabilidad</strong></p>
-<ol>
-<li>Como equipo de operaciones, quiero ver métricas, logs y el estado de salud de <code>pagatu-cliente-ms</code> en un panel, para detectar problemas (incluidas fallas de RENIEC/SUNAT) antes de que afecten a los clientes.</li>
-</ol>
-<p><strong>S11 — integración frontend</strong></p>
-<ol>
-<li>Como cliente, quiero completar mi perfil desde la aplicación web con solo mi DNI o RUC, para no llenar el formulario a mano.</li>
-</ol>
-<p>Las historias 1-4 de <code>pagatu-cliente-ms</code> no tienen una sesión de guía dedicada todavía — se construyen como trabajo autónomo, en el mismo momento que el equipo decida levantar <code>pagatu-orden-ms</code> (ambos microservicios nuevos se scaffoldan juntos, siguiendo la sección siguiente). Las de S10 y S11 quedan como delimitación de alcance para más adelante, sin implementarse todavía.</p>
 <h2 id="crear-el-proyecto-base-de-pagatu-orden-ms">Crear el proyecto base de <code>pagatu-orden-ms</code><a class="headerlink" href="#crear-el-proyecto-base-de-pagatu-orden-ms" title="Permanent link">&para;</a></h2>
 <p><strong>Tabla 1. Configuración del proyecto <code>pagatu-orden-ms</code> en Spring Initializr</strong></p>
 <table>
