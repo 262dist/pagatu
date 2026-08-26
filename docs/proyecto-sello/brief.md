@@ -11,7 +11,7 @@ Cada equipo llena una sola copia de este brief, la publica en su repositorio (o 
 - Nombre del equipo:
 - Sección:
 - Repositorio (URL):
-- Topics del repositorio configurados (sí/no):
+- Topics del repositorio configurados (sí/no) — incluye `grupo-<numero>-<nombre-proyecto>` (ver [Guía del Proyecto Sello](index.md), sección 5):
 
 **Integrantes:**
 
@@ -24,13 +24,11 @@ Cada equipo llena una sola copia de este brief, la publica en su repositorio (o 
 
 ## 2. Dominio del proyecto
 
-- Nombre del proyecto (coincide con `grupo-<numero>-<nombre-proyecto>` en los topics):
+- Nombre del proyecto:
 - Problema o necesidad que resuelve (2-4 líneas):
-- Rubro o nicho de comercio electrónico (breve — ej. ropa, comida, servicios, entradas: el "qué se vende"):
-- Flujo de negocio de extremo a extremo (breve — el proceso que atraviesa varios microservicios: catálogo → orden → **pago**, igual que en `pagatu`):
+- Dominio de negocio (breve — rubro o nicho de comercio electrónico, ej. ropa, comida, servicios, entradas, y el flujo de extremo a extremo: catálogo → orden → pago, igual que en `pagatu`):
 - Usuarios / actores principales (roles que interactúan con el sistema):
-- **Servicio externo real**: el proyecto debe integrar al menos un servicio externo **real**, no simulado (la API real, no un mock) — de preferencia una pasarela de pagos, por ser la más cercana al flujo de `pagatu` ([Mercado Pago](https://www.mercadopago.com.pe/developers) recomendado por económico, cuenta sandbox gratuita); si el rubro no encaja bien con pagos en línea, puede ser cualquier otro servicio externo real de complejidad equivalente — Google Maps/geolocalización, predicción de tiempos de entrega, un LLM (recomendaciones, chatbot, búsqueda semántica), etc. Indica cuál y por qué:
-- Otros sistemas externos reales adicionales, si los hay (ej. RENIEC/SUNAT como `pagatu` con `cliente-ms`, envío de correos/SMS, etc.):
+- Servicio externo real que integra el proyecto (la API real, no simulada) — de preferencia una pasarela de pagos (ej. Mercado Pago, económica y con sandbox gratuito); si el rubro no encaja con pagos en línea, puede ser otro servicio externo real de complejidad equivalente (Google Maps, predicción de tiempos, un LLM, RENIEC/SUNAT, etc.). Indica cuál:
 - ¿Continúa un proyecto de un ciclo anterior, o es un dominio nuevo? Si continúa, indicar cuál:
 
 ## 3. Microservicios previstos y alcance esperado
