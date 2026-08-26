@@ -322,6 +322,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../proyecto-sello/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief técnico (plantilla)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../proyecto-sello/alcance-microservicios/" class="md-nav__link">
         
   
@@ -784,6 +812,34 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="2.3 El patrón Service Registry en la arquitectura de microservicios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#231-que-es-el-patron-service-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3.1 Qué es el patrón Service Registry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#232-registro-y-descubrimiento-en-produccion-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3.2 Registro y descubrimiento en producción local
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1325,6 +1381,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="2.3 El patrón Service Registry en la arquitectura de microservicios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#231-que-es-el-patron-service-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3.1 Qué es el patrón Service Registry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#232-registro-y-descubrimiento-en-produccion-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3.2 Registro y descubrimiento en producción local
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -1815,10 +1899,24 @@ Microservicios: puerto fijo por instancia (8080, 8081, ...)
 <p><strong>Registro de servicios</strong>: el componente (<code>pagatu-eureka</code>, un <strong>Eureka Server</strong>) donde cada microservicio anuncia su propia existencia al arrancar — nombre lógico, dirección real y un <strong>heartbeat</strong> (latido) periódico que confirma que la instancia sigue viva. Si una instancia deja de enviar heartbeat (latido) (se cayó, se apagó), Eureka la retira del registro después de un tiempo, sin que nadie tenga que notificarlo a mano.</p>
 <p><strong>Error frecuente</strong>: pensar que Eureka "descubre" servicios activamente, buscándolos en la red. Es al revés — cada instancia se registra por su cuenta, empujando la información hacia Eureka (<em>self-registration</em>); Eureka nunca sale a buscar quién está corriendo.</p>
 <h3 id="23-el-patron-service-registry-en-la-arquitectura-de-microservicios">2.3 El patrón Service Registry en la arquitectura de microservicios<a class="headerlink" href="#23-el-patron-service-registry-en-la-arquitectura-de-microservicios" title="Permanent link">&para;</a></h3>
-<p>Lo construido en 2.2 no es una solución aislada de <code>pagatu</code> — es la implementación de <strong>Service Registry</strong> (también llamado <em>Service Discovery</em>), uno de los patrones de arquitectura de microservicios más conocidos. Según Rajput (2019), Eureka implementa este patrón como una base de datos de registro que permite que los microservicios se registren y se den de baja automáticamente, eliminando la necesidad de configurar endpoints de servicio de forma fija.</p>
+<p>Lo construido en 2.2 no es una solución aislada de <code>pagatu</code> — es la implementación de <strong>Service Registry</strong> (también llamado <em>Service Discovery</em>), uno de los patrones de arquitectura de microservicios más conocidos.</p>
+<h4 id="231-que-es-el-patron-service-registry">2.3.1 Qué es el patrón Service Registry<a class="headerlink" href="#231-que-es-el-patron-service-registry" title="Permanent link">&para;</a></h4>
+<p>Según Rajput (2019), Eureka implementa este patrón como una base de datos de registro que permite que los microservicios se registren y se den de baja automáticamente, eliminando la necesidad de configurar endpoints de servicio de forma fija.</p>
 <p><strong>Problema que resuelve:</strong> en un sistema con varios microservicios, cada uno con varias instancias que pueden aparecer, moverse o desaparecer en cualquier momento, ningún cliente puede mantener a mano una lista actualizada de direcciones válidas. Codificar esas direcciones de forma fija hace que el sistema deje de tolerar cambios de escala sin intervención manual.</p>
 <p><strong>Contexto en el que aplica:</strong> sistemas distribuidos donde el número de instancias de un mismo servicio varía (por escalado, caídas o despliegues), y donde ningún cliente puede asumir una dirección fija de antemano.</p>
 <p><strong>Cómo funciona:</strong> cada instancia se registra a sí misma ante un servidor de registro al arrancar (<em>self-registration</em>, ya visto en 2.2) y renueva su registro periódicamente mediante <em>heartbeat</em> (latido). Quien necesita comunicarse con el servicio consulta al registro por su nombre lógico, en vez de guardar una dirección fija (<em>client-side</em> o <em>server-side discovery</em>, según quién resuelva la dirección — en esta sesión, cada cliente de Eureka la resuelve del lado del cliente).</p>
+<p><strong>Figura 3. Registro, descubrimiento y conexión entre clientes de Eureka</strong></p>
+<pre class="mermaid"><code>flowchart TB
+    Registry["Service Registry&lt;br/&gt;(Eureka Server)"]
+    X["Service X&lt;br/&gt;(Eureka Client)"]
+    Y["Service Y&lt;br/&gt;(Eureka Client)"]
+
+    X --&gt;|"1. Register"| Registry
+    Y --&gt;|"1. Register"| Registry
+    Y --&gt;|"2. Discover"| Registry
+    X &lt;--&gt;|"3. Connect"| Y</code></pre>
+<p><em>Nota.</em> Adaptado de <em>Implementing Microservice Registry with Eureka</em>, por D. Rajput, 2019, Dinesh on Java (<a href="https://dineshonjava.com/implementing-microservice-registry-with-eureka/">https://dineshonjava.com/implementing-microservice-registry-with-eureka/</a>). Fuente temporal mientras el catálogo de patrones de SACAViX System Design (<a href="https://systemdesign.sacavix.com/patterns">https://systemdesign.sacavix.com/patterns</a>), usado en S2, no vuelve a estar disponible.</p>
+<p>Los tres pasos del diagrama son los mismos tres conceptos de esta sesión, en orden: <strong>1. Register</strong> es 2.2 (registro de servicios); <strong>2. Discover</strong> es 2.4 (descubrimiento de servicios); <strong>3. Connect</strong> es lo que ya se ve en la Figura 2 — una vez que Service Y descubrió a Service X, ambos se conectan directamente, sin que Eureka intermedie en esa conexión.</p>
 <p><strong>Casos de uso típicos:</strong></p>
 <ul>
 <li>Servicios que escalan horizontalmente, con instancias que aparecen y desaparecen sin aviso previo.</li>
@@ -1835,8 +1933,32 @@ Microservicios: puerto fijo por instancia (8080, 8081, ...)
 <li>Reutilizar el mismo puerto en dos instancias que deben correr a la vez sin coordinarlas (el error que evita asignar puertos distintos a mano en 2.5/3.9).</li>
 <li>Asumir que una instancia que aparece en el registro sigue necesariamente viva en este instante exacto — el registro refleja el último <em>heartbeat</em> (latido) recibido, no el estado en tiempo real.</li>
 </ul>
-<p><em>Nota.</em> Adaptado de <em>Implementing Microservice Registry with Eureka</em>, por D. Rajput, 2019, Dinesh on Java (<a href="https://dineshonjava.com/implementing-microservice-registry-with-eureka/">https://dineshonjava.com/implementing-microservice-registry-with-eureka/</a>). Fuente temporal mientras el catálogo de patrones de SACAViX System Design (<a href="https://systemdesign.sacavix.com/patterns">https://systemdesign.sacavix.com/patterns</a>), usado en S2, no vuelve a estar disponible.</p>
 <p><code>pagatu-eureka</code> es la implementación concreta de este patrón para el curso; en la Figura 2 ya se ve funcionando junto al resto del sistema.</p>
+<h4 id="232-registro-y-descubrimiento-en-produccion-local">2.3.2 Registro y descubrimiento en producción local<a class="headerlink" href="#232-registro-y-descubrimiento-en-produccion-local" title="Permanent link">&para;</a></h4>
+<p><strong>Figura 4. Registro y descubrimiento en producción local</strong></p>
+<pre class="mermaid"><code>flowchart LR
+    Client["Cliente - PowerShell / bash"]
+    subgraph Docker["Docker Network: pagatu-prod-net"]
+        Eureka["pagatu-eureka - Eureka Server - 8761 interno"]
+        I1["pagatu-catalogo-ms - réplica 1"]
+        I2["pagatu-catalogo-ms - réplica 2"]
+        Config["pagatu-config - Config Server - 8888 interno"]
+    end
+
+    Client --&gt;|"GET localhost:28761"| Eureka
+    I1 -. "registra instancia - http://pagatu-eureka:8761/eureka" .-&gt; Eureka
+    I2 -. "registra instancia - http://pagatu-eureka:8761/eureka" .-&gt; Eureka
+    I1 -. "spring.config.import - http://pagatu-config:8888" .-&gt; Config
+    I2 -. "spring.config.import - http://pagatu-config:8888" .-&gt; Config
+    Eureka -. "spring.config.import - http://pagatu-config:8888" .-&gt; Config
+
+    classDef server fill:#eef6ff,stroke:#2b6cb0,color:#111;
+    class Eureka,Config server;</code></pre>
+<p>En PROD local, <code>pagatu-eureka</code> corre como contenedor:</p>
+<div class="highlight"><pre><span></span><code>host: localhost:28761
+docker interno: pagatu-eureka:8761
+</code></pre></div>
+<p>Lectura del diagrama: la diferencia con la Figura 2 no es el mecanismo — sigue siendo registro y descubrimiento por nombre lógico —, es la dirección que usa cada componente para hablar con <code>pagatu-eureka</code>: dentro de la red Docker, no es <code>localhost</code>, es el nombre del servicio (<code>pagatu-eureka</code>), igual que ya hace <code>pagatu-catalogo-ms</code> con <code>pagatu-config</code> desde S2 (Figura 4 de esa sesión). El cliente externo (fuera de Docker) sigue usando <code>localhost</code>, pero con el puerto publicado (<code>28761</code>), no el interno.</p>
 <h3 id="24-descubrimiento-de-servicios">2.4 Descubrimiento de servicios<a class="headerlink" href="#24-descubrimiento-de-servicios" title="Permanent link">&para;</a></h3>
 <p><strong>Descubrimiento de servicios</strong>: la capacidad de encontrar una instancia real preguntando solo por su nombre lógico (<code>spring.application.name</code>, el mismo que ya identifica a cada microservicio en <code>pagatu-config</code> desde S2), sin conocer host ni puerto de antemano. Quien pregunta puede ser otro microservicio, o — a partir de S4 — el Gateway, que reparte tráfico entre todas las instancias que Eureka le devuelva para ese nombre.</p>
 <p>El nombre lógico es literalmente el mismo dato que ya existe desde S2: <code>spring.application.name</code> identifica al microservicio ante <code>pagatu-config</code> (<code>/pagatu-catalogo-ms/dev</code>) y, desde hoy, también ante <code>pagatu-eureka</code> — un solo nombre, dos usos.</p>
@@ -2171,7 +2293,7 @@ Microservicios: puerto fijo por instancia (8080, 8081, ...)
 <div class="highlight"><pre><span></span><code>http://localhost:18761
 </code></pre></div>
 <p>Resultado esperado: <code>PAGATU-CATALOGO-MS</code> ahora lista <strong>dos</strong> direcciones distintas, <code>localhost:8080</code> y <code>localhost:8081</code> — el mismo nombre lógico, dos instancias con puerto fijo conocido de antemano, cada una anunciada a Eureka.</p>
-<p><strong>Figura 3. Dashboard de Eureka con <code>pagatu-catalogo-ms</code> en dos instancias</strong></p>
+<p><strong>Figura 5. Dashboard de Eureka con <code>pagatu-catalogo-ms</code> en dos instancias</strong></p>
 <p><img alt="Dashboard de Eureka con PAGATU-CATALOGO-MS registrado en dos instancias, pagatu-catalogo-ms:8080 y pagatu-catalogo-ms:8081, ambas UP" src="../img/s03-3.9-eureka-dashboard.png" /></p>
 <p><strong>Tabla 5. Verificación de múltiples instancias antes de continuar</strong></p>
 <table>
