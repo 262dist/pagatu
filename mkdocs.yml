@@ -8,6 +8,7 @@ nav:
   - Inicio: index.md
   - Guía de Proyecto Sello:
       - Guía del proyecto: proyecto-sello/index.md
+      - Brief técnico (plantilla): proyecto-sello/brief.md
       - Alcance por microservicio: proyecto-sello/alcance-microservicios.md
   - Silabos:
       - Silabo 2026-1: silabo_dist_2026_1.md

@@ -140,13 +140,35 @@ Lectura del diagrama: el cliente ya no necesita saber en qué puerto responde `p
 
 ### 2.3 El patrón Service Registry en la arquitectura de microservicios
 
-Lo construido en 2.2 no es una solución aislada de `pagatu` — es la implementación de **Service Registry** (también llamado *Service Discovery*), uno de los patrones de arquitectura de microservicios más conocidos. Según Rajput (2019), Eureka implementa este patrón como una base de datos de registro que permite que los microservicios se registren y se den de baja automáticamente, eliminando la necesidad de configurar endpoints de servicio de forma fija.
+Lo construido en 2.2 no es una solución aislada de `pagatu` — es la implementación de **Service Registry** (también llamado *Service Discovery*), uno de los patrones de arquitectura de microservicios más conocidos.
+
+#### 2.3.1 Qué es el patrón Service Registry
+
+Según Rajput (2019), Eureka implementa este patrón como una base de datos de registro que permite que los microservicios se registren y se den de baja automáticamente, eliminando la necesidad de configurar endpoints de servicio de forma fija.
 
 **Problema que resuelve:** en un sistema con varios microservicios, cada uno con varias instancias que pueden aparecer, moverse o desaparecer en cualquier momento, ningún cliente puede mantener a mano una lista actualizada de direcciones válidas. Codificar esas direcciones de forma fija hace que el sistema deje de tolerar cambios de escala sin intervención manual.
 
 **Contexto en el que aplica:** sistemas distribuidos donde el número de instancias de un mismo servicio varía (por escalado, caídas o despliegues), y donde ningún cliente puede asumir una dirección fija de antemano.
 
 **Cómo funciona:** cada instancia se registra a sí misma ante un servidor de registro al arrancar (*self-registration*, ya visto en 2.2) y renueva su registro periódicamente mediante *heartbeat* (latido). Quien necesita comunicarse con el servicio consulta al registro por su nombre lógico, en vez de guardar una dirección fija (*client-side* o *server-side discovery*, según quién resuelva la dirección — en esta sesión, cada cliente de Eureka la resuelve del lado del cliente).
+
+**Figura 3. Registro, descubrimiento y conexión entre clientes de Eureka**
+
+```mermaid
+flowchart TB
+    Registry["Service Registry<br/>(Eureka Server)"]
+    X["Service X<br/>(Eureka Client)"]
+    Y["Service Y<br/>(Eureka Client)"]
+
+    X -->|"1. Register"| Registry
+    Y -->|"1. Register"| Registry
+    Y -->|"2. Discover"| Registry
+    X <-->|"3. Connect"| Y
+```
+
+*Nota.* Adaptado de *Implementing Microservice Registry with Eureka*, por D. Rajput, 2019, Dinesh on Java (<https://dineshonjava.com/implementing-microservice-registry-with-eureka/>). Fuente temporal mientras el catálogo de patrones de SACAViX System Design (<https://systemdesign.sacavix.com/patterns>), usado en S2, no vuelve a estar disponible.
+
+Los tres pasos del diagrama son los mismos tres conceptos de esta sesión, en orden: **1. Register** es 2.2 (registro de servicios); **2. Discover** es 2.4 (descubrimiento de servicios); **3. Connect** es lo que ya se ve en la Figura 2 — una vez que Service Y descubrió a Service X, ambos se conectan directamente, sin que Eureka intermedie en esa conexión.
 
 **Casos de uso típicos:**
 
@@ -164,9 +186,41 @@ Lo construido en 2.2 no es una solución aislada de `pagatu` — es la implement
 - Reutilizar el mismo puerto en dos instancias que deben correr a la vez sin coordinarlas (el error que evita asignar puertos distintos a mano en 2.5/3.9).
 - Asumir que una instancia que aparece en el registro sigue necesariamente viva en este instante exacto — el registro refleja el último *heartbeat* (latido) recibido, no el estado en tiempo real.
 
-*Nota.* Adaptado de *Implementing Microservice Registry with Eureka*, por D. Rajput, 2019, Dinesh on Java (<https://dineshonjava.com/implementing-microservice-registry-with-eureka/>). Fuente temporal mientras el catálogo de patrones de SACAViX System Design (<https://systemdesign.sacavix.com/patterns>), usado en S2, no vuelve a estar disponible.
-
 `pagatu-eureka` es la implementación concreta de este patrón para el curso; en la Figura 2 ya se ve funcionando junto al resto del sistema.
+
+#### 2.3.2 Registro y descubrimiento en producción local
+
+**Figura 4. Registro y descubrimiento en producción local**
+
+```mermaid
+flowchart LR
+    Client["Cliente - PowerShell / bash"]
+    subgraph Docker["Docker Network: pagatu-prod-net"]
+        Eureka["pagatu-eureka - Eureka Server - 8761 interno"]
+        I1["pagatu-catalogo-ms - réplica 1"]
+        I2["pagatu-catalogo-ms - réplica 2"]
+        Config["pagatu-config - Config Server - 8888 interno"]
+    end
+
+    Client -->|"GET localhost:28761"| Eureka
+    I1 -. "registra instancia - http://pagatu-eureka:8761/eureka" .-> Eureka
+    I2 -. "registra instancia - http://pagatu-eureka:8761/eureka" .-> Eureka
+    I1 -. "spring.config.import - http://pagatu-config:8888" .-> Config
+    I2 -. "spring.config.import - http://pagatu-config:8888" .-> Config
+    Eureka -. "spring.config.import - http://pagatu-config:8888" .-> Config
+
+    classDef server fill:#eef6ff,stroke:#2b6cb0,color:#111;
+    class Eureka,Config server;
+```
+
+En PROD local, `pagatu-eureka` corre como contenedor:
+
+```text
+host: localhost:28761
+docker interno: pagatu-eureka:8761
+```
+
+Lectura del diagrama: la diferencia con la Figura 2 no es el mecanismo — sigue siendo registro y descubrimiento por nombre lógico —, es la dirección que usa cada componente para hablar con `pagatu-eureka`: dentro de la red Docker, no es `localhost`, es el nombre del servicio (`pagatu-eureka`), igual que ya hace `pagatu-catalogo-ms` con `pagatu-config` desde S2 (Figura 4 de esa sesión). El cliente externo (fuera de Docker) sigue usando `localhost`, pero con el puerto publicado (`28761`), no el interno.
 
 ### 2.4 Descubrimiento de servicios
 
@@ -542,7 +596,7 @@ http://localhost:18761
 
 Resultado esperado: `PAGATU-CATALOGO-MS` ahora lista **dos** direcciones distintas, `localhost:8080` y `localhost:8081` — el mismo nombre lógico, dos instancias con puerto fijo conocido de antemano, cada una anunciada a Eureka.
 
-**Figura 3. Dashboard de Eureka con `pagatu-catalogo-ms` en dos instancias**
+**Figura 5. Dashboard de Eureka con `pagatu-catalogo-ms` en dos instancias**
 
 ![Dashboard de Eureka con PAGATU-CATALOGO-MS registrado en dos instancias, pagatu-catalogo-ms:8080 y pagatu-catalogo-ms:8081, ambas UP](img/s03-3.9-eureka-dashboard.png)
 

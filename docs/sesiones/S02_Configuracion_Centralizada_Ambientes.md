@@ -1047,6 +1047,9 @@ Tiempo: 4h fuera del aula.
 
 Replicación autónoma del patrón de configuración centralizada en otro microservicio del dominio (por ejemplo, `orden-ms` — ver [Alcance por microservicio y proyecto base](../proyecto-sello/alcance-microservicios.md)), documentada en evidencia individual.
 
+!!! note "Hito de equipo: Brief técnico"
+    S2 es también el hito del **Brief técnico del Proyecto Sello** (ver [cronograma](../proyecto-sello/index.md#4-cronograma)): tu equipo declara por escrito el dominio, el flujo de negocio y los microservicios previstos para su propio proyecto (no necesariamente `pagatu`). Complétalo usando la [plantilla del brief](../proyecto-sello/brief.md) — es un entregable de equipo, una sola copia por proyecto, independiente de la evidencia individual de esta sección.
+
 Completa y evidencia estas tareas:
 
 1. Crear `orden-ms-dev.yml` y `orden-ms-prod.yml` en `config-repo`, con los valores de ambiente del microservicio replicado.
