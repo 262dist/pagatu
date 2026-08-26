@@ -546,9 +546,9 @@ En DEV no se define ninguna variable de entorno: se usa el valor por defecto, `f
 
 **Producto del paso:** `pagatu-config` ejecutando en `localhost:18888`.
 
-```bash
+```powershell
 cd infra/pagatu-config
-mvnw spring-boot:run
+.\mvnw.cmd spring-boot:run
 ```
 
 Verifica health y metrics:
@@ -779,17 +779,17 @@ El prefijo `optional:` evita que `pagatu-catalogo-ms` falle al arrancar si `paga
 
 Terminal 1 (Config Server):
 
-```bash
+```powershell
 cd infra/pagatu-config
-mvnw spring-boot:run
+.\mvnw.cmd spring-boot:run
 ```
 
 Terminal 2 (base de datos + microservicio):
 
-```bash
+```powershell
 cd services/pagatu-catalogo-ms
 docker compose -f compose-dev.yml up -d
-mvnw spring-boot:run
+.\mvnw.cmd spring-boot:run
 ```
 
 Verifica en la consola de arranque:
@@ -820,9 +820,9 @@ Resultado esperado: `/actuator/health` responde `UP`, `/api/v1/categorias` respo
 
 Puedes iniciar también la segunda instancia (S1, 3.4.1), en otra terminal:
 
-```bash
+```powershell
 cd services/pagatu-catalogo-ms
-mvnw spring-boot:run "-Dspring-boot.run.arguments=--server.port=8081"
+.\mvnw.cmd spring-boot:run "-Dspring-boot.run.arguments=--server.port=8081"
 ```
 
 Ambas instancias leen la misma configuración centralizada desde `pagatu-config` y responden el mismo CRUD.
