@@ -5,11 +5,13 @@ import pe.edu.upeu.catalogo.dto.CategoriaResponse;
 import pe.edu.upeu.catalogo.service.CategoriaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/categorias")
 @RequiredArgsConstructor
@@ -19,6 +21,7 @@ public class CategoriaController {
 
     @GetMapping
     public List<CategoriaResponse> listar() {
+        log.info("Listando categorías");
         return categoriaService.listar();
     }
 

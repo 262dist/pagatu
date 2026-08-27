@@ -1,7 +1,9 @@
+name: pagatu-obs-dev
+
 services:
   pagatu-prometheus:
-    image: prom/prometheus:latest
-    container_name: pagatu-prometheus
+    image: prom/prometheus:v3.14.0
+    container_name: pagatu-prometheus-dev
     restart: unless-stopped
     ports:
       - "19090:9090"
@@ -11,15 +13,15 @@ services:
       - "host.docker.internal:host-gateway"
 
   pagatu-loki:
-    image: grafana/loki:latest
-    container_name: pagatu-loki
+    image: grafana/loki:3.7.6
+    container_name: pagatu-loki-dev
     restart: unless-stopped
     ports:
       - "13100:3100"
 
   pagatu-promtail:
-    image: grafana/promtail:latest
-    container_name: pagatu-promtail
+    image: grafana/promtail:3.6.8
+    container_name: pagatu-promtail-dev
     restart: unless-stopped
     volumes:
       - ./promtail/promtail-config-dev.yml:/etc/promtail/config.yml:ro

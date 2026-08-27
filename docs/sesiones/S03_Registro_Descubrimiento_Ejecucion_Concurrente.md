@@ -350,7 +350,7 @@ Desde VS Code, usa Spring Initializr (`Spring Initializr: Create a Maven Project
 | Campo | Valor |
 |---|---|
 | Project | Maven Project |
-| Spring Boot | **4.0.7** |
+| Spring Boot | La última estable que ofrezca Spring Initializr en ese momento (verificado: **4.0.8**) |
 | Language | Java |
 | Group Id | `pe.edu.upeu` |
 | Artifact Id | `pagatu-eureka` |
@@ -379,12 +379,12 @@ En `pom.xml`, la dependencia clave:
 </dependency>
 ```
 
-Mismo BOM de Spring Cloud que ya usa `pagatu-config` (S2, 3.3) — **Spring Cloud 2025.1.2** (*Oakwood*):
+Mismo mecanismo de BOM de Spring Cloud que ya usa `pagatu-config` (S2, 3.3) — Spring Initializr elige la versión de Spring Cloud compatible con la versión de Spring Boot seleccionada (verificado: **2025.1.3**, *Oakwood*; una versión más nueva que la 2025.1.2 que quedó fija en `pagatu-config`, por la diferencia de fecha entre S2 y S3 — ambas dentro de la misma línea *Oakwood*, sin incompatibilidad):
 
 ```xml
 <properties>
     <java.version>21</java.version>
-    <spring-cloud.version>2025.1.2</spring-cloud.version>
+    <spring-cloud.version>2025.1.3</spring-cloud.version>
 </properties>
 
 <dependencyManagement>
@@ -452,8 +452,6 @@ server:
 eureka:
   server:
     enable-self-preservation: false
-  instance:
-    hostname: localhost
   client:
     register-with-eureka: false
     fetch-registry: false
@@ -713,10 +711,12 @@ scrape_configs:
 Crea `obs/compose-dev.yml`:
 
 ```yaml
+name: pagatu-obs-dev
+
 services:
   pagatu-prometheus:
-    image: prom/prometheus:latest
-    container_name: pagatu-prometheus
+    image: prom/prometheus:v3.14.0
+    container_name: pagatu-prometheus-dev
     restart: unless-stopped
     ports:
       - "19090:9090"
@@ -727,6 +727,10 @@ services:
 ```
 
 `extra_hosts` con `host-gateway` es necesario en Linux para que `host.docker.internal` resuelva al host — en Docker Desktop (Windows/macOS) ya funciona sin esa línea, pero dejarla no daña nada.
+
+Dos cosas evitan que este archivo choque con `obs/compose.yml` (PROD, 3.15), que define los mismos tres servicios: el `name: pagatu-obs-dev` de la primera línea, y el `container_name` con sufijo `-dev`. El `name:` es el que realmente importa — Compose identifica contenedores por *proyecto + nombre de servicio*, no por `container_name` (eso es solo cosmético); sin un `name:` propio en cada archivo, Compose deriva el nombre de proyecto de la carpeta (`obs`, la misma para los dos archivos) y trata `pagatu-prometheus` de uno y del otro como el mismo servicio del mismo proyecto — levantar uno "recrea" al otro, aunque tengan `container_name` distinto. Con `name:` explícito y distinto en cada archivo, quedan como proyectos completamente separados. Mismo patrón que ya usa `infra/compose.yml` (`name: pagatu-infra-prod`, S3) y que `pagatu-postgres-catalogo-dev` frente a `pagatu-postgres-catalogo` usa para el `container_name`.
+
+Las tres imágenes (`prom/prometheus`, `grafana/loki`, `grafana/promtail`) van con versión fija, no `:latest`: esta es una guía que muchos estudiantes van a seguir en momentos distintos, y `:latest` es un blanco móvil — Loki en particular ha tenido cambios de esquema de configuración entre versiones mayores. Fijar la versión evita que alguien reciba una imagen distinta a la que esta guía verificó funcionando.
 
 Levanta el contenedor:
 
@@ -770,7 +774,9 @@ Con los targets en `UP`, ya se puede consultar lo recolectado. Abre `http://loca
 
 **Producto del paso:** Promtail leyendo los logs que `pagatu-catalogo-ms` ya escribe a archivo desde S1, y enviándolos a Loki.
 
-`pagatu-catalogo-ms` ya escribe a archivo desde S1 (3.3.2, `logback-spring.xml`) — no hace falta agregar nada a `config-repo` para esto: `logging.file.name` no tendría efecto aquí, porque el `logback-spring.xml` del proyecto fija la ruta del archivo directamente (`logs/catalogo.log`), sin usar esa propiedad. Ambas instancias (3.8, 3.9) ya escriben, por simplicidad, al mismo archivo dentro de `services/pagatu-catalogo-ms/logs/` — el que arma cada noche `logs/catalogo.log` (el activo) y lo rota a `logs/catalogo-AAAA-MM-DD.log` (histórico, hasta 7 días).
+`pagatu-catalogo-ms` ya escribe a archivo desde S1 (3.3.2, `logback-spring.xml`) — no hace falta agregar nada a `config-repo` para esto: `logging.file.name` no tendría efecto aquí, porque el `logback-spring.xml` del proyecto fija la ruta del archivo directamente (`logs/catalogo.log`), sin usar esa propiedad. Ambas instancias (3.8, 3.9) ya escriben, por simplicidad, al mismo archivo dentro de `services/pagatu-catalogo-ms/logs/`: `logs/catalogo.log` es el activo, y `TimeBasedRollingPolicy` lo rota a `logs/catalogo-AAAA-MM-DD.log` (histórico, hasta 7 días, `maxHistory: 7`).
+
+La rotación **no es un reloj de fondo** — Logback la revisa solo cuando efectivamente se escribe una línea de log, no a medianoche por sí sola. Si un día no hay ninguna actividad (la instancia no corrió, o corrió sin generar ningún evento), ese día no genera archivo: `catalogo.log` sigue acumulando en silencio hasta el próximo evento real, sin importar cuántos días pasen de por medio. Por eso en la práctica vas a ver huecos en la numeración de `catalogo-AAAA-MM-DD.log` — no es un error, es evidencia de qué días realmente hubo actividad.
 
 Crea `obs/promtail/promtail-config-dev.yml`:
 
@@ -799,15 +805,15 @@ Agrega Loki y Promtail a `obs/compose-dev.yml` (junto a `pagatu-prometheus`, 3.1
 
 ```yaml
   pagatu-loki:
-    image: grafana/loki:latest
-    container_name: pagatu-loki
+    image: grafana/loki:3.7.6
+    container_name: pagatu-loki-dev
     restart: unless-stopped
     ports:
       - "13100:3100"
 
   pagatu-promtail:
-    image: grafana/promtail:latest
-    container_name: pagatu-promtail
+    image: grafana/promtail:3.6.8
+    container_name: pagatu-promtail-dev
     restart: unless-stopped
     volumes:
       - ./promtail/promtail-config-dev.yml:/etc/promtail/config.yml:ro
@@ -846,7 +852,7 @@ curl -G http://localhost:13100/loki/api/v1/query_range --data-urlencode 'query={
 
 Resultado esperado: una respuesta JSON con líneas de log reales de `pagatu-catalogo-ms` (por ejemplo, el mensaje de arranque de Tomcat en el puerto `8080` u `8081`).
 
-`pagatu-catalogo-ms` no loguea cada petición (S1 no agregó ese filtro), así que estas consultas no sirven para contar CRUD uno por uno — pero sí para constatar, desde el log, lo mismo que ya viste en las métricas de Prometheus (3.12). En vez de escribir la URL a mano, usa `[uri]::EscapeDataString(...)` para no pelear con comillas y espacios dentro del query:
+`pagatu-catalogo-ms` no loguea cada petición todavía (S1 no agregó ese filtro), así que estas consultas no sirven para contar CRUD uno por uno — pero sí para constatar, desde el log, lo mismo que ya viste en las métricas de Prometheus (3.12). Más abajo se agrega una línea de log real a un endpoint concreto, para poder rastrear una petición específica. En vez de escribir la URL a mano, usa `[uri]::EscapeDataString(...)` para no pelear con comillas y espacios dentro del query:
 
 - `{application="pagatu-catalogo-ms"} |= "Started PagatuCatalogoMsApplication"` — la línea "Started ... in X seconds" de cada arranque. El número de segundos debería coincidir con `application_ready_time_seconds` de esa misma instancia en Prometheus: es la misma medición, solo que aquí la ves como texto y allá como métrica.
 - `{application="pagatu-catalogo-ms"} |= "EurekaServiceRegistry"` — cada alta (`status UP`) y baja (`status DOWN`) de una instancia en Eureka. El momento de un "Unregistering ... DOWN" debería coincidir con el instante en que esa instancia pasa a `0` en `up{job="pagatu-microservicios"}` (3.12), en el siguiente scrape de Prometheus.
@@ -859,17 +865,99 @@ $uri = "http://localhost:13100/loki/api/v1/query_range?query=$([uri]::EscapeData
 (Invoke-RestMethod -Method Get -Uri $uri) | ConvertTo-Json -Depth 10
 ```
 
-Su equivalente para pegar directo en el navegador (mismo estilo que la consulta simple ya usada antes, con las comillas codificadas como `%22`):
+Su equivalente para pegar directo en el navegador — no hace falta codificar comillas ni espacios a mano (`%22`, `%20`), el navegador los codifica solo al pegar la URL:
 
 ```text
-http://localhost:13100/loki/api/v1/query_range?query={application=%22pagatu-catalogo-ms%22}%20|=%20%22Started%20PagatuCatalogoMsApplication%22
+http://localhost:13100/loki/api/v1/query_range?query={application="pagatu-catalogo-ms"} |= "Started PagatuCatalogoMsApplication"
 
-http://localhost:13100/loki/api/v1/query_range?query={application=%22pagatu-catalogo-ms%22}%20|=%20%22EurekaServiceRegistry%22
+http://localhost:13100/loki/api/v1/query_range?query={application="pagatu-catalogo-ms"} |= "EurekaServiceRegistry"
 
-http://localhost:13100/loki/api/v1/query_range?query={application=%22pagatu-catalogo-ms%22}%20|=%20%22HikariPool%22
+http://localhost:13100/loki/api/v1/query_range?query={application="pagatu-catalogo-ms"} |= "HikariPool"
 
-http://localhost:13100/loki/api/v1/query_range?query={application=%22pagatu-catalogo-ms%22,%20detected_level=%22error%22}
+http://localhost:13100/loki/api/v1/query_range?query={application="pagatu-catalogo-ms", detected_level="error"}
 ```
+
+**Rastrear una petición específica por traceId (opcional)**
+
+El mecanismo para esto ya existe desde S1 (3.3.2, `CorrelationIdFilter`): cada request que llega ya recibe un `traceId` (UUID) guardado en el MDC y devuelto como header `X-Trace-ID` en la respuesta. Lo único que falta es una línea de log real durante el request — sin eso, el `traceId` viaja pero no queda escrito en ningún lado. Agrega `@Slf4j` (Lombok, ya está en el `pom.xml` desde S1) y una línea `log.info(...)` a `CategoriaController.listar()`:
+
+```java
+package pe.edu.upeu.catalogo.controller;
+
+import pe.edu.upeu.catalogo.dto.CategoriaRequest;
+import pe.edu.upeu.catalogo.dto.CategoriaResponse;
+import pe.edu.upeu.catalogo.service.CategoriaService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@Slf4j
+@RestController
+@RequestMapping("/api/v1/categorias")
+@RequiredArgsConstructor
+public class CategoriaController {
+
+    private final CategoriaService categoriaService;
+
+    @GetMapping
+    public List<CategoriaResponse> listar() {
+        log.info("Listando categorías");
+        return categoriaService.listar();
+    }
+
+    @GetMapping("/{id}")
+    public CategoriaResponse obtener(@PathVariable Long id) {
+        return categoriaService.obtener(id);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public CategoriaResponse crear(@Valid @RequestBody CategoriaRequest request) {
+        return categoriaService.crear(request);
+    }
+
+    @PutMapping("/{id}")
+    public CategoriaResponse actualizar(@PathVariable Long id, @Valid @RequestBody CategoriaRequest request) {
+        return categoriaService.actualizar(id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void eliminar(@PathVariable Long id) {
+        categoriaService.eliminar(id);
+    }
+}
+```
+
+Solo cambió el `@GetMapping` sin parámetros (`listar()`) — el resto del archivo queda igual. Reinicia la instancia (DevTools ya recompila solo, S1) y haz el request capturando el header de respuesta (`Invoke-WebRequest`, no `Invoke-RestMethod` — este último no expone los headers):
+
+```powershell
+$resp = Invoke-WebRequest -Method Get -Uri "http://localhost:8080/api/v1/categorias"
+$traceId = $resp.Headers['X-Trace-ID']
+$traceId
+```
+
+Con el `traceId` capturado, filtra Loki por ese valor exacto — vas a ver únicamente la línea de este request, no las de arranque ni las de Eureka:
+
+```powershell
+$query = "{application=`"pagatu-catalogo-ms`"} |= `"$traceId`""
+$uri = "http://localhost:13100/loki/api/v1/query_range?query=$([uri]::EscapeDataString($query))"
+(Invoke-RestMethod -Method Get -Uri $uri) | ConvertTo-Json -Depth 10
+```
+
+O directo en el navegador, filtrando por el texto del propio `log.info(...)` en vez del `traceId` (más simple si solo quieres confirmar que la línea llegó a Loki, sin capturar ningún header):
+
+```text
+http://localhost:13100/loki/api/v1/query_range?query={application="pagatu-catalogo-ms"} |= "Listando"
+```
+
+Con esto, un `log.info(...)` sí genera más detalle por request (antes solo existían logs de arranque/infraestructura) — y, al ser un evento de log real, también es lo que dispara el chequeo de rotación diaria (3.13): si hoy no había ningún archivo `catalogo-AAAA-MM-DD.log` todavía, este mismo request puede ser el que finalmente lo dispare.
+
+Esto solo rastrea el `traceId` **dentro de `catalogo-ms`** — no se propaga todavía a otros microservicios (eso necesitaría que las llamadas salientes reenvíen `X-Trace-ID`, algo natural para S6 cuando haya llamadas síncronas entre microservicios).
 
 ### 3.15 Registro y observabilidad en producción local (opcional)
 
@@ -949,6 +1037,8 @@ Resultado esperado: `pagatu-eureka` responde en `28761`, y las instancias de `pa
 
 Este bloque es la versión en PROD de 3.10-3.14 — mismas dos herramientas, con una diferencia clave: en PROD, Prometheus y Loki no le hablan a `host.docker.internal`, sino directamente al nombre del servicio dentro de `pagatu-prod-net` (`pagatu-eureka`), igual que ya hace `pagatu-catalogo-ms` para su propia configuración (S2, 3.12).
 
+Esto no es una preferencia de estilo — en PROD, `services/pagatu-catalogo-ms/compose.yml` tiene el puerto `8080` comentado (`#ports: #  - "28080:8080"`, S2): las réplicas de `pagatu-catalogo-ms` **no publican ningún puerto al host**, solo son alcanzables dentro de la red Docker. Prometheus no tiene otra forma de llegar a `/actuator/prometheus` de cada réplica más que compartiendo esa misma red — por eso `pagatu-prometheus` en `obs/compose.yml` (abajo) lleva `networks: - pagatu-prod-net`, igual que `pagatu-eureka` e `infra/compose.yml`. Sin esa línea, Prometheus descubre las instancias vía Eureka (que sí conoce sus direcciones internas) pero cada scrape falla con "connection refused" — el contenedor de Prometheus, en su propia red por defecto, no tiene ruta hacia contenedores de otra red. `pagatu-loki` y `pagatu-promtail` se unen a la misma red por consistencia, aunque estrictamente ninguno de los dos necesita alcanzar nada fuera de `obs/` — Loki solo recibe *push* de Promtail (dentro del mismo `compose.yml`), y Promtail solo lee un archivo montado del host, no hace llamadas de red hacia otro contenedor.
+
 **1. Nada que agregar al volumen de logs.** `services/pagatu-catalogo-ms/compose.yml` ya monta `./logs:/app/logs` desde S2 — un *bind mount* directo a `services/pagatu-catalogo-ms/logs` en el host, el mismo archivo que ya lee Promtail en DEV (3.13). No hace falta crear un volumen nombrado ni tocar ese `compose.yml`: Promtail, en el paso 4, monta esa misma carpeta del host directamente, igual que en DEV.
 
 **Sí hace falta exponer el endpoint de Prometheus en PROD** — 3.10 lo agregó a `pagatu-catalogo-ms-dev.yml`, pero `pagatu-catalogo-ms-prod.yml` (`config-repo`) todavía no lo tiene. Sin esto, Prometheus descubre la instancia vía Eureka pero recibe `404` al intentar `/actuator/prometheus`:
@@ -1003,9 +1093,11 @@ scrape_configs:
 **4. Crear `obs/compose.yml`** (bare, no `compose-prod.yml` — mismo patrón de `services/pagatu-catalogo-ms` e `infra`: sin sufijo es PROD, `-dev` es DEV):
 
 ```yaml
+name: pagatu-obs-prod
+
 services:
   pagatu-prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v3.14.0
     container_name: pagatu-prometheus
     restart: unless-stopped
     ports:
@@ -1016,7 +1108,7 @@ services:
       - pagatu-prod-net
 
   pagatu-loki:
-    image: grafana/loki:latest
+    image: grafana/loki:3.7.6
     container_name: pagatu-loki
     restart: unless-stopped
     ports:
@@ -1025,7 +1117,7 @@ services:
       - pagatu-prod-net
 
   pagatu-promtail:
-    image: grafana/promtail:latest
+    image: grafana/promtail:3.6.8
     container_name: pagatu-promtail
     restart: unless-stopped
     volumes:

@@ -1,6 +1,8 @@
+name: pagatu-obs-prod
+
 services:
   pagatu-prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v3.14.0
     container_name: pagatu-prometheus
     restart: unless-stopped
     ports:
@@ -11,7 +13,7 @@ services:
       - pagatu-prod-net
 
   pagatu-loki:
-    image: grafana/loki:latest
+    image: grafana/loki:3.7.6
     container_name: pagatu-loki
     restart: unless-stopped
     ports:
@@ -20,7 +22,7 @@ services:
       - pagatu-prod-net
 
   pagatu-promtail:
-    image: grafana/promtail:latest
+    image: grafana/promtail:3.6.8
     container_name: pagatu-promtail
     restart: unless-stopped
     volumes:
