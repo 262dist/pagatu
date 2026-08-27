@@ -434,10 +434,6 @@ management:
       show-details: always
 ```
 
-**Error frecuente**: sin `service-url.defaultZone` propio, la sección "General Info" del dashboard (`registered-replicas`, `unavailable-replicas`) muestra un valor de relleno del framework — `http://localhost:8761/eureka/`, el puerto por defecto de Eureka, **sin** el prefijo `1` de DEV — aunque `pagatu-eureka` esté corriendo en `18761`. No afecta el funcionamiento (con `register-with-eureka`/`fetch-registry` en `false`, ese valor no se usa para nada real, es solo informativo), pero declarar `service-url.defaultZone` con el puerto correcto evita la confusión y mantiene la convención de puertos (1 = DEV, 2 = PROD) también en esta pantalla.
-
-**Error frecuente**: por la misma razón que en 3.7 (el hostname `algo.mshome.net` en vez de `localhost`), la sección "Instance Info" del propio `pagatu-eureka` puede mostrar un `ipAddr` como `172.23.96.1` — la IP del adaptador de red virtual que crea Docker Desktop/WSL2 en Windows. `eureka.instance.hostname` e `ip-address` son propiedades **independientes**: fijar el hostname no cambia esa IP. A propósito **se deja sin fijar**: el `ipAddr` queda dinámico, autodetectado según la IP real de cada máquina — solo `hostname: localhost` se fuerza, para que los enlaces del dashboard sean consistentes entre estudiantes; el `ipAddr` mostrado en "Instance Info" no afecta el funcionamiento, es solo información de `pagatu-eureka` sobre sí mismo y puede variar de una laptop a otra sin problema.
-
 **Error frecuente**: con solo 1 o 2 instancias registradas, el dashboard de Eureka suele mostrar un banner rojo de "EMERGENCY! EUREKA MAY BE INCORRECTLY CLAIMING INSTANCES ARE UP WHEN THEY'RE NOT..." — es el modo de **autopreservación**: Eureka espera un mínimo de *heartbeats* (latidos) por minuto según el número de instancias registradas, y con tan pocas instancias casi siempre cae por debajo del umbral, aunque todo funcione bien. `enable-self-preservation: false` lo desactiva **solo en DEV**, donde el número de instancias es deliberadamente bajo; en PROD (real o local) esta protección se deja activada, porque ahí sí cumple su función — evitar que una partición de red temporal des-registre instancias que en realidad siguen vivas.
 
 Con `enable-self-preservation: false`, el dashboard va a mostrar en su lugar un banner distinto: "THE SELF PRESERVATION MODE IS TURNED OFF...". Ese es solo informativo, no una alarma — confirma que la protección está apagada a propósito. **No lo vuelvas a `true` en DEV**: si lo haces, al detener una instancia con Ctrl+C en 3.9, es probable que Eureka entre en autopreservación (por el bajo número de instancias) y la deje listada como `UP` sin expirarla nunca — justo lo contrario de lo que pide verificar la Tabla 5.
@@ -528,8 +524,6 @@ eureka:
 En DEV seguimos con puerto fijo, igual que desde S1 — lo único nuevo es que ahora ese puerto (`instance-id`) queda anunciado a `pagatu-eureka`. Para la segunda instancia (3.9) se sigue el mismo mecanismo ya usado en S1 (3.4.1): pasar un puerto distinto por línea de comandos (`--server.port=8081`), no un puerto asignado al azar.
 
 **Error frecuente**: olvidar el override de puerto al levantar la segunda instancia. Sin `--server.port=8081`, la segunda instancia intenta usar el mismo `8080` fijo de `config-repo` y no llega a arrancar (`Address already in use`).
-
-**Error frecuente**: sin `hostname: localhost`, Eureka registra cada instancia con el nombre de red que reporte el sistema operativo — en Windows, muchas veces algo como `tu-usuario.mshome.net` (el dominio que asigna la red virtual de Docker Desktop/WSL2), no `localhost`. El enlace del dashboard sigue funcionando porque ese nombre resuelve a la propia máquina, pero cambia de un equipo a otro — fijar `hostname: localhost` hace que el enlace sea el mismo, predecible, en cualquier laptop del curso.
 
 **3. Agregar la configuración equivalente en `config-repo/pagatu-catalogo-ms-prod.yml`:**
 
@@ -670,9 +664,15 @@ scrape_configs:
     relabel_configs:
       - source_labels: [__meta_eureka_app_name]
         target_label: application
+      - source_labels: [__address__]
+        regex: "localhost:(.+)"
+        target_label: __address__
+        replacement: "host.docker.internal:$1"
 ```
 
 `eureka_sd_configs` es la pieza clave: Prometheus consulta el registro de `pagatu-eureka` igual que lo haría cualquier otro cliente de descubrimiento (2.6), y ajusta su lista de *targets* automáticamente cada vez que una instancia aparece o desaparece del registro.
+
+**Error frecuente**: los targets aparecen descubiertos pero en `DOWN`, con el error "connect: connection refused" al intentar `http://localhost:<puerto>/actuator/prometheus`. La causa: `pagatu-eureka` reporta la dirección de cada instancia usando `eureka.instance.hostname: localhost` (fijado en 3.7 para que el dashboard se vea limpio) — pero "localhost" dentro del contenedor de Prometheus es el propio contenedor, no tu máquina. El segundo `relabel_configs` de arriba corrige esto: reescribe `localhost:<puerto>` a `host.docker.internal:<puerto>` **solo para el scrape de Prometheus**, sin tocar `eureka.instance.hostname` — así el dashboard de Eureka se sigue viendo limpio (`localhost:8080`) y Prometheus igual logra conectarse.
 
 Crea `infra/pagatu-observability/compose-dev.yml`:
 
@@ -720,6 +720,15 @@ Resultado esperado: dos *targets* bajo el job `pagatu-microservicios`, uno por i
 | Detener una instancia de `pagatu-catalogo-ms` | El target correspondiente pasa a `DOWN` tras el siguiente scrape, sin editar `prometheus.yml` |
 
 **Error frecuente**: si los targets aparecen en `0/0` o vacíos, la causa más común es que `host.docker.internal` no resuelve desde el contenedor de Prometheus — revisa `extra_hosts` en `compose-dev.yml`, o reemplaza temporalmente por la IP real del host en `prometheus.yml` para descartar el problema.
+
+Con los targets en `UP`, ya se puede consultar lo recolectado. Abre `http://localhost:19090/query` y prueba estas consultas — todas responden a la misma pregunta de fondo: ¿el microservicio está realmente sano, no solo "arriba"?
+
+- `up{job="pagatu-microservicios"}` — lo más básico: `1` si Prometheus pudo scrapear esa instancia en el último intento, `0` si no. Con dos instancias, deberías ver dos series, una por `instance` (`pagatu-catalogo-ms:8080` y `:8081`).
+- `application_ready_time_seconds` — cuánto tardó cada instancia en quedar lista para atender peticiones. Útil para comparar si una instancia arrancó razonablemente rápido frente a la otra.
+- `process_uptime_seconds` — cuánto tiempo lleva corriendo cada instancia desde que arrancó. Compáralo contra el momento en que hiciste tus pruebas: si acabas de levantarla, va a estar en unos pocos segundos.
+- `http_server_requests_seconds_count` — cuántas peticiones ha atendido cada instancia hasta ahora, separadas por `uri`, `status` y `outcome`. Es la evidencia de que el CRUD de S1-S2 realmente está sirviendo tráfico, no solo respondiendo al health check.
+- `sum(rate(http_server_requests_seconds_count{status=~"5.."}[5m])) by (instance)` — tasa de errores de servidor (5xx) por instancia en los últimos 5 minutos. Si tu microservicio está sano y nunca respondió un 500, esta consulta devuelve **"Empty query result"**, no `0` — Prometheus solo crea la serie de una combinación de etiquetas (`status="500"`, en este caso) la primera vez que ocurre de verdad; mientras no pase ningún error, esa serie no existe. "Empty" aquí es la respuesta *correcta* de un servicio sano, no una consulta rota.
+- `hikaricp_connections_active` frente a `hikaricp_connections_max` — cuántas conexiones a PostgreSQL está usando cada instancia ahora mismo, contra el máximo configurado. Si `active` se acerca a `max` de forma sostenida, es una señal de que el pool de conexiones se está quedando corto.
 
 ### 3.13 Enviar logs de `pagatu-catalogo-ms` a Loki
 
@@ -776,8 +785,6 @@ Vuelve a levantar el stack con el archivo actualizado:
 cd infra/pagatu-observability
 docker compose -f compose-dev.yml up -d
 ```
-
-**Error frecuente**: si ambas instancias de `pagatu-catalogo-ms` corren desde la misma carpeta `services/pagatu-catalogo-ms`, comparten el mismo archivo de log — las líneas de las dos instancias quedan entremezcladas en `catalogo.log`. Para esta sesión es una simplificación aceptada; no es necesario separar los archivos por instancia.
 
 ### 3.14 Verificar logs en Loki
 
