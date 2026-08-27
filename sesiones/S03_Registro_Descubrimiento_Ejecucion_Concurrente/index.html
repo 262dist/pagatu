@@ -1004,10 +1004,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#311-crear-pagatu-observability-con-prometheus-descubrimiento-via-eureka" class="md-nav__link">
+  <a href="#311-crear-obs-con-prometheus-descubrimiento-via-eureka" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.11 Crear pagatu-observability con Prometheus (descubrimiento vía Eureka)
+        3.11 Crear obs con Prometheus (descubrimiento vía Eureka)
       
     </span>
   </a>
@@ -1572,10 +1572,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#311-crear-pagatu-observability-con-prometheus-descubrimiento-via-eureka" class="md-nav__link">
+  <a href="#311-crear-obs-con-prometheus-descubrimiento-via-eureka" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.11 Crear pagatu-observability con Prometheus (descubrimiento vía Eureka)
+        3.11 Crear obs con Prometheus (descubrimiento vía Eureka)
       
     </span>
   </a>
@@ -1793,7 +1793,7 @@
 <li><strong>Incorporar</strong> un servidor de registro y descubrimiento de servicios, conectar un microservicio como cliente, y verificar múltiples instancias activas del mismo servicio localizables por nombre lógico, sin que el cliente necesite conocer el puerto de cada una.</li>
 </ul>
 <h3 id="14-producto-de-sesion">1.4 Producto de sesión<a class="headerlink" href="#14-producto-de-sesion" title="Permanent link">&para;</a></h3>
-<p><code>pagatu-eureka</code> operativo en <code>infra/pagatu-eureka</code>, con <code>pagatu-catalogo-ms</code> registrado como cliente Eureka y ejecutando dos instancias simultáneas (puerto fijo <code>8080</code>/<code>8081</code>, igual que desde S1), visibles por nombre lógico en el dashboard — sin que ningún cliente necesite memorizar en qué puerto responde cada una. De forma opcional (según los recursos de cómputo disponibles), también Prometheus y Loki en pie en <code>infra/pagatu-observability</code>, recolectando métricas y logs de esas mismas instancias — Prometheus las encuentra preguntándole a <code>pagatu-eureka</code>, no por una lista de direcciones escrita a mano.</p>
+<p><code>pagatu-eureka</code> operativo en <code>infra/pagatu-eureka</code>, con <code>pagatu-catalogo-ms</code> registrado como cliente Eureka y ejecutando dos instancias simultáneas (puerto fijo <code>8080</code>/<code>8081</code>, igual que desde S1), visibles por nombre lógico en el dashboard — sin que ningún cliente necesite memorizar en qué puerto responde cada una. De forma opcional (según los recursos de cómputo disponibles), también Prometheus y Loki en pie en <code>obs</code>, recolectando métricas y logs de esas mismas instancias — Prometheus las encuentra preguntándole a <code>pagatu-eureka</code>, no por una lista de direcciones escrita a mano.</p>
 <h3 id="15-metodologia">1.5 Metodología<a class="headerlink" href="#15-metodologia" title="Permanent link">&para;</a></h3>
 <p><strong>Tabla 1. Metodología de la sesión</strong></p>
 <table>
@@ -2043,7 +2043,7 @@ docker interno: pagatu-eureka:8761
 <li><strong>3.8</strong> Levantar <code>pagatu-catalogo-ms</code> y verificar el registro.</li>
 <li><strong>3.9</strong> Levantar una segunda instancia y verificar múltiples instancias.</li>
 <li><strong>3.10</strong> Exponer métricas de <code>pagatu-catalogo-ms</code> para Prometheus (opcional).</li>
-<li><strong>3.11</strong> Crear <code>pagatu-observability</code> con Prometheus (descubrimiento vía Eureka) (opcional).</li>
+<li><strong>3.11</strong> Crear <code>obs</code> con Prometheus (descubrimiento vía Eureka) (opcional).</li>
 <li><strong>3.12</strong> Verificar targets descubiertos y métricas recolectadas (opcional).</li>
 <li><strong>3.13</strong> Enviar logs de <code>pagatu-catalogo-ms</code> a Loki (opcional).</li>
 <li><strong>3.14</strong> Verificar logs en Loki (opcional).</li>
@@ -2378,9 +2378,9 @@ docker interno: pagatu-eureka:8761
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8080/actuator/prometheus
 </code></pre></div>
 <p>Resultado esperado: una respuesta en texto plano, con métricas como <code>process_uptime_seconds</code> o <code>http_server_requests_seconds_count</code>.</p>
-<h3 id="311-crear-pagatu-observability-con-prometheus-descubrimiento-via-eureka">3.11 Crear <code>pagatu-observability</code> con Prometheus (descubrimiento vía Eureka)<a class="headerlink" href="#311-crear-pagatu-observability-con-prometheus-descubrimiento-via-eureka" title="Permanent link">&para;</a></h3>
+<h3 id="311-crear-obs-con-prometheus-descubrimiento-via-eureka">3.11 Crear <code>obs</code> con Prometheus (descubrimiento vía Eureka)<a class="headerlink" href="#311-crear-obs-con-prometheus-descubrimiento-via-eureka" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> Prometheus corriendo en Docker, configurado para descubrir instancias preguntándole a <code>pagatu-eureka</code> — no con una lista de direcciones escrita a mano.</p>
-<p>Crea <code>infra/pagatu-observability/prometheus/prometheus.yml</code>:</p>
+<p>Crea <code>obs/prometheus/prometheus-dev.yml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">global</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">scrape_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">15s</span>
 
@@ -2399,7 +2399,7 @@ docker interno: pagatu-eureka:8761
 </code></pre></div>
 <p><code>eureka_sd_configs</code> es la pieza clave: Prometheus consulta el registro de <code>pagatu-eureka</code> igual que lo haría cualquier otro cliente de descubrimiento (2.6), y ajusta su lista de <em>targets</em> automáticamente cada vez que una instancia aparece o desaparece del registro.</p>
 <p><strong>Error frecuente</strong>: los targets aparecen descubiertos pero en <code>DOWN</code>, con el error "connect: connection refused" al intentar <code>http://localhost:&lt;puerto&gt;/actuator/prometheus</code>. La causa: <code>pagatu-eureka</code> reporta la dirección de cada instancia usando <code>eureka.instance.hostname: localhost</code> (fijado en 3.7 para que el dashboard se vea limpio) — pero "localhost" dentro del contenedor de Prometheus es el propio contenedor, no tu máquina. El segundo <code>relabel_configs</code> de arriba corrige esto: reescribe <code>localhost:&lt;puerto&gt;</code> a <code>host.docker.internal:&lt;puerto&gt;</code> <strong>solo para el scrape de Prometheus</strong>, sin tocar <code>eureka.instance.hostname</code> — así el dashboard de Eureka se sigue viendo limpio (<code>localhost:8080</code>) y Prometheus igual logra conectarse.</p>
-<p>Crea <code>infra/pagatu-observability/compose-dev.yml</code>:</p>
+<p>Crea <code>obs/compose-dev.yml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">pagatu-prometheus</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prom/prometheus:latest</span>
@@ -2408,13 +2408,13 @@ docker interno: pagatu-eureka:8761
 <span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"19090:9090"</span>
 <span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./prometheus/prometheus-dev.yml:/etc/prometheus/prometheus.yml:ro</span>
 <span class="w">    </span><span class="nt">extra_hosts</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"host.docker.internal:host-gateway"</span>
 </code></pre></div>
 <p><code>extra_hosts</code> con <code>host-gateway</code> es necesario en Linux para que <code>host.docker.internal</code> resuelva al host — en Docker Desktop (Windows/macOS) ya funciona sin esa línea, pero dejarla no daña nada.</p>
 <p>Levanta el contenedor:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>infra/pagatu-observability
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>obs
 docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-dev.yml<span class="w"> </span>up<span class="w"> </span>-d
 </code></pre></div>
 <h3 id="312-verificar-targets-descubiertos-y-metricas-recolectadas">3.12 Verificar targets descubiertos y métricas recolectadas<a class="headerlink" href="#312-verificar-targets-descubiertos-y-metricas-recolectadas" title="Permanent link">&para;</a></h3>
@@ -2422,7 +2422,7 @@ docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> 
 <p>Abre en el navegador:</p>
 <div class="highlight"><pre><span></span><code>http://localhost:19090/targets
 </code></pre></div>
-<p>Resultado esperado: dos <em>targets</em> bajo el job <code>pagatu-microservicios</code>, uno por instancia de <code>pagatu-catalogo-ms</code>, ambos en estado <code>UP</code> — ninguno escrito a mano en <code>prometheus.yml</code>.</p>
+<p>Resultado esperado: dos <em>targets</em> bajo el job <code>pagatu-microservicios</code>, uno por instancia de <code>pagatu-catalogo-ms</code>, ambos en estado <code>UP</code> — ninguno escrito a mano en <code>prometheus-dev.yml</code>.</p>
 <p><strong>Tabla 6. Verificación de observabilidad antes de continuar</strong></p>
 <table>
 <thead>
@@ -2442,11 +2442,11 @@ docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> 
 </tr>
 <tr>
 <td>Detener una instancia de <code>pagatu-catalogo-ms</code></td>
-<td>El target correspondiente pasa a <code>DOWN</code> tras el siguiente scrape, sin editar <code>prometheus.yml</code></td>
+<td>El target correspondiente pasa a <code>DOWN</code> tras el siguiente scrape, sin editar <code>prometheus-dev.yml</code></td>
 </tr>
 </tbody>
 </table>
-<p><strong>Error frecuente</strong>: si los targets aparecen en <code>0/0</code> o vacíos, la causa más común es que <code>host.docker.internal</code> no resuelve desde el contenedor de Prometheus — revisa <code>extra_hosts</code> en <code>compose-dev.yml</code>, o reemplaza temporalmente por la IP real del host en <code>prometheus.yml</code> para descartar el problema.</p>
+<p><strong>Error frecuente</strong>: si los targets aparecen en <code>0/0</code> o vacíos, la causa más común es que <code>host.docker.internal</code> no resuelve desde el contenedor de Prometheus — revisa <code>extra_hosts</code> en <code>compose-dev.yml</code>, o reemplaza temporalmente por la IP real del host en <code>prometheus-dev.yml</code> para descartar el problema.</p>
 <p>Con los targets en <code>UP</code>, ya se puede consultar lo recolectado. Abre <code>http://localhost:19090/query</code> y prueba estas consultas — todas responden a la misma pregunta de fondo: ¿el microservicio está realmente sano, no solo "arriba"?</p>
 <ul>
 <li><code>up{job="pagatu-microservicios"}</code> — lo más básico: <code>1</code> si Prometheus pudo scrapear esa instancia en el último intento, <code>0</code> si no. Con dos instancias, deberías ver dos series, una por <code>instance</code> (<code>pagatu-catalogo-ms:8080</code> y <code>:8081</code>).</li>
@@ -2459,7 +2459,7 @@ docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> 
 <h3 id="313-enviar-logs-de-pagatu-catalogo-ms-a-loki">3.13 Enviar logs de <code>pagatu-catalogo-ms</code> a Loki<a class="headerlink" href="#313-enviar-logs-de-pagatu-catalogo-ms-a-loki" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> Promtail leyendo los logs que <code>pagatu-catalogo-ms</code> ya escribe a archivo desde S1, y enviándolos a Loki.</p>
 <p><code>pagatu-catalogo-ms</code> ya escribe a archivo desde S1 (3.3.2, <code>logback-spring.xml</code>) — no hace falta agregar nada a <code>config-repo</code> para esto: <code>logging.file.name</code> no tendría efecto aquí, porque el <code>logback-spring.xml</code> del proyecto fija la ruta del archivo directamente (<code>logs/catalogo.log</code>), sin usar esa propiedad. Ambas instancias (3.8, 3.9) ya escriben, por simplicidad, al mismo archivo dentro de <code>services/pagatu-catalogo-ms/logs/</code> — el que arma cada noche <code>logs/catalogo.log</code> (el activo) y lo rota a <code>logs/catalogo-AAAA-MM-DD.log</code> (histórico, hasta 7 días).</p>
-<p>Crea <code>infra/pagatu-observability/promtail/promtail-config.yml</code>:</p>
+<p>Crea <code>obs/promtail/promtail-config-dev.yml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">server</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">http_listen_port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9080</span>
 
@@ -2478,7 +2478,7 @@ docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> 
 <span class="w">          </span><span class="nt">__path__</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/log/pagatu-catalogo-ms/*.log</span>
 </code></pre></div>
 <p><code>__path__</code> es un patrón — coincide con <code>catalogo.log</code> y con todos los <code>catalogo-AAAA-MM-DD.log</code> que ya existan en la carpeta (S1, 3.3.2 los rota diariamente). Pero eso no significa que Loki reciba el contenido histórico de todos: Promtail, al descubrir un archivo por primera vez, empieza a leerlo <strong>desde el final</strong> (igual que <code>tail -f</code>) — solo empuja a Loki las líneas que se escriben <em>después</em> de que Promtail arrancó. Los archivos ya rotados que no vuelven a recibir escrituras (<code>catalogo-2026-08-19.log</code>, etc.) se quedan sin aportar nada a Loki; el único archivo que sí aparece en tus consultas es el que estaba activo (recibiendo escrituras nuevas) en el momento en que reiniciaste las instancias después de levantar Promtail. Esto es el comportamiento esperado, no un error — Loki no está pensado para reconstruir historial de logs, solo para lo que ocurre de aquí en adelante.</p>
-<p>Agrega Loki y Promtail a <code>infra/pagatu-observability/compose-dev.yml</code> (junto a <code>pagatu-prometheus</code>, 3.11):</p>
+<p>Agrega Loki y Promtail a <code>obs/compose-dev.yml</code> (junto a <code>pagatu-prometheus</code>, 3.11):</p>
 <div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nt">pagatu-loki</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">grafana/loki:latest</span>
 <span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-loki</span>
@@ -2491,14 +2491,14 @@ docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> 
 <span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-promtail</span>
 <span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
 <span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./promtail/promtail-config.yml:/etc/promtail/config.yml:ro</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">../../services/pagatu-catalogo-ms/logs:/var/log/pagatu-catalogo-ms:ro</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./promtail/promtail-config-dev.yml:/etc/promtail/config.yml:ro</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">../services/pagatu-catalogo-ms/logs:/var/log/pagatu-catalogo-ms:ro</span>
 <span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-config.file=/etc/promtail/config.yml</span>
 <span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-loki</span>
 </code></pre></div>
 <p>Vuelve a levantar el stack con el archivo actualizado:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>infra/pagatu-observability
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>obs
 docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-dev.yml<span class="w"> </span>up<span class="w"> </span>-d
 </code></pre></div>
 <h3 id="314-verificar-logs-en-loki">3.14 Verificar logs en Loki<a class="headerlink" href="#314-verificar-logs-en-loki" title="Permanent link">&para;</a></h3>
@@ -2538,8 +2538,17 @@ http://localhost:13100/loki/api/v1/query_range?query={application=%22pagatu-cata
 <p>El alcance evaluado de S3 termina en 3.9 (dos instancias de <code>pagatu-catalogo-ms</code> registradas en DEV, 2.2-2.4) — igual que 3.10 a 3.14 (Prometheus/Loki), producción local con Docker es contenido adicional, no un requisito para cerrar la sesión ni para la evaluación (4.4, 4.6).</p>
 </div>
 <p><strong>Producto del paso:</strong> <code>pagatu-eureka</code> y <code>pagatu-catalogo-ms</code> operativos en Docker, dentro de la misma red compartida ya establecida en S2 (<code>pagatu-prod-net</code>) — y, opcionalmente, Prometheus y Loki descubriendo esas mismas instancias en ese mismo ambiente.</p>
-<p>Agrega <code>pagatu-eureka</code> a <code>infra/compose.yml</code> (junto a <code>pagatu-config</code>, S2 3.11):</p>
-<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nt">pagatu-eureka</span><span class="p">:</span>
+<p>Agrega un healthcheck a <code>pagatu-config</code> y <code>pagatu-eureka</code> a <code>infra/compose.yml</code> (junto a <code>pagatu-config</code>, S2 3.11):</p>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nt">pagatu-config</span><span class="p">:</span>
+<span class="w">    </span><span class="c1"># ...(resto de la definición ya existente, S2 3.11)</span>
+<span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"CMD-SHELL"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"bash</span><span class="nv"> </span><span class="s">-c</span><span class="nv"> </span><span class="s">'&lt;/dev/tcp/localhost/8888'</span><span class="nv"> </span><span class="s">||</span><span class="nv"> </span><span class="s">exit</span><span class="nv"> </span><span class="s">1"</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5s</span>
+<span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3s</span>
+<span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="w">      </span><span class="nt">start_period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
+
+<span class="w">  </span><span class="nt">pagatu-eureka</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">build</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">context</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./pagatu-eureka</span>
 <span class="w">      </span><span class="nt">dockerfile</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Dockerfile</span>
@@ -2550,18 +2559,26 @@ http://localhost:13100/loki/api/v1/query_range?query={application=%22pagatu-cata
 <span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">SPRING_PROFILES_ACTIVE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prod</span>
 <span class="w">      </span><span class="nt">CONFIG_SERVER_URL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://pagatu-config:8888</span>
+<span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">pagatu-config</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span>
 <span class="w">    </span><span class="nt">networks</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-prod-net</span>
 </code></pre></div>
 <p><code>infra/pagatu-eureka/Dockerfile</code> (mismo patrón multi-stage que <code>pagatu-config</code>, S2 3.11).</p>
+<p><strong>Error frecuente</strong>: <code>pagatu-eureka</code> arranca pero <code>http://localhost:28761</code> no responde, y su log muestra intentos fallidos contra <code>http://localhost:8761/eureka/</code> (con <code>localhost</code>, no <code>pagatu-eureka</code>) — el puerto que realmente configuraste en <code>pagatu-eureka-prod.yml</code>. La causa: <code>spring.config.import</code> usa <code>optional:configserver:...</code> — si <code>pagatu-config</code> todavía no está listo para responder cuando <code>pagatu-eureka</code> arranca (ambos en el mismo <code>compose.yml</code>, sin orden garantizado), Spring Boot <strong>no falla, ignora la configuración remota en silencio</strong> y arranca con los valores por defecto (puerto 8080, <code>defaultZone</code> apuntando a <code>localhost:8761</code>). El <code>healthcheck</code> de arriba, junto con <code>depends_on: condition: service_healthy</code>, evita la carrera: <code>pagatu-eureka</code> no arranca hasta que <code>pagatu-config</code> responde de verdad, no solo hasta que su contenedor existe.</p>
 <p>Levanta infraestructura y microservicio, en ese orden (mismo criterio de S2, 3.12):</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>infra
 docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--build
 docker<span class="w"> </span>compose<span class="w"> </span>ps
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>../services/pagatu-catalogo-ms
-docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--build<span class="w"> </span>--scale<span class="w"> </span>pagatu-catalogo-ms<span class="o">=</span><span class="m">2</span>
+<p>Si <code>pagatu-config</code> y/o <code>pagatu-eureka</code> ya existían de un intento anterior (antes de agregar el <code>healthcheck</code>/<code>depends_on</code> de arriba), <code>up -d</code> no los recrea solo por editar el YAML — Compose no ve cambio en la imagen, así que deja los contenedores viejos corriendo con la definición vieja. En ese caso, fuerza la recreación de esos dos:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--force-recreate<span class="w"> </span>pagatu-config<span class="w"> </span>pagatu-eureka
 </code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>../services/pagatu-catalogo-ms
+docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--scale<span class="w"> </span>pagatu-catalogo-ms<span class="o">=</span><span class="m">2</span>
+</code></pre></div>
+<p>Sin <code>--build</code>: la imagen de <code>pagatu-catalogo-ms</code> no cambió (ni <code>Dockerfile</code>, ni <code>pom.xml</code>, ni código) — solo <code>infra</code> es nuevo (<code>pagatu-eureka</code>), por eso ese sí lleva <code>--build</code>.</p>
 <p>Verifica:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:28761/actuator/health"</span>
 </code></pre></div>
@@ -2570,17 +2587,16 @@ docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> 
 <p>Resultado esperado: <code>pagatu-eureka</code> responde en <code>28761</code>, y las instancias de <code>pagatu-catalogo-ms</code> aparecen registradas usando <code>http://pagatu-eureka:8761/eureka</code> (la URL interna de la red Docker, no la de host).</p>
 <p><strong>Prometheus y Loki en producción local</strong></p>
 <p>Este bloque es la versión en PROD de 3.10-3.14 — mismas dos herramientas, con una diferencia clave: en PROD, Prometheus y Loki no le hablan a <code>host.docker.internal</code>, sino directamente al nombre del servicio dentro de <code>pagatu-prod-net</code> (<code>pagatu-eureka</code>), igual que ya hace <code>pagatu-catalogo-ms</code> para su propia configuración (S2, 3.12).</p>
-<p><strong>1. Agregar el volumen de logs a <code>services/pagatu-catalogo-ms/compose.yml</code></strong>, para que Promtail pueda leerlos desde otro contenedor. El <code>logback-spring.xml</code> del proyecto (S1, 3.3.2) ya escribe a <code>logs/catalogo.log</code>, una ruta relativa al <code>WORKDIR</code> del <code>Dockerfile</code> (<code>/app</code>, S1 3.6.1) — el volumen se monta ahí, en <code>/app/logs</code>, no en una ruta inventada:</p>
-<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nt">pagatu-catalogo-ms</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-catalogo-logs:/app/logs</span>
-
-<span class="nt">volumes</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">pagatu-catalogo-logs</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-catalogo-logs</span>
+<p><strong>1. Nada que agregar al volumen de logs.</strong> <code>services/pagatu-catalogo-ms/compose.yml</code> ya monta <code>./logs:/app/logs</code> desde S2 — un <em>bind mount</em> directo a <code>services/pagatu-catalogo-ms/logs</code> en el host, el mismo archivo que ya lee Promtail en DEV (3.13). No hace falta crear un volumen nombrado ni tocar ese <code>compose.yml</code>: Promtail, en el paso 4, monta esa misma carpeta del host directamente, igual que en DEV.</p>
+<p><strong>Sí hace falta exponer el endpoint de Prometheus en PROD</strong> — 3.10 lo agregó a <code>pagatu-catalogo-ms-dev.yml</code>, pero <code>pagatu-catalogo-ms-prod.yml</code> (<code>config-repo</code>) todavía no lo tiene. Sin esto, Prometheus descubre la instancia vía Eureka pero recibe <code>404</code> al intentar <code>/actuator/prometheus</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">management</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">endpoints</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">web</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">exposure</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health,info,metrics,prometheus</span>
 </code></pre></div>
-<p>No hace falta tocar <code>config-repo/pagatu-catalogo-ms-prod.yml</code> — igual que en DEV (3.13), <code>logging.file.name</code> no tendría efecto porque <code>logback-spring.xml</code> ya fija la ruta del archivo directamente.</p>
-<p><strong>2. Crear <code>infra/pagatu-observability/prometheus/prometheus-prod.yml</code>:</strong></p>
+<p>No hace falta tocar <code>logging.file.name</code> — igual que en DEV (3.13), <code>logback-spring.xml</code> ya fija la ruta del archivo directamente.</p>
+<p><strong>2. Crear <code>obs/prometheus/prometheus.yml</code></strong> (bare, PROD — mismo patrón):</p>
 <div class="highlight"><pre><span></span><code><span class="nt">global</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">scrape_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">15s</span>
 
@@ -2593,7 +2609,7 @@ docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> 
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">source_labels</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">__meta_eureka_app_name</span><span class="p p-Indicator">]</span>
 <span class="w">        </span><span class="nt">target_label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">application</span>
 </code></pre></div>
-<p><strong>3. Crear <code>infra/pagatu-observability/promtail/promtail-config-prod.yml</code>:</strong></p>
+<p><strong>3. Crear <code>obs/promtail/promtail-config.yml</code></strong> (bare, PROD — mismo patrón):</p>
 <div class="highlight"><pre><span></span><code><span class="nt">server</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">http_listen_port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9080</span>
 
@@ -2609,9 +2625,9 @@ docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> 
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">localhost</span><span class="p p-Indicator">]</span>
 <span class="w">        </span><span class="nt">labels</span><span class="p">:</span>
 <span class="w">          </span><span class="nt">application</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-catalogo-ms</span>
-<span class="w">          </span><span class="nt">__path__</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/app/logs/*.log</span>
+<span class="w">          </span><span class="nt">__path__</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/log/pagatu-catalogo-ms/*.log</span>
 </code></pre></div>
-<p><strong>4. Crear <code>infra/pagatu-observability/compose-prod.yml</code>:</strong></p>
+<p><strong>4. Crear <code>obs/compose.yml</code></strong> (bare, no <code>compose-prod.yml</code> — mismo patrón de <code>services/pagatu-catalogo-ms</code> e <code>infra</code>: sin sufijo es PROD, <code>-dev</code> es DEV):</p>
 <div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">pagatu-prometheus</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prom/prometheus:latest</span>
@@ -2620,7 +2636,7 @@ docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> 
 <span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"29090:9090"</span>
 <span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./prometheus/prometheus-prod.yml:/etc/prometheus/prometheus.yml:ro</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro</span>
 <span class="w">    </span><span class="nt">networks</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-prod-net</span>
 
@@ -2638,8 +2654,8 @@ docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> 
 <span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-promtail</span>
 <span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
 <span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./promtail/promtail-config-prod.yml:/etc/promtail/config.yml:ro</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-catalogo-logs:/app/logs:ro</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./promtail/promtail-config.yml:/etc/promtail/config.yml:ro</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">../services/pagatu-catalogo-ms/logs:/var/log/pagatu-catalogo-ms:ro</span>
 <span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-config.file=/etc/promtail/config.yml</span>
 <span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-loki</span>
@@ -2649,30 +2665,27 @@ docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> 
 <span class="nt">networks</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">pagatu-prod-net</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">external</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-
-<span class="nt">volumes</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">pagatu-catalogo-logs</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">external</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </code></pre></div>
-<p><code>pagatu-catalogo-logs</code> se declara <code>external: true</code> porque el volumen ya existe — lo creó <code>services/pagatu-catalogo-ms/compose.yml</code> en el paso 1; este archivo solo se conecta a él, mismo patrón ya usado para <code>pagatu-prod-net</code> (S2, 3.11).</p>
-<p>Reconstruye <code>pagatu-catalogo-ms</code> (para que tome el volumen nuevo) y levanta el stack de observabilidad:</p>
+<p>El bind mount de Promtail apunta a la misma carpeta del host que ya usa <code>services/pagatu-catalogo-ms/compose.yml</code> (<code>./logs</code>) — no es un volumen compartido entre contenedores, es la misma ruta del host montada dos veces, una por cada contenedor que la necesita (igual que ya hace <code>pagatu-prod-net</code>, S2 3.11, pero con una carpeta en vez de una red).</p>
+<p>Si <code>pagatu-catalogo-ms</code> ya estaba corriendo (lanzado más arriba, antes de editar <code>pagatu-catalogo-ms-prod.yml</code>), reinícialo para que tome la configuración nueva — el cambio vive en <code>config-repo</code>, que <code>pagatu-config</code> sirve en cada arranque, así que basta con un reinicio, no una reconstrucción:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>services/pagatu-catalogo-ms
-docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--build<span class="w"> </span>--scale<span class="w"> </span>pagatu-catalogo-ms<span class="o">=</span><span class="m">2</span>
-
-<span class="nb">cd</span><span class="w"> </span>../../infra/pagatu-observability
-docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-prod.yml<span class="w"> </span>up<span class="w"> </span>-d
+docker<span class="w"> </span>compose<span class="w"> </span>restart<span class="w"> </span>pagatu-catalogo-ms
+</code></pre></div>
+<p>Levanta el stack de observabilidad:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>../../obs
+docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
 </code></pre></div>
 <p>Verifica:</p>
 <div class="highlight"><pre><span></span><code>http://localhost:29090/targets
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:23100/loki/api/v1/query_range?query={application=</span><span class="se">`"</span><span class="s2">pagatu-catalogo-ms</span><span class="se">`"</span><span class="s2">}"</span><span class="p">)</span> <span class="p">|</span> <span class="nb">ConvertTo-Json</span> <span class="n">-Depth</span> <span class="n">10</span>
 </code></pre></div>
-<p>Resultado esperado: mismo comportamiento que en DEV (3.12, 3.14) — targets descubiertos automáticamente vía Eureka, y logs de ambas réplicas consultables en Loki (recuerda que, igual que en DEV, ambas réplicas comparten el mismo archivo de log dentro del volumen).</p>
+<p>Resultado esperado: mismo comportamiento que en DEV (3.12, 3.14) — targets descubiertos automáticamente vía Eureka, y logs de ambas réplicas consultables en Loki (recuerda que, igual que en DEV, ambas réplicas comparten el mismo archivo de log en el host).</p>
 <p>Al terminar, baja los tres entornos en orden inverso (mismo patrón de S2, 3.14):</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>infra/pagatu-observability
-docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-prod.yml<span class="w"> </span>down
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>obs
+docker<span class="w"> </span>compose<span class="w"> </span>down
 
-<span class="nb">cd</span><span class="w"> </span>../../services/pagatu-catalogo-ms
+<span class="nb">cd</span><span class="w"> </span>../services/pagatu-catalogo-ms
 docker<span class="w"> </span>compose<span class="w"> </span>down
 
 <span class="nb">cd</span><span class="w"> </span>../../infra
@@ -2702,7 +2715,7 @@ docker<span class="w"> </span>compose<span class="w"> </span>down
 </ol>
 <p><strong>Opcional</strong> (solo si completaste 3.10 a 3.14 con <code>pagatu-catalogo-ms</code>, y tu equipo cuenta con los recursos de cómputo):</p>
 <ol>
-<li>Agregar <code>micrometer-registry-prometheus</code> y el endpoint <code>prometheus</code> a <code>pagatu-orden-ms</code> (mismo patrón de 3.10), y verificar que aparece como target nuevo en <code>http://localhost:19090/targets</code> <strong>sin tocar <code>prometheus.yml</code></strong> — el descubrimiento vía Eureka ya cubre cualquier servicio que se registre, no solo <code>pagatu-catalogo-ms</code>.</li>
+<li>Agregar <code>micrometer-registry-prometheus</code> y el endpoint <code>prometheus</code> a <code>pagatu-orden-ms</code> (mismo patrón de 3.10), y verificar que aparece como target nuevo en <code>http://localhost:19090/targets</code> <strong>sin tocar <code>prometheus-dev.yml</code></strong> — el descubrimiento vía Eureka ya cubre cualquier servicio que se registre, no solo <code>pagatu-catalogo-ms</code>.</li>
 <li>Verificar que <code>pagatu-orden-ms</code> también escribe sus logs a un archivo dentro de <code>services/pagatu-orden-ms/logs/</code>. Si tu equipo copió el <code>logback-spring.xml</code> de <code>pagatu-catalogo-ms</code> (S1, 3.3.2) al crear el proyecto (mismo patrón de 3.13, sin agregar <code>logging.file.name</code> — no tendría efecto), ya debería estar escribiendo ahí; si no, agrégalo siguiendo ese mismo archivo como referencia, ajustando el nombre del logger. Súmalo al mismo bind-mount de Promtail (3.13) y verifica sus logs en Loki con una consulta filtrando <code>application="pagatu-orden-ms"</code>.</li>
 </ol>
 <h3 id="42-proposito">4.2 Propósito<a class="headerlink" href="#42-proposito" title="Permanent link">&para;</a></h3>
