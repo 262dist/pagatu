@@ -2082,7 +2082,7 @@ docker interno: pagatu-eureka:8761
 </tr>
 <tr>
 <td>Spring Boot</td>
-<td><strong>4.0.7</strong></td>
+<td>La última estable que ofrezca Spring Initializr en ese momento (verificado: <strong>4.0.8</strong>)</td>
 </tr>
 <tr>
 <td>Language</td>
@@ -2153,10 +2153,10 @@ docker interno: pagatu-eureka:8761
 <span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-netflix-eureka-server<span class="nt">&lt;/artifactId&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div>
-<p>Mismo BOM de Spring Cloud que ya usa <code>pagatu-config</code> (S2, 3.3) — <strong>Spring Cloud 2025.1.2</strong> (<em>Oakwood</em>):</p>
+<p>Mismo mecanismo de BOM de Spring Cloud que ya usa <code>pagatu-config</code> (S2, 3.3) — Spring Initializr elige la versión de Spring Cloud compatible con la versión de Spring Boot seleccionada (verificado: <strong>2025.1.3</strong>, <em>Oakwood</em>; una versión más nueva que la 2025.1.2 que quedó fija en <code>pagatu-config</code>, por la diferencia de fecha entre S2 y S3 — ambas dentro de la misma línea <em>Oakwood</em>, sin incompatibilidad):</p>
 <div class="highlight"><pre><span></span><code><span class="nt">&lt;properties&gt;</span>
 <span class="w">    </span><span class="nt">&lt;java.version&gt;</span>21<span class="nt">&lt;/java.version&gt;</span>
-<span class="w">    </span><span class="nt">&lt;spring-cloud.version&gt;</span>2025.1.2<span class="nt">&lt;/spring-cloud.version&gt;</span>
+<span class="w">    </span><span class="nt">&lt;spring-cloud.version&gt;</span>2025.1.3<span class="nt">&lt;/spring-cloud.version&gt;</span>
 <span class="nt">&lt;/properties&gt;</span>
 
 <span class="nt">&lt;dependencyManagement&gt;</span>
@@ -2209,8 +2209,6 @@ docker interno: pagatu-eureka:8761
 <span class="nt">eureka</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">server</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">enable-self-preservation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
-<span class="w">  </span><span class="nt">instance</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span>
 <span class="w">  </span><span class="nt">client</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">register-with-eureka</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 <span class="w">    </span><span class="nt">fetch-registry</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
@@ -2400,10 +2398,12 @@ docker interno: pagatu-eureka:8761
 <p><code>eureka_sd_configs</code> es la pieza clave: Prometheus consulta el registro de <code>pagatu-eureka</code> igual que lo haría cualquier otro cliente de descubrimiento (2.6), y ajusta su lista de <em>targets</em> automáticamente cada vez que una instancia aparece o desaparece del registro.</p>
 <p><strong>Error frecuente</strong>: los targets aparecen descubiertos pero en <code>DOWN</code>, con el error "connect: connection refused" al intentar <code>http://localhost:&lt;puerto&gt;/actuator/prometheus</code>. La causa: <code>pagatu-eureka</code> reporta la dirección de cada instancia usando <code>eureka.instance.hostname: localhost</code> (fijado en 3.7 para que el dashboard se vea limpio) — pero "localhost" dentro del contenedor de Prometheus es el propio contenedor, no tu máquina. El segundo <code>relabel_configs</code> de arriba corrige esto: reescribe <code>localhost:&lt;puerto&gt;</code> a <code>host.docker.internal:&lt;puerto&gt;</code> <strong>solo para el scrape de Prometheus</strong>, sin tocar <code>eureka.instance.hostname</code> — así el dashboard de Eureka se sigue viendo limpio (<code>localhost:8080</code>) y Prometheus igual logra conectarse.</p>
 <p>Crea <code>obs/compose-dev.yml</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-obs-dev</span>
+
+<span class="nt">services</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">pagatu-prometheus</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prom/prometheus:latest</span>
-<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-prometheus</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prom/prometheus:v3.14.0</span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-prometheus-dev</span>
 <span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
 <span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"19090:9090"</span>
@@ -2413,6 +2413,8 @@ docker interno: pagatu-eureka:8761
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"host.docker.internal:host-gateway"</span>
 </code></pre></div>
 <p><code>extra_hosts</code> con <code>host-gateway</code> es necesario en Linux para que <code>host.docker.internal</code> resuelva al host — en Docker Desktop (Windows/macOS) ya funciona sin esa línea, pero dejarla no daña nada.</p>
+<p>Dos cosas evitan que este archivo choque con <code>obs/compose.yml</code> (PROD, 3.15), que define los mismos tres servicios: el <code>name: pagatu-obs-dev</code> de la primera línea, y el <code>container_name</code> con sufijo <code>-dev</code>. El <code>name:</code> es el que realmente importa — Compose identifica contenedores por <em>proyecto + nombre de servicio</em>, no por <code>container_name</code> (eso es solo cosmético); sin un <code>name:</code> propio en cada archivo, Compose deriva el nombre de proyecto de la carpeta (<code>obs</code>, la misma para los dos archivos) y trata <code>pagatu-prometheus</code> de uno y del otro como el mismo servicio del mismo proyecto — levantar uno "recrea" al otro, aunque tengan <code>container_name</code> distinto. Con <code>name:</code> explícito y distinto en cada archivo, quedan como proyectos completamente separados. Mismo patrón que ya usa <code>infra/compose.yml</code> (<code>name: pagatu-infra-prod</code>, S3) y que <code>pagatu-postgres-catalogo-dev</code> frente a <code>pagatu-postgres-catalogo</code> usa para el <code>container_name</code>.</p>
+<p>Las tres imágenes (<code>prom/prometheus</code>, <code>grafana/loki</code>, <code>grafana/promtail</code>) van con versión fija, no <code>:latest</code>: esta es una guía que muchos estudiantes van a seguir en momentos distintos, y <code>:latest</code> es un blanco móvil — Loki en particular ha tenido cambios de esquema de configuración entre versiones mayores. Fijar la versión evita que alguien reciba una imagen distinta a la que esta guía verificó funcionando.</p>
 <p>Levanta el contenedor:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>obs
 docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-dev.yml<span class="w"> </span>up<span class="w"> </span>-d
@@ -2458,7 +2460,8 @@ docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> 
 </ul>
 <h3 id="313-enviar-logs-de-pagatu-catalogo-ms-a-loki">3.13 Enviar logs de <code>pagatu-catalogo-ms</code> a Loki<a class="headerlink" href="#313-enviar-logs-de-pagatu-catalogo-ms-a-loki" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> Promtail leyendo los logs que <code>pagatu-catalogo-ms</code> ya escribe a archivo desde S1, y enviándolos a Loki.</p>
-<p><code>pagatu-catalogo-ms</code> ya escribe a archivo desde S1 (3.3.2, <code>logback-spring.xml</code>) — no hace falta agregar nada a <code>config-repo</code> para esto: <code>logging.file.name</code> no tendría efecto aquí, porque el <code>logback-spring.xml</code> del proyecto fija la ruta del archivo directamente (<code>logs/catalogo.log</code>), sin usar esa propiedad. Ambas instancias (3.8, 3.9) ya escriben, por simplicidad, al mismo archivo dentro de <code>services/pagatu-catalogo-ms/logs/</code> — el que arma cada noche <code>logs/catalogo.log</code> (el activo) y lo rota a <code>logs/catalogo-AAAA-MM-DD.log</code> (histórico, hasta 7 días).</p>
+<p><code>pagatu-catalogo-ms</code> ya escribe a archivo desde S1 (3.3.2, <code>logback-spring.xml</code>) — no hace falta agregar nada a <code>config-repo</code> para esto: <code>logging.file.name</code> no tendría efecto aquí, porque el <code>logback-spring.xml</code> del proyecto fija la ruta del archivo directamente (<code>logs/catalogo.log</code>), sin usar esa propiedad. Ambas instancias (3.8, 3.9) ya escriben, por simplicidad, al mismo archivo dentro de <code>services/pagatu-catalogo-ms/logs/</code>: <code>logs/catalogo.log</code> es el activo, y <code>TimeBasedRollingPolicy</code> lo rota a <code>logs/catalogo-AAAA-MM-DD.log</code> (histórico, hasta 7 días, <code>maxHistory: 7</code>).</p>
+<p>La rotación <strong>no es un reloj de fondo</strong> — Logback la revisa solo cuando efectivamente se escribe una línea de log, no a medianoche por sí sola. Si un día no hay ninguna actividad (la instancia no corrió, o corrió sin generar ningún evento), ese día no genera archivo: <code>catalogo.log</code> sigue acumulando en silencio hasta el próximo evento real, sin importar cuántos días pasen de por medio. Por eso en la práctica vas a ver huecos en la numeración de <code>catalogo-AAAA-MM-DD.log</code> — no es un error, es evidencia de qué días realmente hubo actividad.</p>
 <p>Crea <code>obs/promtail/promtail-config-dev.yml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">server</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">http_listen_port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9080</span>
@@ -2480,15 +2483,15 @@ docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> 
 <p><code>__path__</code> es un patrón — coincide con <code>catalogo.log</code> y con todos los <code>catalogo-AAAA-MM-DD.log</code> que ya existan en la carpeta (S1, 3.3.2 los rota diariamente). Pero eso no significa que Loki reciba el contenido histórico de todos: Promtail, al descubrir un archivo por primera vez, empieza a leerlo <strong>desde el final</strong> (igual que <code>tail -f</code>) — solo empuja a Loki las líneas que se escriben <em>después</em> de que Promtail arrancó. Los archivos ya rotados que no vuelven a recibir escrituras (<code>catalogo-2026-08-19.log</code>, etc.) se quedan sin aportar nada a Loki; el único archivo que sí aparece en tus consultas es el que estaba activo (recibiendo escrituras nuevas) en el momento en que reiniciaste las instancias después de levantar Promtail. Esto es el comportamiento esperado, no un error — Loki no está pensado para reconstruir historial de logs, solo para lo que ocurre de aquí en adelante.</p>
 <p>Agrega Loki y Promtail a <code>obs/compose-dev.yml</code> (junto a <code>pagatu-prometheus</code>, 3.11):</p>
 <div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nt">pagatu-loki</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">grafana/loki:latest</span>
-<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-loki</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">grafana/loki:3.7.6</span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-loki-dev</span>
 <span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
 <span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"13100:3100"</span>
 
 <span class="w">  </span><span class="nt">pagatu-promtail</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">grafana/promtail:latest</span>
-<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-promtail</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">grafana/promtail:3.6.8</span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-promtail-dev</span>
 <span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
 <span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./promtail/promtail-config-dev.yml:/etc/promtail/config.yml:ro</span>
@@ -2512,7 +2515,7 @@ docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> 
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-G<span class="w"> </span>http://localhost:13100/loki/api/v1/query_range<span class="w"> </span>--data-urlencode<span class="w"> </span><span class="s1">'query={application="pagatu-catalogo-ms"}'</span>
 </code></pre></div>
 <p>Resultado esperado: una respuesta JSON con líneas de log reales de <code>pagatu-catalogo-ms</code> (por ejemplo, el mensaje de arranque de Tomcat en el puerto <code>8080</code> u <code>8081</code>).</p>
-<p><code>pagatu-catalogo-ms</code> no loguea cada petición (S1 no agregó ese filtro), así que estas consultas no sirven para contar CRUD uno por uno — pero sí para constatar, desde el log, lo mismo que ya viste en las métricas de Prometheus (3.12). En vez de escribir la URL a mano, usa <code>[uri]::EscapeDataString(...)</code> para no pelear con comillas y espacios dentro del query:</p>
+<p><code>pagatu-catalogo-ms</code> no loguea cada petición todavía (S1 no agregó ese filtro), así que estas consultas no sirven para contar CRUD uno por uno — pero sí para constatar, desde el log, lo mismo que ya viste en las métricas de Prometheus (3.12). Más abajo se agrega una línea de log real a un endpoint concreto, para poder rastrear una petición específica. En vez de escribir la URL a mano, usa <code>[uri]::EscapeDataString(...)</code> para no pelear con comillas y espacios dentro del query:</p>
 <ul>
 <li><code>{application="pagatu-catalogo-ms"} |= "Started PagatuCatalogoMsApplication"</code> — la línea "Started ... in X seconds" de cada arranque. El número de segundos debería coincidir con <code>application_ready_time_seconds</code> de esa misma instancia en Prometheus: es la misma medición, solo que aquí la ves como texto y allá como métrica.</li>
 <li><code>{application="pagatu-catalogo-ms"} |= "EurekaServiceRegistry"</code> — cada alta (<code>status UP</code>) y baja (<code>status DOWN</code>) de una instancia en Eureka. El momento de un "Unregistering ... DOWN" debería coincidir con el instante en que esa instancia pasa a <code>0</code> en <code>up{job="pagatu-microservicios"}</code> (3.12), en el siguiente scrape de Prometheus.</li>
@@ -2523,15 +2526,82 @@ docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> 
 <span class="nv">$uri</span> <span class="p">=</span> <span class="s2">"http://localhost:13100/loki/api/v1/query_range?query=</span><span class="p">$(</span><span class="no">[uri]</span><span class="p">::</span><span class="n">EscapeDataString</span><span class="p">(</span><span class="nv">$query</span><span class="p">))</span><span class="s2">"</span>
 <span class="p">(</span><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="nv">$uri</span><span class="p">)</span> <span class="p">|</span> <span class="nb">ConvertTo-Json</span> <span class="n">-Depth</span> <span class="n">10</span>
 </code></pre></div>
-<p>Su equivalente para pegar directo en el navegador (mismo estilo que la consulta simple ya usada antes, con las comillas codificadas como <code>%22</code>):</p>
-<div class="highlight"><pre><span></span><code>http://localhost:13100/loki/api/v1/query_range?query={application=%22pagatu-catalogo-ms%22}%20|=%20%22Started%20PagatuCatalogoMsApplication%22
+<p>Su equivalente para pegar directo en el navegador — no hace falta codificar comillas ni espacios a mano (<code>%22</code>, <code>%20</code>), el navegador los codifica solo al pegar la URL:</p>
+<div class="highlight"><pre><span></span><code>http://localhost:13100/loki/api/v1/query_range?query={application="pagatu-catalogo-ms"} |= "Started PagatuCatalogoMsApplication"
 
-http://localhost:13100/loki/api/v1/query_range?query={application=%22pagatu-catalogo-ms%22}%20|=%20%22EurekaServiceRegistry%22
+http://localhost:13100/loki/api/v1/query_range?query={application="pagatu-catalogo-ms"} |= "EurekaServiceRegistry"
 
-http://localhost:13100/loki/api/v1/query_range?query={application=%22pagatu-catalogo-ms%22}%20|=%20%22HikariPool%22
+http://localhost:13100/loki/api/v1/query_range?query={application="pagatu-catalogo-ms"} |= "HikariPool"
 
-http://localhost:13100/loki/api/v1/query_range?query={application=%22pagatu-catalogo-ms%22,%20detected_level=%22error%22}
+http://localhost:13100/loki/api/v1/query_range?query={application="pagatu-catalogo-ms", detected_level="error"}
 </code></pre></div>
+<p><strong>Rastrear una petición específica por traceId (opcional)</strong></p>
+<p>El mecanismo para esto ya existe desde S1 (3.3.2, <code>CorrelationIdFilter</code>): cada request que llega ya recibe un <code>traceId</code> (UUID) guardado en el MDC y devuelto como header <code>X-Trace-ID</code> en la respuesta. Lo único que falta es una línea de log real durante el request — sin eso, el <code>traceId</code> viaja pero no queda escrito en ningún lado. Agrega <code>@Slf4j</code> (Lombok, ya está en el <code>pom.xml</code> desde S1) y una línea <code>log.info(...)</code> a <code>CategoriaController.listar()</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.controller</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.dto.CategoriaRequest</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.dto.CategoriaResponse</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.service.CategoriaService</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jakarta.validation.Valid</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lombok.RequiredArgsConstructor</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lombok.extern.slf4j.Slf4j</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.http.HttpStatus</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.web.bind.annotation.*</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.List</span><span class="p">;</span>
+
+<span class="nd">@Slf4j</span>
+<span class="nd">@RestController</span>
+<span class="nd">@RequestMapping</span><span class="p">(</span><span class="s">"/api/v1/categorias"</span><span class="p">)</span>
+<span class="nd">@RequiredArgsConstructor</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CategoriaController</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">CategoriaService</span><span class="w"> </span><span class="n">categoriaService</span><span class="p">;</span>
+
+<span class="w">    </span><span class="nd">@GetMapping</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">CategoriaResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">listar</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">"Listando categorías"</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">categoriaService</span><span class="p">.</span><span class="na">listar</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/{id}"</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">CategoriaResponse</span><span class="w"> </span><span class="nf">obtener</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">categoriaService</span><span class="p">.</span><span class="na">obtener</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nd">@PostMapping</span>
+<span class="w">    </span><span class="nd">@ResponseStatus</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">CREATED</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">CategoriaResponse</span><span class="w"> </span><span class="nf">crear</span><span class="p">(</span><span class="nd">@Valid</span><span class="w"> </span><span class="nd">@RequestBody</span><span class="w"> </span><span class="n">CategoriaRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">categoriaService</span><span class="p">.</span><span class="na">crear</span><span class="p">(</span><span class="n">request</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nd">@PutMapping</span><span class="p">(</span><span class="s">"/{id}"</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">CategoriaResponse</span><span class="w"> </span><span class="nf">actualizar</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="nd">@Valid</span><span class="w"> </span><span class="nd">@RequestBody</span><span class="w"> </span><span class="n">CategoriaRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">categoriaService</span><span class="p">.</span><span class="na">actualizar</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nd">@DeleteMapping</span><span class="p">(</span><span class="s">"/{id}"</span><span class="p">)</span>
+<span class="w">    </span><span class="nd">@ResponseStatus</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">NO_CONTENT</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">eliminar</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">categoriaService</span><span class="p">.</span><span class="na">eliminar</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Solo cambió el <code>@GetMapping</code> sin parámetros (<code>listar()</code>) — el resto del archivo queda igual. Reinicia la instancia (DevTools ya recompila solo, S1) y haz el request capturando el header de respuesta (<code>Invoke-WebRequest</code>, no <code>Invoke-RestMethod</code> — este último no expone los headers):</p>
+<div class="highlight"><pre><span></span><code><span class="nv">$resp</span> <span class="p">=</span> <span class="nb">Invoke-WebRequest</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:8080/api/v1/categorias"</span>
+<span class="nv">$traceId</span> <span class="p">=</span> <span class="nv">$resp</span><span class="p">.</span><span class="n">Headers</span><span class="p">[</span><span class="s1">'X-Trace-ID'</span><span class="p">]</span>
+<span class="nv">$traceId</span>
+</code></pre></div>
+<p>Con el <code>traceId</code> capturado, filtra Loki por ese valor exacto — vas a ver únicamente la línea de este request, no las de arranque ni las de Eureka:</p>
+<div class="highlight"><pre><span></span><code><span class="nv">$query</span> <span class="p">=</span> <span class="s2">"{application=</span><span class="se">`"</span><span class="s2">pagatu-catalogo-ms</span><span class="se">`"</span><span class="s2">} |= </span><span class="se">`"</span><span class="s2">$traceId</span><span class="se">`"</span><span class="s2">"</span>
+<span class="nv">$uri</span> <span class="p">=</span> <span class="s2">"http://localhost:13100/loki/api/v1/query_range?query=</span><span class="p">$(</span><span class="no">[uri]</span><span class="p">::</span><span class="n">EscapeDataString</span><span class="p">(</span><span class="nv">$query</span><span class="p">))</span><span class="s2">"</span>
+<span class="p">(</span><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="nv">$uri</span><span class="p">)</span> <span class="p">|</span> <span class="nb">ConvertTo-Json</span> <span class="n">-Depth</span> <span class="n">10</span>
+</code></pre></div>
+<p>O directo en el navegador, filtrando por el texto del propio <code>log.info(...)</code> en vez del <code>traceId</code> (más simple si solo quieres confirmar que la línea llegó a Loki, sin capturar ningún header):</p>
+<div class="highlight"><pre><span></span><code>http://localhost:13100/loki/api/v1/query_range?query={application="pagatu-catalogo-ms"} |= "Listando"
+</code></pre></div>
+<p>Con esto, un <code>log.info(...)</code> sí genera más detalle por request (antes solo existían logs de arranque/infraestructura) — y, al ser un evento de log real, también es lo que dispara el chequeo de rotación diaria (3.13): si hoy no había ningún archivo <code>catalogo-AAAA-MM-DD.log</code> todavía, este mismo request puede ser el que finalmente lo dispare.</p>
+<p>Esto solo rastrea el <code>traceId</code> <strong>dentro de <code>catalogo-ms</code></strong> — no se propaga todavía a otros microservicios (eso necesitaría que las llamadas salientes reenvíen <code>X-Trace-ID</code>, algo natural para S6 cuando haya llamadas síncronas entre microservicios).</p>
 <h3 id="315-registro-y-observabilidad-en-produccion-local-opcional">3.15 Registro y observabilidad en producción local (opcional)<a class="headerlink" href="#315-registro-y-observabilidad-en-produccion-local-opcional" title="Permanent link">&para;</a></h3>
 <div class="admonition note">
 <p class="admonition-title">3.15 es opcional</p>
@@ -2587,6 +2657,7 @@ docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> 
 <p>Resultado esperado: <code>pagatu-eureka</code> responde en <code>28761</code>, y las instancias de <code>pagatu-catalogo-ms</code> aparecen registradas usando <code>http://pagatu-eureka:8761/eureka</code> (la URL interna de la red Docker, no la de host).</p>
 <p><strong>Prometheus y Loki en producción local</strong></p>
 <p>Este bloque es la versión en PROD de 3.10-3.14 — mismas dos herramientas, con una diferencia clave: en PROD, Prometheus y Loki no le hablan a <code>host.docker.internal</code>, sino directamente al nombre del servicio dentro de <code>pagatu-prod-net</code> (<code>pagatu-eureka</code>), igual que ya hace <code>pagatu-catalogo-ms</code> para su propia configuración (S2, 3.12).</p>
+<p>Esto no es una preferencia de estilo — en PROD, <code>services/pagatu-catalogo-ms/compose.yml</code> tiene el puerto <code>8080</code> comentado (<code>#ports: #  - "28080:8080"</code>, S2): las réplicas de <code>pagatu-catalogo-ms</code> <strong>no publican ningún puerto al host</strong>, solo son alcanzables dentro de la red Docker. Prometheus no tiene otra forma de llegar a <code>/actuator/prometheus</code> de cada réplica más que compartiendo esa misma red — por eso <code>pagatu-prometheus</code> en <code>obs/compose.yml</code> (abajo) lleva <code>networks: - pagatu-prod-net</code>, igual que <code>pagatu-eureka</code> e <code>infra/compose.yml</code>. Sin esa línea, Prometheus descubre las instancias vía Eureka (que sí conoce sus direcciones internas) pero cada scrape falla con "connection refused" — el contenedor de Prometheus, en su propia red por defecto, no tiene ruta hacia contenedores de otra red. <code>pagatu-loki</code> y <code>pagatu-promtail</code> se unen a la misma red por consistencia, aunque estrictamente ninguno de los dos necesita alcanzar nada fuera de <code>obs/</code> — Loki solo recibe <em>push</em> de Promtail (dentro del mismo <code>compose.yml</code>), y Promtail solo lee un archivo montado del host, no hace llamadas de red hacia otro contenedor.</p>
 <p><strong>1. Nada que agregar al volumen de logs.</strong> <code>services/pagatu-catalogo-ms/compose.yml</code> ya monta <code>./logs:/app/logs</code> desde S2 — un <em>bind mount</em> directo a <code>services/pagatu-catalogo-ms/logs</code> en el host, el mismo archivo que ya lee Promtail en DEV (3.13). No hace falta crear un volumen nombrado ni tocar ese <code>compose.yml</code>: Promtail, en el paso 4, monta esa misma carpeta del host directamente, igual que en DEV.</p>
 <p><strong>Sí hace falta exponer el endpoint de Prometheus en PROD</strong> — 3.10 lo agregó a <code>pagatu-catalogo-ms-dev.yml</code>, pero <code>pagatu-catalogo-ms-prod.yml</code> (<code>config-repo</code>) todavía no lo tiene. Sin esto, Prometheus descubre la instancia vía Eureka pero recibe <code>404</code> al intentar <code>/actuator/prometheus</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">management</span><span class="p">:</span>
@@ -2628,9 +2699,11 @@ docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> 
 <span class="w">          </span><span class="nt">__path__</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/log/pagatu-catalogo-ms/*.log</span>
 </code></pre></div>
 <p><strong>4. Crear <code>obs/compose.yml</code></strong> (bare, no <code>compose-prod.yml</code> — mismo patrón de <code>services/pagatu-catalogo-ms</code> e <code>infra</code>: sin sufijo es PROD, <code>-dev</code> es DEV):</p>
-<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-obs-prod</span>
+
+<span class="nt">services</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">pagatu-prometheus</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prom/prometheus:latest</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prom/prometheus:v3.14.0</span>
 <span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-prometheus</span>
 <span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
 <span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
@@ -2641,7 +2714,7 @@ docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> 
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-prod-net</span>
 
 <span class="w">  </span><span class="nt">pagatu-loki</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">grafana/loki:latest</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">grafana/loki:3.7.6</span>
 <span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-loki</span>
 <span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
 <span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
@@ -2650,7 +2723,7 @@ docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> 
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-prod-net</span>
 
 <span class="w">  </span><span class="nt">pagatu-promtail</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">grafana/promtail:latest</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">grafana/promtail:3.6.8</span>
 <span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-promtail</span>
 <span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
 <span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
