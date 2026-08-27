@@ -1790,10 +1790,10 @@
 <h3 id="13-proposito-de-aprendizaje">1.3 Propósito de aprendizaje<a class="headerlink" href="#13-proposito-de-aprendizaje" title="Permanent link">&para;</a></h3>
 <p>Al concluir la clase, estarás en condiciones de:</p>
 <ul>
-<li><strong>Incorporar</strong> un servidor de registro y descubrimiento de servicios, conectar un microservicio como cliente, y verificar múltiples instancias activas del mismo servicio localizables por nombre lógico, sin que el cliente necesite conocer el puerto de cada una.</li>
+<li><strong>Construir e implementar</strong> un servidor de registro y descubrimiento de servicios, conectar un microservicio como cliente, y verificar que sus múltiples instancias activas quedan localizables por nombre lógico en el registro — sin que ningún componente que las consulte (otro cliente de Eureka, o una herramienta de observabilidad) necesite una lista de direcciones escrita a mano.</li>
 </ul>
 <h3 id="14-producto-de-sesion">1.4 Producto de sesión<a class="headerlink" href="#14-producto-de-sesion" title="Permanent link">&para;</a></h3>
-<p><code>pagatu-eureka</code> operativo en <code>infra/pagatu-eureka</code>, con <code>pagatu-catalogo-ms</code> registrado como cliente Eureka y ejecutando dos instancias simultáneas (puerto fijo <code>8080</code>/<code>8081</code>, igual que desde S1), visibles por nombre lógico en el dashboard — sin que ningún cliente necesite memorizar en qué puerto responde cada una. De forma opcional (según los recursos de cómputo disponibles), también Prometheus y Loki en pie en <code>obs</code>, recolectando métricas y logs de esas mismas instancias — Prometheus las encuentra preguntándole a <code>pagatu-eureka</code>, no por una lista de direcciones escrita a mano.</p>
+<p><code>pagatu-eureka</code> operativo en <code>infra/pagatu-eureka</code>, con <code>pagatu-catalogo-ms</code> registrado como cliente Eureka y ejecutando dos instancias simultáneas (puerto fijo <code>8080</code>/<code>8081</code>, igual que desde S1), visibles por nombre lógico en el dashboard — sin que ningún componente que consulte el registro necesite memorizar en qué puerto responde cada una (quien prueba a mano, con PowerShell o Swagger, sigue usando el puerto exacto de cada instancia — 3.8, 3.9). De forma opcional (según los recursos de cómputo disponibles), también Prometheus y Loki en pie en <code>obs</code>, recolectando métricas y logs de esas mismas instancias — Prometheus las encuentra preguntándole a <code>pagatu-eureka</code>, no por una lista de direcciones escrita a mano.</p>
 <h3 id="15-metodologia">1.5 Metodología<a class="headerlink" href="#15-metodologia" title="Permanent link">&para;</a></h3>
 <p><strong>Tabla 1. Metodología de la sesión</strong></p>
 <table>
@@ -1894,10 +1894,9 @@
 Eureka Server: http://localhost:18761
 Microservicios: puerto fijo por instancia (8080, 8081, ...)
 </code></pre></div>
-<p>Lectura del diagrama: el cliente ya no necesita saber en qué puerto responde <code>pagatu-catalogo-ms</code> — cada instancia se anuncia a <code>pagatu-eureka</code> al arrancar, y es Eureka quien resuelve el nombre lógico (<code>pagatu-catalogo-ms</code>) a una dirección real, en el momento en que alguien pregunta. La configuración de los tres componentes (incluido el propio <code>pagatu-eureka</code>) sigue viniendo de <code>pagatu-config</code>, exactamente como desde S2 — registro y configuración son dos preguntas distintas, a dos servidores distintos. Este diagrama es el mapa que guía el resto de la explicación: cada apartado siguiente desarrolla uno de sus componentes, en el mismo orden del Índice (1.2).</p>
+<p>Lectura del diagrama: fíjate que el <code>Cliente</code> hace dos llamadas de naturaleza distinta. La primera (<code>GET localhost:18761</code>) consulta el registro — ahí es donde Eureka resuelve el nombre lógico <code>pagatu-catalogo-ms</code> a una lista de direcciones reales, sin que nadie haya escrito esa lista a mano. La segunda (<code>GET localhost:8080/api/v1/categorias</code>) sigue siendo una llamada directa, con puerto exacto — quien prueba a mano (PowerShell, Swagger) no queda automáticamente libre de conocer el puerto; ese paso extra (resolver el nombre y elegir la instancia sin intervención humana) es trabajo del Gateway, en S4. Lo que sí cambia hoy es que cada instancia se anuncia sola al arrancar, y cualquier componente que consulte el registro puede encontrarla por nombre. La configuración de los tres componentes (incluido el propio <code>pagatu-eureka</code>) sigue viniendo de <code>pagatu-config</code>, exactamente como desde S2 — registro y configuración son dos preguntas distintas, a dos servidores distintos. Este diagrama es el mapa que guía el resto de la explicación: cada apartado siguiente desarrolla uno de sus componentes, en el mismo orden del Índice (1.2).</p>
 <h3 id="22-registro-de-servicios">2.2 Registro de servicios<a class="headerlink" href="#22-registro-de-servicios" title="Permanent link">&para;</a></h3>
-<p><strong>Registro de servicios</strong>: el componente (<code>pagatu-eureka</code>, un <strong>Eureka Server</strong>) donde cada microservicio anuncia su propia existencia al arrancar — nombre lógico, dirección real y un <strong>heartbeat</strong> (latido) periódico que confirma que la instancia sigue viva. Si una instancia deja de enviar heartbeat (latido) (se cayó, se apagó), Eureka la retira del registro después de un tiempo, sin que nadie tenga que notificarlo a mano.</p>
-<p><strong>Error frecuente</strong>: pensar que Eureka "descubre" servicios activamente, buscándolos en la red. Es al revés — cada instancia se registra por su cuenta, empujando la información hacia Eureka (<em>self-registration</em>); Eureka nunca sale a buscar quién está corriendo.</p>
+<p><strong>Registro de servicios</strong>: el componente (<code>pagatu-eureka</code>, un <strong>Eureka Server</strong>) donde cada microservicio anuncia su propia existencia al arrancar — nombre lógico, dirección real y un <strong>heartbeat</strong> (latido) periódico que confirma que la instancia sigue viva. Si una instancia deja de enviar heartbeat (latido) (se cayó, se apagó), Eureka la retira del registro después de un tiempo, sin que nadie tenga que notificarlo a mano. El nombre "descubrimiento" puede sugerir que Eureka sale a buscar servicios en la red — es al revés: cada instancia se registra por su cuenta, empujando la información hacia Eureka (<em>self-registration</em>); Eureka nunca busca nada, solo recibe.</p>
 <h3 id="23-el-patron-service-registry-en-la-arquitectura-de-microservicios">2.3 El patrón Service Registry en la arquitectura de microservicios<a class="headerlink" href="#23-el-patron-service-registry-en-la-arquitectura-de-microservicios" title="Permanent link">&para;</a></h3>
 <p>Lo construido en 2.2 no es una solución aislada de <code>pagatu</code> — es la implementación de <strong>Service Registry</strong> (también llamado <em>Service Discovery</em>), uno de los patrones de arquitectura de microservicios más conocidos.</p>
 <h4 id="231-que-es-el-patron-service-registry">2.3.1 Qué es el patrón Service Registry<a class="headerlink" href="#231-que-es-el-patron-service-registry" title="Permanent link">&para;</a></h4>
@@ -1963,7 +1962,7 @@ docker interno: pagatu-eureka:8761
 <p><strong>Descubrimiento de servicios</strong>: la capacidad de encontrar una instancia real preguntando solo por su nombre lógico (<code>spring.application.name</code>, el mismo que ya identifica a cada microservicio en <code>pagatu-config</code> desde S2), sin conocer host ni puerto de antemano. Quien pregunta puede ser otro microservicio, o — a partir de S4 — el Gateway, que reparte tráfico entre todas las instancias que Eureka le devuelva para ese nombre.</p>
 <p>El nombre lógico es literalmente el mismo dato que ya existe desde S2: <code>spring.application.name</code> identifica al microservicio ante <code>pagatu-config</code> (<code>/pagatu-catalogo-ms/dev</code>) y, desde hoy, también ante <code>pagatu-eureka</code> — un solo nombre, dos usos.</p>
 <h3 id="25-ejecucion-concurrente-de-servicios">2.5 Ejecución concurrente de servicios<a class="headerlink" href="#25-ejecucion-concurrente-de-servicios" title="Permanent link">&para;</a></h3>
-<p><strong>Ejecución concurrente</strong>: varias instancias del mismo microservicio corriendo a la vez, cada una anunciándose a Eureka bajo el mismo nombre lógico. En DEV, cada instancia sigue arrancando con un puerto fijo asignado a mano (<code>8080</code>, <code>8081</code>, ...) — el mismo mecanismo de S1 (3.4.1) —, porque varias instancias comparten el mismo host y necesitan puertos distintos para no chocar entre sí. Lo que cambia hoy no es cómo se elige el puerto, sino que ya nadie fuera de la propia instancia necesita conocerlo: cada una se registra con su dirección real, y quien la busca pregunta por el nombre lógico, no por el puerto.</p>
+<p><strong>Ejecución concurrente</strong>: varias instancias del mismo microservicio corriendo a la vez, cada una anunciándose a Eureka bajo el mismo nombre lógico. En DEV, cada instancia sigue arrancando con un puerto fijo asignado a mano (<code>8080</code>, <code>8081</code>, ...) — el mismo mecanismo de S1 (3.4.1) —, porque varias instancias comparten el mismo host y necesitan puertos distintos para no chocar entre sí. Eureka no exige que ese puerto lo asigne el sistema operativo, solo que cada instancia use uno <em>distinto</em> — elegido a mano en DEV, aislado por contenedor en PROD. Lo que cambia hoy no es cómo se elige el puerto, sino que ya nadie fuera de la propia instancia necesita conocerlo: cada una se registra con su dirección real, y quien la busca pregunta por el nombre lógico, no por el puerto.</p>
 <p><strong>Tabla 2. Antes (S1-S2) vs. hoy: cómo se identifica una instancia</strong></p>
 <table>
 <thead>
@@ -1991,11 +1990,10 @@ docker interno: pagatu-eureka:8761
 </tr>
 </tbody>
 </table>
-<p><strong>Error frecuente</strong>: pensar que Eureka exige puertos asignados automáticamente por el sistema operativo. No es así — lo que exige es que cada instancia tenga un puerto <em>distinto</em>, elegido de la forma que sea (a mano en DEV, aislado por contenedor en PROD); lo nuevo es que ese puerto deja de ser algo que el cliente necesita memorizar.</p>
 <h3 id="26-observabilidad-de-instancias-registradas">2.6 Observabilidad de instancias registradas<a class="headerlink" href="#26-observabilidad-de-instancias-registradas" title="Permanent link">&para;</a></h3>
 <p>Quien consulta el registro de Eureka no tiene que ser otro microservicio del negocio. Cualquier herramienta de monitoreo puede usar el mismo registro como fuente de descubrimiento — para saber qué instancias existen y dónde recolectar sus métricas y registros de actividad (<em>logs</em>), sin que nadie mantenga a mano una lista de direcciones que cambia cada vez que se agrega o se cae una instancia. Es el mismo mecanismo de descubrimiento de 2.4, aplicado a un consumidor distinto del registro: no un microservicio que atiende peticiones de negocio, sino una herramienta que observa al resto del sistema desde afuera.</p>
 <p>En esta sesión, esa idea se aplica de forma opcional (3.10-3.14) con dos herramientas concretas — <strong>Prometheus</strong> para métricas y <strong>Loki</strong> para logs, ambas descubriendo instancias vía <code>pagatu-eureka</code> — pero el concepto no depende de esas dos herramientas específicas: cualquier sistema de observabilidad que sepa consultar un registro de servicios puede aprovechar el mismo mecanismo.</p>
-<p><strong>Figura 5. Prometheus y Loki recolectando de <code>pagatu-catalogo-ms</code></strong></p>
+<p><strong>Figura 5. Prometheus y Loki recolectando de <code>pagatu-catalogo-ms</code> en DEV</strong></p>
 <pre class="mermaid"><code>flowchart TB
     Eureka["Eureka Server&lt;br/&gt;localhost:18761"]
     I1["pagatu-catalogo-ms&lt;br/&gt;instancia 1, puerto 8080"]
@@ -2026,6 +2024,39 @@ docker interno: pagatu-eureka:8761
     class Eureka server;
     class Prometheus,Promtail,Loki obs;</code></pre>
 <p>Lectura del diagrama: son <strong>dos caminos distintos</strong>, no uno solo. Prometheus sí usa a Eureka — le pregunta qué instancias existen (<code>eureka_sd_configs</code>, 3.11) y luego <strong>jala</strong> (<em>pull</em>) las métricas de cada una por HTTP, cada 15 segundos. Promtail, en cambio, <strong>no consulta a Eureka en absoluto</strong> — ni sabe que Eureka existe: solo vigila un archivo de log compartido en disco (3.13) y, apenas ve una línea nueva, la <strong>empuja</strong> (<em>push</em>) a Loki. Por eso una instancia que nunca se registró en Eureka igual podría aparecer en Loki (si escribe al mismo archivo), y por eso detener <code>pagatu-eureka</code> no afecta en nada a Promtail — son mecanismos de descubrimiento y transporte completamente independientes, aunque ambos terminan observando al mismo <code>pagatu-catalogo-ms</code>.</p>
+<p><strong>Figura 6. Prometheus y Loki recolectando de <code>pagatu-catalogo-ms</code> en producción local</strong></p>
+<pre class="mermaid"><code>flowchart LR
+    Cliente["Cliente&lt;br/&gt;PowerShell / bash / navegador"]
+    LogFile[("services/pagatu-catalogo-ms/logs&lt;br/&gt;carpeta del host")]
+    subgraph Docker["Docker Network: pagatu-prod-net"]
+        Eureka["pagatu-eureka&lt;br/&gt;8761 interno"]
+        I1["pagatu-catalogo-ms&lt;br/&gt;réplica 1 - 8080 interno, no publicado"]
+        I2["pagatu-catalogo-ms&lt;br/&gt;réplica 2 - 8080 interno, no publicado"]
+        Prometheus["pagatu-prometheus&lt;br/&gt;host: localhost:29090"]
+        Promtail["pagatu-promtail&lt;br/&gt;lee archivos de log"]
+        Loki["pagatu-loki&lt;br/&gt;host: localhost:23100"]
+    end
+
+    I1 -. "registra instancia" .-&gt; Eureka
+    I2 -. "registra instancia" .-&gt; Eureka
+
+    Prometheus --&gt;|"1. pregunta targets&lt;br/&gt;http://pagatu-eureka:8761/eureka"| Eureka
+    Prometheus --&gt;|"2. scrape /actuator/prometheus"| I1
+    Prometheus --&gt;|"2. scrape /actuator/prometheus"| I2
+
+    I1 --&gt;|"escribe"| LogFile
+    I2 --&gt;|"escribe"| LogFile
+    Promtail --&gt;|"lee - bind mount al host"| LogFile
+    Promtail --&gt;|"push"| Loki
+
+    Cliente --&gt;|"localhost:29090"| Prometheus
+    Cliente --&gt;|"localhost:23100"| Loki
+
+    classDef server fill:#eef6ff,stroke:#2b6cb0,color:#111;
+    classDef obs fill:#fff3e0,stroke:#e65100,color:#111;
+    class Eureka server;
+    class Prometheus,Promtail,Loki obs;</code></pre>
+<p>Lectura del diagrama: la diferencia real con la Figura 5 no es solo <code>host.docker.internal</code> vs. nombre de servicio (2.3.2 ya lo explica para Eureka) — es que aquí <code>pagatu-catalogo-ms</code> <strong>no publica el puerto 8080 al host</strong> (<code>#ports:</code> comentado en <code>services/pagatu-catalogo-ms/compose.yml</code>, S2). Por eso Prometheus y las réplicas comparten obligatoriamente <code>pagatu-prod-net</code> (3.15): sin esa red, no hay ninguna otra forma de llegar a <code>/actuator/prometheus</code>. Fíjate también que <code>LogFile</code> queda <strong>fuera</strong> del recuadro de la red Docker — el <em>bind mount</em> a la carpeta del host es un mecanismo de sistema de archivos, no de red, así que le llega igual a los contenedores de la red que a Promtail, sin que la membresía a <code>pagatu-prod-net</code> tenga nada que ver con eso.</p>
 <h2 id="3-aplica-actividad-practica-guiada">3. Aplica: actividad práctica guiada<a class="headerlink" href="#3-aplica-actividad-practica-guiada" title="Permanent link">&para;</a></h2>
 <p>Tiempo: 2h.</p>
 <p><strong>Actividad:</strong> construcción de <code>pagatu-eureka</code> y conexión de <code>pagatu-catalogo-ms</code> como cliente, verificado con dos instancias simultáneas en el dashboard (Producto de la sesión en 1.4).</p>
@@ -2319,7 +2350,7 @@ docker interno: pagatu-eureka:8761
 <div class="highlight"><pre><span></span><code>http://localhost:18761
 </code></pre></div>
 <p>Resultado esperado: <code>PAGATU-CATALOGO-MS</code> ahora lista <strong>dos</strong> direcciones distintas, <code>localhost:8080</code> y <code>localhost:8081</code> — el mismo nombre lógico, dos instancias con puerto fijo conocido de antemano, cada una anunciada a Eureka.</p>
-<p><strong>Figura 6. Dashboard de Eureka con <code>pagatu-catalogo-ms</code> en dos instancias</strong></p>
+<p><strong>Figura 7. Dashboard de Eureka con <code>pagatu-catalogo-ms</code> en dos instancias</strong></p>
 <p><img alt="Dashboard de Eureka con PAGATU-CATALOGO-MS registrado en dos instancias, pagatu-catalogo-ms:8080 y pagatu-catalogo-ms:8081, ambas UP" src="../img/s03-3.9-eureka-dashboard.png" /></p>
 <p><strong>Tabla 5. Verificación de múltiples instancias antes de continuar</strong></p>
 <table>
@@ -2395,8 +2426,7 @@ docker interno: pagatu-eureka:8761
 <span class="w">        </span><span class="nt">target_label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__address__</span>
 <span class="w">        </span><span class="nt">replacement</span><span class="p">:</span><span class="w"> </span><span class="s">"host.docker.internal:$1"</span>
 </code></pre></div>
-<p><code>eureka_sd_configs</code> es la pieza clave: Prometheus consulta el registro de <code>pagatu-eureka</code> igual que lo haría cualquier otro cliente de descubrimiento (2.6), y ajusta su lista de <em>targets</em> automáticamente cada vez que una instancia aparece o desaparece del registro.</p>
-<p><strong>Error frecuente</strong>: los targets aparecen descubiertos pero en <code>DOWN</code>, con el error "connect: connection refused" al intentar <code>http://localhost:&lt;puerto&gt;/actuator/prometheus</code>. La causa: <code>pagatu-eureka</code> reporta la dirección de cada instancia usando <code>eureka.instance.hostname: localhost</code> (fijado en 3.7 para que el dashboard se vea limpio) — pero "localhost" dentro del contenedor de Prometheus es el propio contenedor, no tu máquina. El segundo <code>relabel_configs</code> de arriba corrige esto: reescribe <code>localhost:&lt;puerto&gt;</code> a <code>host.docker.internal:&lt;puerto&gt;</code> <strong>solo para el scrape de Prometheus</strong>, sin tocar <code>eureka.instance.hostname</code> — así el dashboard de Eureka se sigue viendo limpio (<code>localhost:8080</code>) y Prometheus igual logra conectarse.</p>
+<p><code>eureka_sd_configs</code> es la pieza clave: Prometheus consulta el registro de <code>pagatu-eureka</code> igual que lo haría cualquier otro cliente de descubrimiento (2.6), y ajusta su lista de <em>targets</em> automáticamente cada vez que una instancia aparece o desaparece del registro. Los dos <code>relabel_configs</code> cumplen roles distintos. El primero solo renombra una etiqueta (<code>__meta_eureka_app_name</code> a <code>application</code>), cosmético. El segundo existe porque <code>pagatu-eureka</code> reporta la dirección de cada instancia usando <code>eureka.instance.hostname: localhost</code> (fijado en 3.7 para que el dashboard se vea limpio) — pero "localhost" dentro del propio contenedor de Prometheus significa el contenedor mismo, no tu máquina; sin corregirlo, Prometheus intentaría conectarse a sí mismo y el target quedaría en <code>DOWN</code> con "connection refused". Ese segundo <code>relabel_configs</code> reescribe <code>localhost:&lt;puerto&gt;</code> a <code>host.docker.internal:&lt;puerto&gt;</code> <strong>solo para el scrape de Prometheus</strong>, sin tocar <code>eureka.instance.hostname</code> — así el dashboard de Eureka se sigue viendo limpio (<code>localhost:8080</code>) y Prometheus igual logra conectarse.</p>
 <p>Crea <code>obs/compose-dev.yml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-obs-dev</span>
 
@@ -2413,7 +2443,7 @@ docker interno: pagatu-eureka:8761
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"host.docker.internal:host-gateway"</span>
 </code></pre></div>
 <p><code>extra_hosts</code> con <code>host-gateway</code> es necesario en Linux para que <code>host.docker.internal</code> resuelva al host — en Docker Desktop (Windows/macOS) ya funciona sin esa línea, pero dejarla no daña nada.</p>
-<p>Dos cosas evitan que este archivo choque con <code>obs/compose.yml</code> (PROD, 3.15), que define los mismos tres servicios: el <code>name: pagatu-obs-dev</code> de la primera línea, y el <code>container_name</code> con sufijo <code>-dev</code>. El <code>name:</code> es el que realmente importa — Compose identifica contenedores por <em>proyecto + nombre de servicio</em>, no por <code>container_name</code> (eso es solo cosmético); sin un <code>name:</code> propio en cada archivo, Compose deriva el nombre de proyecto de la carpeta (<code>obs</code>, la misma para los dos archivos) y trata <code>pagatu-prometheus</code> de uno y del otro como el mismo servicio del mismo proyecto — levantar uno "recrea" al otro, aunque tengan <code>container_name</code> distinto. Con <code>name:</code> explícito y distinto en cada archivo, quedan como proyectos completamente separados. Mismo patrón que ya usa <code>infra/compose.yml</code> (<code>name: pagatu-infra-prod</code>, S3) y que <code>pagatu-postgres-catalogo-dev</code> frente a <code>pagatu-postgres-catalogo</code> usa para el <code>container_name</code>.</p>
+<p>Dos cosas evitan que este archivo choque con <code>obs/compose.yml</code> (PROD, 3.15), que define los mismos tres servicios: el <code>name: pagatu-obs-dev</code> de la primera línea, y el <code>container_name</code> con sufijo <code>-dev</code>. El <code>name:</code> es el que realmente importa — Compose identifica contenedores por <em>proyecto + nombre de servicio</em>, no por <code>container_name</code> (eso es solo cosmético); sin un <code>name:</code> propio en cada archivo, Compose deriva el nombre de proyecto de la carpeta (<code>obs</code>, la misma para los dos archivos) y trata <code>pagatu-prometheus</code> de uno y del otro como el mismo servicio del mismo proyecto — levantar uno "recrea" al otro, aunque tengan <code>container_name</code> distinto. Con <code>name:</code> explícito y distinto en cada archivo, quedan como proyectos completamente separados. Mismo patrón que ya usa <code>infra/compose.yml</code> (<code>name: pagatu-infra-prod</code>, S2) y que <code>pagatu-postgres-catalogo-dev</code> frente a <code>pagatu-postgres-catalogo</code> usa para el <code>container_name</code>.</p>
 <p>Las tres imágenes (<code>prom/prometheus</code>, <code>grafana/loki</code>, <code>grafana/promtail</code>) van con versión fija, no <code>:latest</code>: esta es una guía que muchos estudiantes van a seguir en momentos distintos, y <code>:latest</code> es un blanco móvil — Loki en particular ha tenido cambios de esquema de configuración entre versiones mayores. Fijar la versión evita que alguien reciba una imagen distinta a la que esta guía verificó funcionando.</p>
 <p>Levanta el contenedor:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>obs
@@ -2608,7 +2638,7 @@ http://localhost:13100/loki/api/v1/query_range?query={application="pagatu-catalo
 <p>El alcance evaluado de S3 termina en 3.9 (dos instancias de <code>pagatu-catalogo-ms</code> registradas en DEV, 2.2-2.4) — igual que 3.10 a 3.14 (Prometheus/Loki), producción local con Docker es contenido adicional, no un requisito para cerrar la sesión ni para la evaluación (4.4, 4.6).</p>
 </div>
 <p><strong>Producto del paso:</strong> <code>pagatu-eureka</code> y <code>pagatu-catalogo-ms</code> operativos en Docker, dentro de la misma red compartida ya establecida en S2 (<code>pagatu-prod-net</code>) — y, opcionalmente, Prometheus y Loki descubriendo esas mismas instancias en ese mismo ambiente.</p>
-<p>Agrega un healthcheck a <code>pagatu-config</code> y <code>pagatu-eureka</code> a <code>infra/compose.yml</code> (junto a <code>pagatu-config</code>, S2 3.11):</p>
+<p>En <code>infra/compose.yml</code> (S2, 3.11), agrega un <code>healthcheck</code> a <code>pagatu-config</code> y el servicio <code>pagatu-eureka</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nt">pagatu-config</span><span class="p">:</span>
 <span class="w">    </span><span class="c1"># ...(resto de la definición ya existente, S2 3.11)</span>
 <span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
@@ -2636,7 +2666,7 @@ http://localhost:13100/loki/api/v1/query_range?query={application="pagatu-catalo
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-prod-net</span>
 </code></pre></div>
 <p><code>infra/pagatu-eureka/Dockerfile</code> (mismo patrón multi-stage que <code>pagatu-config</code>, S2 3.11).</p>
-<p><strong>Error frecuente</strong>: <code>pagatu-eureka</code> arranca pero <code>http://localhost:28761</code> no responde, y su log muestra intentos fallidos contra <code>http://localhost:8761/eureka/</code> (con <code>localhost</code>, no <code>pagatu-eureka</code>) — el puerto que realmente configuraste en <code>pagatu-eureka-prod.yml</code>. La causa: <code>spring.config.import</code> usa <code>optional:configserver:...</code> — si <code>pagatu-config</code> todavía no está listo para responder cuando <code>pagatu-eureka</code> arranca (ambos en el mismo <code>compose.yml</code>, sin orden garantizado), Spring Boot <strong>no falla, ignora la configuración remota en silencio</strong> y arranca con los valores por defecto (puerto 8080, <code>defaultZone</code> apuntando a <code>localhost:8761</code>). El <code>healthcheck</code> de arriba, junto con <code>depends_on: condition: service_healthy</code>, evita la carrera: <code>pagatu-eureka</code> no arranca hasta que <code>pagatu-config</code> responde de verdad, no solo hasta que su contenedor existe.</p>
+<p>El <code>healthcheck</code> de <code>pagatu-config</code> y el <code>depends_on: condition: service_healthy</code> de <code>pagatu-eureka</code> no son boilerplate — resuelven una carrera real de arranque. <code>pagatu-eureka</code> importa su configuración con <code>spring.config.import: optional:configserver:...</code> (3.4): el prefijo <code>optional:</code> significa que, si <code>pagatu-config</code> todavía no responde en el instante exacto en que <code>pagatu-eureka</code> arranca, Spring Boot <strong>no falla, ignora la configuración remota en silencio</strong> y sigue con los valores por defecto (puerto <code>8080</code>, <code>defaultZone</code> apuntando a <code>localhost:8761</code> en vez de <code>pagatu-eureka:8761</code>) — sin ese <code>depends_on</code>, ambos contenedores arrancan a la vez dentro del mismo <code>compose.yml</code>, sin orden garantizado. El <code>healthcheck</code> (una prueba de conexión TCP al puerto <code>8888</code> vía <code>/dev/tcp</code> de bash, ya que la imagen <code>eclipse-temurin:21-jre</code> no trae <code>curl</code>) hace que <code>pagatu-eureka</code> espere hasta que <code>pagatu-config</code> responda de verdad, no solo hasta que su contenedor exista.</p>
 <p>Levanta infraestructura y microservicio, en ese orden (mismo criterio de S2, 3.12):</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>infra
 docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--build
@@ -2784,7 +2814,7 @@ docker<span class="w"> </span>compose<span class="w"> </span>down
 <li>Agregar Eureka Client a <code>pagatu-orden-ms</code>, manteniendo su puerto fijo de DEV (<code>orden-ms-dev.yml</code>) tal como quedó en el paso 1 — mismo patrón de 3.7, <code>instance-id: ${spring.application.name}:${server.port}</code>.</li>
 <li>Levantar <code>pagatu-orden-ms</code> y verificar que se registra en <code>pagatu-eureka</code> con ese puerto fijo.</li>
 <li>Levantar una segunda instancia de <code>pagatu-orden-ms</code>, pasando un puerto distinto por línea de comandos (mismo mecanismo de 3.9), y verificar ambas en el dashboard.</li>
-<li>Explicar, con tus propias palabras, por qué el cliente ya no necesita conocer el puerto de ninguna de las dos instancias de <code>pagatu-orden-ms</code>, aunque ambos sean fijos y elegidos a mano.</li>
+<li>Explicar, con tus propias palabras, por qué un componente que consulta el registro (otro cliente de Eureka, no un tester humano con Swagger/PowerShell) ya no necesita una lista de direcciones escrita a mano para encontrar ninguna de las dos instancias de <code>pagatu-orden-ms</code>, aunque ambos puertos sean fijos y elegidos a mano.</li>
 </ol>
 <p><strong>Opcional</strong> (solo si completaste 3.10 a 3.14 con <code>pagatu-catalogo-ms</code>, y tu equipo cuenta con los recursos de cómputo):</p>
 <ol>
@@ -2824,14 +2854,14 @@ docker<span class="w"> </span>compose<span class="w"> </span>down
 </ul>
 </li>
 <li><em>Comprensión del patrón</em><ul>
-<li>Explicación propia de por qué el cliente ya no necesita conocer el puerto de cada instancia, aunque ambos sean fijos.</li>
+<li>Explicación propia de por qué un componente que consulta el registro ya no necesita una lista de direcciones escrita a mano para encontrar cada instancia, aunque ambos puertos sean fijos.</li>
 </ul>
 </li>
 </ol>
 <p><strong>Opcional</strong> (si tu equipo completó Prometheus/Loki, 3.10-3.14):</p>
 <ol>
 <li><em>Prometheus y Loki extendidos a <code>pagatu-orden-ms</code></em><ul>
-<li>Captura de <code>pagatu-orden-ms</code> como target nuevo en Prometheus (sin editar <code>prometheus.yml</code>), y de una consulta a Loki con logs propios de <code>pagatu-orden-ms</code>.</li>
+<li>Captura de <code>pagatu-orden-ms</code> como target nuevo en Prometheus (sin editar su configuración — el descubrimiento vía Eureka ya lo cubre), y de una consulta a Loki con logs propios de <code>pagatu-orden-ms</code>.</li>
 </ul>
 </li>
 </ol>
@@ -2931,7 +2961,7 @@ el Gateway y el balanceo de carga que se construyen en S4?
 <tr>
 <td>4. Comprensión del patrón*</td>
 <td style="text-align: right;">25</td>
-<td>Explicación clara y correcta de registro, descubrimiento y por qué el cliente no necesita conocer el puerto (patrón Service Registry, 2.3).</td>
+<td>Explicación clara y correcta de registro, descubrimiento y por qué un componente que consulta el registro no necesita una lista de direcciones escrita a mano (patrón Service Registry, 2.3).</td>
 <td>Explicación correcta con detalles menores.</td>
 <td>Explicación superficial o imprecisa.</td>
 <td>No explica el patrón.</td>
@@ -2952,13 +2982,15 @@ Indica 2 fortalezas y 2 recomendaciones.
 </code></pre></div>
 <h2 id="5-cierre">5. Cierre<a class="headerlink" href="#5-cierre" title="Permanent link">&para;</a></h2>
 <p>Tiempo: 5 min.</p>
-<p><strong>Resumen breve:</strong> hoy el cliente de <code>pagatu-catalogo-ms</code> dejó de necesitar el puerto exacto de cada instancia — <code>pagatu-eureka</code> centraliza el registro, cada instancia (con su puerto fijo, <code>8080</code>/<code>8081</code>, igual que desde S1) se anuncia sola al arrancar, y dos instancias simultáneas quedaron verificadas por nombre lógico, no por dirección memorizada de antemano. Quien tuvo los recursos de cómputo para completarlo, vio además a Prometheus y Loki recolectando métricas y logs de esas mismas instancias, encontrándolas por descubrimiento — no por una lista escrita a mano.</p>
+<p><strong>Resumen breve:</strong> hoy <code>pagatu-catalogo-ms</code> dejó de depender de una lista de direcciones escrita a mano — <code>pagatu-eureka</code> centraliza el registro, cada instancia (con su puerto fijo, <code>8080</code>/<code>8081</code>, igual que desde S1) se anuncia sola al arrancar, y dos instancias simultáneas quedaron verificadas por nombre lógico. Quien pruebe a mano (PowerShell, Swagger) sigue usando el puerto exacto de cada una — lo que cambió es que cualquier componente que consulte el registro (otro cliente de Eureka, o una herramienta de observabilidad) ya no necesita esa lista fija. Quien tuvo los recursos de cómputo para completarlo, vio además a Prometheus y Loki recolectando métricas y logs de esas mismas instancias, encontrándolas por descubrimiento — no por una lista escrita a mano.</p>
 <p><strong>Dinámica participativa:</strong> en una ronda rápida, cada estudiante comparte en una frase qué vio cambiar en el dashboard de Eureka al detener una instancia con Ctrl+C.</p>
-<p><strong>Metacognición:</strong> ¿qué parte de la sesión te costó más entender — que el cliente ya no necesite conocer el puerto, el heartbeat (latido), o que el mismo registro de Eureka sirva para que un microservicio encuentre a otro y para que una herramienta como Prometheus encuentre a ambos?</p>
+<p><strong>Metacognición:</strong> ¿qué parte de la sesión te costó más entender — la diferencia entre "un componente consulta el registro por nombre" y "quien prueba a mano sigue necesitando el puerto exacto", el heartbeat (latido), o que el mismo registro de Eureka sirva para que un microservicio encuentre a otro y para que una herramienta como Prometheus encuentre a ambos?</p>
 <p><strong>Proyección:</strong> en S4 se agrega el Gateway, sobre este mismo <code>pagatu-eureka</code> — el punto único de acceso que reparte tráfico entre todas las instancias que Eureka ya sabe encontrar. Para quien ya tenga Prometheus y Loki en pie desde hoy, se agrega Grafana con paneles que visualizan lo que ambos vienen recolectando.</p>
 <h2 id="bibliografia">Bibliografía<a class="headerlink" href="#bibliografia" title="Permanent link">&para;</a></h2>
 <ul>
+<li>BSoft Group. (2026). <em>Educate</em> [plataforma de cursos; acceso restringido al momento de esta guía]. <a href="https://bsoftgroup.com/educate/#/mcontainer/container/mcursos/bcursos/cursos/1736471448631?ARQ=ARQ&amp;JAV=JAV">https://bsoftgroup.com/educate/#/mcontainer/container/mcursos/bcursos/cursos/1736471448631?ARQ=ARQ&amp;JAV=JAV</a></li>
 <li>Rajput, D. (2019). <em>Implementing microservice registry with Eureka</em>. Dinesh on Java. <a href="https://dineshonjava.com/implementing-microservice-registry-with-eureka/">https://dineshonjava.com/implementing-microservice-registry-with-eureka/</a></li>
+<li>SACAViX. (2026). <em>Catálogo de patrones</em> [sitio no disponible al momento de esta guía]. SACAViX System Design. <a href="https://systemdesign.sacavix.com/patterns">https://systemdesign.sacavix.com/patterns</a></li>
 <li>VMware Tanzu / Broadcom Inc. (2026). <em>Spring Cloud Netflix reference documentation</em>. <a href="https://docs.spring.io/spring-cloud-netflix/reference/">https://docs.spring.io/spring-cloud-netflix/reference/</a></li>
 <li>Netflix. (2024). <em>Eureka Wiki</em>. <a href="https://github.com/Netflix/eureka/wiki">https://github.com/Netflix/eureka/wiki</a></li>
 <li>VMware Tanzu / Broadcom Inc. (2026). <em>Spring Cloud 2025.1.2 (aka Oakwood) release notes</em>. <a href="https://spring.io/blog/2026/06/11/spring-cloud-2025-1-2-aka-oakwood-has-been-released/">https://spring.io/blog/2026/06/11/spring-cloud-2025-1-2-aka-oakwood-has-been-released/</a></li>
