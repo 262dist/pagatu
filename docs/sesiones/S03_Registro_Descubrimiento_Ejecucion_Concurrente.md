@@ -26,7 +26,7 @@ Al concluir la clase, estarás en condiciones de:
 
 ### 1.4 Producto de sesión
 
-`pagatu-eureka` operativo en `infra/pagatu-eureka`, con `pagatu-catalogo-ms` registrado como cliente Eureka y ejecutando dos instancias simultáneas (puerto fijo `8080`/`8081`, igual que desde S1), visibles por nombre lógico en el dashboard — sin que ningún cliente necesite memorizar en qué puerto responde cada una. De forma opcional (según los recursos de cómputo disponibles), también Prometheus y Loki en pie en `infra/pagatu-observability`, recolectando métricas y logs de esas mismas instancias — Prometheus las encuentra preguntándole a `pagatu-eureka`, no por una lista de direcciones escrita a mano.
+`pagatu-eureka` operativo en `infra/pagatu-eureka`, con `pagatu-catalogo-ms` registrado como cliente Eureka y ejecutando dos instancias simultáneas (puerto fijo `8080`/`8081`, igual que desde S1), visibles por nombre lógico en el dashboard — sin que ningún cliente necesite memorizar en qué puerto responde cada una. De forma opcional (según los recursos de cómputo disponibles), también Prometheus y Loki en pie en `obs`, recolectando métricas y logs de esas mismas instancias — Prometheus las encuentra preguntándole a `pagatu-eureka`, no por una lista de direcciones escrita a mano.
 
 ### 1.5 Metodología
 
@@ -306,7 +306,7 @@ Tiempo: 2h.
 - **3.8** Levantar `pagatu-catalogo-ms` y verificar el registro.
 - **3.9** Levantar una segunda instancia y verificar múltiples instancias.
 - **3.10** Exponer métricas de `pagatu-catalogo-ms` para Prometheus (opcional).
-- **3.11** Crear `pagatu-observability` con Prometheus (descubrimiento vía Eureka) (opcional).
+- **3.11** Crear `obs` con Prometheus (descubrimiento vía Eureka) (opcional).
 - **3.12** Verificar targets descubiertos y métricas recolectadas (opcional).
 - **3.13** Enviar logs de `pagatu-catalogo-ms` a Loki (opcional).
 - **3.14** Verificar logs en Loki (opcional).
@@ -682,11 +682,11 @@ curl http://localhost:8080/actuator/prometheus
 
 Resultado esperado: una respuesta en texto plano, con métricas como `process_uptime_seconds` o `http_server_requests_seconds_count`.
 
-### 3.11 Crear `pagatu-observability` con Prometheus (descubrimiento vía Eureka)
+### 3.11 Crear `obs` con Prometheus (descubrimiento vía Eureka)
 
 **Producto del paso:** Prometheus corriendo en Docker, configurado para descubrir instancias preguntándole a `pagatu-eureka` — no con una lista de direcciones escrita a mano.
 
-Crea `infra/pagatu-observability/prometheus/prometheus.yml`:
+Crea `obs/prometheus/prometheus-dev.yml`:
 
 ```yaml
 global:
@@ -710,7 +710,7 @@ scrape_configs:
 
 **Error frecuente**: los targets aparecen descubiertos pero en `DOWN`, con el error "connect: connection refused" al intentar `http://localhost:<puerto>/actuator/prometheus`. La causa: `pagatu-eureka` reporta la dirección de cada instancia usando `eureka.instance.hostname: localhost` (fijado en 3.7 para que el dashboard se vea limpio) — pero "localhost" dentro del contenedor de Prometheus es el propio contenedor, no tu máquina. El segundo `relabel_configs` de arriba corrige esto: reescribe `localhost:<puerto>` a `host.docker.internal:<puerto>` **solo para el scrape de Prometheus**, sin tocar `eureka.instance.hostname` — así el dashboard de Eureka se sigue viendo limpio (`localhost:8080`) y Prometheus igual logra conectarse.
 
-Crea `infra/pagatu-observability/compose-dev.yml`:
+Crea `obs/compose-dev.yml`:
 
 ```yaml
 services:
@@ -721,7 +721,7 @@ services:
     ports:
       - "19090:9090"
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/prometheus-dev.yml:/etc/prometheus/prometheus.yml:ro
     extra_hosts:
       - "host.docker.internal:host-gateway"
 ```
@@ -731,7 +731,7 @@ services:
 Levanta el contenedor:
 
 ```bash
-cd infra/pagatu-observability
+cd obs
 docker compose -f compose-dev.yml up -d
 ```
 
@@ -745,7 +745,7 @@ Abre en el navegador:
 http://localhost:19090/targets
 ```
 
-Resultado esperado: dos *targets* bajo el job `pagatu-microservicios`, uno por instancia de `pagatu-catalogo-ms`, ambos en estado `UP` — ninguno escrito a mano en `prometheus.yml`.
+Resultado esperado: dos *targets* bajo el job `pagatu-microservicios`, uno por instancia de `pagatu-catalogo-ms`, ambos en estado `UP` — ninguno escrito a mano en `prometheus-dev.yml`.
 
 **Tabla 6. Verificación de observabilidad antes de continuar**
 
@@ -753,9 +753,9 @@ Resultado esperado: dos *targets* bajo el job `pagatu-microservicios`, uno por i
 |---|---|
 | `GET /actuator/prometheus` en cada instancia | Métricas en texto plano, `200 OK` |
 | `http://localhost:19090/targets` | Dos targets `pagatu-microservicios`, ambos `UP`, sin configuración manual de direcciones |
-| Detener una instancia de `pagatu-catalogo-ms` | El target correspondiente pasa a `DOWN` tras el siguiente scrape, sin editar `prometheus.yml` |
+| Detener una instancia de `pagatu-catalogo-ms` | El target correspondiente pasa a `DOWN` tras el siguiente scrape, sin editar `prometheus-dev.yml` |
 
-**Error frecuente**: si los targets aparecen en `0/0` o vacíos, la causa más común es que `host.docker.internal` no resuelve desde el contenedor de Prometheus — revisa `extra_hosts` en `compose-dev.yml`, o reemplaza temporalmente por la IP real del host en `prometheus.yml` para descartar el problema.
+**Error frecuente**: si los targets aparecen en `0/0` o vacíos, la causa más común es que `host.docker.internal` no resuelve desde el contenedor de Prometheus — revisa `extra_hosts` en `compose-dev.yml`, o reemplaza temporalmente por la IP real del host en `prometheus-dev.yml` para descartar el problema.
 
 Con los targets en `UP`, ya se puede consultar lo recolectado. Abre `http://localhost:19090/query` y prueba estas consultas — todas responden a la misma pregunta de fondo: ¿el microservicio está realmente sano, no solo "arriba"?
 
@@ -772,7 +772,7 @@ Con los targets en `UP`, ya se puede consultar lo recolectado. Abre `http://loca
 
 `pagatu-catalogo-ms` ya escribe a archivo desde S1 (3.3.2, `logback-spring.xml`) — no hace falta agregar nada a `config-repo` para esto: `logging.file.name` no tendría efecto aquí, porque el `logback-spring.xml` del proyecto fija la ruta del archivo directamente (`logs/catalogo.log`), sin usar esa propiedad. Ambas instancias (3.8, 3.9) ya escriben, por simplicidad, al mismo archivo dentro de `services/pagatu-catalogo-ms/logs/` — el que arma cada noche `logs/catalogo.log` (el activo) y lo rota a `logs/catalogo-AAAA-MM-DD.log` (histórico, hasta 7 días).
 
-Crea `infra/pagatu-observability/promtail/promtail-config.yml`:
+Crea `obs/promtail/promtail-config-dev.yml`:
 
 ```yaml
 server:
@@ -795,7 +795,7 @@ scrape_configs:
 
 `__path__` es un patrón — coincide con `catalogo.log` y con todos los `catalogo-AAAA-MM-DD.log` que ya existan en la carpeta (S1, 3.3.2 los rota diariamente). Pero eso no significa que Loki reciba el contenido histórico de todos: Promtail, al descubrir un archivo por primera vez, empieza a leerlo **desde el final** (igual que `tail -f`) — solo empuja a Loki las líneas que se escriben *después* de que Promtail arrancó. Los archivos ya rotados que no vuelven a recibir escrituras (`catalogo-2026-08-19.log`, etc.) se quedan sin aportar nada a Loki; el único archivo que sí aparece en tus consultas es el que estaba activo (recibiendo escrituras nuevas) en el momento en que reiniciaste las instancias después de levantar Promtail. Esto es el comportamiento esperado, no un error — Loki no está pensado para reconstruir historial de logs, solo para lo que ocurre de aquí en adelante.
 
-Agrega Loki y Promtail a `infra/pagatu-observability/compose-dev.yml` (junto a `pagatu-prometheus`, 3.11):
+Agrega Loki y Promtail a `obs/compose-dev.yml` (junto a `pagatu-prometheus`, 3.11):
 
 ```yaml
   pagatu-loki:
@@ -810,8 +810,8 @@ Agrega Loki y Promtail a `infra/pagatu-observability/compose-dev.yml` (junto a `
     container_name: pagatu-promtail
     restart: unless-stopped
     volumes:
-      - ./promtail/promtail-config.yml:/etc/promtail/config.yml:ro
-      - ../../services/pagatu-catalogo-ms/logs:/var/log/pagatu-catalogo-ms:ro
+      - ./promtail/promtail-config-dev.yml:/etc/promtail/config.yml:ro
+      - ../services/pagatu-catalogo-ms/logs:/var/log/pagatu-catalogo-ms:ro
     command: -config.file=/etc/promtail/config.yml
     depends_on:
       - pagatu-loki
@@ -820,7 +820,7 @@ Agrega Loki y Promtail a `infra/pagatu-observability/compose-dev.yml` (junto a `
 Vuelve a levantar el stack con el archivo actualizado:
 
 ```bash
-cd infra/pagatu-observability
+cd obs
 docker compose -f compose-dev.yml up -d
 ```
 
@@ -878,9 +878,18 @@ http://localhost:13100/loki/api/v1/query_range?query={application=%22pagatu-cata
 
 **Producto del paso:** `pagatu-eureka` y `pagatu-catalogo-ms` operativos en Docker, dentro de la misma red compartida ya establecida en S2 (`pagatu-prod-net`) — y, opcionalmente, Prometheus y Loki descubriendo esas mismas instancias en ese mismo ambiente.
 
-Agrega `pagatu-eureka` a `infra/compose.yml` (junto a `pagatu-config`, S2 3.11):
+Agrega un healthcheck a `pagatu-config` y `pagatu-eureka` a `infra/compose.yml` (junto a `pagatu-config`, S2 3.11):
 
 ```yaml
+  pagatu-config:
+    # ...(resto de la definición ya existente, S2 3.11)
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c '</dev/tcp/localhost/8888' || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
   pagatu-eureka:
     build:
       context: ./pagatu-eureka
@@ -892,11 +901,16 @@ Agrega `pagatu-eureka` a `infra/compose.yml` (junto a `pagatu-config`, S2 3.11):
     environment:
       SPRING_PROFILES_ACTIVE: prod
       CONFIG_SERVER_URL: http://pagatu-config:8888
+    depends_on:
+      pagatu-config:
+        condition: service_healthy
     networks:
       - pagatu-prod-net
 ```
 
 `infra/pagatu-eureka/Dockerfile` (mismo patrón multi-stage que `pagatu-config`, S2 3.11).
+
+**Error frecuente**: `pagatu-eureka` arranca pero `http://localhost:28761` no responde, y su log muestra intentos fallidos contra `http://localhost:8761/eureka/` (con `localhost`, no `pagatu-eureka`) — el puerto que realmente configuraste en `pagatu-eureka-prod.yml`. La causa: `spring.config.import` usa `optional:configserver:...` — si `pagatu-config` todavía no está listo para responder cuando `pagatu-eureka` arranca (ambos en el mismo `compose.yml`, sin orden garantizado), Spring Boot **no falla, ignora la configuración remota en silencio** y arranca con los valores por defecto (puerto 8080, `defaultZone` apuntando a `localhost:8761`). El `healthcheck` de arriba, junto con `depends_on: condition: service_healthy`, evita la carrera: `pagatu-eureka` no arranca hasta que `pagatu-config` responde de verdad, no solo hasta que su contenedor existe.
 
 Levanta infraestructura y microservicio, en ese orden (mismo criterio de S2, 3.12):
 
@@ -906,10 +920,18 @@ docker compose up -d --build
 docker compose ps
 ```
 
+Si `pagatu-config` y/o `pagatu-eureka` ya existían de un intento anterior (antes de agregar el `healthcheck`/`depends_on` de arriba), `up -d` no los recrea solo por editar el YAML — Compose no ve cambio en la imagen, así que deja los contenedores viejos corriendo con la definición vieja. En ese caso, fuerza la recreación de esos dos:
+
+```bash
+docker compose up -d --force-recreate pagatu-config pagatu-eureka
+```
+
 ```bash
 cd ../services/pagatu-catalogo-ms
-docker compose up -d --build --scale pagatu-catalogo-ms=2
+docker compose up -d --scale pagatu-catalogo-ms=2
 ```
+
+Sin `--build`: la imagen de `pagatu-catalogo-ms` no cambió (ni `Dockerfile`, ni `pom.xml`, ni código) — solo `infra` es nuevo (`pagatu-eureka`), por eso ese sí lleva `--build`.
 
 Verifica:
 
@@ -927,21 +949,21 @@ Resultado esperado: `pagatu-eureka` responde en `28761`, y las instancias de `pa
 
 Este bloque es la versión en PROD de 3.10-3.14 — mismas dos herramientas, con una diferencia clave: en PROD, Prometheus y Loki no le hablan a `host.docker.internal`, sino directamente al nombre del servicio dentro de `pagatu-prod-net` (`pagatu-eureka`), igual que ya hace `pagatu-catalogo-ms` para su propia configuración (S2, 3.12).
 
-**1. Agregar el volumen de logs a `services/pagatu-catalogo-ms/compose.yml`**, para que Promtail pueda leerlos desde otro contenedor. El `logback-spring.xml` del proyecto (S1, 3.3.2) ya escribe a `logs/catalogo.log`, una ruta relativa al `WORKDIR` del `Dockerfile` (`/app`, S1 3.6.1) — el volumen se monta ahí, en `/app/logs`, no en una ruta inventada:
+**1. Nada que agregar al volumen de logs.** `services/pagatu-catalogo-ms/compose.yml` ya monta `./logs:/app/logs` desde S2 — un *bind mount* directo a `services/pagatu-catalogo-ms/logs` en el host, el mismo archivo que ya lee Promtail en DEV (3.13). No hace falta crear un volumen nombrado ni tocar ese `compose.yml`: Promtail, en el paso 4, monta esa misma carpeta del host directamente, igual que en DEV.
+
+**Sí hace falta exponer el endpoint de Prometheus en PROD** — 3.10 lo agregó a `pagatu-catalogo-ms-dev.yml`, pero `pagatu-catalogo-ms-prod.yml` (`config-repo`) todavía no lo tiene. Sin esto, Prometheus descubre la instancia vía Eureka pero recibe `404` al intentar `/actuator/prometheus`:
 
 ```yaml
-  pagatu-catalogo-ms:
-    volumes:
-      - pagatu-catalogo-logs:/app/logs
-
-volumes:
-  pagatu-catalogo-logs:
-    name: pagatu-catalogo-logs
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
 ```
 
-No hace falta tocar `config-repo/pagatu-catalogo-ms-prod.yml` — igual que en DEV (3.13), `logging.file.name` no tendría efecto porque `logback-spring.xml` ya fija la ruta del archivo directamente.
+No hace falta tocar `logging.file.name` — igual que en DEV (3.13), `logback-spring.xml` ya fija la ruta del archivo directamente.
 
-**2. Crear `infra/pagatu-observability/prometheus/prometheus-prod.yml`:**
+**2. Crear `obs/prometheus/prometheus.yml`** (bare, PROD — mismo patrón):
 
 ```yaml
 global:
@@ -957,7 +979,7 @@ scrape_configs:
         target_label: application
 ```
 
-**3. Crear `infra/pagatu-observability/promtail/promtail-config-prod.yml`:**
+**3. Crear `obs/promtail/promtail-config.yml`** (bare, PROD — mismo patrón):
 
 ```yaml
 server:
@@ -975,10 +997,10 @@ scrape_configs:
       - targets: [localhost]
         labels:
           application: pagatu-catalogo-ms
-          __path__: /app/logs/*.log
+          __path__: /var/log/pagatu-catalogo-ms/*.log
 ```
 
-**4. Crear `infra/pagatu-observability/compose-prod.yml`:**
+**4. Crear `obs/compose.yml`** (bare, no `compose-prod.yml` — mismo patrón de `services/pagatu-catalogo-ms` e `infra`: sin sufijo es PROD, `-dev` es DEV):
 
 ```yaml
 services:
@@ -989,7 +1011,7 @@ services:
     ports:
       - "29090:9090"
     volumes:
-      - ./prometheus/prometheus-prod.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     networks:
       - pagatu-prod-net
 
@@ -1007,8 +1029,8 @@ services:
     container_name: pagatu-promtail
     restart: unless-stopped
     volumes:
-      - ./promtail/promtail-config-prod.yml:/etc/promtail/config.yml:ro
-      - pagatu-catalogo-logs:/app/logs:ro
+      - ./promtail/promtail-config.yml:/etc/promtail/config.yml:ro
+      - ../services/pagatu-catalogo-ms/logs:/var/log/pagatu-catalogo-ms:ro
     command: -config.file=/etc/promtail/config.yml
     depends_on:
       - pagatu-loki
@@ -1018,22 +1040,22 @@ services:
 networks:
   pagatu-prod-net:
     external: true
-
-volumes:
-  pagatu-catalogo-logs:
-    external: true
 ```
 
-`pagatu-catalogo-logs` se declara `external: true` porque el volumen ya existe — lo creó `services/pagatu-catalogo-ms/compose.yml` en el paso 1; este archivo solo se conecta a él, mismo patrón ya usado para `pagatu-prod-net` (S2, 3.11).
+El bind mount de Promtail apunta a la misma carpeta del host que ya usa `services/pagatu-catalogo-ms/compose.yml` (`./logs`) — no es un volumen compartido entre contenedores, es la misma ruta del host montada dos veces, una por cada contenedor que la necesita (igual que ya hace `pagatu-prod-net`, S2 3.11, pero con una carpeta en vez de una red).
 
-Reconstruye `pagatu-catalogo-ms` (para que tome el volumen nuevo) y levanta el stack de observabilidad:
+Si `pagatu-catalogo-ms` ya estaba corriendo (lanzado más arriba, antes de editar `pagatu-catalogo-ms-prod.yml`), reinícialo para que tome la configuración nueva — el cambio vive en `config-repo`, que `pagatu-config` sirve en cada arranque, así que basta con un reinicio, no una reconstrucción:
 
 ```bash
 cd services/pagatu-catalogo-ms
-docker compose up -d --build --scale pagatu-catalogo-ms=2
+docker compose restart pagatu-catalogo-ms
+```
 
-cd ../../infra/pagatu-observability
-docker compose -f compose-prod.yml up -d
+Levanta el stack de observabilidad:
+
+```bash
+cd ../../obs
+docker compose up -d
 ```
 
 Verifica:
@@ -1046,15 +1068,15 @@ http://localhost:29090/targets
 (Invoke-RestMethod -Method Get -Uri "http://localhost:23100/loki/api/v1/query_range?query={application=`"pagatu-catalogo-ms`"}") | ConvertTo-Json -Depth 10
 ```
 
-Resultado esperado: mismo comportamiento que en DEV (3.12, 3.14) — targets descubiertos automáticamente vía Eureka, y logs de ambas réplicas consultables en Loki (recuerda que, igual que en DEV, ambas réplicas comparten el mismo archivo de log dentro del volumen).
+Resultado esperado: mismo comportamiento que en DEV (3.12, 3.14) — targets descubiertos automáticamente vía Eureka, y logs de ambas réplicas consultables en Loki (recuerda que, igual que en DEV, ambas réplicas comparten el mismo archivo de log en el host).
 
 Al terminar, baja los tres entornos en orden inverso (mismo patrón de S2, 3.14):
 
 ```bash
-cd infra/pagatu-observability
-docker compose -f compose-prod.yml down
+cd obs
+docker compose down
 
-cd ../../services/pagatu-catalogo-ms
+cd ../services/pagatu-catalogo-ms
 docker compose down
 
 cd ../../infra
@@ -1090,7 +1112,7 @@ Completa y evidencia estas tareas:
 
 **Opcional** (solo si completaste 3.10 a 3.14 con `pagatu-catalogo-ms`, y tu equipo cuenta con los recursos de cómputo):
 
-7. Agregar `micrometer-registry-prometheus` y el endpoint `prometheus` a `pagatu-orden-ms` (mismo patrón de 3.10), y verificar que aparece como target nuevo en `http://localhost:19090/targets` **sin tocar `prometheus.yml`** — el descubrimiento vía Eureka ya cubre cualquier servicio que se registre, no solo `pagatu-catalogo-ms`.
+7. Agregar `micrometer-registry-prometheus` y el endpoint `prometheus` a `pagatu-orden-ms` (mismo patrón de 3.10), y verificar que aparece como target nuevo en `http://localhost:19090/targets` **sin tocar `prometheus-dev.yml`** — el descubrimiento vía Eureka ya cubre cualquier servicio que se registre, no solo `pagatu-catalogo-ms`.
 8. Verificar que `pagatu-orden-ms` también escribe sus logs a un archivo dentro de `services/pagatu-orden-ms/logs/`. Si tu equipo copió el `logback-spring.xml` de `pagatu-catalogo-ms` (S1, 3.3.2) al crear el proyecto (mismo patrón de 3.13, sin agregar `logging.file.name` — no tendría efecto), ya debería estar escribiendo ahí; si no, agrégalo siguiendo ese mismo archivo como referencia, ajustando el nombre del logger. Súmalo al mismo bind-mount de Promtail (3.13) y verifica sus logs en Loki con una consulta filtrando `application="pagatu-orden-ms"`.
 
 ### 4.2 Propósito

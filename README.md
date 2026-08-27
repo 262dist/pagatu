@@ -19,7 +19,11 @@ pagatu/
 │   ├── pagatu-catalogo-ms/   # Categorías y productos (S1)
 │   ├── pagatu-orden-ms/      # Órdenes de compra (S2)
 │   └── pagatu-cliente-ms/    # Perfil de cliente + RENIEC/SUNAT (S2)
-├── infra/                    # Config Server (S2, listo); Eureka (S3) y Gateway (S4), pendientes
+├── infra/                    # Infraestructura que los microservicios necesitan para funcionar
+│   ├── pagatu-config/        # Config Server (S2, listo)
+│   ├── pagatu-eureka/        # Service Registry (S3, listo)
+│   └── (Gateway, S4, pendiente)
+├── obs/                       # Prometheus + Loki + Promtail (S3, opcional) — observa infra/ y services/ desde afuera, no es una dependencia de arranque
 └── clients/                  # Frontend Angular (pendiente, desde S11)
 ```
 
