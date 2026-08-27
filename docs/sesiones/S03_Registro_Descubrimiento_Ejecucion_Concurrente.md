@@ -248,6 +248,42 @@ Quien consulta el registro de Eureka no tiene que ser otro microservicio del neg
 
 En esta sesión, esa idea se aplica de forma opcional (3.10-3.14) con dos herramientas concretas — **Prometheus** para métricas y **Loki** para logs, ambas descubriendo instancias vía `pagatu-eureka` — pero el concepto no depende de esas dos herramientas específicas: cualquier sistema de observabilidad que sepa consultar un registro de servicios puede aprovechar el mismo mecanismo.
 
+**Figura 5. Prometheus y Loki recolectando de `pagatu-catalogo-ms`**
+
+```mermaid
+flowchart TB
+    Eureka["Eureka Server<br/>localhost:18761"]
+    I1["pagatu-catalogo-ms<br/>instancia 1, puerto 8080"]
+    I2["pagatu-catalogo-ms<br/>instancia 2, puerto 8081"]
+    LogFile[("logs/catalogo.log<br/>archivo compartido")]
+    Prometheus["Prometheus<br/>localhost:19090"]
+    Promtail["Promtail<br/>lee archivos de log"]
+    Loki["Loki<br/>localhost:13100"]
+    Cliente["Cliente<br/>PowerShell / bash / navegador"]
+
+    I1 -. "registra instancia" .-> Eureka
+    I2 -. "registra instancia" .-> Eureka
+
+    Prometheus -->|"1. pregunta targets"| Eureka
+    Prometheus -->|"2. scrape /actuator/prometheus"| I1
+    Prometheus -->|"2. scrape /actuator/prometheus"| I2
+
+    I1 -->|"escribe"| LogFile
+    I2 -->|"escribe"| LogFile
+    Promtail -->|"lee - tail"| LogFile
+    Promtail -->|"push"| Loki
+
+    Cliente -->|"/query, /targets"| Prometheus
+    Cliente -->|"/loki/api/v1/query_range"| Loki
+
+    classDef server fill:#eef6ff,stroke:#2b6cb0,color:#111;
+    classDef obs fill:#fff3e0,stroke:#e65100,color:#111;
+    class Eureka server;
+    class Prometheus,Promtail,Loki obs;
+```
+
+Lectura del diagrama: son **dos caminos distintos**, no uno solo. Prometheus sí usa a Eureka — le pregunta qué instancias existen (`eureka_sd_configs`, 3.11) y luego **jala** (*pull*) las métricas de cada una por HTTP, cada 15 segundos. Promtail, en cambio, **no consulta a Eureka en absoluto** — ni sabe que Eureka existe: solo vigila un archivo de log compartido en disco (3.13) y, apenas ve una línea nueva, la **empuja** (*push*) a Loki. Por eso una instancia que nunca se registró en Eureka igual podría aparecer en Loki (si escribe al mismo archivo), y por eso detener `pagatu-eureka` no afecta en nada a Promtail — son mecanismos de descubrimiento y transporte completamente independientes, aunque ambos terminan observando al mismo `pagatu-catalogo-ms`.
+
 ## 3. Aplica: actividad práctica guiada
 
 Tiempo: 2h.
@@ -590,7 +626,7 @@ http://localhost:18761
 
 Resultado esperado: `PAGATU-CATALOGO-MS` ahora lista **dos** direcciones distintas, `localhost:8080` y `localhost:8081` — el mismo nombre lógico, dos instancias con puerto fijo conocido de antemano, cada una anunciada a Eureka.
 
-**Figura 5. Dashboard de Eureka con `pagatu-catalogo-ms` en dos instancias**
+**Figura 6. Dashboard de Eureka con `pagatu-catalogo-ms` en dos instancias**
 
 ![Dashboard de Eureka con PAGATU-CATALOGO-MS registrado en dos instancias, pagatu-catalogo-ms:8080 y pagatu-catalogo-ms:8081, ambas UP](img/s03-3.9-eureka-dashboard.png)
 
@@ -757,6 +793,8 @@ scrape_configs:
           __path__: /var/log/pagatu-catalogo-ms/*.log
 ```
 
+`__path__` es un patrón — coincide con `catalogo.log` y con todos los `catalogo-AAAA-MM-DD.log` que ya existan en la carpeta (S1, 3.3.2 los rota diariamente). Pero eso no significa que Loki reciba el contenido histórico de todos: Promtail, al descubrir un archivo por primera vez, empieza a leerlo **desde el final** (igual que `tail -f`) — solo empuja a Loki las líneas que se escriben *después* de que Promtail arrancó. Los archivos ya rotados que no vuelven a recibir escrituras (`catalogo-2026-08-19.log`, etc.) se quedan sin aportar nada a Loki; el único archivo que sí aparece en tus consultas es el que estaba activo (recibiendo escrituras nuevas) en el momento en que reiniciaste las instancias después de levantar Promtail. Esto es el comportamiento esperado, no un error — Loki no está pensado para reconstruir historial de logs, solo para lo que ocurre de aquí en adelante.
+
 Agrega Loki y Promtail a `infra/pagatu-observability/compose-dev.yml` (junto a `pagatu-prometheus`, 3.11):
 
 ```yaml
@@ -795,8 +833,10 @@ Consulta directamente a Loki (reemplaza el rango de tiempo si tu consulta no dev
 PowerShell:
 
 ```powershell
-Invoke-RestMethod -Method Get -Uri "http://localhost:13100/loki/api/v1/query_range?query={application=`"pagatu-catalogo-ms`"}"
+(Invoke-RestMethod -Method Get -Uri "http://localhost:13100/loki/api/v1/query_range?query={application=`"pagatu-catalogo-ms`"}") | ConvertTo-Json -Depth 10
 ```
+
+`Invoke-RestMethod` convierte el JSON en objetos de PowerShell, y la consola los resume como `System.Object[]` en vez de mostrar el contenido — con `ConvertTo-Json -Depth 10` lo vuelves a convertir a texto, ya expandido, para poder leer las líneas de log reales.
 
 bash macOS/Linux:
 
@@ -805,6 +845,31 @@ curl -G http://localhost:13100/loki/api/v1/query_range --data-urlencode 'query={
 ```
 
 Resultado esperado: una respuesta JSON con líneas de log reales de `pagatu-catalogo-ms` (por ejemplo, el mensaje de arranque de Tomcat en el puerto `8080` u `8081`).
+
+`pagatu-catalogo-ms` no loguea cada petición (S1 no agregó ese filtro), así que estas consultas no sirven para contar CRUD uno por uno — pero sí para constatar, desde el log, lo mismo que ya viste en las métricas de Prometheus (3.12). En vez de escribir la URL a mano, usa `[uri]::EscapeDataString(...)` para no pelear con comillas y espacios dentro del query:
+
+- `{application="pagatu-catalogo-ms"} |= "Started PagatuCatalogoMsApplication"` — la línea "Started ... in X seconds" de cada arranque. El número de segundos debería coincidir con `application_ready_time_seconds` de esa misma instancia en Prometheus: es la misma medición, solo que aquí la ves como texto y allá como métrica.
+- `{application="pagatu-catalogo-ms"} |= "EurekaServiceRegistry"` — cada alta (`status UP`) y baja (`status DOWN`) de una instancia en Eureka. El momento de un "Unregistering ... DOWN" debería coincidir con el instante en que esa instancia pasa a `0` en `up{job="pagatu-microservicios"}` (3.12), en el siguiente scrape de Prometheus.
+- `{application="pagatu-catalogo-ms"} |= "HikariPool"` — cuándo el pool de conexiones abrió o cerró conexiones a PostgreSQL. Corrobora los valores de `hikaricp_connections_active` frente a `hikaricp_connections_max` que consultaste en Prometheus.
+- `{application="pagatu-catalogo-ms", detected_level="error"}` — errores de arranque o de ejecución. Esta es la consulta que Prometheus **no puede** responder: si una instancia nunca llegó a levantar (o se cayó antes del primer scrape), jamás va a existir una métrica suya — no hay proceso vivo del cual medir nada. El log es la única forma de saber *por qué* una instancia nunca apareció como target.
+
+```powershell
+$query = '{application="pagatu-catalogo-ms"} |= "EurekaServiceRegistry"'
+$uri = "http://localhost:13100/loki/api/v1/query_range?query=$([uri]::EscapeDataString($query))"
+(Invoke-RestMethod -Method Get -Uri $uri) | ConvertTo-Json -Depth 10
+```
+
+Su equivalente para pegar directo en el navegador (mismo estilo que la consulta simple ya usada antes, con las comillas codificadas como `%22`):
+
+```text
+http://localhost:13100/loki/api/v1/query_range?query={application=%22pagatu-catalogo-ms%22}%20|=%20%22Started%20PagatuCatalogoMsApplication%22
+
+http://localhost:13100/loki/api/v1/query_range?query={application=%22pagatu-catalogo-ms%22}%20|=%20%22EurekaServiceRegistry%22
+
+http://localhost:13100/loki/api/v1/query_range?query={application=%22pagatu-catalogo-ms%22}%20|=%20%22HikariPool%22
+
+http://localhost:13100/loki/api/v1/query_range?query={application=%22pagatu-catalogo-ms%22,%20detected_level=%22error%22}
+```
 
 ### 3.15 Registro y observabilidad en producción local (opcional)
 
@@ -978,7 +1043,7 @@ http://localhost:29090/targets
 ```
 
 ```powershell
-Invoke-RestMethod -Method Get -Uri "http://localhost:23100/loki/api/v1/query_range?query={application=`"pagatu-catalogo-ms`"}"
+(Invoke-RestMethod -Method Get -Uri "http://localhost:23100/loki/api/v1/query_range?query={application=`"pagatu-catalogo-ms`"}") | ConvertTo-Json -Depth 10
 ```
 
 Resultado esperado: mismo comportamiento que en DEV (3.12, 3.14) — targets descubiertos automáticamente vía Eureka, y logs de ambas réplicas consultables en Loki (recuerda que, igual que en DEV, ambas réplicas comparten el mismo archivo de log dentro del volumen).
