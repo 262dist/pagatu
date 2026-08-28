@@ -1900,10 +1900,10 @@ Microservicios: puerto fijo por instancia (8080, 8081, ...)
 <h3 id="23-el-patron-service-registry-en-la-arquitectura-de-microservicios">2.3 El patrón Service Registry en la arquitectura de microservicios<a class="headerlink" href="#23-el-patron-service-registry-en-la-arquitectura-de-microservicios" title="Permanent link">&para;</a></h3>
 <p>Lo construido en 2.2 no es una solución aislada de <code>pagatu</code> — es la implementación de <strong>Service Registry</strong> (también llamado <em>Service Discovery</em>), uno de los patrones de arquitectura de microservicios más conocidos.</p>
 <h4 id="231-que-es-el-patron-service-registry">2.3.1 Qué es el patrón Service Registry<a class="headerlink" href="#231-que-es-el-patron-service-registry" title="Permanent link">&para;</a></h4>
-<p>Según Rajput (2019), Eureka implementa este patrón como una base de datos de registro que permite que los microservicios se registren y se den de baja automáticamente, eliminando la necesidad de configurar endpoints de servicio de forma fija.</p>
+<p>Según SACAViX System Design (2026), Service Registry es una base de datos centralizada que almacena las ubicaciones de red (IP, puerto) de todas las instancias de servicio, permitiendo que se encuentren dinámicamente sin configuración estática — exactamente lo que Eureka implementa para este curso, registrando y dando de baja instancias automáticamente, sin que nadie configure endpoints fijos a mano.</p>
 <p><strong>Problema que resuelve:</strong> en un sistema con varios microservicios, cada uno con varias instancias que pueden aparecer, moverse o desaparecer en cualquier momento, ningún cliente puede mantener a mano una lista actualizada de direcciones válidas. Codificar esas direcciones de forma fija hace que el sistema deje de tolerar cambios de escala sin intervención manual.</p>
 <p><strong>Contexto en el que aplica:</strong> sistemas distribuidos donde el número de instancias de un mismo servicio varía (por escalado, caídas o despliegues), y donde ningún cliente puede asumir una dirección fija de antemano.</p>
-<p><strong>Cómo funciona:</strong> cada instancia se registra a sí misma ante un servidor de registro al arrancar (<em>self-registration</em>, ya visto en 2.2) y renueva su registro periódicamente mediante <em>heartbeat</em> (latido). Quien necesita comunicarse con el servicio consulta al registro por su nombre lógico, en vez de guardar una dirección fija (<em>client-side</em> o <em>server-side discovery</em>, según quién resuelva la dirección — en esta sesión, cada cliente de Eureka la resuelve del lado del cliente).</p>
+<p><strong>Cómo funciona:</strong> cada instancia se registra a sí misma ante un servidor de registro al arrancar (<em>self-registration</em>, ya visto en 2.2) y renueva su registro periódicamente mediante <em>heartbeat</em> (latido). Quien necesita comunicarse con el servicio consulta al registro por su nombre lógico, en vez de guardar una dirección fija.</p>
 <p><strong>Figura 3. Registro, descubrimiento y conexión entre clientes de Eureka</strong></p>
 <pre class="mermaid"><code>flowchart TB
     Registry["Service Registry&lt;br/&gt;(Eureka Server)"]
@@ -1914,8 +1914,33 @@ Microservicios: puerto fijo por instancia (8080, 8081, ...)
     Y --&gt;|"1. Register"| Registry
     Y --&gt;|"2. Discover"| Registry
     X &lt;--&gt;|"3. Connect"| Y</code></pre>
-<p><em>Nota.</em> Adaptado de <em>Implementing Microservice Registry with Eureka</em>, por D. Rajput, 2019, Dinesh on Java (<a href="https://dineshonjava.com/implementing-microservice-registry-with-eureka/">https://dineshonjava.com/implementing-microservice-registry-with-eureka/</a>). Fuente temporal mientras el catálogo de patrones de SACAViX System Design (<a href="https://systemdesign.sacavix.com/patterns">https://systemdesign.sacavix.com/patterns</a>), usado en S2, no vuelve a estar disponible.</p>
+<p><em>Nota.</em> Adaptado de <em>Implementing Microservice Registry with Eureka</em>, por D. Rajput, 2019, Dinesh on Java (<a href="https://dineshonjava.com/implementing-microservice-registry-with-eureka/">https://dineshonjava.com/implementing-microservice-registry-with-eureka/</a>).</p>
 <p>Los tres pasos del diagrama son los mismos tres conceptos de esta sesión, en orden: <strong>1. Register</strong> es 2.2 (registro de servicios); <strong>2. Discover</strong> es 2.4 (descubrimiento de servicios); <strong>3. Connect</strong> es lo que ya se ve en la Figura 2 — una vez que Service Y descubrió a Service X, ambos se conectan directamente, sin que Eureka intermedie en esa conexión.</p>
+<p><strong>Quién hace el <em>discover</em>, exactamente, es una decisión de diseño aparte</strong> — no forma parte del registro en sí (SACAViX System Design, 2026):</p>
+<ul>
+<li><strong><em>Client-side discovery</em></strong> (lo que construye esta sesión): el propio cliente consulta a Eureka, recibe la lista de direcciones y elige una — el cliente necesita saber que Eureka existe y contiene la lógica de elegir.</li>
+<li><strong><em>Server-side discovery</em></strong> (adelanto de S4): el cliente ni siquiera sabe que Eureka existe — llama siempre a un punto único (el Gateway), y es el Gateway quien consulta a Eureka y reenvía la petición a una instancia concreta.</li>
+</ul>
+<p><strong>Figura 4. <em>Client-side<em> vs. </em>server-side discovery</em></strong></p>
+<pre class="mermaid"><code>flowchart TB
+    subgraph Hoy["Client-side discovery (esta sesión)"]
+        C1["Cliente"] --&gt;|"1. pregunta a Eureka"| E1["Eureka"]
+        E1 --&gt;|"2. devuelve direcciones"| C1
+        C1 --&gt;|"3. elige una y llama directo"| S1["pagatu-catalogo-ms"]
+    end
+
+    subgraph Proximo["Server-side discovery (S4, Gateway)"]
+        C2["Cliente"] --&gt;|"1. llama al Gateway&lt;br/&gt;sin conocer a Eureka"| G["Gateway"]
+        G --&gt;|"2. pregunta a Eureka"| E2["Eureka"]
+        E2 --&gt;|"3. devuelve direcciones"| G
+        G --&gt;|"4. reenvía a una instancia"| S2["pagatu-catalogo-ms"]
+    end
+
+    Hoy ~~~ Proximo
+
+    classDef today fill:#ffe08a,stroke:#9a6b00,stroke-width:2px,color:#111;
+    class C1,E1,S1 today;</code></pre>
+<p>La diferencia no es solo "quién pregunta" — es qué tanto sabe el cliente. Hoy, el cliente de Eureka (otro microservicio, o tú mismo probando en 3.8) necesita conocer a Eureka y decidir. En S4, el Gateway se vuelve ese único punto de contacto: el cliente externo llama siempre al mismo lugar, y ni siquiera se entera de que hay varias instancias ni de que existe un registro detrás — es la misma idea de 1.3 (quien prueba a mano sigue necesitando el puerto exacto hoy) llevada un paso más allá: con Gateway, ya ni el puerto de cada instancia hace falta conocerlo.</p>
 <p><strong>Casos de uso típicos:</strong></p>
 <ul>
 <li>Servicios que escalan horizontalmente, con instancias que aparecen y desaparecen sin aviso previo.</li>
@@ -1934,7 +1959,7 @@ Microservicios: puerto fijo por instancia (8080, 8081, ...)
 </ul>
 <p><code>pagatu-eureka</code> es la implementación concreta de este patrón para el curso; en la Figura 2 ya se ve funcionando junto al resto del sistema.</p>
 <h4 id="232-registro-y-descubrimiento-en-produccion-local">2.3.2 Registro y descubrimiento en producción local<a class="headerlink" href="#232-registro-y-descubrimiento-en-produccion-local" title="Permanent link">&para;</a></h4>
-<p><strong>Figura 4. Registro y descubrimiento en producción local</strong></p>
+<p><strong>Figura 5. Registro y descubrimiento en producción local</strong></p>
 <pre class="mermaid"><code>flowchart LR
     Client["Cliente - PowerShell / bash"]
     subgraph Docker["Docker Network: pagatu-prod-net"]
@@ -1993,7 +2018,7 @@ docker interno: pagatu-eureka:8761
 <h3 id="26-observabilidad-de-instancias-registradas">2.6 Observabilidad de instancias registradas<a class="headerlink" href="#26-observabilidad-de-instancias-registradas" title="Permanent link">&para;</a></h3>
 <p>Quien consulta el registro de Eureka no tiene que ser otro microservicio del negocio. Cualquier herramienta de monitoreo puede usar el mismo registro como fuente de descubrimiento — para saber qué instancias existen y dónde recolectar sus métricas y registros de actividad (<em>logs</em>), sin que nadie mantenga a mano una lista de direcciones que cambia cada vez que se agrega o se cae una instancia. Es el mismo mecanismo de descubrimiento de 2.4, aplicado a un consumidor distinto del registro: no un microservicio que atiende peticiones de negocio, sino una herramienta que observa al resto del sistema desde afuera.</p>
 <p>En esta sesión, esa idea se aplica de forma opcional (3.10-3.14) con dos herramientas concretas — <strong>Prometheus</strong> para métricas y <strong>Loki</strong> para logs, ambas descubriendo instancias vía <code>pagatu-eureka</code> — pero el concepto no depende de esas dos herramientas específicas: cualquier sistema de observabilidad que sepa consultar un registro de servicios puede aprovechar el mismo mecanismo.</p>
-<p><strong>Figura 5. Prometheus y Loki recolectando de <code>pagatu-catalogo-ms</code> en DEV</strong></p>
+<p><strong>Figura 6. Prometheus y Loki recolectando de <code>pagatu-catalogo-ms</code> en DEV</strong></p>
 <pre class="mermaid"><code>flowchart TB
     Eureka["Eureka Server&lt;br/&gt;localhost:18761"]
     I1["pagatu-catalogo-ms&lt;br/&gt;instancia 1, puerto 8080"]
@@ -2024,7 +2049,7 @@ docker interno: pagatu-eureka:8761
     class Eureka server;
     class Prometheus,Promtail,Loki obs;</code></pre>
 <p>Lectura del diagrama: son <strong>dos caminos distintos</strong>, no uno solo. Prometheus sí usa a Eureka — le pregunta qué instancias existen (<code>eureka_sd_configs</code>, 3.11) y luego <strong>jala</strong> (<em>pull</em>) las métricas de cada una por HTTP, cada 15 segundos. Promtail, en cambio, <strong>no consulta a Eureka en absoluto</strong> — ni sabe que Eureka existe: solo vigila un archivo de log compartido en disco (3.13) y, apenas ve una línea nueva, la <strong>empuja</strong> (<em>push</em>) a Loki. Por eso una instancia que nunca se registró en Eureka igual podría aparecer en Loki (si escribe al mismo archivo), y por eso detener <code>pagatu-eureka</code> no afecta en nada a Promtail — son mecanismos de descubrimiento y transporte completamente independientes, aunque ambos terminan observando al mismo <code>pagatu-catalogo-ms</code>.</p>
-<p><strong>Figura 6. Prometheus y Loki recolectando de <code>pagatu-catalogo-ms</code> en producción local</strong></p>
+<p><strong>Figura 7. Prometheus y Loki recolectando de <code>pagatu-catalogo-ms</code> en producción local</strong></p>
 <pre class="mermaid"><code>flowchart LR
     Cliente["Cliente&lt;br/&gt;PowerShell / bash / navegador"]
     LogFile[("services/pagatu-catalogo-ms/logs&lt;br/&gt;carpeta del host")]
@@ -2350,7 +2375,7 @@ docker interno: pagatu-eureka:8761
 <div class="highlight"><pre><span></span><code>http://localhost:18761
 </code></pre></div>
 <p>Resultado esperado: <code>PAGATU-CATALOGO-MS</code> ahora lista <strong>dos</strong> direcciones distintas, <code>localhost:8080</code> y <code>localhost:8081</code> — el mismo nombre lógico, dos instancias con puerto fijo conocido de antemano, cada una anunciada a Eureka.</p>
-<p><strong>Figura 7. Dashboard de Eureka con <code>pagatu-catalogo-ms</code> en dos instancias</strong></p>
+<p><strong>Figura 8. Dashboard de Eureka con <code>pagatu-catalogo-ms</code> en dos instancias</strong></p>
 <p><img alt="Dashboard de Eureka con PAGATU-CATALOGO-MS registrado en dos instancias, pagatu-catalogo-ms:8080 y pagatu-catalogo-ms:8081, ambas UP" src="../img/s03-3.9-eureka-dashboard.png" /></p>
 <p><strong>Tabla 5. Verificación de múltiples instancias antes de continuar</strong></p>
 <table>
@@ -2990,7 +3015,8 @@ Indica 2 fortalezas y 2 recomendaciones.
 <ul>
 <li>BSoft Group. (2026). <em>Educate</em> [plataforma de cursos; acceso restringido al momento de esta guía]. <a href="https://bsoftgroup.com/educate/#/mcontainer/container/mcursos/bcursos/cursos/1736471448631?ARQ=ARQ&amp;JAV=JAV">https://bsoftgroup.com/educate/#/mcontainer/container/mcursos/bcursos/cursos/1736471448631?ARQ=ARQ&amp;JAV=JAV</a></li>
 <li>Rajput, D. (2019). <em>Implementing microservice registry with Eureka</em>. Dinesh on Java. <a href="https://dineshonjava.com/implementing-microservice-registry-with-eureka/">https://dineshonjava.com/implementing-microservice-registry-with-eureka/</a></li>
-<li>SACAViX. (2026). <em>Catálogo de patrones</em> [sitio no disponible al momento de esta guía]. SACAViX System Design. <a href="https://systemdesign.sacavix.com/patterns">https://systemdesign.sacavix.com/patterns</a></li>
+<li>SACAViX. (2026). <em>Catálogo de patrones</em>. SACAViX System Design. <a href="https://systemdesign.sacavix.com/patterns">https://systemdesign.sacavix.com/patterns</a></li>
+<li>SACAViX. (2026). <em>Service Registry</em>. SACAViX System Design — Service Registry. <a href="https://systemdesign.sacavix.com/patterns/service-registry">https://systemdesign.sacavix.com/patterns/service-registry</a></li>
 <li>VMware Tanzu / Broadcom Inc. (2026). <em>Spring Cloud Netflix reference documentation</em>. <a href="https://docs.spring.io/spring-cloud-netflix/reference/">https://docs.spring.io/spring-cloud-netflix/reference/</a></li>
 <li>Netflix. (2024). <em>Eureka Wiki</em>. <a href="https://github.com/Netflix/eureka/wiki">https://github.com/Netflix/eureka/wiki</a></li>
 <li>VMware Tanzu / Broadcom Inc. (2026). <em>Spring Cloud 2025.1.2 (aka Oakwood) release notes</em>. <a href="https://spring.io/blog/2026/06/11/spring-cloud-2025-1-2-aka-oakwood-has-been-released/">https://spring.io/blog/2026/06/11/spring-cloud-2025-1-2-aka-oakwood-has-been-released/</a></li>
