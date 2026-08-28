@@ -10,6 +10,7 @@ nav:
       - Guía del proyecto: proyecto-sello/index.md
       - Brief técnico (plantilla): proyecto-sello/brief.md
       - Alcance por microservicio: proyecto-sello/alcance-microservicios.md
+      - Sistema académico (referencia): proyecto-sello/acad.md
   - Silabos:
       - Silabo 2026-1: silabo_dist_2026_1.md
       - Silabo 2026-2: silabo_dist_2026_2.md
