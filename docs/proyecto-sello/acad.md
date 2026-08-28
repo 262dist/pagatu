@@ -5,9 +5,9 @@
  │ 1. INSTITUCIONAL          │                   │ 2. PERSONAS               │
  │ Y ORGANIZACIÓN            │                   │                           │
  │ institución, campus,      │                   │ persona, identificación,  │
- │ sedes, facultades,        │                   │ contactos, documentos,    │
- │ escuelas, programas,      │                   │ relaciones y roles        │
- │ periodos, calendarios     │                   │                           │
+ │ sedes, facultades,        │                   │ datos personales          │
+ │ escuelas, programas,      │                   │ contactos                 │
+ │ periodos, calendarios     │                   │ documentos                │
  └─────────────┬─────────────┘                   └─────────────┬─────────────┘
                │                                               │
                └──────────────────────┬────────────────────────┘
