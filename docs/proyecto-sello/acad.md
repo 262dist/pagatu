@@ -164,70 +164,74 @@
 
 ## Cómo implementarlo: monolito modular vs. microservicios
 
-Cualquiera de los 22 dominios de arriba puede construirse dentro de **un solo desplegable** (monolito modular) o como **servicios independientes** (microservicios) — la elección no cambia el modelo de dominio, cambia solo dónde termina un proceso y empieza otro. En los dos casos, cada módulo o microservicio mantiene el mismo límite interno: arquitectura hexagonal, con el dominio en el centro y los adaptadores hacia fuera.
+Cualquiera de los 22 dominios de arriba puede construirse dentro de **un solo desplegable** (monolito modular) o como **servicios independientes** (microservicios) — la elección no cambia el modelo de dominio, cambia solo dónde termina un proceso y empieza otro. Los dos diagramas de abajo se quedan a nivel **contenedor** (C2 del C4 model): módulos/servicios y sus bases de datos, y cómo se llaman entre sí — sin bajar al detalle interno de cada uno (eso ya se ve en ADS S04, 2.4).
 
 ### A. Monolito modular — un solo despliegue
 
 ```mermaid
 flowchart TB
-    subgraph MONO["Aplicación (1 despliegue, 1 proceso)"]
-        direction LR
-        subgraph M1["módulo: catálogo"]
-            direction TB
-            A1["adaptadores"] --> P1["puertos"]
-            P1 --> D1{{"dominio"}}
-        end
-        subgraph M2["módulo: ventas"]
-            direction TB
-            A2["adaptadores"] --> P2["puertos"]
-            P2 --> D2{{"dominio"}}
-        end
-        subgraph M3["módulo: seguridad"]
-            direction TB
-            A3["adaptadores"] --> P3["puertos"]
-            P3 --> D3{{"dominio"}}
-        end
-        M1 -.->|"llamada Java directa"| M2
-        M2 -.->|"llamada Java directa"| M3
+    Cliente["Cliente"]
+    subgraph APP["Aplicación (1 despliegue, 1 proceso)"]
+        Curriculo["Módulo Currículo"]
+        Planificacion["Módulo Planificación"]
+        Matricula["Módulo Matrícula"]
+        Matricula -->|"llamada Java directa"| Planificacion
+        Planificacion -->|"llamada Java directa"| Curriculo
     end
+    DB[("Base de datos<br/>schemas separados por módulo")]
 
-    classDef dominio fill:#a8e6b0,stroke:#2f7d3c,stroke-width:2px,color:#111;
-    class D1,D2,D3 dominio;
+    Cliente --> APP
+    Curriculo --> DB
+    Planificacion --> DB
+    Matricula --> DB
 ```
 
-Cada módulo es una unidad interna con su propio dominio y puertos, verificada en tiempo de compilación (p. ej. `ApplicationModules.verify()` de Spring Modulith) — pero todos corren en el mismo proceso y se comunican con una llamada directa en Java, sin red de por medio.
+Los tres módulos corren en el mismo proceso — `Matrícula` llama a `Planificación` y esta a `Currículo` con una llamada directa en Java (verificada en tiempo de compilación, p. ej. `ApplicationModules.verify()` de Spring Modulith), sin red de por medio.
 
 ### B. Microservicios — un despliegue por servicio
 
 ```mermaid
 flowchart TB
-    subgraph MS[" "]
-        direction LR
-        subgraph S1["ms: catálogo"]
-            direction TB
-            AA1["adaptadores"] --> PP1["puertos"]
-            PP1 --> DD1{{"dominio"}}
-        end
-        subgraph S2["ms: ventas"]
-            direction TB
-            AA2["adaptadores"] --> PP2["puertos"]
-            PP2 --> DD2{{"dominio"}}
-        end
-        subgraph S3["ms: seguridad"]
-            direction TB
-            AA3["adaptadores"] --> PP3["puertos"]
-            PP3 --> DD3{{"dominio"}}
-        end
-        S1 <-.->|"red: HTTP / mensajería"| S2
-        S2 <-.->|"red: HTTP / mensajería"| S3
-    end
+    Cliente["Cliente"]
+    Gateway["API Gateway"]
+    Curriculo["Servicio Currículo"]
+    Planificacion["Servicio Planificación"]
+    Matricula["Servicio Matrícula"]
+    DBCurriculo[("BD Currículo")]
+    DBPlanificacion[("BD Planificación")]
+    DBMatricula[("BD Matrícula")]
 
-    classDef dominio fill:#a8e6b0,stroke:#2f7d3c,stroke-width:2px,color:#111;
-    class DD1,DD2,DD3 dominio;
+    Cliente --> Gateway
+    Gateway --> Curriculo
+    Gateway --> Planificacion
+    Gateway --> Matricula
+    Matricula -.->|"HTTP / mensajería"| Planificacion
+    Planificacion -.->|"HTTP / mensajería"| Curriculo
+    Curriculo --> DBCurriculo
+    Planificacion --> DBPlanificacion
+    Matricula --> DBMatricula
 ```
 
-Cada servicio es su propio proceso, con su propio ciclo de despliegue (y normalmente su propia base de datos) — la comunicación ya no es una llamada Java, es red (HTTP/mensajería), con todo lo que eso trae: *service discovery*, tolerancia a fallos, observabilidad distribuida.
+Cada servicio es su propio proceso, con su propia base de datos — la comunicación ya no es una llamada Java, es red (HTTP/mensajería) a través del *API Gateway* o directo entre servicios, con todo lo que eso trae: *service discovery*, tolerancia a fallos, observabilidad distribuida.
 
 ### Lo que no cambia entre A y B
 
-El hexágono interno — dominio en el centro, puertos alrededor, adaptadores hacia el exterior — es idéntico en los dos enfoques. Lo único que cambia es el borde exterior: si ese límite es una llamada de método dentro del mismo proceso, o una llamada de red entre dos procesos distintos. Por eso un módulo bien delimitado en A se puede extraer a microservicio en B sin rediseñar su interior: el puerto que ya tenía se convierte en el contrato de red.
+Un nivel más abajo (C3, no dibujado aquí — ver ADS S04, 2.4), cada módulo/servicio sigue siendo el mismo hexágono: dominio en el centro, puertos primarios/secundarios alrededor, adaptadores primarios/secundarios hacia el exterior. Lo único que cambia entre A y B es el borde exterior: si ese límite es una llamada de método dentro del mismo proceso, o una llamada de red entre dos procesos distintos. Por eso un módulo bien delimitado en A se puede extraer a microservicio en B sin rediseñar su interior: el puerto que ya tenía se convierte en el contrato de red.
+
+### C3: dentro de un módulo/servicio (zoom a `currículo`)
+
+```mermaid
+flowchart TB
+    subgraph MOD["módulo: currículo"]
+        direction TB
+        AP["adaptadores primarios"] --> PP["puertos primarios"]
+        PP --> DOM{{"dominio"}}
+        DOM --> PS["puertos secundarios"]
+        PS --> AS["adaptadores secundarios"]
+    end
+
+    classDef dominio fill:#a8e6b0,stroke:#2f7d3c,stroke-width:2px,color:#111;
+    class DOM dominio;
+```
+
+Esto es lo que A y B esconden detrás de cada caja "Módulo Currículo"/"Servicio Currículo" — el mismo detalle que ADS S04 (2.4, Figura 6) muestra con adaptadores concretos (REST, CLI, eventos por el lado primario; PostgreSQL, API externa, correo por el secundario) en vez de las etiquetas genéricas de aquí.
