@@ -513,6 +513,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#c2-real-base-cores-excepciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C2 real: base + cores + excepciones
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -875,6 +886,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#c2-real-base-cores-excepciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C2 real: base + cores + excepciones
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1172,49 +1194,143 @@
 <th>Grupo</th>
 <th>Dominios (del mapa de 22)</th>
 <th>Organización interna</th>
+<th>Topología de despliegue</th>
 <th>Por qué</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>Académico</strong></td>
-<td>1-8: Institucional, Personas, Admisión, Currículo, Planificación, Matrícula, Evaluación, Trayectoria</td>
-<td><strong>Capas</strong> por defecto</td>
-<td>CRUD con validaciones — sin regla de negocio que hoy justifique aislar el dominio (Tabla 1).</td>
+<td><strong>Base (universal)</strong></td>
+<td>1-2: Institucional, Personas</td>
+<td><strong>Capas</strong></td>
+<td><strong>Monolito modular</strong> (A)</td>
+<td>La consulta literalmente todo lo demás — académico, administrativo, y hasta sistemas externos (Admisión, ERP). Extraerlo multiplicaría por 20 las llamadas de red del sistema (ver más arriba, "por qué no es microservicio").</td>
 </tr>
 <tr>
-<td><strong>Académico — excepción</strong></td>
+<td><strong>Core académico</strong></td>
+<td>4-5, 7-8: Currículo, Planificación, Evaluación, Trayectoria</td>
+<td><strong>Capas</strong> por defecto</td>
+<td><strong>Monolito modular</strong> (A)</td>
+<td>CRUD con validaciones — sin regla de negocio que hoy justifique aislar el dominio (Tabla 1), ni volumen que justifique un despliegue aparte.</td>
+</tr>
+<tr>
+<td><strong>Core académico — excepción DDD</strong></td>
 <td>8. Trayectoria Académica</td>
 <td><strong>Hexagonal</strong>, si el cálculo de convalidaciones/reconocimientos crece</td>
-<td>Único candidato real dentro de académico a agregado DDD (mismo criterio que <code>ventas</code> en LP2 S4, ver ADS S04 2.11) — se evalúa cuando el código exista, no antes.</td>
+<td><strong>Monolito modular</strong> (A)</td>
+<td>Único candidato real dentro de académico a agregado DDD (mismo criterio que <code>ventas</code> en LP2 S4, ver ADS S04 2.11) — se evalúa cuando el código exista, no antes. Organización interna distinta no implica proceso aparte.</td>
 </tr>
 <tr>
-<td><strong>Financiero</strong></td>
-<td>9. Finanzas del Estudiante, 11. Ingresos, Cobranza y Pagos</td>
+<td><strong>Académico — externo, por escala</strong></td>
+<td>3. Admisión</td>
+<td>No aplica — no se construye</td>
+<td><strong>Sistema externo</strong> (CRM, ej. Bitrix24)</td>
+<td>Examen de admisión y publicación de resultados concentran un pico de tráfico igual o mayor al de matrícula. En vez de construir y operar un microservicio propio solo para absorber ese pico, se contrata un CRM ya hecho para gestión de prospectos/postulantes — el equipo construye el adaptador de integración (registrar persona admitida en el núcleo), no el motor.</td>
+</tr>
+<tr>
+<td><strong>Académico — excepción de escala</strong></td>
+<td>6. Matrícula</td>
+<td><strong>Capas</strong> (sin cambio)</td>
+<td><strong>Candidato real a microservicio</strong> (B) desde el diseño, no solo "más adelante"</td>
+<td>Carga muy distinta al resto: en periodo de matrícula, miles de estudiantes inscriben al mismo tiempo, mientras el resto del sistema (Currículo, Personas) tiene tráfico normal — el caso de uso de manual de microservicios (SACAViX/ADS S04 2.7): "servicios con necesidades de escala muy distintas entre sí". No es complejidad de dominio (por eso sigue en Capas), es volumen de tráfico concentrado en el tiempo. A diferencia de Admisión, sí se construye propio — es el flujo central del negocio, no algo que un CRM genérico resuelva.</td>
+</tr>
+<tr>
+<td><strong>Core administrativo</strong></td>
+<td>9. Finanzas del Estudiante</td>
 <td><strong>Hexagonal desde el inicio</strong></td>
-<td>Caso de uso de manual (SACAViX, ver ADS S04 2.4): pasarelas de pago y bancos distintos, necesidad real de cambiar de proveedor sin tocar el cálculo de cargos/conciliación — no hay que esperar a que la complejidad "aparezca", ya está garantizada por el dominio.</td>
+<td><strong>Monolito modular al inicio</strong> — candidato a extraerse a microservicio (B) si el volumen de transacciones o un requisito de aislamiento (auditoría, PCI) lo justifica</td>
+<td>Dueño real del cargo y el saldo del estudiante (agregado DDD, ver más abajo) — crea el cargo, aplica descuentos, y su propio personal (<code>Cajero</code>) cobra presencial. Es el primer módulo del core administrativo — otros módulos administrativos propios, si el sistema los necesita, se agregarían a este mismo grupo.</td>
 </tr>
 <tr>
-<td><strong>Financiero — externo</strong></td>
-<td>ERP Financiero (contabilidad, tesorería)</td>
+<td><strong>Administrativo — canal</strong></td>
+<td>11. Ingresos, Cobranza y Pagos (acotado a <code>Pagos en línea</code>)</td>
+<td><strong>Hexagonal</strong> (servicio delgado)</td>
+<td><strong>Servicio propio, opcional aparte del monolito</strong></td>
+<td>Solo intermedia con la pasarela cuando el alumno paga online y confirma a <code>Finanzas del Estudiante</code> — no crea cargos ni decide descuentos. Caso de uso de manual (SACAViX, ver ADS S04 2.4): necesidad real de cambiar de pasarela sin tocar el cálculo de cargos, que vive en otro módulo.</td>
+</tr>
+<tr>
+<td><strong>Administrativo — externo</strong></td>
+<td>ERP Administrativo (contabilidad, RRHH, tesorería)</td>
 <td><strong>No se construye — se integra</strong></td>
-<td>Mismo criterio que Keycloak para seguridad: sistema de terceros, el trabajo del equipo es el adaptador de integración, no el motor contable.</td>
+<td><strong>Sistema externo</strong> (fuera de los despliegues propios)</td>
+<td>Mismo criterio que Keycloak para seguridad y Admisión/Bitrix24: sistema de terceros, el trabajo del equipo es el adaptador de integración, no el motor contable/RRHH. Se nombra "Administrativo" (no "Financiero") justamente para no confundirlo con <code>Finanzas del Estudiante</code> — cubre además RRHH, que no es parte de ese módulo.</td>
 </tr>
 <tr>
 <td><strong>Resto</strong></td>
 <td>12, 14-20: Extensión, LMS, Servicios al Estudiante, Investigación, Prácticas, Movilidad, Egresados, Convenios, Biblioteca</td>
 <td><strong>Capas</strong></td>
-<td>Mismo perfil que académico: gestión de contenido/registros, sin regla de negocio que aislar todavía.</td>
+<td><strong>Monolito modular</strong> (A)</td>
+<td>Mismo perfil que académico: gestión de contenido/registros, sin regla de negocio ni volumen que aislar todavía.</td>
 </tr>
 <tr>
 <td><strong>Transversal</strong></td>
 <td>21. Analítica/BI, 22. Plataforma Transversal</td>
 <td><strong>No aplica el eje hexagonal</strong></td>
-<td>Son capas transversales de infraestructura (seguridad vía Keycloak, observabilidad, BI), no módulos de dominio — se consumen desde los demás, no se construyen con el mismo criterio.</td>
+<td>Seguridad: <strong>servicio externo</strong> (Keycloak); Analítica/BI: consume datos de los demás, no es un despliegue propio</td>
+<td>Son capas transversales de infraestructura, no módulos de dominio — se consumen desde los demás, no se construyen con el mismo criterio.</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Topología de despliegue:</strong> monolito modular (A) para todo el sistema al inicio — ningún grupo justifica todavía el costo operacional de microservicios (Trade-offs, más arriba). <strong>Financiero/Pagos</strong> es el candidato más real a extraerse primero si el volumen de transacciones o un requisito de aislamiento (auditoría, PCI) lo justifica más adelante — no antes, y no como decisión de diseño inicial.</p>
+<p><strong>Decisión de topología, en una frase:</strong> el sistema arranca como <strong>monolito modular</strong> (Figura 2) para el core académico y <code>Finanzas del Estudiante</code> (core administrativo), con <code>Matrícula</code> y <code>Pagos en línea</code> como microservicios propios desde el diseño (escala el primero, canal de pago aislado el segundo) — <code>Admisión</code> no llega ni a construirse: se resuelve con un CRM externo por la misma razón de escala, sin pagar el costo de operar un servicio propio. <code>Institucional</code>/<code>Personas</code> no se mueve de la base bajo ninguna circunstancia: es lo único que absolutamente todo (interno y externo) necesita consultar.</p>
+<h2 id="c2-real-base-cores-excepciones">C2 real: base + cores + excepciones<a class="headerlink" href="#c2-real-base-cores-excepciones" title="Permanent link">&para;</a></h2>
+<p><strong>Figura 7. C2 (contenedores) con la decisión completa</strong></p>
+<pre class="mermaid"><code>flowchart TB
+    Cliente["Cliente (alumno)"]
+    Cajero["Cajero&lt;br/&gt;(personal de Finanzas del Estudiante)"]
+    Gateway["API Gateway"]
+    Keycloak["Keycloak (externo)"]
+
+    Cliente --&gt; Gateway
+    Cajero --&gt; Gateway
+    Gateway -.-&gt; Keycloak
+    Gateway -.-&gt; Admision["Admisión&lt;br/&gt;(CRM externo, ej. Bitrix24)"]
+    Gateway --&gt; CoreAcademico["Core académico&lt;br/&gt;Currículo, Planificación&lt;br/&gt;(monolito modular)"]
+    Gateway --&gt; Matricula["Matrícula&lt;br/&gt;(microservicio — escala)"]
+    Gateway --&gt; Finanzas["Finanzas del Estudiante&lt;br/&gt;(hexagonal — cargo + saldo)"]
+    Gateway --&gt; PagosOnline["Pagos en línea&lt;br/&gt;(integración con pasarela)"]
+
+    Matricula -.-&gt;|"catálogo, cupos, costo estimado"| CoreAcademico
+    Matricula -.-&gt;|"cursos elegidos + cuotas"| Finanzas
+    Finanzas -.-&gt;|"costo real, unidad organizacional"| CoreAcademico
+    PagosOnline -.-&gt;|"saldo del cargo / confirma pago"| Finanzas
+    PagosOnline -.-&gt; Pasarela["Pasarela de pago (externo)"]
+
+    ERP["ERP Administrativo (externo)"] -.-&gt;|"plan presupuestal (config.) / consulta ingresos"| Finanzas
+
+    Base["Base universal&lt;br/&gt;Personas, Institucional"]
+    CoreAcademico --&gt; Base
+    Matricula -.-&gt; Base
+    Finanzas -.-&gt; Base
+    Admision -.-&gt; Base
+    ERP -.-&gt; Base</code></pre>
+<p><strong>Cómo leer el diagrama:</strong> flecha sólida = llamada Java directa, mismo proceso (<code>Cliente</code>/<code>Cajero → Gateway</code>, <code>Gateway → *</code> por ser enrutamiento, y <code>Core académico → Base</code> porque ambos viven en el mismo monolito modular). Flecha punteada = HTTP, procesos distintos — todo lo demás, incluidos los tres microservicios propios (<code>Matrícula</code>, <code>Finanzas del Estudiante</code>, <code>Pagos en línea</code>) y los cuatro sistemas externos (<code>Keycloak</code>, <code>Admisión</code>, <code>ERP Administrativo</code>, <code>Pasarela</code>). Cada flecha muestra una dependencia, no una secuencia de pasos — el orden real de la conversación está en la lista de abajo.</p>
+<p><strong>Quién es quién:</strong></p>
+<ul>
+<li><strong>Base universal</strong> (<code>Personas</code>, <code>Institucional</code>): la consulta literalmente todo el sistema, interno y externo. Vive en el monolito modular.</li>
+<li><strong>Core académico</strong> (<code>Currículo</code>, <code>Planificación</code>): también en el monolito modular, un escalón más específico que la base.</li>
+<li><strong><code>Matrícula</code></strong>: microservicio propio por <strong>escala</strong> (picos en periodo de matrícula), no por complejidad de dominio — sigue organizada por capas por dentro.</li>
+<li><strong><code>Admisión</code></strong>: incluso con el mismo problema de escala (examen/resultados), <strong>no se construye</strong> — se resuelve con un CRM externo (ej. Bitrix24), igual que Keycloak resuelve seguridad.</li>
+<li><strong><code>Finanzas del Estudiante</code></strong> (dominio 9): el core administrativo real — dueño del cargo y el saldo del estudiante, hexagonal desde el inicio. <code>Cajero</code> es su propio personal, no un servicio aparte.</li>
+<li><strong><code>Pagos en línea</code></strong> (parte del dominio 11): un servicio delgado y separado de <code>Finanzas del Estudiante</code> — solo intermedia con la <code>Pasarela</code>, no crea cargos ni decide descuentos.</li>
+<li><strong><code>ERP Administrativo</code></strong>: sistema externo (contabilidad, RRHH, tesorería) — nunca se construye, solo se integra.</li>
+</ul>
+<p><strong>El flujo, de punta a punta:</strong></p>
+<ol>
+<li>La gerencia aprueba el plan presupuestal en <code>ERP Administrativo</code> (tarifa por crédito, política de becas). De ahí baja, en una sola dirección y por adelantado (no por transacción), el tarifario y las reglas de descuento que <code>Finanzas del Estudiante</code> deja configurados para todo el periodo.</li>
+<li>El alumno elige cursos y número de <strong>cuotas</strong> en <code>Matrícula</code>, consultando a <code>Core académico</code> el catálogo, los cupos y un costo estimado (para mostrar en pantalla).</li>
+<li><code>Matrícula</code> le pasa a <code>Finanzas del Estudiante</code> los cursos elegidos (los IDs, no un monto) más el número de cuotas.</li>
+<li><code>Finanzas del Estudiante</code> <strong>no confía en el estimado de <code>Matrícula</code></strong> — vuelve a consultar <code>Core académico</code> el costo real de cada curso, y de paso obtiene el programa y la facultad/escuela a la que pertenece (dato que guarda como <strong>unidad organizacional</strong>, junto al <strong>tipo de concepto</strong>: matrícula o enseñanza).</li>
+<li>Con el costo real y sus descuentos aplicados, <code>Finanzas del Estudiante</code> genera el <strong>cargo de matrícula</strong> (a pagar ahora) y programa los <strong>cargos de enseñanza</strong> de los meses siguientes, uno por cuota elegida — estos últimos existen ya, pero no se cobran todavía.</li>
+<li>El alumno cubre el cargo de matrícula con uno o ambos canales: <code>Pagos en línea</code> (que antes de cobrar verifica el saldo con <code>Finanzas</code> y después le confirma el pago) o directo en ventanilla (<code>Cajero</code>). Se puede combinar — por ejemplo, 60% online y 40% en caja.</li>
+<li>Cuando el saldo del cargo de matrícula llega a cero, <code>Finanzas del Estudiante</code> lo hace saber y <code>Matrícula</code> queda confirmada. Los cargos de enseñanza de los meses siguientes se cobran igual, por los mismos canales, sin volver a pasar por <code>Matrícula</code>.</li>
+</ol>
+<p><strong>Tres aclaraciones que ya se corrigieron una vez y vale la pena dejar explícitas:</strong></p>
+<ul>
+<li><strong><code>Finanzas del Estudiante</code> no conoce ninguna cuenta contable.</strong> Cada cargo lleva concepto y unidad organizacional — lenguaje del negocio académico. Traducir eso a cuenta contable y centro de costo es trabajo del <code>ERP Administrativo</code>, con su propio plan de cuentas, cuando consulta ingresos — nunca antes.</li>
+<li><strong><code>Matrícula</code> y <code>Pagos en línea</code> no se llaman entre sí.</strong> Cada uno depende de <code>Finanzas del Estudiante</code> por separado — <code>Matrícula</code> para crear el cargo, <code>Pagos en línea</code> para cobrarlo. Meterlos en contacto directo (como el patrón clásico Orden→Pago) obligaría a <code>Matrícula</code> a cargar con lógica de cobranza que dura meses, no solo el pico de matrícula que la justifica.</li>
+<li><strong>El agregado real de <code>Finanzas del Estudiante</code></strong> es "un cargo de matrícula + N cargos de enseñanza programados", cada uno con su propio saldo (2.11, más arriba) — con dos invariantes: la suma de pagos de un cargo nunca supera su monto, y la matrícula se confirma solo con el cargo de matrícula en cero (no los de enseñanza).</li>
+</ul>
+<p>La Figura 7 dibuja 8 de los 22 dominios como muestra — el patrón (todo consulta la base, HTTP solo cuando hay una razón real de extraerse o reemplazarse por un externo) se repite igual para el resto.</p>
 
 
 
