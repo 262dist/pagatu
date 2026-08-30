@@ -486,6 +486,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#c3-dentro-de-un-moduloservicio-zoom-a-curriculo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C3: dentro de un módulo/servicio (zoom a currículo)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -826,6 +837,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#c3-dentro-de-un-moduloservicio-zoom-a-curriculo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C3: dentro de un módulo/servicio (zoom a currículo)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1013,61 +1035,60 @@
    convalidaciones/reconocimientos y demás movimientos académicos.
 </code></pre></div>
 <h2 id="como-implementarlo-monolito-modular-vs-microservicios">Cómo implementarlo: monolito modular vs. microservicios<a class="headerlink" href="#como-implementarlo-monolito-modular-vs-microservicios" title="Permanent link">&para;</a></h2>
-<p>Cualquiera de los 22 dominios de arriba puede construirse dentro de <strong>un solo desplegable</strong> (monolito modular) o como <strong>servicios independientes</strong> (microservicios) — la elección no cambia el modelo de dominio, cambia solo dónde termina un proceso y empieza otro. En los dos casos, cada módulo o microservicio mantiene el mismo límite interno: arquitectura hexagonal, con el dominio en el centro y los adaptadores hacia fuera.</p>
+<p>Cualquiera de los 22 dominios de arriba puede construirse dentro de <strong>un solo desplegable</strong> (monolito modular) o como <strong>servicios independientes</strong> (microservicios) — la elección no cambia el modelo de dominio, cambia solo dónde termina un proceso y empieza otro. Los dos diagramas de abajo se quedan a nivel <strong>contenedor</strong> (C2 del C4 model): módulos/servicios y sus bases de datos, y cómo se llaman entre sí — sin bajar al detalle interno de cada uno (eso ya se ve en ADS S04, 2.4).</p>
 <h3 id="a-monolito-modular-un-solo-despliegue">A. Monolito modular — un solo despliegue<a class="headerlink" href="#a-monolito-modular-un-solo-despliegue" title="Permanent link">&para;</a></h3>
 <pre class="mermaid"><code>flowchart TB
-    subgraph MONO["Aplicación (1 despliegue, 1 proceso)"]
-        direction LR
-        subgraph M1["módulo: catálogo"]
-            direction TB
-            A1["adaptadores"] --&gt; P1["puertos"]
-            P1 --&gt; D1{{"dominio"}}
-        end
-        subgraph M2["módulo: ventas"]
-            direction TB
-            A2["adaptadores"] --&gt; P2["puertos"]
-            P2 --&gt; D2{{"dominio"}}
-        end
-        subgraph M3["módulo: seguridad"]
-            direction TB
-            A3["adaptadores"] --&gt; P3["puertos"]
-            P3 --&gt; D3{{"dominio"}}
-        end
-        M1 -.-&gt;|"llamada Java directa"| M2
-        M2 -.-&gt;|"llamada Java directa"| M3
+    Cliente["Cliente"]
+    subgraph APP["Aplicación (1 despliegue, 1 proceso)"]
+        Curriculo["Módulo Currículo"]
+        Planificacion["Módulo Planificación"]
+        Matricula["Módulo Matrícula"]
+        Matricula --&gt;|"llamada Java directa"| Planificacion
+        Planificacion --&gt;|"llamada Java directa"| Curriculo
     end
+    DB[("Base de datos&lt;br/&gt;schemas separados por módulo")]
 
-    classDef dominio fill:#a8e6b0,stroke:#2f7d3c,stroke-width:2px,color:#111;
-    class D1,D2,D3 dominio;</code></pre>
-<p>Cada módulo es una unidad interna con su propio dominio y puertos, verificada en tiempo de compilación (p. ej. <code>ApplicationModules.verify()</code> de Spring Modulith) — pero todos corren en el mismo proceso y se comunican con una llamada directa en Java, sin red de por medio.</p>
+    Cliente --&gt; APP
+    Curriculo --&gt; DB
+    Planificacion --&gt; DB
+    Matricula --&gt; DB</code></pre>
+<p>Los tres módulos corren en el mismo proceso — <code>Matrícula</code> llama a <code>Planificación</code> y esta a <code>Currículo</code> con una llamada directa en Java (verificada en tiempo de compilación, p. ej. <code>ApplicationModules.verify()</code> de Spring Modulith), sin red de por medio.</p>
 <h3 id="b-microservicios-un-despliegue-por-servicio">B. Microservicios — un despliegue por servicio<a class="headerlink" href="#b-microservicios-un-despliegue-por-servicio" title="Permanent link">&para;</a></h3>
 <pre class="mermaid"><code>flowchart TB
-    subgraph MS[" "]
-        direction LR
-        subgraph S1["ms: catálogo"]
-            direction TB
-            AA1["adaptadores"] --&gt; PP1["puertos"]
-            PP1 --&gt; DD1{{"dominio"}}
-        end
-        subgraph S2["ms: ventas"]
-            direction TB
-            AA2["adaptadores"] --&gt; PP2["puertos"]
-            PP2 --&gt; DD2{{"dominio"}}
-        end
-        subgraph S3["ms: seguridad"]
-            direction TB
-            AA3["adaptadores"] --&gt; PP3["puertos"]
-            PP3 --&gt; DD3{{"dominio"}}
-        end
-        S1 &lt;-.-&gt;|"red: HTTP / mensajería"| S2
-        S2 &lt;-.-&gt;|"red: HTTP / mensajería"| S3
+    Cliente["Cliente"]
+    Gateway["API Gateway"]
+    Curriculo["Servicio Currículo"]
+    Planificacion["Servicio Planificación"]
+    Matricula["Servicio Matrícula"]
+    DBCurriculo[("BD Currículo")]
+    DBPlanificacion[("BD Planificación")]
+    DBMatricula[("BD Matrícula")]
+
+    Cliente --&gt; Gateway
+    Gateway --&gt; Curriculo
+    Gateway --&gt; Planificacion
+    Gateway --&gt; Matricula
+    Matricula -.-&gt;|"HTTP / mensajería"| Planificacion
+    Planificacion -.-&gt;|"HTTP / mensajería"| Curriculo
+    Curriculo --&gt; DBCurriculo
+    Planificacion --&gt; DBPlanificacion
+    Matricula --&gt; DBMatricula</code></pre>
+<p>Cada servicio es su propio proceso, con su propia base de datos — la comunicación ya no es una llamada Java, es red (HTTP/mensajería) a través del <em>API Gateway</em> o directo entre servicios, con todo lo que eso trae: <em>service discovery</em>, tolerancia a fallos, observabilidad distribuida.</p>
+<h3 id="lo-que-no-cambia-entre-a-y-b">Lo que no cambia entre A y B<a class="headerlink" href="#lo-que-no-cambia-entre-a-y-b" title="Permanent link">&para;</a></h3>
+<p>Un nivel más abajo (C3, no dibujado aquí — ver ADS S04, 2.4), cada módulo/servicio sigue siendo el mismo hexágono: dominio en el centro, puertos primarios/secundarios alrededor, adaptadores primarios/secundarios hacia el exterior. Lo único que cambia entre A y B es el borde exterior: si ese límite es una llamada de método dentro del mismo proceso, o una llamada de red entre dos procesos distintos. Por eso un módulo bien delimitado en A se puede extraer a microservicio en B sin rediseñar su interior: el puerto que ya tenía se convierte en el contrato de red.</p>
+<h3 id="c3-dentro-de-un-moduloservicio-zoom-a-curriculo">C3: dentro de un módulo/servicio (zoom a <code>currículo</code>)<a class="headerlink" href="#c3-dentro-de-un-moduloservicio-zoom-a-curriculo" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>flowchart TB
+    subgraph MOD["módulo: currículo"]
+        direction TB
+        AP["adaptadores primarios"] --&gt; PP["puertos primarios"]
+        PP --&gt; DOM{{"dominio"}}
+        DOM --&gt; PS["puertos secundarios"]
+        PS --&gt; AS["adaptadores secundarios"]
     end
 
     classDef dominio fill:#a8e6b0,stroke:#2f7d3c,stroke-width:2px,color:#111;
-    class DD1,DD2,DD3 dominio;</code></pre>
-<p>Cada servicio es su propio proceso, con su propio ciclo de despliegue (y normalmente su propia base de datos) — la comunicación ya no es una llamada Java, es red (HTTP/mensajería), con todo lo que eso trae: <em>service discovery</em>, tolerancia a fallos, observabilidad distribuida.</p>
-<h3 id="lo-que-no-cambia-entre-a-y-b">Lo que no cambia entre A y B<a class="headerlink" href="#lo-que-no-cambia-entre-a-y-b" title="Permanent link">&para;</a></h3>
-<p>El hexágono interno — dominio en el centro, puertos alrededor, adaptadores hacia el exterior — es idéntico en los dos enfoques. Lo único que cambia es el borde exterior: si ese límite es una llamada de método dentro del mismo proceso, o una llamada de red entre dos procesos distintos. Por eso un módulo bien delimitado en A se puede extraer a microservicio en B sin rediseñar su interior: el puerto que ya tenía se convierte en el contrato de red.</p>
+    class DOM dominio;</code></pre>
+<p>Esto es lo que A y B esconden detrás de cada caja "Módulo Currículo"/"Servicio Currículo" — el mismo detalle que ADS S04 (2.4, Figura 6) muestra con adaptadores concretos (REST, CLI, eventos por el lado primario; PostgreSQL, API externa, correo por el secundario) en vez de las etiquetas genéricas de aquí.</p>
 
 
 
