@@ -487,10 +487,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#c3-dentro-de-un-moduloservicio-zoom-a-curriculo" class="md-nav__link">
+  <a href="#c3-dentro-de-un-moduloservicio-dos-formas-de-organizarlo-zoom-a-curriculo" class="md-nav__link">
     <span class="md-ellipsis">
       
-        C3: dentro de un módulo/servicio (zoom a currículo)
+        C3: dentro de un módulo/servicio — dos formas de organizarlo (zoom a currículo)
       
     </span>
   </a>
@@ -499,6 +499,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decision-aplicada-academico-financiero-y-el-resto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decisión aplicada: académico, financiero y el resto
+      
+    </span>
+  </a>
   
 </li>
       
@@ -838,10 +849,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#c3-dentro-de-un-moduloservicio-zoom-a-curriculo" class="md-nav__link">
+  <a href="#c3-dentro-de-un-moduloservicio-dos-formas-de-organizarlo-zoom-a-curriculo" class="md-nav__link">
     <span class="md-ellipsis">
       
-        C3: dentro de un módulo/servicio (zoom a currículo)
+        C3: dentro de un módulo/servicio — dos formas de organizarlo (zoom a currículo)
       
     </span>
   </a>
@@ -850,6 +861,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decision-aplicada-academico-financiero-y-el-resto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decisión aplicada: académico, financiero y el resto
+      
+    </span>
+  </a>
   
 </li>
       
@@ -874,6 +896,7 @@
 
 
 <h1 id="sistema-universitario-integrado">Sistema Universitario Integrado<a class="headerlink" href="#sistema-universitario-integrado" title="Permanent link">&para;</a></h1>
+<p><strong>Figura 1. Los 22 dominios del Sistema Universitario Integrado</strong></p>
 <div class="highlight"><pre><span></span><code> ┌───────────────────────────┐                   ┌───────────────────────────┐
  │ 1. INSTITUCIONAL          │                   │ 2. PERSONAS               │
  │ Y ORGANIZACIÓN            │                   │                           │
@@ -1037,6 +1060,7 @@
 <h2 id="como-implementarlo-monolito-modular-vs-microservicios">Cómo implementarlo: monolito modular vs. microservicios<a class="headerlink" href="#como-implementarlo-monolito-modular-vs-microservicios" title="Permanent link">&para;</a></h2>
 <p>Cualquiera de los 22 dominios de arriba puede construirse dentro de <strong>un solo desplegable</strong> (monolito modular) o como <strong>servicios independientes</strong> (microservicios) — la elección no cambia el modelo de dominio, cambia solo dónde termina un proceso y empieza otro. Los dos diagramas de abajo se quedan a nivel <strong>contenedor</strong> (C2 del C4 model): módulos/servicios y sus bases de datos, y cómo se llaman entre sí — sin bajar al detalle interno de cada uno (eso ya se ve en ADS S04, 2.4).</p>
 <h3 id="a-monolito-modular-un-solo-despliegue">A. Monolito modular — un solo despliegue<a class="headerlink" href="#a-monolito-modular-un-solo-despliegue" title="Permanent link">&para;</a></h3>
+<p><strong>Figura 2. Monolito modular (C2 — contenedores)</strong></p>
 <pre class="mermaid"><code>flowchart TB
     Cliente["Cliente"]
     subgraph APP["Aplicación (1 despliegue, 1 proceso)"]
@@ -1054,6 +1078,7 @@
     Matricula --&gt; DB</code></pre>
 <p>Los tres módulos corren en el mismo proceso — <code>Matrícula</code> llama a <code>Planificación</code> y esta a <code>Currículo</code> con una llamada directa en Java (verificada en tiempo de compilación, p. ej. <code>ApplicationModules.verify()</code> de Spring Modulith), sin red de por medio.</p>
 <h3 id="b-microservicios-un-despliegue-por-servicio">B. Microservicios — un despliegue por servicio<a class="headerlink" href="#b-microservicios-un-despliegue-por-servicio" title="Permanent link">&para;</a></h3>
+<p><strong>Figura 3. Microservicios (C2 — contenedores)</strong></p>
 <pre class="mermaid"><code>flowchart TB
     Cliente["Cliente"]
     Gateway["API Gateway"]
@@ -1076,19 +1101,120 @@
 <p>Cada servicio es su propio proceso, con su propia base de datos — la comunicación ya no es una llamada Java, es red (HTTP/mensajería) a través del <em>API Gateway</em> o directo entre servicios, con todo lo que eso trae: <em>service discovery</em>, tolerancia a fallos, observabilidad distribuida.</p>
 <h3 id="lo-que-no-cambia-entre-a-y-b">Lo que no cambia entre A y B<a class="headerlink" href="#lo-que-no-cambia-entre-a-y-b" title="Permanent link">&para;</a></h3>
 <p>Un nivel más abajo (C3, no dibujado aquí — ver ADS S04, 2.4), cada módulo/servicio sigue siendo el mismo hexágono: dominio en el centro, puertos primarios/secundarios alrededor, adaptadores primarios/secundarios hacia el exterior. Lo único que cambia entre A y B es el borde exterior: si ese límite es una llamada de método dentro del mismo proceso, o una llamada de red entre dos procesos distintos. Por eso un módulo bien delimitado en A se puede extraer a microservicio en B sin rediseñar su interior: el puerto que ya tenía se convierte en el contrato de red.</p>
-<h3 id="c3-dentro-de-un-moduloservicio-zoom-a-curriculo">C3: dentro de un módulo/servicio (zoom a <code>currículo</code>)<a class="headerlink" href="#c3-dentro-de-un-moduloservicio-zoom-a-curriculo" title="Permanent link">&para;</a></h3>
+<h3 id="c3-dentro-de-un-moduloservicio-dos-formas-de-organizarlo-zoom-a-curriculo">C3: dentro de un módulo/servicio — dos formas de organizarlo (zoom a <code>currículo</code>)<a class="headerlink" href="#c3-dentro-de-un-moduloservicio-dos-formas-de-organizarlo-zoom-a-curriculo" title="Permanent link">&para;</a></h3>
+<p>Dentro de cada caja "Módulo Currículo"/"Servicio Currículo" de A y B hay todavía una decisión más: cómo se organiza el código <em>adentro</em>. Dos opciones, no una — la misma comparación que hace ADS S04 (2.3-2.4), aplicada aquí al dominio académico.</p>
+<p><strong>Figura 4. Por capas (organización tradicional)</strong></p>
 <pre class="mermaid"><code>flowchart TB
-    subgraph MOD["módulo: currículo"]
+    subgraph MODCAPAS["módulo: currículo (por capas)"]
         direction TB
-        AP["adaptadores primarios"] --&gt; PP["puertos primarios"]
-        PP --&gt; DOM{{"dominio"}}
-        DOM --&gt; PS["puertos secundarios"]
-        PS --&gt; AS["adaptadores secundarios"]
+        CTRL["Controller"] --&gt; SERV["Service"] --&gt; REPO["Repository"]
+    end</code></pre>
+<p><strong>Figura 5. Hexagonal (dominio aislado)</strong></p>
+<pre class="mermaid"><code>flowchart TB
+    subgraph MOD["módulo: currículo (hexagonal)"]
+        direction TB
+        AP["adaptadores primarios&lt;br/&gt;(equivalente: Controller)"] --&gt; PP["puertos primarios&lt;br/&gt;(interfaz UseCase)"]
+        PP --&gt; DOM{{"dominio&lt;br/&gt;(equivalente: Service, puro)"}}
+        DOM --&gt; PS["puertos secundarios&lt;br/&gt;(interfaz RepositoryPort)"]
+        PS --&gt; AS["adaptadores secundarios&lt;br/&gt;(equivalente: Repository)"]
     end
 
     classDef dominio fill:#a8e6b0,stroke:#2f7d3c,stroke-width:2px,color:#111;
     class DOM dominio;</code></pre>
 <p>Esto es lo que A y B esconden detrás de cada caja "Módulo Currículo"/"Servicio Currículo" — el mismo detalle que ADS S04 (2.4, Figura 6) muestra con adaptadores concretos (REST, CLI, eventos por el lado primario; PostgreSQL, API externa, correo por el secundario) en vez de las etiquetas genéricas de aquí.</p>
+<p><strong>Figura 6. Clean Architecture (si algún módulo llega a necesitarlo)</strong></p>
+<pre class="mermaid"><code>flowchart TB
+    subgraph FRAMEWORKS["Frameworks y drivers (Spring, JPA, HTTP)"]
+        subgraph ADAPTERS["Adaptadores de interfaz&lt;br/&gt;(equivalente: Controller/Repository impl.)"]
+            subgraph USECASES["Casos de uso&lt;br/&gt;(orquestación)"]
+                ENTITIES["Entidades del dominio&lt;br/&gt;(reglas atómicas, más interno)"]
+            end
+        end
+    end</code></pre>
+<p>Hexagonal es, en la práctica, un caso concreto de aplicación de Clean Architecture (SACAViX Tech, ver ADS S04 2.5) — no un tercer patrón aparte. La diferencia real de Clean sobre Hexagonal es separar formalmente <strong>Entidades</strong> (reglas atómicas) de <strong>Casos de uso</strong> (orquestación entre varias entidades), algo que el "dominio" de la Figura 5 todavía trata como una sola pieza. Esa separación solo aporta claridad cuando un módulo acumula muchos casos de uso complejos — ningún dominio de los 22 la necesita hoy.</p>
+<p><strong>Tabla 1. Capas vs. Hexagonal vs. Clean, dentro de un módulo</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Por capas</th>
+<th>Hexagonal</th>
+<th>Clean Architecture</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ventaja</strong></td>
+<td>Simple y rápido de construir — sin interfaces ni indirección extra, natural para CRUD.</td>
+<td>Dominio aislado de la tecnología: se prueba sin base de datos ni servidor HTTP, y se cambia de proveedor (BD, API externa) escribiendo solo un adaptador nuevo.</td>
+<td>Mismo aislamiento que Hexagonal, más una separación explícita entre reglas atómicas (Entidades) y orquestación (Casos de uso) — útil si un módulo tiene muchos casos de uso complejos que comparten las mismas entidades.</td>
+</tr>
+<tr>
+<td><strong>Desventaja</strong></td>
+<td>El dominio queda acoplado directo a Spring/JPA — cambiar de framework o de motor de base de datos obliga a tocar la lógica de negocio.</td>
+<td>Más clases e interfaces que mantener; <em>over-engineering</em> si el módulo es CRUD simple sin reglas de negocio reales que proteger.</td>
+<td>Todo el costo de Hexagonal, más una capa adicional (Casos de uso separados de Entidades) que la mayoría de los módulos no necesita — el <em>over-engineering</em> de Hexagonal, pero un escalón más arriba.</td>
+</tr>
+<tr>
+<td><strong>Cuándo usarla aquí</strong></td>
+<td>La mayoría de los 22 dominios, al menos al inicio — CRUD con validaciones simples (ej. Personas, Currículo, Matrícula en su versión básica).</td>
+<td>Un dominio que acumule reglas de negocio genuinamente complejas — candidatos reales: cálculo de créditos/convalidaciones (Trayectoria Académica), o reglas de cobranza con múltiples medios de pago (Ingresos y Pagos).</td>
+<td>Ninguno de los 22 dominios lo justifica hoy — quedaría reservado para un módulo que, además de complejo, acumule tantos casos de uso que separarlos de las entidades aporte claridad real.</td>
+</tr>
+</tbody>
+</table>
+<p>No es una decisión de una sola vez para todo el sistema: cada módulo se evalúa por separado, con el mismo criterio de ADS S04 (2.11) — capas por defecto, hexagonal cuando el dominio ya lo justifica, Clean solo si además el volumen de casos de uso lo pide.</p>
+<h2 id="decision-aplicada-academico-financiero-y-el-resto">Decisión aplicada: académico, financiero y el resto<a class="headerlink" href="#decision-aplicada-academico-financiero-y-el-resto" title="Permanent link">&para;</a></h2>
+<p><strong>Tabla 2. Decisión de arquitectura por grupo de dominios</strong></p>
+<table>
+<thead>
+<tr>
+<th>Grupo</th>
+<th>Dominios (del mapa de 22)</th>
+<th>Organización interna</th>
+<th>Por qué</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Académico</strong></td>
+<td>1-8: Institucional, Personas, Admisión, Currículo, Planificación, Matrícula, Evaluación, Trayectoria</td>
+<td><strong>Capas</strong> por defecto</td>
+<td>CRUD con validaciones — sin regla de negocio que hoy justifique aislar el dominio (Tabla 1).</td>
+</tr>
+<tr>
+<td><strong>Académico — excepción</strong></td>
+<td>8. Trayectoria Académica</td>
+<td><strong>Hexagonal</strong>, si el cálculo de convalidaciones/reconocimientos crece</td>
+<td>Único candidato real dentro de académico a agregado DDD (mismo criterio que <code>ventas</code> en LP2 S4, ver ADS S04 2.11) — se evalúa cuando el código exista, no antes.</td>
+</tr>
+<tr>
+<td><strong>Financiero</strong></td>
+<td>9. Finanzas del Estudiante, 11. Ingresos, Cobranza y Pagos</td>
+<td><strong>Hexagonal desde el inicio</strong></td>
+<td>Caso de uso de manual (SACAViX, ver ADS S04 2.4): pasarelas de pago y bancos distintos, necesidad real de cambiar de proveedor sin tocar el cálculo de cargos/conciliación — no hay que esperar a que la complejidad "aparezca", ya está garantizada por el dominio.</td>
+</tr>
+<tr>
+<td><strong>Financiero — externo</strong></td>
+<td>ERP Financiero (contabilidad, tesorería)</td>
+<td><strong>No se construye — se integra</strong></td>
+<td>Mismo criterio que Keycloak para seguridad: sistema de terceros, el trabajo del equipo es el adaptador de integración, no el motor contable.</td>
+</tr>
+<tr>
+<td><strong>Resto</strong></td>
+<td>12, 14-20: Extensión, LMS, Servicios al Estudiante, Investigación, Prácticas, Movilidad, Egresados, Convenios, Biblioteca</td>
+<td><strong>Capas</strong></td>
+<td>Mismo perfil que académico: gestión de contenido/registros, sin regla de negocio que aislar todavía.</td>
+</tr>
+<tr>
+<td><strong>Transversal</strong></td>
+<td>21. Analítica/BI, 22. Plataforma Transversal</td>
+<td><strong>No aplica el eje hexagonal</strong></td>
+<td>Son capas transversales de infraestructura (seguridad vía Keycloak, observabilidad, BI), no módulos de dominio — se consumen desde los demás, no se construyen con el mismo criterio.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Topología de despliegue:</strong> monolito modular (A) para todo el sistema al inicio — ningún grupo justifica todavía el costo operacional de microservicios (Trade-offs, más arriba). <strong>Financiero/Pagos</strong> es el candidato más real a extraerse primero si el volumen de transacciones o un requisito de aislamiento (auditoría, PCI) lo justifica más adelante — no antes, y no como decisión de diseño inicial.</p>
 
 
 
