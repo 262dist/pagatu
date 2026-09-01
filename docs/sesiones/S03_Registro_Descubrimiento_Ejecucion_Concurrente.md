@@ -60,8 +60,8 @@ La solución no es "recordar mejor" las direcciones — es que ningún cliente n
 ### 1.7 Ubicación en el curso
 
 - Unidad: U1 - Sistema distribuido base orientado a producción.
-- Producto de unidad: sistema distribuido base funcional, configurable y preparado para múltiples instancias.
 - Producto del curso: sistema distribuido de microservicios end-to-end, configurable, escalable, seguro, resiliente, consistente, observable, integrado con frontend y defendido técnicamente.
+- Producto de unidad: sistema distribuido base funcional, configurable y preparado para múltiples instancias.
 - Avance del producto en esta sesión: registro y descubrimiento de servicios operativo, con `pagatu-catalogo-ms` ejecutando múltiples instancias localizables por nombre lógico.
 
 **Figura 1. Roadmap del producto de la unidad**
@@ -129,6 +129,8 @@ Config Server: http://localhost:18888
 Eureka Server: http://localhost:18761
 Microservicios: puerto fijo por instancia (8080, 8081, ...)
 ```
+
+Este diagrama muestra DEV porque es el ambiente de la clase presencial (3.1-3.9); el mismo registro, con las mismas instancias, corriendo en Docker dentro de `pagatu-prod-net` en vez de con Maven en el host, se ve en la Figura 5 (2.3) — mismo patrón que ya usó S2 (Figura 2 en DEV, Figura 4 en producción local).
 
 Lectura del diagrama: fíjate que el `Cliente` hace dos llamadas de naturaleza distinta. La primera (`GET localhost:18761`) consulta el registro — ahí es donde Eureka resuelve el nombre lógico `pagatu-catalogo-ms` a una lista de direcciones reales, sin que nadie haya escrito esa lista a mano. La segunda (`GET localhost:8080/api/v1/categorias`) sigue siendo una llamada directa, con puerto exacto — quien prueba a mano (PowerShell, Swagger) no queda automáticamente libre de conocer el puerto; ese paso extra (resolver el nombre y elegir la instancia sin intervención humana) es trabajo del Gateway, en S4. Lo que sí cambia hoy es que cada instancia se anuncia sola al arrancar, y cualquier componente que consulte el registro puede encontrarla por nombre. La configuración de los tres componentes (incluido el propio `pagatu-eureka`) sigue viniendo de `pagatu-config`, exactamente como desde S2 — registro y configuración son dos preguntas distintas, a dos servidores distintos. Este diagrama es el mapa que guía el resto de la explicación: cada apartado siguiente desarrolla uno de sus componentes, en el mismo orden del Índice (1.2).
 

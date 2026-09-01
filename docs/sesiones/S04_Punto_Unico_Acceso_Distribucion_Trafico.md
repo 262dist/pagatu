@@ -57,8 +57,8 @@ La solución no es que el cliente aprenda a consultar Eureka también — es que
 ### 1.7 Ubicación en el curso
 
 - Unidad: U1 - Sistema distribuido base orientado a producción.
-- Producto de unidad: sistema distribuido base funcional, configurable y preparado para múltiples instancias.
 - Producto del curso: sistema distribuido de microservicios end-to-end, configurable, escalable, seguro, resiliente, consistente, observable, integrado con frontend y defendido técnicamente.
+- Producto de unidad: sistema distribuido base funcional, configurable y preparado para múltiples instancias.
 - Avance del producto en esta sesión: punto único de acceso operativo, con rutas resueltas por descubrimiento y tráfico repartido entre instancias.
 
 **Figura 1. Roadmap del producto de la unidad**
@@ -66,10 +66,10 @@ La solución no es que el cliente aprenda a consultar Eureka también — es que
 ```mermaid
 flowchart TB
     Cliente["Cliente de prueba - PowerShell / bash / Swagger"]
-    Gateway["Gateway - punto único de acceso - balanceo de carga - HOY"]
+    Gateway["Gateway - punto único de acceso - balanceo de carga - HOY - puerto 18080 (DEV)"]
     Catalogo["pagatu-catalogo-ms - construido en S1 - REST + BD + health"]
     Orden["pagatu-orden-ms - trabajo aplicado"]
-    Eureka["Registro de servicios - pagatu-eureka - construido en S3"]
+    Eureka["Registro de servicios - pagatu-eureka - construido en S3 - puerto 18761 (DEV)"]
     Config["Servidor de configuración - pagatu-config - construido en S2"]
     Repo[("Repositorio de configuración - config-repo")]
 
@@ -102,20 +102,45 @@ Tiempo: 25 min.
 ```mermaid
 flowchart LR
     Cliente["Cliente externo"]
-    GW["pagatu-gateway"]
+    GW["pagatu-gateway<br/>puerto 18080 (DEV)"]
     LB["Resolución lb://<br/>elige una instancia"]
-    Eureka[("pagatu-eureka")]
+    Eureka[("pagatu-eureka<br/>puerto 18761 (DEV)")]
     I1["pagatu-catalogo-ms<br/>instancia 1, puerto 8080"]
     I2["pagatu-catalogo-ms<br/>instancia 2, puerto 8081"]
 
-    Cliente -->|"1. GET /api/v1/categorias"| GW
+    Cliente -->|"1. petición 1: GET /api/v1/categorias"| GW
+    Cliente -.->|"1. petición 2"| GW
+    Cliente -. "1. petición 3" .-> GW
     GW -->|"2. resuelve la ruta"| LB
     LB -.->|"3. consulta instancias vivas"| Eureka
-    LB -->|"4a. esta vez"| I1
-    LB -.->|"4b. la próxima vez"| I2
+    LB -->|"4. turno 1"| I1
+    LB -.->|"4. turno 2"| I2
+    LB -. "4. turno 3, vuelve a empezar" .-> I1
 ```
 
-Lectura del diagrama: el cliente ya no llama a `pagatu-catalogo-ms` — llama a `pagatu-gateway`, siempre a la misma dirección. `pagatu-gateway` reconoce la ruta por su `Path` (2.3), resuelve `lb://pagatu-catalogo-ms` preguntándole a `pagatu-eureka` qué instancias están vivas en ese instante, y reenvía la petición a una de ellas — distinta cada vez, según el balanceo de carga. Quien prueba a mano ya no necesita escribir `:8080` ni `:8081`: la petición 1 puede resolverse contra la instancia 1, y la petición 2, idéntica, contra la instancia 2, sin que el cliente note ninguna diferencia en la respuesta. Este diagrama es el mapa que guía el resto de la explicación: cada apartado siguiente desarrolla uno de sus componentes, en el mismo orden del Índice (1.2).
+Lectura del diagrama: el cliente ya no llama a `pagatu-catalogo-ms` — llama a `pagatu-gateway`, siempre a la misma dirección. `pagatu-gateway` reconoce la ruta por su `Path` (2.3), resuelve `lb://pagatu-catalogo-ms` preguntándole a `pagatu-eureka` qué instancias están vivas en ese instante, y reenvía cada petición a una instancia distinta, en turnos — la primera petición cae en la instancia 1, la segunda en la instancia 2, la tercera vuelve a la instancia 1. Quien prueba a mano ya no necesita escribir `:8080` ni `:8081`: las tres peticiones usan siempre `18080`, sin que el cliente note ninguna diferencia en la respuesta. Este diagrama es el mapa que guía el resto de la explicación: cada apartado siguiente desarrolla uno de sus componentes, en el mismo orden del Índice (1.2) — incluyendo el propio algoritmo de turnos, que 2.3 retoma con su propio diagrama (Figura 4).
+
+Ese flujo es el mismo en DEV y en producción local — lo que cambia entre un ambiente y otro no es *cómo* resuelve el Gateway, sino *quién más puede llegar directo a una instancia sin pasar por él*:
+
+**Figura 3. Punto único de acceso en producción local**
+
+```mermaid
+flowchart TB
+    Cliente["Cliente externo"]
+    GW["pagatu-gateway<br/>único puerto expuesto al host: 28080"]
+    Eureka[("pagatu-eureka<br/>puerto 28761, solo dashboard")]
+    I1["pagatu-catalogo-ms<br/>réplica 1, sin puerto expuesto"]
+    I2["pagatu-catalogo-ms<br/>réplica 2, sin puerto expuesto"]
+
+    Cliente -->|"único punto de entrada"| GW
+    GW -.->|"resuelve lb://"| Eureka
+    GW --> I1
+    GW --> I2
+    I1 -. registra instancia .-> Eureka
+    I2 -. registra instancia .-> Eureka
+```
+
+En DEV (Figura 2), cualquiera puede seguir llamando directo a `localhost:8080` o `:8081` — los microservicios corren con Maven en el host, con sus puertos fijos abiertos, precisamente para poder probarlos uno por uno mientras se aprende (3.5-3.6). En producción local, eso deja de ser posible a propósito: `services/pagatu-catalogo-ms/compose.yml` ya trae el puerto de sus réplicas comentado desde S2 (`#ports: #  - "28080:8080"`) — ninguna réplica publica nada al host, solo son alcanzables dentro de `pagatu-prod-net`. `pagatu-gateway` (3.8, opcional) es el único componente que expone un puerto **de negocio** (`28080`, tráfico real de la API): el punto único de acceso, llevado a su consecuencia real — no es solo que el cliente *prefiera* pasar por el Gateway, es que en producción **no tiene otra forma de llegar** a un microservicio. `pagatu-eureka` sí sigue exponiendo su puerto (`28761`, en `infra/compose.yml` desde S3) — pero solo para que el equipo revise su dashboard desde el host; ningún cliente de negocio le pega directo a `28761`, la única puerta de entrada para tráfico real sigue siendo `28080`.
 
 ### 2.2 Punto único de acceso
 
@@ -125,6 +150,10 @@ Según SACAViX System Design (2026), un API Gateway centraliza el punto de entra
 
 **Error frecuente**: pensar que el Gateway reemplaza al registro de servicios (`pagatu-eureka`, S3). No lo reemplaza — lo consume. El Gateway sigue necesitando saber qué instancias existen y están vivas; lo que cambia es *quién* le pregunta eso a Eureka: antes, cada cliente potencial; ahora, un único componente, una sola vez por petición.
 
+**Punto único de acceso y balanceo de carga no son el mismo patrón, aunque en esta sesión se construyan juntos.** SACAViX System Design los documenta por separado: la propia página de *API Gateway* lista *Load Balancing* como patrón **relacionado**, no como parte de su definición — porque cada uno resuelve un problema distinto y puede existir sin el otro. Un balanceador de carga puro (por ejemplo, un ALB de AWS repartiendo tráfico entre instancias de un único servicio) no enruta nada por ruta ni oculta ninguna topología de microservicios; un Gateway podría enrutar peticiones hacia servicios que tienen una sola instancia cada uno, sin repartir nada entre copias. Lo que hace `pagatu-gateway` es **componer** los dos: cuando resuelve una ruta con `uri: lb://...` (2.3), delega la elección de instancia a Spring Cloud LoadBalancer — una librería distinta, con su propia responsabilidad — en vez de reimplementar el balanceo dentro del enrutador. Spring Cloud Gateway los junta por conveniencia de configuración, no porque sean, en el fondo, el mismo patrón.
+
+Esa composición tiene un costo que SACAViX System Design (2026) también documenta como *trade-off* del API Gateway, no solo una ventaja: si `pagatu-gateway` se cae, el sistema entero queda sin punto de entrada, aunque las dos instancias de `pagatu-catalogo-ms` sigan perfectamente vivas — un único punto de acceso es, también, un único punto de fallo. Esta sesión no resuelve eso (implica correr varias instancias del propio Gateway, con su propio balanceo por delante); solo lo deja documentado como una limitación real, no oculta, de lo que se construye hoy.
+
 ### 2.3 Distribución de tráfico entre instancias
 
 Una **ruta** en el Gateway conecta un patrón de entrada (qué peticiones atrapa) con un destino. En Spring Cloud Gateway, una ruta se define con tres piezas:
@@ -133,9 +162,126 @@ Una **ruta** en el Gateway conecta un patrón de entrada (qué peticiones atrapa
 - **`predicates`**: condición que decide si una petición entra por esta ruta — la más común es `Path`, que compara la URL de la petición contra un patrón.
 - **`uri`**: destino de la ruta. El esquema `lb://` (*load-balanced*) es la pieza clave: en vez de una dirección fija (`http://localhost:8080`), `lb://pagatu-catalogo-ms` le dice al Gateway "resuelve este nombre lógico contra el registro, y elige una instancia viva" — exactamente lo mismo que ya hace cualquier cliente de Eureka (S3, 2.4), aplicado ahora a nivel de ruta.
 
-El **balanceo de carga** es la decisión de *cuál* instancia recibe cada petición, entre todas las que el registro reporta como vivas en ese instante. Spring Cloud LoadBalancer (el balanceador que resuelve el esquema `lb://`) usa por defecto una estrategia *round-robin*: reparte las peticiones en turnos, una instancia después de otra, sin favorecer ninguna — la primera petición a una instancia, la segunda a la otra, la tercera de vuelta a la primera.
+El **balanceo de carga** es la decisión de *cuál* instancia recibe cada petición, entre todas las que el registro reporta como vivas en ese instante. Spring Cloud LoadBalancer (el balanceador que resuelve el esquema `lb://`) usa por defecto `RoundRobinLoadBalancer`: reparte las peticiones en turnos, una instancia después de otra, sin favorecer ninguna — la primera petición a una instancia, la segunda a la otra, la tercera de vuelta a la primera. Nadie lo eligió a mano en `pagatu-gateway` (3.4) — es lo que Spring Cloud LoadBalancer usa si no se le indica otra cosa.
 
-**Tabla 2. Antes y después del punto único de acceso**
+**Figura 4. Round Robin, el algoritmo que usa `pagatu-gateway` hoy**
+
+```mermaid
+flowchart LR
+    Cliente["Cliente externo"]
+    GW["pagatu-gateway<br/>puerto 18080 (DEV)<br/>Round Robin"]
+    Eureka[("pagatu-eureka<br/>puerto 18761 (DEV)")]
+    I1["pagatu-catalogo-ms<br/>instancia 1, puerto 8080"]
+    I2["pagatu-catalogo-ms<br/>instancia 2, puerto 8081"]
+
+    Cliente -->|"petición 1"| GW
+    GW -. consulta instancias vivas .-> Eureka
+    GW -->|"turno 1"| I1
+    Cliente -.->|"petición 2"| GW
+    GW -.->|"turno 2"| I2
+    Cliente -. "petición 3" .-> GW
+    GW -. "turno 3, vuelve a empezar" .-> I1
+```
+
+Es el algoritmo activo en `pagatu-gateway` sin ninguna configuración adicional (3.4-3.6): cada petición nueva a `lb://pagatu-catalogo-ms` consulta a `pagatu-eureka` qué instancias siguen vivas, y cae en la instancia siguiente del turno, alternando 8080/8081 en orden fijo. La verificación de 3.6 (peticiones repetidas contra `18080`, revisando qué instancia respondió cada vez por su log) es, en el fondo, observar este mismo diagrama en vivo.
+
+**Cómo se cambiaría** (fuera del alcance de esta sesión, solo para que quede claro que es configuración, no una limitación fija): Spring Cloud LoadBalancer trae un segundo algoritmo listo para usar, `RandomLoadBalancer` (elige una instancia al azar en cada petición, en vez de por turnos). Se activa declarando una configuración específica para el servicio, con `@LoadBalancerClient`:
+
+```java
+@LoadBalancerClient(name = "pagatu-catalogo-ms", configuration = CatalogoLoadBalancerConfig.class)
+public class PagatuGatewayApplication { /* ... */ }
+
+class CatalogoLoadBalancerConfig {
+    @Bean
+    ReactorLoadBalancer<ServiceInstance> randomLoadBalancer(
+            Environment environment, LoadBalancerClientFactory factory) {
+        String name = environment.getProperty(LoadBalancerClientFactory.PROPERTY_NAME);
+        return new RandomLoadBalancer(
+            factory.getLazyProvider(name, ServiceInstanceListSupplier.class), name);
+    }
+}
+```
+
+`RoundRobinLoadBalancer` y `RandomLoadBalancer` son los dos únicos algoritmos que Spring Cloud LoadBalancer trae listos para usar. Los otros que documenta SACAViX System Design (2026) — *Weighted Round Robin*, *Least Connections*, *IP Hash/Consistent Hashing*, *Least Response Time* — no vienen incluidos: implementarlos exige escribir una clase propia de balanceo (misma interfaz `ReactorServiceInstanceLoadBalancer` que ya usan los dos anteriores), trabajo real, no una propiedad de configuración. Por eso quedan fuera del alcance de esta sesión — se documentan aquí como panorama, no como algo que se construye hoy.
+
+**Figura 5. Weighted Round Robin, sobre las instancias de hoy**
+
+```mermaid
+flowchart LR
+    LB{"pagatu-gateway<br/>puerto 18080 (DEV)<br/>Weighted Round Robin"}
+    I1["pagatu-catalogo-ms<br/>instancia 1, puerto 8080<br/>peso 1"]
+    I2["pagatu-catalogo-ms<br/>instancia 2, puerto 8081<br/>peso 2 - el doble de recursos"]
+
+    LB -->|"~33% del tráfico"| I1
+    LB -->|"~66% del tráfico"| I2
+```
+
+Reparte proporcional al peso asignado a cada instancia — necesario con hardware heterogéneo. Las dos instancias de `pagatu-catalogo-ms` de hoy corren en la misma máquina, con la misma capacidad: no hay ningún peso real que asignar, por eso *round-robin* sin pesos ya reparte parejo.
+
+**Figura 6. Least Connections, sobre las instancias de hoy**
+
+```mermaid
+flowchart LR
+    LB{"pagatu-gateway<br/>puerto 18080 (DEV)<br/>Least Connections"}
+    I1["pagatu-catalogo-ms<br/>instancia 1, puerto 8080<br/>12 conexiones activas"]
+    I2["pagatu-catalogo-ms<br/>instancia 2, puerto 8081<br/>3 conexiones activas"]
+
+    LB -.->|"no elegida, más carga"| I1
+    LB -->|"elegida: menos conexiones activas"| I2
+```
+
+Envía cada petición nueva a la instancia con menos conexiones activas en ese instante — útil cuando las conexiones duran tiempos muy distintos (WebSockets de larga duración mezclados con peticiones HTTP cortas). Las peticiones de hoy (`GET /api/v1/categorias`) son todas cortas y de duración parecida: contar conexiones activas no aportaría una decisión distinta a la de repartir por turnos.
+
+**Figura 7. IP Hash / Consistent Hashing, sobre las instancias de hoy**
+
+```mermaid
+flowchart LR
+    CA["Cliente A<br/>203.0.113.5<br/>2 peticiones distintas"]
+    CB["Cliente B<br/>198.51.100.7"]
+    GW{"pagatu-gateway<br/>puerto 18080 (DEV)<br/>IP Hash"}
+    I1["pagatu-catalogo-ms<br/>instancia 1, puerto 8080"]
+    I2["pagatu-catalogo-ms<br/>instancia 2, puerto 8081"]
+
+    CA -->|"hash(203.0.113.5)"| GW
+    CB -->|"hash(198.51.100.7)"| GW
+    GW -->|"siempre la misma instancia"| I2
+    GW -->|"otro hash, otra instancia"| I1
+```
+
+Calcula un hash a partir de la IP del cliente (u otro identificador) para que el mismo cliente siempre golpee la misma instancia — necesario solo si el servicio guarda estado en memoria local, que se perdería si la siguiente petición del mismo cliente cayera en otra instancia. `pagatu-catalogo-ms` no guarda ningún estado propio en memoria — su único estado real vive en `pagatu_catalogo_db` (PostgreSQL), compartido por ambas instancias por igual; no hay nada que "recordar" de un cliente entre una petición y la siguiente.
+
+**Figura 8. Least Response Time, sobre las instancias de hoy**
+
+```mermaid
+flowchart LR
+    LB{"pagatu-gateway<br/>puerto 18080 (DEV)<br/>Least Response Time"}
+    I1["pagatu-catalogo-ms<br/>instancia 1, puerto 8080<br/>~120ms promedio"]
+    I2["pagatu-catalogo-ms<br/>instancia 2, puerto 8081<br/>~35ms promedio"]
+
+    LB -.->|"no elegida, más lenta"| I1
+    LB -->|"elegida: menor latencia reciente"| I2
+```
+
+Combina conexiones activas con la latencia reciente de cada instancia, enviando tráfico a la que responde más rápido con menos carga — el más preciso de los cinco, también el más costoso de operar, porque exige monitorear tiempos de respuesta en vivo. Con dos instancias idénticas, sin diferencia real de capacidad ni de carga, no hay ninguna latencia distinta que detectar.
+
+Las dos instancias de `pagatu-catalogo-ms` de esta sesión son idénticas en capacidad y no guardan ningún estado propio — exactamente el escenario donde *round-robin*, el más simple de los cinco, ya es suficiente. Elegir un algoritmo más sofisticado sin una razón real (como las de las cuatro figuras anteriores) no mejora nada — solo agrega complejidad operacional donde no hace falta.
+
+Aislando solo la diferencia entre `uri: http://...` (una dirección fija) y `uri: lb://...` (2.2) — misma ruta, mismo Gateway, mismo `predicates`, la única variable es si el destino se resuelve por balanceo o no:
+
+`pagatu-eureka` (S3) sigue corriendo en los dos casos, y las dos instancias de `pagatu-catalogo-ms` siguen registrándose en él exactamente igual — lo que cambia no es si Eureka existe, sino si **esta ruta en particular** lo consulta. Con `uri: http://localhost:8080`, el Gateway nunca le pregunta nada al registro: envía la petición a esa dirección literal, exista o no esa instancia en ese momento, esté registrada o no, sin importar cuántas otras instancias estén vivas — el registro sigue ahí, simplemente nadie lo mira para esta ruta. Con `uri: lb://pagatu-catalogo-ms`, el Gateway sí consulta a `pagatu-eureka` en cada petición, y recién ahí el balanceador elige entre las instancias que el registro reporta vivas.
+
+**Tabla 2. Sin balanceo de carga y con balanceo de carga**
+
+| | Ruta sin balanceo (`uri: http://localhost:8080`) | Ruta con balanceo (`uri: lb://pagatu-catalogo-ms`) |
+|---|---|---|
+| ¿Esta ruta consulta a `pagatu-eureka`? | No — la dirección ya está fija en la propia ruta | Sí, en cada petición, para saber qué instancias siguen vivas |
+| Cuántas instancias puede atender la ruta | Una sola, la que esté escrita en la dirección | Todas las que el registro reporte vivas en ese momento |
+| Qué pasa si esa instancia recibe más tráfico del que soporta | Toda la carga cae sobre ella, sin alternativa | Se reparte entre las instancias disponibles |
+| Qué pasa si se agrega una instancia nueva | Nadie la usa hasta que alguien edite la ruta a mano | Empieza a recibir tráfico en cuanto se registra, sin tocar la ruta |
+| Qué pasa si esa instancia se cae | El Gateway le sigue enviando tráfico, y falla | El Gateway deja de enviarle tráfico en cuanto el registro la retira |
+| Quién decide qué instancia atiende cada petición | Nadie decide — siempre la misma, fija en la ruta | El balanceador de carga, con el algoritmo elegido (arriba) |
+
+**Tabla 3. Antes y después del punto único de acceso**
 
 | | Sin Gateway (hasta S3) | Con Gateway (desde hoy) |
 |---|---|---|
@@ -210,7 +356,7 @@ Confirma que `http://localhost:18761` muestra dos instancias de `PAGATU-CATALOGO
 
 Desde VS Code, usa Spring Initializr (`Spring Initializr: Create a Maven Project`):
 
-**Tabla 3. Configuración del proyecto `pagatu-gateway` en Spring Initializr**
+**Tabla 4. Configuración del proyecto `pagatu-gateway` en Spring Initializr**
 
 | Campo | Valor |
 |---|---|
@@ -226,7 +372,7 @@ Desde VS Code, usa Spring Initializr (`Spring Initializr: Create a Maven Project
 
 Dependencias a seleccionar:
 
-**Tabla 4. Dependencias del proyecto `pagatu-gateway`**
+**Tabla 5. Dependencias del proyecto `pagatu-gateway`**
 
 | Grupo | Dependencias | Propósito |
 |---|---|---|
@@ -426,7 +572,7 @@ for i in 1 2 3 4; do curl -s -o /dev/null http://localhost:18080/api/v1/categori
 
 Revisa ambas consolas de `pagatu-catalogo-ms`: cada una debe mostrar líneas de log nuevas por **algunas** de las cuatro peticiones, no todas por la misma instancia — esa alternancia es la evidencia del balanceo *round-robin* (2.3), no algo que se vea en la respuesta HTTP (ambas instancias devuelven exactamente los mismos datos, porque comparten la misma base de datos).
 
-**Tabla 5. Verificación de balanceo de carga antes de continuar**
+**Tabla 6. Verificación de balanceo de carga antes de continuar**
 
 | Verificación | Resultado esperado |
 |---|---|
@@ -435,7 +581,7 @@ Revisa ambas consolas de `pagatu-catalogo-ms`: cada una debe mostrar líneas de 
 | Consola de la instancia `8081` | Recibe el resto de las peticiones, no cero |
 | Detener una instancia (Ctrl+C) y repetir las peticiones | El Gateway sigue respondiendo `200`, ahora siempre desde la instancia que queda viva |
 
-El último caso de la Tabla 5 es la prueba real del punto único de acceso: el cliente nunca se entera de que una instancia se cayó — sigue llamando a la misma dirección, y el Gateway deja de enviarle tráfico a la instancia caída en cuanto `pagatu-eureka` la retira del registro (S3, heartbeat).
+El último caso de la Tabla 6 es la prueba real del punto único de acceso: el cliente nunca se entera de que una instancia se cayó — sigue llamando a la misma dirección, y el Gateway deja de enviarle tráfico a la instancia caída en cuanto `pagatu-eureka` la retira del registro (S3, heartbeat).
 
 ### 3.7 (opcional, anexo) Grafana sobre Prometheus y Loki
 
@@ -544,6 +690,14 @@ Verifica:
 ```powershell
 Invoke-RestMethod -Method Get -Uri "http://localhost:28080/api/v1/categorias"
 ```
+
+**Evidencia de aprendizaje:**
+
+- `pagatu-gateway` operativo en DEV, registrado en `pagatu-eureka` y verificado en el dashboard.
+- Rutas hacia `pagatu-catalogo-ms` (`/api/v1/categorias`, `/api/v1/productos`) resueltas por el Gateway, sin usar los puertos directos de las instancias.
+- Balanceo de carga verificado con peticiones consecutivas resueltas por instancias distintas.
+- (Opcional) Grafana con Prometheus y Loki como fuentes de datos, mostrando métricas y logs en un solo tablero.
+- (Opcional) `pagatu-gateway` operativo también en producción local, como único componente con puerto de negocio expuesto al host.
 
 ## 4. Crea: actividad autónoma
 
@@ -657,7 +811,7 @@ La evidencia individual se considera completa si:
 
 ### 4.6 Rúbrica de evaluación
 
-**Tabla 6. Rúbrica de evaluación**
+**Tabla 7. Rúbrica de evaluación**
 
 | Criterio | Peso (%) | A (20 pts) | B (15 pts) | C (10 pts) | D (5 pts) | Nivel obtenido |
 |---|---:|---|---|---|---|---:|
@@ -696,6 +850,7 @@ Tiempo: 5 min.
 ## Bibliografía
 
 - SACAViX. (2026). *API Gateway*. SACAViX System Design — API Gateway. https://systemdesign.sacavix.com/patterns/api-gateway
+- SACAViX. (2026). *Load Balancing*. SACAViX System Design — Load Balancing. https://systemdesign.sacavix.com/patterns/load-balancing
 - VMware Tanzu / Broadcom Inc. (2026). *Spring Cloud Gateway reference documentation*. https://docs.spring.io/spring-cloud-gateway/reference/
 - VMware Tanzu / Broadcom Inc. (2026). *Spring Cloud LoadBalancer reference documentation*. https://docs.spring.io/spring-cloud-commons/reference/spring-cloud-commons/loadbalancer.html
 - VMware Tanzu / Broadcom Inc. (2026). *Spring Cloud 2025.1.2 (aka Oakwood) release notes*. https://spring.io/blog/2026/06/11/spring-cloud-2025-1-2-aka-oakwood-has-been-released/

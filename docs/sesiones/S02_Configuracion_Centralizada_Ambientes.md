@@ -66,8 +66,8 @@ Con dos servicios el problema ya es real; con diez, es prácticamente imposible 
 ### 1.7 Ubicación en el curso
 
 - Unidad: U1 - Sistema distribuido base orientado a producción.
-- Producto de unidad: sistema distribuido base funcional, configurable y preparado para múltiples instancias, ejecutable en desarrollo y producción local en paralelo.
 - Producto del curso: Proyecto Sello: sistema distribuido de microservicios end-to-end, configurable, escalable, seguro, resiliente, consistente, observable, integrado con frontend y defendido técnicamente.
+- Producto de unidad: sistema distribuido base funcional, configurable y preparado para múltiples instancias, ejecutable en desarrollo y producción local en paralelo.
 - Avance del producto en esta sesión: configuración externa por ambiente mediante Config Server, con `pagatu-catalogo-ms` migrado a Config Client.
 
 **Figura 1. Roadmap del producto de la unidad**
