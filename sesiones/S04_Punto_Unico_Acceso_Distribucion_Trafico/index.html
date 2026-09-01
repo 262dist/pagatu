@@ -1,0 +1,2324 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://262dist.github.io/pagatu/sesiones/S04_Punto_Unico_Acceso_Distribucion_Trafico/">
+      
+      
+        <link rel="prev" href="../S03_Registro_Descubrimiento_Ejecucion_Concurrente/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+  
+    <title>Pagatu - S4 - Punto único de acceso y distribución de tráfico</title>
+  
+
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#s4-punto-unico-de-acceso-y-distribucion-de-trafico" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Pagatu" class="md-header__button md-logo" aria-label="Pagatu" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Pagatu
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              S4 - Punto único de acceso y distribución de tráfico
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/262dist/pagatu" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    262dist/pagatu
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Pagatu" class="md-nav__button md-logo" aria-label="Pagatu" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Pagatu
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/262dist/pagatu" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    262dist/pagatu
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía de Proyecto Sello
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guía de Proyecto Sello
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía del proyecto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief técnico (plantilla)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/alcance-microservicios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Alcance por microservicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/acad/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sistema académico (referencia)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabos
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Silabos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabo 2026-1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabo 2026-2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I. Sistema distribuido base orientado a producción
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    I. Sistema distribuido base orientado a producción
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S01_Construccion_Servicio_Base/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S1 - Construcción de un servicio base para un sistema distribuido
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S02_Configuracion_Centralizada_Ambientes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S2 - Gestión centralizada de configuración y ambientes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S03_Registro_Descubrimiento_Ejecucion_Concurrente/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S3 - Registro, descubrimiento y ejecución concurrente de servicios
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S4 - Punto único de acceso y distribución de tráfico
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S4 - Punto único de acceso y distribución de tráfico
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introducción
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introducción">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-presentacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Presentación de la sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-indice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Índice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-proposito-de-aprendizaje" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Propósito de aprendizaje
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-producto-de-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Producto de sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-metodologia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Metodología
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-motivacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6 Motivación de la sesión
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.6 Motivación de la sesión">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#161-caso-el-puerto-que-el-cliente-ya-no-deberia-conocer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6.1 Caso: el puerto que el cliente ya no debería conocer
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-ubicacion-en-el-curso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.7 Ubicación en el curso
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-explica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Explica
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Explica">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-arquitectura-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Arquitectura de la sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-punto-unico-de-acceso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Punto único de acceso
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-distribucion-de-trafico-entre-instancias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Distribución de tráfico entre instancias
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-aplica-actividad-practica-guiada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Aplica: actividad práctica guiada
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Aplica: actividad práctica guiada">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-verificar-el-punto-de-partida" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Verificar el punto de partida
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-crear-el-proyecto-pagatu-gateway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Crear el proyecto pagatu-gateway
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-configurar-pagatu-gateway-como-config-client" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Configurar pagatu-gateway como Config Client
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-crear-la-configuracion-de-pagatu-gateway-en-config-repo-con-sus-rutas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Crear la configuración de pagatu-gateway en config-repo, con sus rutas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-probar-pagatu-gateway-en-dev" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Probar pagatu-gateway en DEV
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-verificar-balanceo-de-carga-entre-instancias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 Verificar balanceo de carga entre instancias
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-opcional-anexo-grafana-sobre-prometheus-y-loki" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7 (opcional, anexo) Grafana sobre Prometheus y Loki
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#38-opcional-punto-unico-de-acceso-en-produccion-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.8 (opcional) Punto único de acceso en producción local
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-crea-actividad-autonoma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Crea: actividad autónoma
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Crea: actividad autónoma">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-actividad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Actividad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Propósito
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-indicaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Indicaciones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3 Indicaciones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#431-estructura-del-informe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.1 Estructura del informe
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-criterios-minimos-de-aceptacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Criterios mínimos de aceptación
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-preguntas-de-defensa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 Preguntas de defensa
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-rubrica-de-evaluacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 Rúbrica de evaluación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-cierre" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Cierre
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bibliografia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bibliografía
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introducción
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introducción">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-presentacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Presentación de la sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-indice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Índice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-proposito-de-aprendizaje" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Propósito de aprendizaje
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-producto-de-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Producto de sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-metodologia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Metodología
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-motivacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6 Motivación de la sesión
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.6 Motivación de la sesión">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#161-caso-el-puerto-que-el-cliente-ya-no-deberia-conocer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6.1 Caso: el puerto que el cliente ya no debería conocer
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-ubicacion-en-el-curso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.7 Ubicación en el curso
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-explica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Explica
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Explica">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-arquitectura-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Arquitectura de la sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-punto-unico-de-acceso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Punto único de acceso
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-distribucion-de-trafico-entre-instancias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Distribución de tráfico entre instancias
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-aplica-actividad-practica-guiada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Aplica: actividad práctica guiada
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Aplica: actividad práctica guiada">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-verificar-el-punto-de-partida" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Verificar el punto de partida
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-crear-el-proyecto-pagatu-gateway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Crear el proyecto pagatu-gateway
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-configurar-pagatu-gateway-como-config-client" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Configurar pagatu-gateway como Config Client
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-crear-la-configuracion-de-pagatu-gateway-en-config-repo-con-sus-rutas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Crear la configuración de pagatu-gateway en config-repo, con sus rutas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-probar-pagatu-gateway-en-dev" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Probar pagatu-gateway en DEV
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-verificar-balanceo-de-carga-entre-instancias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 Verificar balanceo de carga entre instancias
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-opcional-anexo-grafana-sobre-prometheus-y-loki" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7 (opcional, anexo) Grafana sobre Prometheus y Loki
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#38-opcional-punto-unico-de-acceso-en-produccion-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.8 (opcional) Punto único de acceso en producción local
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-crea-actividad-autonoma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Crea: actividad autónoma
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Crea: actividad autónoma">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-actividad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Actividad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Propósito
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-indicaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Indicaciones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3 Indicaciones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#431-estructura-del-informe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.1 Estructura del informe
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-criterios-minimos-de-aceptacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Criterios mínimos de aceptación
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-preguntas-de-defensa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 Preguntas de defensa
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-rubrica-de-evaluacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 Rúbrica de evaluación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-cierre" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Cierre
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bibliografia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bibliografía
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="s4-punto-unico-de-acceso-y-distribucion-de-trafico">S4 - Punto Único de Acceso y Distribución de Tráfico<a class="headerlink" href="#s4-punto-unico-de-acceso-y-distribucion-de-trafico" title="Permanent link">&para;</a></h1>
+<p><em>Por: Angel Sullon Macalupu @asullom - 2026</em></p>
+<h2 id="1-introduccion">1. Introducción<a class="headerlink" href="#1-introduccion" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 20 min.</p>
+<h3 id="11-presentacion-de-la-sesion">1.1 Presentación de la sesión<a class="headerlink" href="#11-presentacion-de-la-sesion" title="Permanent link">&para;</a></h3>
+<p>Aunque el registro y descubrimiento de servicios ya resuelve que ningún componente necesite memorizar direcciones a mano, quien prueba el sistema desde afuera — un cliente real, no otro microservicio — todavía tiene que conocer el puerto exacto de cada instancia y decidir a cuál llamar. Esta sesión resuelve exactamente eso: un único punto de entrada que recibe todas las peticiones externas, resuelve el servicio correcto por su nombre lógico y reparte el tráfico entre las instancias disponibles, sin que quien llama sepa nunca cuántas hay ni en qué puerto responde cada una.</p>
+<h3 id="12-indice">1.2 Índice<a class="headerlink" href="#12-indice" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Punto único de acceso.</li>
+<li>Distribución de tráfico entre instancias.</li>
+</ol>
+<h3 id="13-proposito-de-aprendizaje">1.3 Propósito de aprendizaje<a class="headerlink" href="#13-proposito-de-aprendizaje" title="Permanent link">&para;</a></h3>
+<p>Al concluir la clase, estarás en condiciones de:</p>
+<ul>
+<li><strong>Configurar e implementar</strong> un punto único de acceso que enrute peticiones hacia los servicios ya registrados y reparta el tráfico entre sus instancias disponibles, sin que quien consume el sistema conozca puertos ni direcciones individuales.</li>
+</ul>
+<h3 id="14-producto-de-sesion">1.4 Producto de sesión<a class="headerlink" href="#14-producto-de-sesion" title="Permanent link">&para;</a></h3>
+<p><code>pagatu-gateway</code> operativo en <code>infra/pagatu-gateway</code>, con rutas hacia <code>pagatu-catalogo-ms</code> (<code>/api/v1/categorias</code>, <code>/api/v1/productos</code>) resueltas mediante <code>lb://</code> sobre el registro de <code>pagatu-eureka</code>, balanceando tráfico entre sus dos instancias (<code>8080</code>/<code>8081</code>, S3), verificado con múltiples peticiones consecutivas al mismo punto de entrada.</p>
+<h3 id="15-metodologia">1.5 Metodología<a class="headerlink" href="#15-metodologia" title="Permanent link">&para;</a></h3>
+<p><strong>Tabla 1. Metodología de la sesión</strong></p>
+<table>
+<thead>
+<tr>
+<th>Actividades a Realizar en el Periodo</th>
+<th>Orientaciones generales (Orientaciones Metodológicas)</th>
+<th>Material de estudio recomendado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Revisión previa individual</td>
+<td>Confirmar que <code>pagatu-eureka</code> y las dos instancias de <code>pagatu-catalogo-ms</code> (S3) siguen registrándose en DEV. Trabajo individual, antes de clase; identificar qué puerto habría que usar hoy para llamar a cada instancia sin ningún componente nuevo.</td>
+<td>Evidencia individual de S3, dashboard de <code>pagatu-eureka</code>.</td>
+</tr>
+<tr>
+<td>Clase presencial</td>
+<td>Construcción guiada de <code>pagatu-gateway</code>, con rutas hacia <code>pagatu-catalogo-ms</code> y balanceo de carga verificado entre sus dos instancias. Trabajo individual, siguiendo al docente paso a paso; consulta inmediata ante una ruta que no resuelve. Quien cuente con los recursos de cómputo puede continuar con Grafana (3.7, opcional) y con producción local (3.8, opcional).</td>
+<td>Pasos 3.1 a 3.6 de esta guía (3.7-3.8 son opcionales).</td>
+</tr>
+<tr>
+<td>Evaluación formativa</td>
+<td>Revisión en clase de <code>pagatu-gateway</code> respondiendo por HTTP y de al menos dos peticiones consecutivas resueltas por instancias distintas. La evidencia se completa y sustenta de forma individual, fuera del aula, según los criterios mínimos de la sección 4.4.</td>
+<td>Indicaciones de entrega (4.3), rúbrica de evaluación (4.6).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="16-motivacion-de-la-sesion">1.6 Motivación de la sesión<a class="headerlink" href="#16-motivacion-de-la-sesion" title="Permanent link">&para;</a></h3>
+<h4 id="161-caso-el-puerto-que-el-cliente-ya-no-deberia-conocer">1.6.1 Caso: el puerto que el cliente ya no debería conocer<a class="headerlink" href="#161-caso-el-puerto-que-el-cliente-ya-no-deberia-conocer" title="Permanent link">&para;</a></h4>
+<p>Con dos instancias de <code>pagatu-catalogo-ms</code> registradas en <code>pagatu-eureka</code> (sesión 3), un cliente que prueba a mano —PowerShell, Swagger— sigue escribiendo <code>localhost:8080</code> o <code>localhost:8081</code>: el registro le sirve a otro microservicio, o a una herramienta de observabilidad, pero no a ese cliente externo, que nunca consulta a Eureka por su cuenta. Si mañana aparece una tercera instancia, o una de las dos existentes se cae, ese cliente sigue apuntando a un puerto fijo que puede dejar de responder — nadie le avisa que la topología cambió.</p>
+<p>La solución no es que el cliente aprenda a consultar Eureka también — es que nunca necesite hacerlo: un único punto de entrada recibe la petición, resuelve el nombre lógico por su cuenta, y decide a qué instancia enviarla. El cliente solo conoce una dirección, siempre la misma, sin importar cuántas instancias haya detrás ni cuál de ellas responda esta vez.</p>
+<p><strong>Preguntas de análisis</strong></p>
+<p><strong>Activación de conocimientos previos</strong></p>
+<ol>
+<li>En la sesión 3, ¿qué componente consultaba a <code>pagatu-eureka</code> por nombre lógico, y qué componente seguía necesitando el puerto exacto de cada instancia?</li>
+</ol>
+<p><strong>Comprensión del punto único de acceso</strong></p>
+<ol>
+<li>Si un cliente externo llamara directamente a <code>pagatu-catalogo-ms:8081</code> y esa instancia se cayera, ¿qué pasaría con esa petición? ¿Cambiaría algo si el cliente llamara al punto único de acceso en vez de al puerto directo?</li>
+<li>¿Por qué "repartir tráfico entre instancias" necesita primero "encontrar las instancias disponibles" — y por qué eso ya estaba resuelto desde la sesión anterior?</li>
+</ol>
+<h3 id="17-ubicacion-en-el-curso">1.7 Ubicación en el curso<a class="headerlink" href="#17-ubicacion-en-el-curso" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Unidad: U1 - Sistema distribuido base orientado a producción.</li>
+<li>Producto de unidad: sistema distribuido base funcional, configurable y preparado para múltiples instancias.</li>
+<li>Producto del curso: sistema distribuido de microservicios end-to-end, configurable, escalable, seguro, resiliente, consistente, observable, integrado con frontend y defendido técnicamente.</li>
+<li>Avance del producto en esta sesión: punto único de acceso operativo, con rutas resueltas por descubrimiento y tráfico repartido entre instancias.</li>
+</ul>
+<p><strong>Figura 1. Roadmap del producto de la unidad</strong></p>
+<pre class="mermaid"><code>flowchart TB
+    Cliente["Cliente de prueba - PowerShell / bash / Swagger"]
+    Gateway["Gateway - punto único de acceso - balanceo de carga - HOY"]
+    Catalogo["pagatu-catalogo-ms - construido en S1 - REST + BD + health"]
+    Orden["pagatu-orden-ms - trabajo aplicado"]
+    Eureka["Registro de servicios - pagatu-eureka - construido en S3"]
+    Config["Servidor de configuración - pagatu-config - construido en S2"]
+    Repo[("Repositorio de configuración - config-repo")]
+
+    Cliente --&gt; Gateway
+    Gateway --&gt;|"lb://pagatu-catalogo-ms"| Catalogo
+    Gateway --&gt;|"lb://pagatu-orden-ms"| Orden
+    Gateway -. descubre servicios .-&gt; Eureka
+    Catalogo -. registra instancia .-&gt; Eureka
+    Orden -. registra instancia .-&gt; Eureka
+    Gateway -. carga configuración .-&gt; Config
+    Catalogo -. carga configuración .-&gt; Config
+    Config --&gt; Repo
+
+    classDef done fill:#e8f5e9,stroke:#2e7d32,color:#111;
+    classDef today fill:#ffe08a,stroke:#9a6b00,stroke-width:2px,color:#111;
+    class Catalogo,Eureka,Config done;
+    class Gateway today;</code></pre>
+<p>Hoy se construye <code>pagatu-gateway</code> con rutas hacia <code>pagatu-catalogo-ms</code>, ya registrado con dos instancias desde S3. <code>pagatu-orden-ms</code> (todavía sin Config Client ni Eureka Client, según se haya completado o no el trabajo autónomo de S3) recibe su propia ruta como trabajo autónomo de esta sesión (sección 4) — el mismo patrón, aplicado sobre el segundo microservicio.</p>
+<h2 id="2-explica">2. Explica<a class="headerlink" href="#2-explica" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 25 min.</p>
+<h3 id="21-arquitectura-de-la-sesion">2.1 Arquitectura de la sesión<a class="headerlink" href="#21-arquitectura-de-la-sesion" title="Permanent link">&para;</a></h3>
+<p><strong>Figura 2. De la petición externa a la instancia que la atiende</strong></p>
+<pre class="mermaid"><code>flowchart LR
+    Cliente["Cliente externo"]
+    GW["pagatu-gateway"]
+    LB["Resolución lb://&lt;br/&gt;elige una instancia"]
+    Eureka[("pagatu-eureka")]
+    I1["pagatu-catalogo-ms&lt;br/&gt;instancia 1, puerto 8080"]
+    I2["pagatu-catalogo-ms&lt;br/&gt;instancia 2, puerto 8081"]
+
+    Cliente --&gt;|"1. GET /api/v1/categorias"| GW
+    GW --&gt;|"2. resuelve la ruta"| LB
+    LB -.-&gt;|"3. consulta instancias vivas"| Eureka
+    LB --&gt;|"4a. esta vez"| I1
+    LB -.-&gt;|"4b. la próxima vez"| I2</code></pre>
+<p>Lectura del diagrama: el cliente ya no llama a <code>pagatu-catalogo-ms</code> — llama a <code>pagatu-gateway</code>, siempre a la misma dirección. <code>pagatu-gateway</code> reconoce la ruta por su <code>Path</code> (2.3), resuelve <code>lb://pagatu-catalogo-ms</code> preguntándole a <code>pagatu-eureka</code> qué instancias están vivas en ese instante, y reenvía la petición a una de ellas — distinta cada vez, según el balanceo de carga. Quien prueba a mano ya no necesita escribir <code>:8080</code> ni <code>:8081</code>: la petición 1 puede resolverse contra la instancia 1, y la petición 2, idéntica, contra la instancia 2, sin que el cliente note ninguna diferencia en la respuesta. Este diagrama es el mapa que guía el resto de la explicación: cada apartado siguiente desarrolla uno de sus componentes, en el mismo orden del Índice (1.2).</p>
+<h3 id="22-punto-unico-de-acceso">2.2 Punto único de acceso<a class="headerlink" href="#22-punto-unico-de-acceso" title="Permanent link">&para;</a></h3>
+<p>Un <strong>Gateway</strong> (o <em>API Gateway</em>) es el componente que recibe todo el tráfico externo de un sistema distribuido y lo reenvía hacia el microservicio correcto — el cliente conoce una sola dirección, nunca la topología interna del sistema. Sin Gateway, cada cliente tendría que conocer la dirección de cada microservicio (y de cada una de sus instancias) por separado; agregar un microservicio nuevo, o escalar uno existente, obligaría a actualizar a <strong>todos</strong> los clientes que lo llaman directamente.</p>
+<p>Según SACAViX System Design (2026), un API Gateway centraliza el punto de entrada de un sistema distribuido, ocultando la topología interna y permitiendo aplicar en un solo lugar preocupaciones transversales (enrutamiento, balanceo de carga, y más adelante en el curso, autenticación) que de otro modo se repetirían en cada microservicio.</p>
+<p><strong>Error frecuente</strong>: pensar que el Gateway reemplaza al registro de servicios (<code>pagatu-eureka</code>, S3). No lo reemplaza — lo consume. El Gateway sigue necesitando saber qué instancias existen y están vivas; lo que cambia es <em>quién</em> le pregunta eso a Eureka: antes, cada cliente potencial; ahora, un único componente, una sola vez por petición.</p>
+<h3 id="23-distribucion-de-trafico-entre-instancias">2.3 Distribución de tráfico entre instancias<a class="headerlink" href="#23-distribucion-de-trafico-entre-instancias" title="Permanent link">&para;</a></h3>
+<p>Una <strong>ruta</strong> en el Gateway conecta un patrón de entrada (qué peticiones atrapa) con un destino. En Spring Cloud Gateway, una ruta se define con tres piezas:</p>
+<ul>
+<li><strong><code>id</code></strong>: nombre de la ruta, solo para identificarla en configuración y logs.</li>
+<li><strong><code>predicates</code></strong>: condición que decide si una petición entra por esta ruta — la más común es <code>Path</code>, que compara la URL de la petición contra un patrón.</li>
+<li><strong><code>uri</code></strong>: destino de la ruta. El esquema <code>lb://</code> (<em>load-balanced</em>) es la pieza clave: en vez de una dirección fija (<code>http://localhost:8080</code>), <code>lb://pagatu-catalogo-ms</code> le dice al Gateway "resuelve este nombre lógico contra el registro, y elige una instancia viva" — exactamente lo mismo que ya hace cualquier cliente de Eureka (S3, 2.4), aplicado ahora a nivel de ruta.</li>
+</ul>
+<p>El <strong>balanceo de carga</strong> es la decisión de <em>cuál</em> instancia recibe cada petición, entre todas las que el registro reporta como vivas en ese instante. Spring Cloud LoadBalancer (el balanceador que resuelve el esquema <code>lb://</code>) usa por defecto una estrategia <em>round-robin</em>: reparte las peticiones en turnos, una instancia después de otra, sin favorecer ninguna — la primera petición a una instancia, la segunda a la otra, la tercera de vuelta a la primera.</p>
+<p><strong>Tabla 2. Antes y después del punto único de acceso</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Sin Gateway (hasta S3)</th>
+<th>Con Gateway (desde hoy)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dirección que conoce el cliente</td>
+<td>Una por instancia (<code>:8080</code>, <code>:8081</code>, ...)</td>
+<td>Una sola, fija</td>
+</tr>
+<tr>
+<td>Qué pasa si una instancia se cae</td>
+<td>El cliente que apuntaba ahí falla</td>
+<td>El Gateway deja de enviarle tráfico; el cliente no lo nota</td>
+</tr>
+<tr>
+<td>Qué pasa si se agrega una instancia nueva</td>
+<td>Ningún cliente existente la usa, a menos que se actualice a mano</td>
+<td>El Gateway empieza a repartirle tráfico también, sin cambios en el cliente</td>
+</tr>
+<tr>
+<td>Quién decide a qué instancia va cada petición</td>
+<td>El propio cliente (a mano, escribiendo el puerto)</td>
+<td>El balanceador de carga, automáticamente</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-aplica-actividad-practica-guiada">3. Aplica: actividad práctica guiada<a class="headerlink" href="#3-aplica-actividad-practica-guiada" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 2h.</p>
+<p><strong>Actividad:</strong> construcción guiada de <code>pagatu-gateway</code>, con rutas hacia <code>pagatu-catalogo-ms</code> resueltas por descubrimiento y balanceo de carga verificado entre sus dos instancias (Producto de la sesión en 1.4).</p>
+<p><strong>Propósito de la actividad:</strong> que un cliente externo llame siempre a la misma dirección, sin conocer cuántas instancias de <code>pagatu-catalogo-ms</code> existen ni en qué puerto responde cada una, verificando con evidencia real que el tráfico se reparte entre ellas.</p>
+<p><strong>Orientaciones metodológicas:</strong> en el laboratorio, el docente construye <code>pagatu-gateway</code> paso a paso frente a la clase, verificando cada ruta antes de avanzar; los estudiantes replican cada paso en su propio equipo, con las dos instancias de <code>pagatu-catalogo-ms</code> (S3) ya corriendo antes de empezar.</p>
+<p><strong>Actividades para realizar:</strong></p>
+<ul>
+<li><strong>3.1</strong> Verificar el punto de partida.</li>
+<li><strong>3.2</strong> Crear el proyecto <code>pagatu-gateway</code>.</li>
+<li><strong>3.3</strong> Configurar <code>pagatu-gateway</code> como Config Client.</li>
+<li><strong>3.4</strong> Crear la configuración de <code>pagatu-gateway</code> en <code>config-repo</code>, con sus rutas.</li>
+<li><strong>3.5</strong> Probar <code>pagatu-gateway</code> en DEV.</li>
+<li><strong>3.6</strong> Verificar balanceo de carga entre instancias.</li>
+<li><strong>3.7</strong> (opcional, anexo) Grafana sobre Prometheus y Loki.</li>
+<li><strong>3.8</strong> (opcional) Punto único de acceso en producción local.</li>
+</ul>
+<h3 id="31-verificar-el-punto-de-partida">3.1 Verificar el punto de partida<a class="headerlink" href="#31-verificar-el-punto-de-partida" title="Permanent link">&para;</a></h3>
+<p><strong>Punto de partida común:</strong> todo el equipo debe comenzar exactamente desde el mismo estado, no desde su propio avance individual. Clona la rama <code>s03-registro-descubrimiento</code> (el snapshot de cierre de S3 — incluye <code>pagatu-eureka</code> y <code>pagatu-catalogo-ms</code> registrado):</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>--branch<span class="w"> </span>s03-registro-descubrimiento<span class="w"> </span>https://github.com/262dist/pagatu.git
+</code></pre></div>
+<p><strong>Producto del paso:</strong> confirmación de que <code>pagatu-config</code>, <code>pagatu-eureka</code> y dos instancias de <code>pagatu-catalogo-ms</code> siguen registrándose en DEV, antes de tocar código nuevo.</p>
+<p><strong>Requisito antes de continuar:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd </span><span class="n">infra</span><span class="p">/</span><span class="n">pagatu-config</span>
+<span class="p">.\</span><span class="n">mvnw</span><span class="p">.</span><span class="n">cmd</span> <span class="n">spring-boot</span><span class="p">:</span><span class="n">run</span>
+</code></pre></div>
+<p>En otra terminal:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd </span><span class="n">infra</span><span class="p">/</span><span class="n">pagatu-eureka</span>
+<span class="p">.\</span><span class="n">mvnw</span><span class="p">.</span><span class="n">cmd</span> <span class="n">spring-boot</span><span class="p">:</span><span class="n">run</span>
+</code></pre></div>
+<p>En dos terminales más, una instancia en cada una (mismo mecanismo de S3, 3.9):</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd </span><span class="n">services</span><span class="p">/</span><span class="n">pagatu-catalogo-ms</span>
+<span class="n">docker</span> <span class="n">compose</span> <span class="o">-f</span> <span class="n">compose-dev</span><span class="p">.</span><span class="n">yml</span> <span class="n">up</span> <span class="n">-d</span>
+<span class="p">.\</span><span class="n">mvnw</span><span class="p">.</span><span class="n">cmd</span> <span class="n">spring-boot</span><span class="p">:</span><span class="n">run</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="nb">cd </span><span class="n">services</span><span class="p">/</span><span class="n">pagatu-catalogo-ms</span>
+<span class="p">.\</span><span class="n">mvnw</span><span class="p">.</span><span class="n">cmd</span> <span class="n">spring-boot</span><span class="p">:</span><span class="n">run</span> <span class="s2">"-Dspring-boot.run.arguments=--server.port=8081"</span>
+</code></pre></div>
+<p>Confirma que <code>http://localhost:18761</code> muestra dos instancias de <code>PAGATU-CATALOGO-MS</code>, ambas <code>UP</code>. Si falla, el problema es anterior a esta sesión (S1-S3), no de los pasos 3.2 en adelante.</p>
+<h3 id="32-crear-el-proyecto-pagatu-gateway">3.2 Crear el proyecto <code>pagatu-gateway</code><a class="headerlink" href="#32-crear-el-proyecto-pagatu-gateway" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> proyecto Spring Boot <code>pagatu-gateway</code> creado dentro de <code>infra/pagatu-gateway</code>.</p>
+<p>Desde VS Code, usa Spring Initializr (<code>Spring Initializr: Create a Maven Project</code>):</p>
+<p><strong>Tabla 3. Configuración del proyecto <code>pagatu-gateway</code> en Spring Initializr</strong></p>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Project</td>
+<td>Maven Project</td>
+</tr>
+<tr>
+<td>Spring Boot</td>
+<td>La última estable que ofrezca Spring Initializr en ese momento (verificado: <strong>4.0.8</strong>)</td>
+</tr>
+<tr>
+<td>Language</td>
+<td>Java</td>
+</tr>
+<tr>
+<td>Group Id</td>
+<td><code>pe.edu.upeu</code></td>
+</tr>
+<tr>
+<td>Artifact Id</td>
+<td><code>pagatu-gateway</code></td>
+</tr>
+<tr>
+<td>Package name</td>
+<td><code>pe.edu.upeu.gateway</code></td>
+</tr>
+<tr>
+<td>Packaging</td>
+<td>Jar</td>
+</tr>
+<tr>
+<td>Java</td>
+<td>21</td>
+</tr>
+<tr>
+<td>Ubicación sugerente</td>
+<td><code>infra/pagatu-gateway</code></td>
+</tr>
+</tbody>
+</table>
+<p>Dependencias a seleccionar:</p>
+<p><strong>Tabla 4. Dependencias del proyecto <code>pagatu-gateway</code></strong></p>
+<table>
+<thead>
+<tr>
+<th>Grupo</th>
+<th>Dependencias</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Spring Cloud Routing</td>
+<td>Gateway</td>
+<td>Enrutamiento y balanceo de carga (2.2, 2.3)</td>
+</tr>
+<tr>
+<td>Spring Cloud</td>
+<td>Config Client</td>
+<td>Leer configuración desde <code>pagatu-config</code></td>
+</tr>
+<tr>
+<td>Spring Cloud Discovery</td>
+<td>Eureka Discovery Client</td>
+<td>Resolver <code>lb://</code> contra <code>pagatu-eureka</code></td>
+</tr>
+<tr>
+<td>Ops</td>
+<td>Spring Boot Actuator</td>
+<td>Verificar health de <code>pagatu-gateway</code></td>
+</tr>
+<tr>
+<td>Productividad</td>
+<td>Spring Boot DevTools</td>
+<td>Facilitar ejecución en desarrollo</td>
+</tr>
+</tbody>
+</table>
+<p>En <code>pom.xml</code>, las dependencias clave:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-gateway<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-netflix-eureka-client<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div>
+<p>Mismo BOM de Spring Cloud que ya usan <code>pagatu-config</code> y <code>pagatu-eureka</code> (S2, S3) — Spring Initializr elige la versión compatible con la versión de Spring Boot seleccionada:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;properties&gt;</span>
+<span class="w">    </span><span class="nt">&lt;java.version&gt;</span>21<span class="nt">&lt;/java.version&gt;</span>
+<span class="w">    </span><span class="nt">&lt;spring-cloud.version&gt;</span>2025.1.3<span class="nt">&lt;/spring-cloud.version&gt;</span>
+<span class="nt">&lt;/properties&gt;</span>
+
+<span class="nt">&lt;dependencyManagement&gt;</span>
+<span class="w">    </span><span class="nt">&lt;dependencies&gt;</span>
+<span class="w">        </span><span class="nt">&lt;dependency&gt;</span>
+<span class="w">            </span><span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">            </span><span class="nt">&lt;artifactId&gt;</span>spring-cloud-dependencies<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">            </span><span class="nt">&lt;version&gt;</span>${spring-cloud.version}<span class="nt">&lt;/version&gt;</span>
+<span class="w">            </span><span class="nt">&lt;type&gt;</span>pom<span class="nt">&lt;/type&gt;</span>
+<span class="w">            </span><span class="nt">&lt;scope&gt;</span>import<span class="nt">&lt;/scope&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/dependencies&gt;</span>
+<span class="nt">&lt;/dependencyManagement&gt;</span>
+</code></pre></div>
+<p><code>pagatu-gateway</code> no necesita ninguna clase ni anotación adicional más allá de la que Spring Initializr ya genera (<code>@SpringBootApplication</code>) — a diferencia de <code>pagatu-eureka</code> (S3, 3.3), que sí necesitaba <code>@EnableEurekaServer</code> para activarse como servidor. Gateway y descubrimiento se activan solos por la sola presencia de las dependencias en el <code>pom.xml</code>; todo el comportamiento real se define en configuración (3.4), no en código.</p>
+<h3 id="33-configurar-pagatu-gateway-como-config-client">3.3 Configurar <code>pagatu-gateway</code> como Config Client<a class="headerlink" href="#33-configurar-pagatu-gateway-como-config-client" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> <code>pagatu-gateway</code> preparado para leer su propia configuración desde <code>pagatu-config</code> — el mismo patrón que ya siguen <code>pagatu-catalogo-ms</code> (S2) y <code>pagatu-eureka</code> (S3).</p>
+<p>En <code>infra/pagatu-gateway/src/main/resources/application.yml</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">spring</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">application</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-gateway</span>
+<span class="w">  </span><span class="nt">profiles</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">active</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dev</span>
+<span class="w">  </span><span class="nt">config</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">import</span><span class="p">:</span><span class="w"> </span><span class="s">"optional:configserver:${CONFIG_SERVER_URL:http://localhost:18888}"</span>
+</code></pre></div>
+<h3 id="34-crear-la-configuracion-de-pagatu-gateway-en-config-repo-con-sus-rutas">3.4 Crear la configuración de <code>pagatu-gateway</code> en <code>config-repo</code>, con sus rutas<a class="headerlink" href="#34-crear-la-configuracion-de-pagatu-gateway-en-config-repo-con-sus-rutas" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> <code>pagatu-gateway-dev.yml</code> y <code>pagatu-gateway-prod.yml</code> en <code>config-repo</code>, con las rutas hacia <code>pagatu-catalogo-ms</code>.</p>
+<p><strong><code>config-repo/pagatu-gateway-dev.yml</code>:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nt">server</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">18080</span>
+
+<span class="nt">spring</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">cloud</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">gateway</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">routes</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-catalogo-categorias</span>
+<span class="w">          </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lb://pagatu-catalogo-ms</span>
+<span class="w">          </span><span class="nt">predicates</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Path=/api/v1/categorias/**</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-catalogo-productos</span>
+<span class="w">          </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lb://pagatu-catalogo-ms</span>
+<span class="w">          </span><span class="nt">predicates</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Path=/api/v1/productos/**</span>
+
+<span class="nt">eureka</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">instance</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span>
+<span class="w">    </span><span class="nt">instance-id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${spring.application.name}:${server.port}</span>
+<span class="w">  </span><span class="nt">client</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">service-url</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">defaultZone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://localhost:18761/eureka</span>
+
+<span class="nt">management</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">endpoints</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">web</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">exposure</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health,info,metrics</span>
+<span class="w">  </span><span class="nt">endpoint</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">health</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">show-details</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always</span>
+</code></pre></div>
+<p><code>18080</code>, no <code>8080</code>: el puerto natural de un Gateway suele ser <code>8080</code>, pero ese ya lo usa la primera instancia de <code>pagatu-catalogo-ms</code> (S1-S3). Mismo criterio que <code>pagatu-config</code> (<code>8888</code> → <code>18888</code>) y <code>pagatu-eureka</code> (<code>8761</code> → <code>18761</code>): en DEV, el prefijo <code>1</code> evita el choque con los puertos que los microservicios ya tienen fijos.</p>
+<p>Dos rutas, no una — <code>pagatu-catalogo-ms</code> expone dos recursos (<code>/api/v1/categorias</code>, <code>/api/v1/productos</code>, S1-S2), y cada uno necesita su propio <code>predicates: Path</code>, aunque las dos apunten al mismo <code>uri: lb://pagatu-catalogo-ms</code>: el Gateway no agrupa rutas por servicio de destino, las agrupa por el patrón de entrada.</p>
+<p><strong><code>config-repo/pagatu-gateway-prod.yml</code>:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nt">server</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span>
+
+<span class="nt">spring</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">cloud</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">gateway</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">routes</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-catalogo-categorias</span>
+<span class="w">          </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lb://pagatu-catalogo-ms</span>
+<span class="w">          </span><span class="nt">predicates</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Path=/api/v1/categorias/**</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-catalogo-productos</span>
+<span class="w">          </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lb://pagatu-catalogo-ms</span>
+<span class="w">          </span><span class="nt">predicates</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Path=/api/v1/productos/**</span>
+
+<span class="nt">eureka</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">instance</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">instance-id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${spring.application.name}:${random.value}</span>
+<span class="w">  </span><span class="nt">client</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">service-url</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">defaultZone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://pagatu-eureka:8761/eureka</span>
+
+<span class="nt">management</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">endpoints</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">web</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">exposure</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health,info,metrics</span>
+<span class="w">  </span><span class="nt">endpoint</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">health</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">show-details</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">never</span>
+</code></pre></div>
+<p>En PROD, <code>pagatu-gateway</code> sí usa el puerto natural <code>8080</code> (dentro de su propio contenedor, sin choque posible con otros servicios — cada uno vive en su propia red interna) — el mismo criterio que ya siguen <code>pagatu-config</code> y <code>pagatu-eureka</code> desde 3.15 de S3.</p>
+<h3 id="35-probar-pagatu-gateway-en-dev">3.5 Probar <code>pagatu-gateway</code> en DEV<a class="headerlink" href="#35-probar-pagatu-gateway-en-dev" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> evidencia de que las rutas resuelven correctamente a través del punto único de acceso.</p>
+<p>Con <code>pagatu-config</code>, <code>pagatu-eureka</code> y las dos instancias de <code>pagatu-catalogo-ms</code> ya corriendo (3.1), en una nueva terminal:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd </span><span class="n">infra</span><span class="p">/</span><span class="n">pagatu-gateway</span>
+<span class="p">.\</span><span class="n">mvnw</span><span class="p">.</span><span class="n">cmd</span> <span class="n">spring-boot</span><span class="p">:</span><span class="n">run</span>
+</code></pre></div>
+<p>Confirma que se registra en el dashboard:</p>
+<div class="highlight"><pre><span></span><code>http://localhost:18761
+</code></pre></div>
+<p>Resultado esperado: aparece <code>PAGATU-GATEWAY</code> junto a <code>PAGATU-CATALOGO-MS</code>, ambos <code>UP</code> — el Gateway también es un cliente de Eureka (2.2), necesita el registro tanto como cualquier otro componente.</p>
+<p>Prueba las rutas, <strong>sin usar <code>8080</code> ni <code>8081</code></strong>, solo el puerto del Gateway:</p>
+<p>PowerShell:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18080/api/v1/categorias"</span>
+<span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18080/api/v1/productos"</span>
+</code></pre></div>
+<p>bash macOS/Linux:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:18080/api/v1/categorias
+curl<span class="w"> </span>http://localhost:18080/api/v1/productos
+</code></pre></div>
+<p>Resultado esperado: la misma respuesta que ya conoces desde S1-S2, ahora obtenida sin escribir ningún puerto de instancia — solo el puerto fijo y único del Gateway.</p>
+<p><strong>Error frecuente</strong>: probar una ruta que no coincide con ningún <code>Path</code> configurado (por ejemplo, <code>http://localhost:18080/categorias</code>, sin el prefijo <code>/api/v1</code>). El Gateway responde <code>404</code>, no porque <code>pagatu-catalogo-ms</code> esté caído, sino porque ninguna ruta reclama esa URL — el error está en la definición de la ruta (3.4), no en el servicio de destino.</p>
+<h3 id="36-verificar-balanceo-de-carga-entre-instancias">3.6 Verificar balanceo de carga entre instancias<a class="headerlink" href="#36-verificar-balanceo-de-carga-entre-instancias" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> evidencia de que peticiones consecutivas, idénticas, se resuelven contra instancias distintas.</p>
+<p>Ten a la vista las dos consolas donde corren las instancias de <code>pagatu-catalogo-ms</code> (<code>8080</code> y <code>8081</code>). Ejecuta varias veces seguidas, sin pausa, la misma petición a través del Gateway:</p>
+<div class="highlight"><pre><span></span><code><span class="n">1</span><span class="p">..</span><span class="n">4</span> <span class="p">|</span> <span class="k">ForEach</span><span class="n">-Object</span> <span class="p">{</span> <span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18080/api/v1/categorias"</span> <span class="p">|</span> <span class="nb">Out-Null</span><span class="p">;</span> <span class="s2">"Petición $_ enviada"</span> <span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="k">for</span><span class="w"> </span>i<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="m">4</span><span class="p">;</span><span class="w"> </span><span class="k">do</span><span class="w"> </span>curl<span class="w"> </span>-s<span class="w"> </span>-o<span class="w"> </span>/dev/null<span class="w"> </span>http://localhost:18080/api/v1/categorias<span class="p">;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Petición </span><span class="nv">$i</span><span class="s2"> enviada"</span><span class="p">;</span><span class="w"> </span><span class="k">done</span>
+</code></pre></div>
+<p>Revisa ambas consolas de <code>pagatu-catalogo-ms</code>: cada una debe mostrar líneas de log nuevas por <strong>algunas</strong> de las cuatro peticiones, no todas por la misma instancia — esa alternancia es la evidencia del balanceo <em>round-robin</em> (2.3), no algo que se vea en la respuesta HTTP (ambas instancias devuelven exactamente los mismos datos, porque comparten la misma base de datos).</p>
+<p><strong>Tabla 5. Verificación de balanceo de carga antes de continuar</strong></p>
+<table>
+<thead>
+<tr>
+<th>Verificación</th>
+<th>Resultado esperado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET /api/v1/categorias</code> vía Gateway (<code>18080</code>)</td>
+<td><code>200 OK</code>, igual que antes vía <code>8080</code>/<code>8081</code> directo</td>
+</tr>
+<tr>
+<td>Consola de la instancia <code>8080</code></td>
+<td>Recibe algunas de las peticiones consecutivas, no todas</td>
+</tr>
+<tr>
+<td>Consola de la instancia <code>8081</code></td>
+<td>Recibe el resto de las peticiones, no cero</td>
+</tr>
+<tr>
+<td>Detener una instancia (Ctrl+C) y repetir las peticiones</td>
+<td>El Gateway sigue respondiendo <code>200</code>, ahora siempre desde la instancia que queda viva</td>
+</tr>
+</tbody>
+</table>
+<p>El último caso de la Tabla 5 es la prueba real del punto único de acceso: el cliente nunca se entera de que una instancia se cayó — sigue llamando a la misma dirección, y el Gateway deja de enviarle tráfico a la instancia caída en cuanto <code>pagatu-eureka</code> la retira del registro (S3, heartbeat).</p>
+<h3 id="37-opcional-anexo-grafana-sobre-prometheus-y-loki">3.7 (opcional, anexo) Grafana sobre Prometheus y Loki<a class="headerlink" href="#37-opcional-anexo-grafana-sobre-prometheus-y-loki" title="Permanent link">&para;</a></h3>
+<div class="admonition note">
+<p class="admonition-title">3.7 es opcional</p>
+<p>Depende de 3.10-3.14 de S3: sin Prometheus ni Loki corriendo, Grafana no tiene qué mostrar. El alcance evaluado de S4 termina en 3.6 (4.4, 4.6); este paso es para quien ya tiene ambos en pie y quiere verlos juntos en un solo tablero.</p>
+</div>
+<p><strong>Producto del paso:</strong> un Grafana propio, con Prometheus y Loki agregados como fuentes de datos automáticamente, corriendo en paralelo al resto del stack.</p>
+<p>Crea <code>obs/grafana/provisioning/datasources/datasources.yml</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+
+<span class="nt">datasources</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Prometheus</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prometheus</span>
+<span class="w">    </span><span class="nt">access</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">proxy</span>
+<span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://pagatu-prometheus:9090</span>
+<span class="w">    </span><span class="nt">isDefault</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Loki</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">loki</span>
+<span class="w">    </span><span class="nt">access</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">proxy</span>
+<span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://pagatu-loki:3100</span>
+</code></pre></div>
+<p><code>url</code> usa el nombre del servicio de Docker Compose (<code>pagatu-prometheus</code>, <code>pagatu-loki</code>, S3), no <code>localhost</code> — misma razón que <code>prometheus-dev.yml</code> usa <code>host.docker.internal</code> para llegar a <code>pagatu-catalogo-ms</code>, que corre fuera de Docker (S3, 3.11).</p>
+<p>Agrega Grafana a <code>obs/compose-dev.yml</code> (junto a <code>pagatu-prometheus</code>, <code>pagatu-loki</code> y <code>pagatu-promtail</code>, S3):</p>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nt">pagatu-grafana</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">grafana/grafana:11.4.0</span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-grafana-dev</span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"13000:3000"</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GF_SECURITY_ADMIN_PASSWORD=admin</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./grafana/provisioning:/etc/grafana/provisioning:ro</span>
+<span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-prometheus</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-loki</span>
+</code></pre></div>
+<p><code>13000</code> sigue el mismo criterio de puertos que Prometheus (<code>19090</code>) y Loki (<code>13100</code>, S3): el prefijo <code>1</code> identifica a DIST DEV, dejando <code>23000</code> reservado para un futuro Grafana de PROD, con el mismo criterio con el que S3 reservó <code>29090</code>/<code>23100</code>.</p>
+<p>Vuelve a levantar el stack:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>obs
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-dev.yml<span class="w"> </span>up<span class="w"> </span>-d
+</code></pre></div>
+<p>Abre <code>http://localhost:13000</code> (usuario <code>admin</code>, contraseña <code>admin</code>). Ve a <strong>Connections → Data sources</strong> y confirma que <code>Prometheus</code> y <code>Loki</code> ya aparecen configurados, sin haberlos agregado a mano.</p>
+<p>Crea un panel nuevo (<strong>Dashboards → New → New dashboard → Add visualization</strong>) y prueba una consulta de cada fuente:</p>
+<ul>
+<li>Con <code>Prometheus</code>: <code>up{job="pagatu-microservicios"}</code> (S3, 3.12) — confirma que <code>pagatu-catalogo-ms</code> sigue con sus instancias arriba.</li>
+<li>Con <code>Loki</code>: <code>{application="pagatu-catalogo-ms"}</code> (S3, 3.14) — logs recientes del servicio.</li>
+</ul>
+<p>Lo que cambia no es el dato ni la consulta — es tener métricas y logs en el mismo tablero, algo que ni Prometheus ni Loki ofrecen por separado.</p>
+<h3 id="38-opcional-punto-unico-de-acceso-en-produccion-local">3.8 (opcional) Punto único de acceso en producción local<a class="headerlink" href="#38-opcional-punto-unico-de-acceso-en-produccion-local" title="Permanent link">&para;</a></h3>
+<div class="admonition note">
+<p class="admonition-title">3.8 es opcional</p>
+<p>El alcance evaluado de S4 termina en 3.6 (4.4, 4.6) — igual que 3.15 de S3, producción local con Docker es contenido adicional.</p>
+</div>
+<p><strong>Producto del paso:</strong> <code>pagatu-gateway</code> operativo en Docker, dentro de la misma red compartida (<code>pagatu-prod-net</code>, S2) — el único componente del sistema con un puerto expuesto al host.</p>
+<p>En <code>infra/compose.yml</code> (S3, 3.15), agrega:</p>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nt">pagatu-gateway</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">build</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">context</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./pagatu-gateway</span>
+<span class="w">      </span><span class="nt">dockerfile</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Dockerfile</span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-gateway</span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"28080:8080"</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">SPRING_PROFILES_ACTIVE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prod</span>
+<span class="w">      </span><span class="nt">CONFIG_SERVER_URL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://pagatu-config:8888</span>
+<span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">pagatu-config</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span>
+<span class="w">    </span><span class="nt">networks</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-prod-net</span>
+</code></pre></div>
+<p><code>infra/pagatu-gateway/Dockerfile</code>: mismo patrón multi-stage que <code>pagatu-config</code> y <code>pagatu-eureka</code> (S2, S3).</p>
+<p><code>28080</code> es el único puerto de microservicio o infraestructura de negocio expuesto al host en todo <code>pagatu-prod-net</code> — <code>pagatu-catalogo-ms</code> ya lo tiene comentado desde S2 (<code>services/pagatu-catalogo-ms/compose.yml</code>, <code>#ports: #  - "28080:8080"</code>... revisa que no choque con el de tu propio <code>pagatu-gateway</code> si alguna vez lo descomentas). Esa es, precisamente, la idea del punto único de acceso llevada a producción: nadie fuera de <code>pagatu-prod-net</code> necesita llegar directo a un microservicio — todos entran por <code>pagatu-gateway</code>.</p>
+<p>Levanta:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>infra
+docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--build
+</code></pre></div>
+<p>Verifica:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:28080/api/v1/categorias"</span>
+</code></pre></div>
+<h2 id="4-crea-actividad-autonoma">4. Crea: actividad autónoma<a class="headerlink" href="#4-crea-actividad-autonoma" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 3h fuera del aula.</p>
+<h3 id="41-actividad">4.1 Actividad<a class="headerlink" href="#41-actividad" title="Permanent link">&para;</a></h3>
+<p>Extensión autónoma del punto único de acceso a <code>pagatu-orden-ms</code>, documentada en evidencia individual.</p>
+<p>Si <code>pagatu-orden-ms</code> todavía no tiene Config Client ni Eureka Client (trabajo autónomo de S3), complétalo primero — sin registro, no hay nada que el Gateway pueda resolver por <code>lb://</code>.</p>
+<p>Completa y evidencia estas tareas:</p>
+<ol>
+<li>Confirmar que <code>pagatu-orden-ms</code> se registra en <code>pagatu-eureka</code> (si no lo hiciste en S3, complétalo ahora: mismo patrón de S3, 4.1).</li>
+<li>Agregar una nueva ruta en <code>pagatu-gateway-dev.yml</code>/<code>pagatu-gateway-prod.yml</code> (<code>config-repo</code>) hacia <code>pagatu-orden-ms</code>, con su propio <code>id</code> y <code>predicates: Path</code> correcto para su recurso REST.</li>
+<li>Probar la ruta nueva a través del Gateway (<code>18080</code>), sin usar el puerto directo de <code>pagatu-orden-ms</code>.</li>
+<li>Levantar una segunda instancia de <code>pagatu-orden-ms</code> (mismo mecanismo de S3, 4.1) y repetir la prueba de balanceo de carga (3.6) contra la ruta nueva.</li>
+<li>Explicar, con tus propias palabras, por qué agregar una ruta nueva no requiere ningún cambio en <code>pagatu-catalogo-ms</code> ni en sus rutas existentes.</li>
+</ol>
+<h3 id="42-proposito">4.2 Propósito<a class="headerlink" href="#42-proposito" title="Permanent link">&para;</a></h3>
+<p>Que cada estudiante demuestre, de forma individual y fuera del aula, que puede extender el punto único de acceso a un servicio nuevo sin el acompañamiento del docente.</p>
+<p>Esta actividad autónoma se desarrolla sobre el proyecto de fin de curso del equipo. El producto de la unidad se construye por acumulación de los avances de cada sesión; por eso, la evidencia de esta sesión debe incorporarse a la documentación del proyecto y quedar trazable en GitHub.</p>
+<h3 id="43-indicaciones">4.3 Indicaciones<a class="headerlink" href="#43-indicaciones" title="Permanent link">&para;</a></h3>
+<p>Entrega un PDF con el siguiente nombre:</p>
+<div class="highlight"><pre><span></span><code>S04_Equipo##_ApellidoNombre.pdf
+</code></pre></div>
+<p>Cada captura de pantalla del informe debe mostrar, sin recortar, el reloj del sistema (fecha y hora) y tu usuario o foto de perfil (Windows, VS Code o navegador) visibles en pantalla — es lo que permite verificar que la evidencia es tuya y que corresponde al momento real de tu trabajo.</p>
+<h4 id="431-estructura-del-informe">4.3.1 Estructura del informe<a class="headerlink" href="#431-estructura-del-informe" title="Permanent link">&para;</a></h4>
+<p><strong>Datos del estudiante</strong></p>
+<ul>
+<li>Nombre:</li>
+<li>Equipo:</li>
+<li>Sesión: S04 - Punto Único de Acceso y Distribución de Tráfico</li>
+<li>Rol o aporte realizado:</li>
+<li>Link de GitHub:</li>
+</ul>
+<p><strong>Evidencia técnica</strong></p>
+<p>Incluye capturas o extractos con una breve explicación debajo de cada uno, organizados en los mismos 4 bloques de la rúbrica (4.6):</p>
+<ol>
+<li><em><code>pagatu-gateway</code> operativo</em><ul>
+<li>Captura del dashboard con <code>pagatu-gateway</code> registrado (trabajo de clase).</li>
+</ul>
+</li>
+<li><em>Rutas hacia <code>pagatu-catalogo-ms</code></em><ul>
+<li>Peticiones exitosas a <code>/api/v1/categorias</code> y <code>/api/v1/productos</code> vía el puerto del Gateway (trabajo de clase).</li>
+</ul>
+</li>
+<li><em>Ruta nueva hacia <code>pagatu-orden-ms</code></em><ul>
+<li>Ruta agregada en <code>config-repo</code>, con petición exitosa vía Gateway.</li>
+</ul>
+</li>
+<li><em>Balanceo de carga verificado</em><ul>
+<li>Evidencia de peticiones consecutivas resueltas por instancias distintas, tanto en <code>pagatu-catalogo-ms</code> como en <code>pagatu-orden-ms</code>.</li>
+</ul>
+</li>
+</ol>
+<p><strong>Error o hallazgo</strong></p>
+<p>Describe un error real: una ruta que respondió <code>404</code> por un <code>Path</code> mal escrito, una instancia que nunca recibió tráfico, o un servicio que el Gateway no pudo resolver por no estar registrado.</p>
+<p><strong>Reflexión técnica breve</strong></p>
+<p>Responde en 5 a 8 líneas:</p>
+<div class="highlight"><pre><span></span><code>¿Por qué agregar un microservicio nuevo al sistema no debería exigir que
+los clientes existentes cambien nada de su configuración?
+</code></pre></div>
+<p><strong>Anexo: Feedback de la sesión</strong></p>
+<p>Pega esta página como la última hoja del PDF, con tus respuestas.</p>
+<ol>
+<li>¿Cuál es el aprendizaje más importante que te llevas de la clase de hoy?</li>
+<li>¿Qué punto de la clase te resultó más confuso o te dejó con dudas?</li>
+<li>¿Tienes alguna pregunta que te gustaría que sea respondida la siguiente clase?</li>
+<li>Sobre tu nivel de comprensión de la clase de hoy, marca una opción:<ul>
+<li>¡Entendido! - Lo domino y podría explicarlo.</li>
+<li>Más o menos. - Entendí la idea general, pero tengo dudas.</li>
+<li>Necesito ayuda. - Me siento perdido/a con este tema.</li>
+</ul>
+</li>
+<li>¿Cómo puedo ayudarte a comprender mejor el tema?</li>
+<li>Pensando en tu participación y esfuerzo en la clase de hoy, ¿cómo te autoevaluarías? Marca una opción:<ul>
+<li>Muy Comprometido/a: Me esforcé al máximo.</li>
+<li>Comprometido/a: Sé que podría haberme esforzado un poco más.</li>
+<li>Poco Comprometido/a: Hoy no di mi mejor esfuerzo.</li>
+</ul>
+</li>
+<li>Mi satisfacción con la clase fue... (califica del 1 al 10, donde 1 es insatisfecho y 10 es muy satisfecho).</li>
+</ol>
+<h3 id="44-criterios-minimos-de-aceptacion">4.4 Criterios mínimos de aceptación<a class="headerlink" href="#44-criterios-minimos-de-aceptacion" title="Permanent link">&para;</a></h3>
+<p>La evidencia individual se considera completa si:</p>
+<ul>
+<li>El archivo respeta el nombre solicitado.</li>
+<li><code>pagatu-gateway</code> responde en DEV, registrado en <code>pagatu-eureka</code> (evidencia de clase).</li>
+<li>Al menos una ruta nueva hacia <code>pagatu-orden-ms</code> está definida en <code>config-repo</code> y responde a través del Gateway.</li>
+<li>Se evidencia balanceo de carga entre al menos dos instancias de <code>pagatu-orden-ms</code>, o se justifica explícitamente por qué no se logró.</li>
+<li>Cada captura de la evidencia técnica muestra el reloj del sistema y el usuario/perfil visible, sin recortar.</li>
+<li>Las fechas y horas de las capturas son coherentes con el historial de commits de su repositorio en GitHub.</li>
+<li>Incluye un error o hallazgo técnico diagnosticado.</li>
+<li>Incluye la reflexión técnica breve solicitada.</li>
+<li>Incluye el Anexo de feedback de la sesión respondido, como última página del PDF.</li>
+</ul>
+<h3 id="45-preguntas-de-defensa">4.5 Preguntas de defensa<a class="headerlink" href="#45-preguntas-de-defensa" title="Permanent link">&para;</a></h3>
+<ol>
+<li>¿Por qué <code>lb://pagatu-catalogo-ms</code> no es una dirección real, y quién la resuelve?</li>
+<li>¿Qué diferencia hay entre un <code>Path</code> que no coincide con ninguna ruta y un servicio de destino que está caído? ¿Cómo distingues uno del otro por la respuesta que recibes?</li>
+<li>¿Por qué dos recursos del mismo microservicio (<code>/api/v1/categorias</code>, <code>/api/v1/productos</code>) necesitan dos rutas distintas, si ambas apuntan al mismo <code>uri</code>?</li>
+<li>Si detienes una instancia con Ctrl+C, ¿cuánto tiempo pasa hasta que el Gateway deja de enviarle tráfico? ¿Por qué no es instantáneo?</li>
+<li>¿Por qué agregar la ruta de <code>pagatu-orden-ms</code> (sección 4) no requirió tocar ninguna configuración de <code>pagatu-catalogo-ms</code>?</li>
+</ol>
+<h3 id="46-rubrica-de-evaluacion">4.6 Rúbrica de evaluación<a class="headerlink" href="#46-rubrica-de-evaluacion" title="Permanent link">&para;</a></h3>
+<p><strong>Tabla 6. Rúbrica de evaluación</strong></p>
+<table>
+<thead>
+<tr>
+<th>Criterio</th>
+<th style="text-align: right;">Peso (%)</th>
+<th>A (20 pts)</th>
+<th>B (15 pts)</th>
+<th>C (10 pts)</th>
+<th>D (5 pts)</th>
+<th style="text-align: right;">Nivel obtenido</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. <code>pagatu-gateway</code> operativo*</td>
+<td style="text-align: right;">25</td>
+<td><code>pagatu-gateway</code> funcional en DEV, registrado en <code>pagatu-eureka</code> y verificado en el dashboard.</td>
+<td>Funcional en DEV, con verificación parcial del dashboard.</td>
+<td>Arranca pero sin verificación clara del registro.</td>
+<td>No evidencia <code>pagatu-gateway</code> funcionando.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>2. Rutas hacia <code>pagatu-catalogo-ms</code>*</td>
+<td style="text-align: right;">25</td>
+<td>Ambas rutas (<code>categorias</code>, <code>productos</code>) responden correctamente vía el puerto del Gateway.</td>
+<td>Al menos una ruta responde correctamente.</td>
+<td>Rutas definidas pero con errores de resolución.</td>
+<td>No evidencia ninguna ruta funcional.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>3. Ruta nueva y balanceo de carga*</td>
+<td style="text-align: right;">25</td>
+<td>Ruta hacia <code>pagatu-orden-ms</code> funcional, con balanceo de carga verificado entre dos instancias.</td>
+<td>Ruta funcional, con balanceo verificado parcialmente o sobre una sola instancia.</td>
+<td>Ruta definida pero sin verificación clara de balanceo.</td>
+<td>No evidencia ruta ni balanceo hacia <code>pagatu-orden-ms</code>.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>4. Comprensión del patrón*</td>
+<td style="text-align: right;">25</td>
+<td>Explicación clara y correcta de por qué el cliente deja de conocer puertos individuales, y de cómo el balanceo elige la instancia (2.2, 2.3).</td>
+<td>Explicación correcta con detalles menores.</td>
+<td>Explicación superficial o imprecisa.</td>
+<td>No explica el patrón.</td>
+<td style="text-align: right;"></td>
+</tr>
+</tbody>
+</table>
+<p>* Agregado manual.</p>
+<p>Nota final = suma de (<code>Peso</code> / 100 × <code>Puntos del nivel obtenido</code>) = ____ / 20.</p>
+<p>Para usar la rúbrica con IA, solicita:</p>
+<div class="highlight"><pre><span></span><code>Evalúa el PDF usando la rúbrica de la sesión.
+Para cada criterio selecciona el nivel obtenido usando la escala A=20, B=15, C=10, D=5 puntos.
+Justifica brevemente cada nivel asignado.
+Verifica que cada captura muestre reloj del sistema y usuario/perfil visible, y que las fechas sean coherentes con el historial de commits de GitHub. Si falta esta evidencia o hay inconsistencias, indícalo explícitamente antes de calificar.
+Calcula la nota final con la fórmula: suma de (Peso/100 × Puntos del nivel obtenido), directamente sobre 20.
+Indica 2 fortalezas y 2 recomendaciones.
+</code></pre></div>
+<h2 id="5-cierre">5. Cierre<a class="headerlink" href="#5-cierre" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 5 min.</p>
+<p><strong>Resumen breve:</strong> hoy el sistema ganó un único punto de entrada — <code>pagatu-gateway</code> resuelve rutas por nombre lógico contra <code>pagatu-eureka</code> y reparte tráfico entre instancias con balanceo <em>round-robin</em>, sin que el cliente externo conozca nunca un puerto de instancia. Quien prueba a mano ya solo escribe una dirección, siempre la misma, sin importar cuántas instancias existan detrás ni cuál de ellas responda esta vez.</p>
+<p><strong>Dinámica participativa:</strong> en una ronda rápida, cada estudiante comparte en una frase qué vio cambiar en las consolas de <code>pagatu-catalogo-ms</code> al mandar varias peticiones seguidas por el Gateway.</p>
+<p><strong>Metacognición:</strong> ¿qué parte de la sesión te costó más entender — que el Gateway también es un cliente de Eureka, que <code>lb://</code> no es una dirección real, o que el balanceo de carga se ve en los logs de las instancias y no en la respuesta HTTP?</p>
+<p><strong>Proyección:</strong> S5 no agrega funcionalidad nueva: integra registro, descubrimiento, ejecución concurrente, Gateway y balanceo de carga como un solo sistema distribuido base, y evalúa lo construido en S1-S4.</p>
+<h2 id="bibliografia">Bibliografía<a class="headerlink" href="#bibliografia" title="Permanent link">&para;</a></h2>
+<ul>
+<li>SACAViX. (2026). <em>API Gateway</em>. SACAViX System Design — API Gateway. <a href="https://systemdesign.sacavix.com/patterns/api-gateway">https://systemdesign.sacavix.com/patterns/api-gateway</a></li>
+<li>VMware Tanzu / Broadcom Inc. (2026). <em>Spring Cloud Gateway reference documentation</em>. <a href="https://docs.spring.io/spring-cloud-gateway/reference/">https://docs.spring.io/spring-cloud-gateway/reference/</a></li>
+<li>VMware Tanzu / Broadcom Inc. (2026). <em>Spring Cloud LoadBalancer reference documentation</em>. <a href="https://docs.spring.io/spring-cloud-commons/reference/spring-cloud-commons/loadbalancer.html">https://docs.spring.io/spring-cloud-commons/reference/spring-cloud-commons/loadbalancer.html</a></li>
+<li>VMware Tanzu / Broadcom Inc. (2026). <em>Spring Cloud 2025.1.2 (aka Oakwood) release notes</em>. <a href="https://spring.io/blog/2026/06/11/spring-cloud-2025-1-2-aka-oakwood-has-been-released/">https://spring.io/blog/2026/06/11/spring-cloud-2025-1-2-aka-oakwood-has-been-released/</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
