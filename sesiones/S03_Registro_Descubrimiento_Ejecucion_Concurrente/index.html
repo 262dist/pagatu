@@ -1252,6 +1252,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S05_Evaluacion_Unidad_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S5 - Evaluación de la Unidad I
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1897,8 +1925,8 @@
 <h3 id="17-ubicacion-en-el-curso">1.7 Ubicación en el curso<a class="headerlink" href="#17-ubicacion-en-el-curso" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Unidad: U1 - Sistema distribuido base orientado a producción.</li>
-<li>Producto de unidad: sistema distribuido base funcional, configurable y preparado para múltiples instancias.</li>
 <li>Producto del curso: sistema distribuido de microservicios end-to-end, configurable, escalable, seguro, resiliente, consistente, observable, integrado con frontend y defendido técnicamente.</li>
+<li>Producto de unidad: sistema distribuido base funcional, configurable y preparado para múltiples instancias.</li>
 <li>Avance del producto en esta sesión: registro y descubrimiento de servicios operativo, con <code>pagatu-catalogo-ms</code> ejecutando múltiples instancias localizables por nombre lógico.</li>
 </ul>
 <p><strong>Figura 1. Roadmap del producto de la unidad</strong></p>
@@ -1952,6 +1980,7 @@
 Eureka Server: http://localhost:18761
 Microservicios: puerto fijo por instancia (8080, 8081, ...)
 </code></pre></div>
+<p>Este diagrama muestra DEV porque es el ambiente de la clase presencial (3.1-3.9); el mismo registro, con las mismas instancias, corriendo en Docker dentro de <code>pagatu-prod-net</code> en vez de con Maven en el host, se ve en la Figura 5 (2.3) — mismo patrón que ya usó S2 (Figura 2 en DEV, Figura 4 en producción local).</p>
 <p>Lectura del diagrama: fíjate que el <code>Cliente</code> hace dos llamadas de naturaleza distinta. La primera (<code>GET localhost:18761</code>) consulta el registro — ahí es donde Eureka resuelve el nombre lógico <code>pagatu-catalogo-ms</code> a una lista de direcciones reales, sin que nadie haya escrito esa lista a mano. La segunda (<code>GET localhost:8080/api/v1/categorias</code>) sigue siendo una llamada directa, con puerto exacto — quien prueba a mano (PowerShell, Swagger) no queda automáticamente libre de conocer el puerto; ese paso extra (resolver el nombre y elegir la instancia sin intervención humana) es trabajo del Gateway, en S4. Lo que sí cambia hoy es que cada instancia se anuncia sola al arrancar, y cualquier componente que consulte el registro puede encontrarla por nombre. La configuración de los tres componentes (incluido el propio <code>pagatu-eureka</code>) sigue viniendo de <code>pagatu-config</code>, exactamente como desde S2 — registro y configuración son dos preguntas distintas, a dos servidores distintos. Este diagrama es el mapa que guía el resto de la explicación: cada apartado siguiente desarrolla uno de sus componentes, en el mismo orden del Índice (1.2).</p>
 <h3 id="22-registro-de-servicios">2.2 Registro de servicios<a class="headerlink" href="#22-registro-de-servicios" title="Permanent link">&para;</a></h3>
 <p><strong>Registro de servicios</strong>: el componente (<code>pagatu-eureka</code>, un <strong>Eureka Server</strong>) donde cada microservicio anuncia su propia existencia al arrancar — nombre lógico, dirección real y un <strong>heartbeat</strong> (latido) periódico que confirma que la instancia sigue viva. Si una instancia deja de enviar heartbeat (latido) (se cayó, se apagó), Eureka la retira del registro después de un tiempo, sin que nadie tenga que notificarlo a mano. El nombre "descubrimiento" puede sugerir que Eureka sale a buscar servicios en la red — es al revés: cada instancia se registra por su cuenta, empujando la información hacia Eureka (<em>self-registration</em>); Eureka nunca busca nada, solo recibe.</p>
