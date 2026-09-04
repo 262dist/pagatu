@@ -634,6 +634,44 @@ flowchart TB
 
 Grafana no recibe datos directamente de `pagatu-catalogo-ms`: siempre pasa por Prometheus (métricas) o Loki (logs) — nunca consulta un microservicio de negocio. `pagatu-prometheus` sigue descubriendo instancias a través de `pagatu-eureka` (S3, 3.11) — Grafana no agrega ningún mecanismo nuevo de descubrimiento, solo une lo que Prometheus y Loki ya recolectan por separado en un mismo tablero.
 
+**Figura 10. Grafana en producción (puerto reservado, no construido en este anexo)**
+
+```mermaid
+flowchart TB
+    Usuario["Usuario<br/>navegador"]
+
+    subgraph Docker["Docker Network: pagatu-prod-net"]
+        subgraph Grafana["pagatu-grafana<br/>host: localhost:23000 (reservado)"]
+            DS1["Data source: Prometheus"]
+            DS2["Data source: Loki"]
+        end
+
+        Prometheus["pagatu-prometheus<br/>host: localhost:29090 (S3)"]
+        Loki["pagatu-loki<br/>host: localhost:23100 (S3)"]
+        Eureka["pagatu-eureka<br/>(S2, S3)"]
+        Promtail["pagatu-promtail<br/>(S3)"]
+        Gateway["pagatu-gateway<br/>host: localhost:28080 (3.12)"]
+
+        I1["pagatu-catalogo-ms<br/>réplica, instance-id aleatorio"]
+        I2["pagatu-catalogo-ms<br/>réplica, instance-id aleatorio"]
+    end
+
+    Usuario -->|"localhost:23000"| Grafana
+    DS1 -->|"PromQL"| Prometheus
+    DS2 -->|"LogQL"| Loki
+
+    Prometheus -->|"eureka_sd_configs"| Eureka
+    Prometheus -->|"scrape /actuator/prometheus"| I1
+    Prometheus -->|"scrape /actuator/prometheus"| I2
+    Prometheus -.->|"scrape opcional"| Gateway
+
+    Promtail -->|"lee logs de"| I1
+    Promtail -->|"lee logs de"| I2
+    Promtail -->|"push"| Loki
+```
+
+Mismo esquema que la Figura 9 — la diferencia no es de conexiones, es de red y de puertos: en DEV, cada herramienta corre suelta en el host (`host.docker.internal`, prefijo `1`); en PROD, todo vive dentro de `pagatu-prod-net` y se habla por nombre de servicio (S3, 3.15), con el prefijo `2` reservado para PROD (`23000`, `29090`, `23100`) y `instance-id` aleatorio para las réplicas de `pagatu-catalogo-ms` (3.9 de S3) en vez del puerto fijo de DEV. `pagatu-gateway` (3.12) no expone métricas propias en este anexo — la flecha punteada marca dónde se agregaría si más adelante se decide incluirlo (mismo patrón de 3.10 de S3 aplicado a `pagatu-gateway`).
+
 Crea `obs/grafana/provisioning/datasources/datasources-dev.yml`:
 
 ```yaml
