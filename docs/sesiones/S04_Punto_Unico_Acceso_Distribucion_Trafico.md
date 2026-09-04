@@ -596,7 +596,7 @@ El último caso de la Tabla 6 es la prueba real del punto único de acceso: el c
 
 **Producto del paso:** un Grafana propio, con Prometheus y Loki agregados como fuentes de datos automáticamente, corriendo en paralelo al resto del stack.
 
-Crea `obs/grafana/provisioning/datasources/datasources.yml`:
+Crea `obs/grafana/provisioning/datasources/datasources-dev.yml`:
 
 ```yaml
 apiVersion: 1
