@@ -29,3 +29,17 @@ services:
     command: -config.file=/etc/promtail/config.yml
     depends_on:
       - pagatu-loki
+
+  pagatu-grafana:
+    image: grafana/grafana:11.4.0
+    container_name: pagatu-grafana-dev
+    restart: unless-stopped
+    ports:
+      - "13000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - pagatu-prometheus
+      - pagatu-loki

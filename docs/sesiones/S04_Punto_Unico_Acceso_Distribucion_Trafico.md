@@ -309,7 +309,11 @@ Tiempo: 2h.
 - **3.5** Probar `pagatu-gateway` en DEV.
 - **3.6** Verificar balanceo de carga entre instancias.
 - **3.7** (opcional, anexo) Grafana sobre Prometheus y Loki.
-- **3.8** (opcional) Punto único de acceso en producción local.
+- **3.8** (opcional, anexo) Tablero y alertas de infraestructura.
+- **3.9** (opcional, anexo) Métricas de negocio con Micrometer.
+- **3.10** (opcional, anexo) Diseñar el tablero de catálogo en tiempo real.
+- **3.11** (opcional, anexo) Guardar los tableros como código.
+- **3.12** (opcional) Punto único de acceso en producción local.
 
 ### 3.1 Verificar el punto de partida
 
@@ -596,6 +600,40 @@ El último caso de la Tabla 6 es la prueba real del punto único de acceso: el c
 
 **Producto del paso:** un Grafana propio, con Prometheus y Loki agregados como fuentes de datos automáticamente, corriendo en paralelo al resto del stack.
 
+**Figura 9. Grafana y sus conexiones**
+
+```mermaid
+flowchart TB
+    Usuario["Usuario<br/>navegador"]
+
+    subgraph Grafana["pagatu-grafana<br/>(puerto 13000)"]
+        DS1["Data source: Prometheus"]
+        DS2["Data source: Loki"]
+    end
+
+    Prometheus["pagatu-prometheus<br/>(puerto 19090)"]
+    Loki["pagatu-loki<br/>(puerto 13100)"]
+    Eureka["pagatu-eureka<br/>(S3)"]
+    Promtail["pagatu-promtail<br/>(S3)"]
+
+    I1["pagatu-catalogo-ms<br/>instancia 1, puerto 8080"]
+    I2["pagatu-catalogo-ms<br/>instancia 2, puerto 8081"]
+
+    Usuario -->|"consulta tableros"| Grafana
+    DS1 -->|"PromQL"| Prometheus
+    DS2 -->|"LogQL"| Loki
+
+    Prometheus -->|"eureka_sd_configs: ¿qué instancias existen?"| Eureka
+    Prometheus -->|"scrape /actuator/prometheus cada 15s"| I1
+    Prometheus -->|"scrape /actuator/prometheus cada 15s"| I2
+
+    Promtail -->|"lee logs de"| I1
+    Promtail -->|"lee logs de"| I2
+    Promtail -->|"push"| Loki
+```
+
+Grafana no recibe datos directamente de `pagatu-catalogo-ms`: siempre pasa por Prometheus (métricas) o Loki (logs) — nunca consulta un microservicio de negocio. `pagatu-prometheus` sigue descubriendo instancias a través de `pagatu-eureka` (S3, 3.11) — Grafana no agrega ningún mecanismo nuevo de descubrimiento, solo une lo que Prometheus y Loki ya recolectan por separado en un mismo tablero.
+
 Crea `obs/grafana/provisioning/datasources/datasources-dev.yml`:
 
 ```yaml
@@ -650,11 +688,300 @@ Crea un panel nuevo (**Dashboards → New → New dashboard → Add visualizatio
 - Con `Prometheus`: `up{job="pagatu-microservicios"}` (S3, 3.12) — confirma que `pagatu-catalogo-ms` sigue con sus instancias arriba.
 - Con `Loki`: `{application="pagatu-catalogo-ms"}` (S3, 3.14) — logs recientes del servicio.
 
-Lo que cambia no es el dato ni la consulta — es tener métricas y logs en el mismo tablero, algo que ni Prometheus ni Loki ofrecen por separado.
+Lo que cambia no es el dato ni la consulta — es tener métricas y logs en el mismo tablero, algo que ni Prometheus ni Loki ofrecen por separado. Los pasos siguientes (3.8-3.11) construyen un tablero real sobre esta base, no solo un panel de prueba.
 
-### 3.8 (opcional) Punto único de acceso en producción local
+### 3.8 (opcional, anexo) Tablero y alertas de infraestructura
 
-!!! note "3.8 es opcional"
+**Producto del paso:** un tablero de infraestructura con las métricas y los logs que ya construiste en S3 (3.12-3.14) — ahora visualizados en Grafana, no solo consultados por API —, más alertas que avisan solas cuando algo falla.
+
+Antes de construir nada de negocio (3.9-3.10), lo primero que un equipo real pone en un tablero es la salud de lo que ya tiene corriendo. Ninguna de las consultas de este paso es nueva: son exactamente las que S3 ya verificó por API o por navegador; lo único distinto es que ahora quedan visibles todo el tiempo, en un tablero, no una vez, en una terminal.
+
+**Cómo se agrega cada panel (primera vez en Grafana, sigue estos pasos para los seis paneles):**
+
+1. Abre `http://localhost:13000`. En el menú de la izquierda, entra a **Dashboards** → botón **New** (arriba a la derecha) → **New dashboard**.
+2. Clic en **+ Add visualization**. En el diálogo que aparece, elige la fuente de datos: `Prometheus` para métricas, `Loki` para logs.
+3. Se abre el editor de panel. En el campo de consulta, debajo del gráfico, pega la consulta del panel.
+4. A la derecha del editor, en **Panel options → Title**, escribe el título del panel (por ejemplo, "Instancias activas").
+5. Justo arriba de **Panel options**, hay un selector de tipo de visualización — cámbialo a **Stat**, **Time series** o **Logs**, según lo que indica cada panel.
+6. Clic en **Save** (arriba a la derecha del editor) para volver al tablero, ya con el panel agregado.
+7. Para el siguiente panel, desde la vista del tablero, clic en **+ Add** (arriba) → **Visualization**, y repite desde el paso 2.
+
+**Panel 1 — Instancias activas de `pagatu-catalogo-ms` (Stat):**
+
+```promql
+up{job="pagatu-microservicios"}
+```
+
+Con las dos instancias corriendo (3.1), este panel muestra dos series — una por instancia — en vez de un único valor: es la primera señal visual de que el sistema es distribuido, no un solo proceso.
+
+**Panel 2 — Peticiones HTTP por segundo, por instancia (Time series):**
+
+```promql
+sum by (instance) (rate(http_server_requests_seconds_count{job="pagatu-microservicios"}[1m]))
+```
+
+`sum by (instance)` separa la serie por cada instancia descubierta vía Eureka — el panel que hace visible, sin adivinar, lo que 3.6 verificó a mano con peticiones consecutivas: si el balanceo reparte tráfico parejo, las dos líneas suben juntas; si una instancia concentra todo, salta a la vista.
+
+**Panel 3 — Conexiones a PostgreSQL (Time series, dos consultas en el mismo panel):**
+
+```promql
+hikaricp_connections_active
+hikaricp_connections_max
+```
+
+**Panel 4 — Peticiones al Gateway (Time series):**
+
+```promql
+rate(http_server_requests_seconds_count{job="pagatu-microservicios", uri=~"/api/v1/.*"}[1m])
+```
+
+Filtra a las rutas que expone `pagatu-gateway` (3.4) — el mismo tráfico que ya cruzaste manualmente en 3.5-3.6, ahora como serie continua.
+
+**Panel 5 — Logs recientes (Logs, fuente `Loki`):**
+
+```logql
+{application="pagatu-catalogo-ms"}
+```
+
+**Panel 6 — Errores recientes (Logs, fuente `Loki`):**
+
+```logql
+{application="pagatu-catalogo-ms", detected_level="error"}
+```
+
+Guarda el tablero con el nombre `Pagatu - Infraestructura` — distinto del tablero de negocio que construye 3.10.
+
+**Buscar una línea específica, sin pegar URLs a mano: `Explore`.** S3 (3.14) encontró líneas puntuales pegando la consulta directo en la URL del navegador contra la API de Loki — funciona, pero es incómodo para explorar: cada búsqueda nueva significa editar la URL a mano. Grafana tiene una herramienta dedicada justo para esto:
+
+1. En el menú de la izquierda, entra a **Explore** (ícono de brújula).
+2. Elige la fuente `Loki` en el selector de arriba.
+3. En el campo de consulta, pega el mismo LogQL que ya usaste por API — por ejemplo, para confirmar el arranque de una instancia (S3, 3.14):
+
+```logql
+{application="pagatu-catalogo-ms"} |= "Started PagatuCatalogoMsApplication"
+```
+
+4. Clic en **Run query** (o Ctrl+Enter). Las líneas que contienen el texto buscado aparecen resaltadas, con el término marcado — la misma "aguja en el pajar" que antes tenías que encontrar leyendo el JSON crudo de la API.
+
+Prueba también el pool de conexiones (S3, 3.14), con la misma mecánica, solo cambiando el texto buscado:
+
+```logql
+{application="pagatu-catalogo-ms"} |= "HikariPool"
+```
+
+`Explore` no reemplaza los paneles del tablero (arriba): un panel muestra siempre lo mismo, para cualquiera que abra el tablero; `Explore` es para preguntas puntuales, del momento — la herramienta correcta cuando no sabes de antemano qué vas a buscar, en vez de crear un panel nuevo por cada búsqueda.
+
+**Alertas: que Grafana avise, no que alguien tenga que quedarse mirando el tablero.** Un tablero sirve mientras alguien lo está viendo; una alerta sigue funcionando aunque nadie lo mire.
+
+**Cómo se crea cada regla de alerta (sigue estos pasos para las dos alertas):**
+
+1. En el menú de la izquierda, entra a **Alerting** → **Alert rules** → botón **+ New alert rule** (arriba a la derecha).
+2. En **Enter alert rule name**, escribe el nombre de la regla (por ejemplo, "Instancia caída").
+3. En **Define query and alert condition**, confirma que la fuente sea `Prometheus` y pega la consulta en el editor de la consulta **A**.
+4. Debajo, en la pestaña **Threshold**, define la condición: elige el operador (`IS BELOW` o `IS ABOVE`, según la alerta) y escribe el valor.
+5. En **Set evaluation behavior**, crea una carpeta nueva escribiendo su nombre (por ejemplo, `Pagatu`) y un grupo de evaluación; en **Evaluate every** define cada cuánto se revisa la condición, y en **for**, cuánto tiempo debe sostenerse antes de pasar a *Firing*.
+6. Sin tocar **Configure labels and notifications** (queda sin *contact point* por ahora, ver más abajo), clic en **Save rule and exit** (arriba a la derecha).
+
+**Alerta 1 — Instancia caída:**
+
+- Consulta (fuente `Prometheus`): `up{job="pagatu-microservicios"}`
+- Condición: `IS BELOW 1`
+- Evaluar cada `10s`, durante (`for`) `1m` antes de pasar a *Firing* — evita que una caída de un segundo (un reinicio normal) dispare la alerta de más. Con dos instancias, esta alerta puede dispararse mientras la otra sigue respondiendo — es justo lo que el balanceo de S4 existe para evitar a nivel de servicio, pero el equipo igual necesita saber que una cayó.
+
+**Alerta 2 — Pool de conexiones cerca del límite:**
+
+- Consulta (fuente `Prometheus`): `hikaricp_connections_active / hikaricp_connections_max`
+- Condición: `IS ABOVE 0.8`
+- Evaluar cada `30s`, durante `2m`.
+
+Sin *contact point* configurado, la alerta igual cambia de estado (*Normal* → *Pending* → *Firing*) y queda visible en **Alerting → Alert rules**, que alcanza para esta sesión. Conectar un canal real de notificación (correo, Slack) queda fuera de este anexo.
+
+**Prueba la Alerta 1 provocándola de verdad:** detén una de las dos instancias de `pagatu-catalogo-ms` (`Ctrl+C` en su terminal) y observa el estado de la regla en **Alerting → Alert rules** — debería pasar de *Normal* a *Pending* y, pasado el minuto configurado, a *Firing*, aunque el Gateway (3.6) siga respondiendo con la instancia restante. Vuelve a levantar la instancia y confirma que regresa sola a *Normal*.
+
+### 3.9 (opcional, anexo) Métricas de negocio con Micrometer
+
+Con la infraestructura ya en su propio tablero y con alertas (3.8), esta es la pieza que le falta al negocio: métricas propias de lo que la aplicación hace, no de cómo está corriendo.
+
+**Producto del paso:** `pagatu-catalogo-ms` emitiendo métricas propias del catálogo, listas para Prometheus.
+
+`up{job="pagatu-microservicios"}` o `hikaricp_connections_active` (3.8) dicen si el servicio está vivo y cuántas conexiones usa — nada sobre cuántos productos se crearon ni cuántas búsquedas fallaron por recurso inexistente. Esas preguntas no las responde ninguna métrica que Spring Boot exponga por defecto: hay que emitirlas explícitamente, en el momento exacto en que el evento de negocio ocurre.
+
+Agrega `MeterRegistry` a `ProductoService` (registra la creación de un producto):
+
+```java
+package pe.edu.upeu.catalogo.service;
+
+import pe.edu.upeu.catalogo.dto.ProductoRequest;
+import pe.edu.upeu.catalogo.dto.ProductoResponse;
+import pe.edu.upeu.catalogo.entity.Categoria;
+import pe.edu.upeu.catalogo.entity.Producto;
+import pe.edu.upeu.catalogo.exception.ResourceNotFoundException;
+import pe.edu.upeu.catalogo.mapper.ProductoMapper;
+import pe.edu.upeu.catalogo.repository.CategoriaRepository;
+import pe.edu.upeu.catalogo.repository.ProductoRepository;
+import io.micrometer.core.instrument.MeterRegistry;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class ProductoService {
+
+    private final ProductoRepository productoRepository;
+    private final ProductoMapper productoMapper;
+    private final CategoriaRepository categoriaRepository;
+    private final MeterRegistry meterRegistry;
+
+    // ... listar(), obtener(), actualizar(), eliminar() sin cambios ...
+
+    public ProductoResponse crear(ProductoRequest request) {
+        Producto producto = productoMapper.toEntity(request);
+        producto.setCategoria(buscarCategoriaOFallar(request.getCategoriaId()));
+        ProductoResponse response = productoMapper.toResponse(productoRepository.save(producto));
+        meterRegistry.counter("pagatu_productos_creados_total").increment();
+        return response;
+    }
+
+    private Producto buscarOFallar(Long id) {
+        return productoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado: " + id));
+    }
+
+    private Categoria buscarCategoriaOFallar(Long categoriaId) {
+        return categoriaRepository.findById(categoriaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria no encontrada: " + categoriaId));
+    }
+}
+```
+
+Solo se agregó el campo `meterRegistry` (Spring lo inyecta solo: `micrometer-registry-prometheus` ya está en el `pom.xml` desde S3, 3.10) y una línea al final de `crear()` — el resto de la clase no cambia. `counter(...).increment()` suma uno cada vez que se llama; Prometheus lo expone como `pagatu_productos_creados_total`.
+
+Registra la búsqueda fallida en `GlobalExceptionHandler` — un solo lugar captura **todas** las búsquedas por recurso inexistente, sin importar si el `id` era de una categoría o de un producto:
+
+```java
+package pe.edu.upeu.catalogo.exception;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import io.micrometer.core.instrument.MeterRegistry;
+import lombok.RequiredArgsConstructor;
+
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
+
+@RestControllerAdvice
+@RequiredArgsConstructor
+public class GlobalExceptionHandler {
+
+    private final MeterRegistry meterRegistry;
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNotFound(ResourceNotFoundException ex) {
+        String recurso = ex.getMessage().split(" ")[0].toLowerCase();
+        meterRegistry.counter("pagatu_recursos_no_encontrados_total", "recurso", recurso).increment();
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", Instant.now().toString());
+        body.put("status", HttpStatus.NOT_FOUND.value());
+        body.put("error", "Not Found");
+        body.put("message", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+    // ... handleValidation() sin cambios ...
+}
+```
+
+El `"recurso"` como etiqueta (*tag*) — tomado de la primera palabra del mensaje, `"Producto"` o `"Categoria"` (3.5.4, 3.5.8) —, no como parte del nombre de la métrica, es lo que permite en 3.10 desglosar búsquedas fallidas por tipo de recurso sin crear una métrica nueva por cada una.
+
+Reinicia las dos instancias de `pagatu-catalogo-ms`, genera al menos tres productos nuevos (`POST /api/v1/productos`, S1) y al menos una búsqueda a un `id` inexistente de cada recurso, y verifica que las métricas nuevas aparezcan:
+
+```powershell
+(Invoke-RestMethod -Uri "http://localhost:8081/actuator/prometheus") -match "pagatu_"
+```
+
+Resultado esperado: líneas con `pagatu_productos_creados_total` y `pagatu_recursos_no_encontrados_total{recurso="producto",...}` / `{recurso="categoria",...}`.
+
+### 3.10 (opcional, anexo) Diseñar el tablero de catálogo en tiempo real
+
+**Producto del paso:** un tablero de Grafana con el catálogo en vivo — productos creados por minuto y búsquedas fallidas por recurso —, actualizándose solo.
+
+Abre `http://localhost:13000` (3.7, más arriba) y crea un tablero **nuevo**, distinto del de infraestructura (3.8): **Dashboards → New → New dashboard**. Cada panel se agrega con **Add visualization**, eligiendo la fuente `Prometheus`, pegando la consulta, y ajustando el tipo de visualización a la derecha.
+
+**Panel 1 — Productos creados por minuto (Time series):**
+
+```promql
+rate(pagatu_productos_creados_total[1m]) * 60
+```
+
+`rate()` calcula la velocidad de crecimiento del contador por segundo, dentro de la ventana `[1m]`; multiplicar por `60` la convierte a "productos por minuto", una unidad que se lee de un vistazo.
+
+**Panel 2 — Total de productos creados, últimos 5 minutos (Stat):**
+
+```promql
+increase(pagatu_productos_creados_total[5m])
+```
+
+`increase()` es `rate()` sin normalizar a "por segundo" — directamente cuánto creció el contador dentro de la ventana.
+
+**Panel 3 — Búsquedas fallidas por recurso (Bar gauge):**
+
+```promql
+sum by (recurso) (pagatu_recursos_no_encontrados_total)
+```
+
+`sum by (recurso)` agrupa por la etiqueta agregada en 3.9 — con dos recursos hoy (`producto`, `categoria`), el panel ya muestra dos barras; queda listo para un tercer recurso sin cambiar la consulta.
+
+**Actualización casi en vivo:** en la esquina superior derecha del tablero, abre el selector de rango de tiempo y elige **Last 30 minutes**; al lado, en el selector de refresco, escribe `10s`. Con eso el tablero vuelve a consultar Prometheus cada 10 segundos — coherente con las ventanas `[1m]`/`[5m]` de las consultas: un refresco más lento que la ventana haría que el tablero se sintiera desactualizado; uno mucho más rápido no aporta nada, porque Prometheus solo tiene datos nuevos cada 15 segundos (el `scrape_interval` de `prometheus-dev.yml`).
+
+Guarda el tablero con el nombre `Pagatu - Catálogo en tiempo real`.
+
+**Negocio e infraestructura, uno al lado del otro:** con los dos tableros abiertos en pestañas distintas — `Pagatu - Infraestructura` (3.8) y `Pagatu - Catálogo en tiempo real` (arriba) —, un salto en "Búsquedas fallidas por recurso" se explica mirando, en el mismo rango de tiempo, el panel de errores del tablero de infraestructura. Es la misma correlación métricas-logs de S3 (3.14), ahora visible sin cambiar de herramienta ni escribir una consulta nueva — solo cambiando de pestaña.
+
+### 3.11 (opcional, anexo) Guardar los tableros como código
+
+**Producto del paso:** los dos tableros (3.8 y 3.10) provisionados automáticamente, igual que ya están las fuentes de datos (3.7) — sobreviven a un `docker compose down` sin reconstruirlos a mano.
+
+Exporta el JSON de cada tablero por separado: ícono de engranaje (**Dashboard settings**) → **JSON Model** → copia el contenido completo. Guarda cada uno con su propio nombre:
+
+- `obs/grafana/provisioning/dashboards/pagatu-infraestructura.json` (3.8)
+- `obs/grafana/provisioning/dashboards/pagatu-catalogo.json` (3.10)
+
+Las reglas de alerta (3.8) se exportan aparte, desde **Alerting → Alert rules**, con el mismo ícono de exportar de cada regla; guárdalas como `obs/grafana/provisioning/alerting/pagatu-alertas-dev.yml` si quieres que también se autoprovisionen — opcional, no imprescindible para esta sesión.
+
+Crea `obs/grafana/provisioning/dashboards/dashboards-dev.yml`:
+
+```yaml
+apiVersion: 1
+
+providers:
+  - name: Pagatu
+    folder: Pagatu
+    type: file
+    options:
+      path: /etc/grafana/provisioning/dashboards
+```
+
+Un único proveedor carga **todos** los archivos `.json` que encuentre en esa carpeta, sin necesitar una entrada por tablero. No hace falta agregar ningún volumen nuevo a `compose-dev.yml`: `./grafana/provisioning:/etc/grafana/provisioning:ro` (3.7, más arriba) ya monta toda la carpeta, incluidas estas subcarpetas nuevas.
+
+Reinicia el contenedor de Grafana y confirma que los dos tableros aparecen solos, en la carpeta `Pagatu`, sin haberlos importado a mano:
+
+```bash
+cd obs
+docker compose -f compose-dev.yml restart pagatu-grafana
+```
+
+Con esto, el stack completo de observabilidad de DIST (Prometheus, Loki, Grafana, datasources y los dos tableros) queda como código en el repositorio — reproducible por cualquier integrante del equipo con un solo `docker compose up`, sin pasos manuales en la UI.
+
+### 3.12 (opcional) Punto único de acceso en producción local
+
+!!! note "3.12 es opcional"
     El alcance evaluado de S4 termina en 3.6 (4.4, 4.6) — igual que 3.15 de S3, producción local con Docker es contenido adicional.
 
 **Producto del paso:** `pagatu-gateway` operativo en Docker, dentro de la misma red compartida (`pagatu-prod-net`, S2) — el único componente del sistema con un puerto expuesto al host.
@@ -703,6 +1030,10 @@ Invoke-RestMethod -Method Get -Uri "http://localhost:28080/api/v1/categorias"
 - Rutas hacia `pagatu-catalogo-ms` (`/api/v1/categorias`, `/api/v1/productos`) resueltas por el Gateway, sin usar los puertos directos de las instancias.
 - Balanceo de carga verificado con peticiones consecutivas resueltas por instancias distintas.
 - (Opcional) Grafana con Prometheus y Loki como fuentes de datos, mostrando métricas y logs en un solo tablero.
+- (Opcional) Tablero de infraestructura con seis paneles y dos alertas configuradas y probadas.
+- (Opcional) Métricas de negocio propias (`pagatu_productos_creados_total`, `pagatu_recursos_no_encontrados_total`) emitidas por `pagatu-catalogo-ms`.
+- (Opcional) Tablero de catálogo en tiempo real, con datos correlacionados contra el tablero de infraestructura.
+- (Opcional) Los dos tableros y las alertas provisionados como código, reproducibles sin pasos manuales en la UI.
 - (Opcional) `pagatu-gateway` operativo también en producción local, como único componente con puerto de negocio expuesto al host.
 
 ## 4. Crea: actividad autónoma
