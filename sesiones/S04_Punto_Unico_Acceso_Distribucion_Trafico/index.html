@@ -2003,13 +2003,14 @@
 <p>En <code>pom.xml</code>, las dependencias clave:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">&lt;dependency&gt;</span>
 <span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
-<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-gateway<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-gateway-server-webmvc<span class="nt">&lt;/artifactId&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 <span class="nt">&lt;dependency&gt;</span>
 <span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
 <span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-netflix-eureka-client<span class="nt">&lt;/artifactId&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div>
+<p><code>-server-webmvc</code>, no <code>-server-webflux</code>: desde Spring Cloud 2025.0.0 existen dos paquetes de Gateway independientes — <code>spring-cloud-starter-gateway-server-webmvc</code> (servlet, bloqueante, Tomcat) y <code>spring-cloud-starter-gateway-server-webflux</code> (reactivo, no bloqueante, Netty). Todos los servicios de <code>pagatu</code> (<code>pagatu-catalogo-ms</code>, S1-S2) usan <code>spring-boot-starter-web</code> — MVC clásico sobre Tomcat —, así que el Gateway debe usar el mismo modelo de concurrencia; mezclar <code>-webflux</code> obligaría a traer Netty/Reactor solo para este componente sin ninguna necesidad real.</p>
 <p>Mismo BOM de Spring Cloud que ya usan <code>pagatu-config</code> y <code>pagatu-eureka</code> (S2, S3) — Spring Initializr elige la versión compatible con la versión de Spring Boot seleccionada:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">&lt;properties&gt;</span>
 <span class="w">    </span><span class="nt">&lt;java.version&gt;</span>21<span class="nt">&lt;/java.version&gt;</span>
@@ -2049,15 +2050,17 @@
 <span class="nt">spring</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">cloud</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">gateway</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">routes</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-catalogo-categorias</span>
-<span class="w">          </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lb://pagatu-catalogo-ms</span>
-<span class="w">          </span><span class="nt">predicates</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Path=/api/v1/categorias/**</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-catalogo-productos</span>
-<span class="w">          </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lb://pagatu-catalogo-ms</span>
-<span class="w">          </span><span class="nt">predicates</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Path=/api/v1/productos/**</span>
+<span class="w">      </span><span class="nt">server</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">webmvc</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">routes</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-catalogo-categorias</span>
+<span class="w">              </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lb://pagatu-catalogo-ms</span>
+<span class="w">              </span><span class="nt">predicates</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Path=/api/v1/categorias/**</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-catalogo-productos</span>
+<span class="w">              </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lb://pagatu-catalogo-ms</span>
+<span class="w">              </span><span class="nt">predicates</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Path=/api/v1/productos/**</span>
 
 <span class="nt">eureka</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">instance</span><span class="p">:</span>
@@ -2085,15 +2088,17 @@
 <span class="nt">spring</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">cloud</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">gateway</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">routes</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-catalogo-categorias</span>
-<span class="w">          </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lb://pagatu-catalogo-ms</span>
-<span class="w">          </span><span class="nt">predicates</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Path=/api/v1/categorias/**</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-catalogo-productos</span>
-<span class="w">          </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lb://pagatu-catalogo-ms</span>
-<span class="w">          </span><span class="nt">predicates</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Path=/api/v1/productos/**</span>
+<span class="w">      </span><span class="nt">server</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">webmvc</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">routes</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-catalogo-categorias</span>
+<span class="w">              </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lb://pagatu-catalogo-ms</span>
+<span class="w">              </span><span class="nt">predicates</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Path=/api/v1/categorias/**</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-catalogo-productos</span>
+<span class="w">              </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lb://pagatu-catalogo-ms</span>
+<span class="w">              </span><span class="nt">predicates</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Path=/api/v1/productos/**</span>
 
 <span class="nt">eureka</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">instance</span><span class="p">:</span>
