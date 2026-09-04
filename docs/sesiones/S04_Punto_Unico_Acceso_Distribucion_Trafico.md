@@ -387,13 +387,15 @@ En `pom.xml`, las dependencias clave:
 ```xml
 <dependency>
     <groupId>org.springframework.cloud</groupId>
-    <artifactId>spring-cloud-starter-gateway</artifactId>
+    <artifactId>spring-cloud-starter-gateway-server-webmvc</artifactId>
 </dependency>
 <dependency>
     <groupId>org.springframework.cloud</groupId>
     <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
 </dependency>
 ```
+
+`-server-webmvc`, no `-server-webflux`: desde Spring Cloud 2025.0.0 existen dos paquetes de Gateway independientes — `spring-cloud-starter-gateway-server-webmvc` (servlet, bloqueante, Tomcat) y `spring-cloud-starter-gateway-server-webflux` (reactivo, no bloqueante, Netty). Todos los servicios de `pagatu` (`pagatu-catalogo-ms`, S1-S2) usan `spring-boot-starter-web` — MVC clásico sobre Tomcat —, así que el Gateway debe usar el mismo modelo de concurrencia; mezclar `-webflux` obligaría a traer Netty/Reactor solo para este componente sin ninguna necesidad real.
 
 Mismo BOM de Spring Cloud que ya usan `pagatu-config` y `pagatu-eureka` (S2, S3) — Spring Initializr elige la versión compatible con la versión de Spring Boot seleccionada:
 
@@ -447,15 +449,17 @@ server:
 spring:
   cloud:
     gateway:
-      routes:
-        - id: pagatu-catalogo-categorias
-          uri: lb://pagatu-catalogo-ms
-          predicates:
-            - Path=/api/v1/categorias/**
-        - id: pagatu-catalogo-productos
-          uri: lb://pagatu-catalogo-ms
-          predicates:
-            - Path=/api/v1/productos/**
+      server:
+        webmvc:
+          routes:
+            - id: pagatu-catalogo-categorias
+              uri: lb://pagatu-catalogo-ms
+              predicates:
+                - Path=/api/v1/categorias/**
+            - id: pagatu-catalogo-productos
+              uri: lb://pagatu-catalogo-ms
+              predicates:
+                - Path=/api/v1/productos/**
 
 eureka:
   instance:
@@ -488,15 +492,17 @@ server:
 spring:
   cloud:
     gateway:
-      routes:
-        - id: pagatu-catalogo-categorias
-          uri: lb://pagatu-catalogo-ms
-          predicates:
-            - Path=/api/v1/categorias/**
-        - id: pagatu-catalogo-productos
-          uri: lb://pagatu-catalogo-ms
-          predicates:
-            - Path=/api/v1/productos/**
+      server:
+        webmvc:
+          routes:
+            - id: pagatu-catalogo-categorias
+              uri: lb://pagatu-catalogo-ms
+              predicates:
+                - Path=/api/v1/categorias/**
+            - id: pagatu-catalogo-productos
+              uri: lb://pagatu-catalogo-ms
+              predicates:
+                - Path=/api/v1/productos/**
 
 eureka:
   instance:
