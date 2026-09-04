@@ -2301,6 +2301,39 @@ curl<span class="w"> </span>http://localhost:18080/api/v1/productos
     Promtail --&gt;|"lee logs de"| I2
     Promtail --&gt;|"push"| Loki</code></pre>
 <p>Grafana no recibe datos directamente de <code>pagatu-catalogo-ms</code>: siempre pasa por Prometheus (métricas) o Loki (logs) — nunca consulta un microservicio de negocio. <code>pagatu-prometheus</code> sigue descubriendo instancias a través de <code>pagatu-eureka</code> (S3, 3.11) — Grafana no agrega ningún mecanismo nuevo de descubrimiento, solo une lo que Prometheus y Loki ya recolectan por separado en un mismo tablero.</p>
+<p><strong>Figura 10. Grafana en producción (puerto reservado, no construido en este anexo)</strong></p>
+<pre class="mermaid"><code>flowchart TB
+    Usuario["Usuario&lt;br/&gt;navegador"]
+
+    subgraph Docker["Docker Network: pagatu-prod-net"]
+        subgraph Grafana["pagatu-grafana&lt;br/&gt;host: localhost:23000 (reservado)"]
+            DS1["Data source: Prometheus"]
+            DS2["Data source: Loki"]
+        end
+
+        Prometheus["pagatu-prometheus&lt;br/&gt;host: localhost:29090 (S3)"]
+        Loki["pagatu-loki&lt;br/&gt;host: localhost:23100 (S3)"]
+        Eureka["pagatu-eureka&lt;br/&gt;(S2, S3)"]
+        Promtail["pagatu-promtail&lt;br/&gt;(S3)"]
+        Gateway["pagatu-gateway&lt;br/&gt;host: localhost:28080 (3.12)"]
+
+        I1["pagatu-catalogo-ms&lt;br/&gt;réplica, instance-id aleatorio"]
+        I2["pagatu-catalogo-ms&lt;br/&gt;réplica, instance-id aleatorio"]
+    end
+
+    Usuario --&gt;|"localhost:23000"| Grafana
+    DS1 --&gt;|"PromQL"| Prometheus
+    DS2 --&gt;|"LogQL"| Loki
+
+    Prometheus --&gt;|"eureka_sd_configs"| Eureka
+    Prometheus --&gt;|"scrape /actuator/prometheus"| I1
+    Prometheus --&gt;|"scrape /actuator/prometheus"| I2
+    Prometheus -.-&gt;|"scrape opcional"| Gateway
+
+    Promtail --&gt;|"lee logs de"| I1
+    Promtail --&gt;|"lee logs de"| I2
+    Promtail --&gt;|"push"| Loki</code></pre>
+<p>Mismo esquema que la Figura 9 — la diferencia no es de conexiones, es de red y de puertos: en DEV, cada herramienta corre suelta en el host (<code>host.docker.internal</code>, prefijo <code>1</code>); en PROD, todo vive dentro de <code>pagatu-prod-net</code> y se habla por nombre de servicio (S3, 3.15), con el prefijo <code>2</code> reservado para PROD (<code>23000</code>, <code>29090</code>, <code>23100</code>) y <code>instance-id</code> aleatorio para las réplicas de <code>pagatu-catalogo-ms</code> (3.9 de S3) en vez del puerto fijo de DEV. <code>pagatu-gateway</code> (3.12) no expone métricas propias en este anexo — la flecha punteada marca dónde se agregaría si más adelante se decide incluirlo (mismo patrón de 3.10 de S3 aplicado a <code>pagatu-gateway</code>).</p>
 <p>Crea <code>obs/grafana/provisioning/datasources/datasources-dev.yml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
 
