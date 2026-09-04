@@ -2180,7 +2180,7 @@ curl<span class="w"> </span>http://localhost:18080/api/v1/productos
 <p>Depende de 3.10-3.14 de S3: sin Prometheus ni Loki corriendo, Grafana no tiene qué mostrar. El alcance evaluado de S4 termina en 3.6 (4.4, 4.6); este paso es para quien ya tiene ambos en pie y quiere verlos juntos en un solo tablero.</p>
 </div>
 <p><strong>Producto del paso:</strong> un Grafana propio, con Prometheus y Loki agregados como fuentes de datos automáticamente, corriendo en paralelo al resto del stack.</p>
-<p>Crea <code>obs/grafana/provisioning/datasources/datasources.yml</code>:</p>
+<p>Crea <code>obs/grafana/provisioning/datasources/datasources-dev.yml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
 
 <span class="nt">datasources</span><span class="p">:</span>
