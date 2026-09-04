@@ -968,10 +968,54 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#38-opcional-punto-unico-de-acceso-en-produccion-local" class="md-nav__link">
+  <a href="#38-opcional-anexo-tablero-y-alertas-de-infraestructura" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.8 (opcional) Punto único de acceso en producción local
+        3.8 (opcional, anexo) Tablero y alertas de infraestructura
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#39-opcional-anexo-metricas-de-negocio-con-micrometer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.9 (opcional, anexo) Métricas de negocio con Micrometer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#310-opcional-anexo-disenar-el-tablero-de-catalogo-en-tiempo-real" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.10 (opcional, anexo) Diseñar el tablero de catálogo en tiempo real
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#311-opcional-anexo-guardar-los-tableros-como-codigo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.11 (opcional, anexo) Guardar los tableros como código
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#312-opcional-punto-unico-de-acceso-en-produccion-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.12 (opcional) Punto único de acceso en producción local
       
     </span>
   </a>
@@ -1426,10 +1470,54 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#38-opcional-punto-unico-de-acceso-en-produccion-local" class="md-nav__link">
+  <a href="#38-opcional-anexo-tablero-y-alertas-de-infraestructura" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.8 (opcional) Punto único de acceso en producción local
+        3.8 (opcional, anexo) Tablero y alertas de infraestructura
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#39-opcional-anexo-metricas-de-negocio-con-micrometer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.9 (opcional, anexo) Métricas de negocio con Micrometer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#310-opcional-anexo-disenar-el-tablero-de-catalogo-en-tiempo-real" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.10 (opcional, anexo) Diseñar el tablero de catálogo en tiempo real
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#311-opcional-anexo-guardar-los-tableros-como-codigo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.11 (opcional, anexo) Guardar los tableros como código
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#312-opcional-punto-unico-de-acceso-en-produccion-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.12 (opcional) Punto único de acceso en producción local
       
     </span>
   </a>
@@ -1888,7 +1976,11 @@
 <li><strong>3.5</strong> Probar <code>pagatu-gateway</code> en DEV.</li>
 <li><strong>3.6</strong> Verificar balanceo de carga entre instancias.</li>
 <li><strong>3.7</strong> (opcional, anexo) Grafana sobre Prometheus y Loki.</li>
-<li><strong>3.8</strong> (opcional) Punto único de acceso en producción local.</li>
+<li><strong>3.8</strong> (opcional, anexo) Tablero y alertas de infraestructura.</li>
+<li><strong>3.9</strong> (opcional, anexo) Métricas de negocio con Micrometer.</li>
+<li><strong>3.10</strong> (opcional, anexo) Diseñar el tablero de catálogo en tiempo real.</li>
+<li><strong>3.11</strong> (opcional, anexo) Guardar los tableros como código.</li>
+<li><strong>3.12</strong> (opcional) Punto único de acceso en producción local.</li>
 </ul>
 <h3 id="31-verificar-el-punto-de-partida">3.1 Verificar el punto de partida<a class="headerlink" href="#31-verificar-el-punto-de-partida" title="Permanent link">&para;</a></h3>
 <p><strong>Punto de partida común:</strong> todo el equipo debe comenzar exactamente desde el mismo estado, no desde su propio avance individual. Clona la rama <code>s03-registro-descubrimiento</code> (el snapshot de cierre de S3 — incluye <code>pagatu-eureka</code> y <code>pagatu-catalogo-ms</code> registrado):</p>
@@ -2180,6 +2272,35 @@ curl<span class="w"> </span>http://localhost:18080/api/v1/productos
 <p>Depende de 3.10-3.14 de S3: sin Prometheus ni Loki corriendo, Grafana no tiene qué mostrar. El alcance evaluado de S4 termina en 3.6 (4.4, 4.6); este paso es para quien ya tiene ambos en pie y quiere verlos juntos en un solo tablero.</p>
 </div>
 <p><strong>Producto del paso:</strong> un Grafana propio, con Prometheus y Loki agregados como fuentes de datos automáticamente, corriendo en paralelo al resto del stack.</p>
+<p><strong>Figura 9. Grafana y sus conexiones</strong></p>
+<pre class="mermaid"><code>flowchart TB
+    Usuario["Usuario&lt;br/&gt;navegador"]
+
+    subgraph Grafana["pagatu-grafana&lt;br/&gt;(puerto 13000)"]
+        DS1["Data source: Prometheus"]
+        DS2["Data source: Loki"]
+    end
+
+    Prometheus["pagatu-prometheus&lt;br/&gt;(puerto 19090)"]
+    Loki["pagatu-loki&lt;br/&gt;(puerto 13100)"]
+    Eureka["pagatu-eureka&lt;br/&gt;(S3)"]
+    Promtail["pagatu-promtail&lt;br/&gt;(S3)"]
+
+    I1["pagatu-catalogo-ms&lt;br/&gt;instancia 1, puerto 8080"]
+    I2["pagatu-catalogo-ms&lt;br/&gt;instancia 2, puerto 8081"]
+
+    Usuario --&gt;|"consulta tableros"| Grafana
+    DS1 --&gt;|"PromQL"| Prometheus
+    DS2 --&gt;|"LogQL"| Loki
+
+    Prometheus --&gt;|"eureka_sd_configs: ¿qué instancias existen?"| Eureka
+    Prometheus --&gt;|"scrape /actuator/prometheus cada 15s"| I1
+    Prometheus --&gt;|"scrape /actuator/prometheus cada 15s"| I2
+
+    Promtail --&gt;|"lee logs de"| I1
+    Promtail --&gt;|"lee logs de"| I2
+    Promtail --&gt;|"push"| Loki</code></pre>
+<p>Grafana no recibe datos directamente de <code>pagatu-catalogo-ms</code>: siempre pasa por Prometheus (métricas) o Loki (logs) — nunca consulta un microservicio de negocio. <code>pagatu-prometheus</code> sigue descubriendo instancias a través de <code>pagatu-eureka</code> (S3, 3.11) — Grafana no agrega ningún mecanismo nuevo de descubrimiento, solo une lo que Prometheus y Loki ya recolectan por separado en un mismo tablero.</p>
 <p>Crea <code>obs/grafana/provisioning/datasources/datasources-dev.yml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
 
@@ -2222,10 +2343,221 @@ docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> 
 <li>Con <code>Prometheus</code>: <code>up{job="pagatu-microservicios"}</code> (S3, 3.12) — confirma que <code>pagatu-catalogo-ms</code> sigue con sus instancias arriba.</li>
 <li>Con <code>Loki</code>: <code>{application="pagatu-catalogo-ms"}</code> (S3, 3.14) — logs recientes del servicio.</li>
 </ul>
-<p>Lo que cambia no es el dato ni la consulta — es tener métricas y logs en el mismo tablero, algo que ni Prometheus ni Loki ofrecen por separado.</p>
-<h3 id="38-opcional-punto-unico-de-acceso-en-produccion-local">3.8 (opcional) Punto único de acceso en producción local<a class="headerlink" href="#38-opcional-punto-unico-de-acceso-en-produccion-local" title="Permanent link">&para;</a></h3>
+<p>Lo que cambia no es el dato ni la consulta — es tener métricas y logs en el mismo tablero, algo que ni Prometheus ni Loki ofrecen por separado. Los pasos siguientes (3.8-3.11) construyen un tablero real sobre esta base, no solo un panel de prueba.</p>
+<h3 id="38-opcional-anexo-tablero-y-alertas-de-infraestructura">3.8 (opcional, anexo) Tablero y alertas de infraestructura<a class="headerlink" href="#38-opcional-anexo-tablero-y-alertas-de-infraestructura" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> un tablero de infraestructura con las métricas y los logs que ya construiste en S3 (3.12-3.14) — ahora visualizados en Grafana, no solo consultados por API —, más alertas que avisan solas cuando algo falla.</p>
+<p>Antes de construir nada de negocio (3.9-3.10), lo primero que un equipo real pone en un tablero es la salud de lo que ya tiene corriendo. Ninguna de las consultas de este paso es nueva: son exactamente las que S3 ya verificó por API o por navegador; lo único distinto es que ahora quedan visibles todo el tiempo, en un tablero, no una vez, en una terminal.</p>
+<p><strong>Cómo se agrega cada panel (primera vez en Grafana, sigue estos pasos para los seis paneles):</strong></p>
+<ol>
+<li>Abre <code>http://localhost:13000</code>. En el menú de la izquierda, entra a <strong>Dashboards</strong> → botón <strong>New</strong> (arriba a la derecha) → <strong>New dashboard</strong>.</li>
+<li>Clic en <strong>+ Add visualization</strong>. En el diálogo que aparece, elige la fuente de datos: <code>Prometheus</code> para métricas, <code>Loki</code> para logs.</li>
+<li>Se abre el editor de panel. En el campo de consulta, debajo del gráfico, pega la consulta del panel.</li>
+<li>A la derecha del editor, en <strong>Panel options → Title</strong>, escribe el título del panel (por ejemplo, "Instancias activas").</li>
+<li>Justo arriba de <strong>Panel options</strong>, hay un selector de tipo de visualización — cámbialo a <strong>Stat</strong>, <strong>Time series</strong> o <strong>Logs</strong>, según lo que indica cada panel.</li>
+<li>Clic en <strong>Save</strong> (arriba a la derecha del editor) para volver al tablero, ya con el panel agregado.</li>
+<li>Para el siguiente panel, desde la vista del tablero, clic en <strong>+ Add</strong> (arriba) → <strong>Visualization</strong>, y repite desde el paso 2.</li>
+</ol>
+<p><strong>Panel 1 — Instancias activas de <code>pagatu-catalogo-ms</code> (Stat):</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nv">up</span><span class="p">{</span><span class="nl">job</span><span class="o">=</span><span class="p">"</span><span class="s">pagatu-microservicios</span><span class="p">"}</span>
+</code></pre></div>
+<p>Con las dos instancias corriendo (3.1), este panel muestra dos series — una por instancia — en vez de un único valor: es la primera señal visual de que el sistema es distribuido, no un solo proceso.</p>
+<p><strong>Panel 2 — Peticiones HTTP por segundo, por instancia (Time series):</strong></p>
+<div class="highlight"><pre><span></span><code><span class="k">sum</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="nv">instance</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="kr">rate</span><span class="o">(</span><span class="nv">http_server_requests_seconds_count</span><span class="p">{</span><span class="nl">job</span><span class="o">=</span><span class="p">"</span><span class="s">pagatu-microservicios</span><span class="p">"}[</span><span class="s">1m</span><span class="p">]</span><span class="o">))</span>
+</code></pre></div>
+<p><code>sum by (instance)</code> separa la serie por cada instancia descubierta vía Eureka — el panel que hace visible, sin adivinar, lo que 3.6 verificó a mano con peticiones consecutivas: si el balanceo reparte tráfico parejo, las dos líneas suben juntas; si una instancia concentra todo, salta a la vista.</p>
+<p><strong>Panel 3 — Conexiones a PostgreSQL (Time series, dos consultas en el mismo panel):</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nv">hikaricp_connections_active</span>
+<span class="nv">hikaricp_connections_max</span>
+</code></pre></div>
+<p><strong>Panel 4 — Peticiones al Gateway (Time series):</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kr">rate</span><span class="o">(</span><span class="nv">http_server_requests_seconds_count</span><span class="p">{</span><span class="nl">job</span><span class="o">=</span><span class="p">"</span><span class="s">pagatu-microservicios</span><span class="p">",</span><span class="w"> </span><span class="nl">uri</span><span class="o">=~</span><span class="p">"</span><span class="s">/api/v1/.*</span><span class="p">"}[</span><span class="s">1m</span><span class="p">]</span><span class="o">)</span>
+</code></pre></div>
+<p>Filtra a las rutas que expone <code>pagatu-gateway</code> (3.4) — el mismo tráfico que ya cruzaste manualmente en 3.5-3.6, ahora como serie continua.</p>
+<p><strong>Panel 5 — Logs recientes (Logs, fuente <code>Loki</code>):</strong></p>
+<div class="highlight"><pre><span></span><code>{application="pagatu-catalogo-ms"}
+</code></pre></div>
+<p><strong>Panel 6 — Errores recientes (Logs, fuente <code>Loki</code>):</strong></p>
+<div class="highlight"><pre><span></span><code>{application="pagatu-catalogo-ms", detected_level="error"}
+</code></pre></div>
+<p>Guarda el tablero con el nombre <code>Pagatu - Infraestructura</code> — distinto del tablero de negocio que construye 3.10.</p>
+<p><strong>Buscar una línea específica, sin pegar URLs a mano: <code>Explore</code>.</strong> S3 (3.14) encontró líneas puntuales pegando la consulta directo en la URL del navegador contra la API de Loki — funciona, pero es incómodo para explorar: cada búsqueda nueva significa editar la URL a mano. Grafana tiene una herramienta dedicada justo para esto:</p>
+<ol>
+<li>En el menú de la izquierda, entra a <strong>Explore</strong> (ícono de brújula).</li>
+<li>Elige la fuente <code>Loki</code> en el selector de arriba.</li>
+<li>En el campo de consulta, pega el mismo LogQL que ya usaste por API — por ejemplo, para confirmar el arranque de una instancia (S3, 3.14):</li>
+</ol>
+<div class="highlight"><pre><span></span><code>{application="pagatu-catalogo-ms"} |= "Started PagatuCatalogoMsApplication"
+</code></pre></div>
+<ol>
+<li>Clic en <strong>Run query</strong> (o Ctrl+Enter). Las líneas que contienen el texto buscado aparecen resaltadas, con el término marcado — la misma "aguja en el pajar" que antes tenías que encontrar leyendo el JSON crudo de la API.</li>
+</ol>
+<p>Prueba también el pool de conexiones (S3, 3.14), con la misma mecánica, solo cambiando el texto buscado:</p>
+<div class="highlight"><pre><span></span><code>{application="pagatu-catalogo-ms"} |= "HikariPool"
+</code></pre></div>
+<p><code>Explore</code> no reemplaza los paneles del tablero (arriba): un panel muestra siempre lo mismo, para cualquiera que abra el tablero; <code>Explore</code> es para preguntas puntuales, del momento — la herramienta correcta cuando no sabes de antemano qué vas a buscar, en vez de crear un panel nuevo por cada búsqueda.</p>
+<p><strong>Alertas: que Grafana avise, no que alguien tenga que quedarse mirando el tablero.</strong> Un tablero sirve mientras alguien lo está viendo; una alerta sigue funcionando aunque nadie lo mire.</p>
+<p><strong>Cómo se crea cada regla de alerta (sigue estos pasos para las dos alertas):</strong></p>
+<ol>
+<li>En el menú de la izquierda, entra a <strong>Alerting</strong> → <strong>Alert rules</strong> → botón <strong>+ New alert rule</strong> (arriba a la derecha).</li>
+<li>En <strong>Enter alert rule name</strong>, escribe el nombre de la regla (por ejemplo, "Instancia caída").</li>
+<li>En <strong>Define query and alert condition</strong>, confirma que la fuente sea <code>Prometheus</code> y pega la consulta en el editor de la consulta <strong>A</strong>.</li>
+<li>Debajo, en la pestaña <strong>Threshold</strong>, define la condición: elige el operador (<code>IS BELOW</code> o <code>IS ABOVE</code>, según la alerta) y escribe el valor.</li>
+<li>En <strong>Set evaluation behavior</strong>, crea una carpeta nueva escribiendo su nombre (por ejemplo, <code>Pagatu</code>) y un grupo de evaluación; en <strong>Evaluate every</strong> define cada cuánto se revisa la condición, y en <strong>for</strong>, cuánto tiempo debe sostenerse antes de pasar a <em>Firing</em>.</li>
+<li>Sin tocar <strong>Configure labels and notifications</strong> (queda sin <em>contact point</em> por ahora, ver más abajo), clic en <strong>Save rule and exit</strong> (arriba a la derecha).</li>
+</ol>
+<p><strong>Alerta 1 — Instancia caída:</strong></p>
+<ul>
+<li>Consulta (fuente <code>Prometheus</code>): <code>up{job="pagatu-microservicios"}</code></li>
+<li>Condición: <code>IS BELOW 1</code></li>
+<li>Evaluar cada <code>10s</code>, durante (<code>for</code>) <code>1m</code> antes de pasar a <em>Firing</em> — evita que una caída de un segundo (un reinicio normal) dispare la alerta de más. Con dos instancias, esta alerta puede dispararse mientras la otra sigue respondiendo — es justo lo que el balanceo de S4 existe para evitar a nivel de servicio, pero el equipo igual necesita saber que una cayó.</li>
+</ul>
+<p><strong>Alerta 2 — Pool de conexiones cerca del límite:</strong></p>
+<ul>
+<li>Consulta (fuente <code>Prometheus</code>): <code>hikaricp_connections_active / hikaricp_connections_max</code></li>
+<li>Condición: <code>IS ABOVE 0.8</code></li>
+<li>Evaluar cada <code>30s</code>, durante <code>2m</code>.</li>
+</ul>
+<p>Sin <em>contact point</em> configurado, la alerta igual cambia de estado (<em>Normal</em> → <em>Pending</em> → <em>Firing</em>) y queda visible en <strong>Alerting → Alert rules</strong>, que alcanza para esta sesión. Conectar un canal real de notificación (correo, Slack) queda fuera de este anexo.</p>
+<p><strong>Prueba la Alerta 1 provocándola de verdad:</strong> detén una de las dos instancias de <code>pagatu-catalogo-ms</code> (<code>Ctrl+C</code> en su terminal) y observa el estado de la regla en <strong>Alerting → Alert rules</strong> — debería pasar de <em>Normal</em> a <em>Pending</em> y, pasado el minuto configurado, a <em>Firing</em>, aunque el Gateway (3.6) siga respondiendo con la instancia restante. Vuelve a levantar la instancia y confirma que regresa sola a <em>Normal</em>.</p>
+<h3 id="39-opcional-anexo-metricas-de-negocio-con-micrometer">3.9 (opcional, anexo) Métricas de negocio con Micrometer<a class="headerlink" href="#39-opcional-anexo-metricas-de-negocio-con-micrometer" title="Permanent link">&para;</a></h3>
+<p>Con la infraestructura ya en su propio tablero y con alertas (3.8), esta es la pieza que le falta al negocio: métricas propias de lo que la aplicación hace, no de cómo está corriendo.</p>
+<p><strong>Producto del paso:</strong> <code>pagatu-catalogo-ms</code> emitiendo métricas propias del catálogo, listas para Prometheus.</p>
+<p><code>up{job="pagatu-microservicios"}</code> o <code>hikaricp_connections_active</code> (3.8) dicen si el servicio está vivo y cuántas conexiones usa — nada sobre cuántos productos se crearon ni cuántas búsquedas fallaron por recurso inexistente. Esas preguntas no las responde ninguna métrica que Spring Boot exponga por defecto: hay que emitirlas explícitamente, en el momento exacto en que el evento de negocio ocurre.</p>
+<p>Agrega <code>MeterRegistry</code> a <code>ProductoService</code> (registra la creación de un producto):</p>
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.service</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.dto.ProductoRequest</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.dto.ProductoResponse</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.entity.Categoria</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.entity.Producto</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.exception.ResourceNotFoundException</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.mapper.ProductoMapper</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.repository.CategoriaRepository</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.repository.ProductoRepository</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">io.micrometer.core.instrument.MeterRegistry</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lombok.RequiredArgsConstructor</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.stereotype.Service</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.List</span><span class="p">;</span>
+
+<span class="nd">@Service</span>
+<span class="nd">@RequiredArgsConstructor</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ProductoService</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ProductoRepository</span><span class="w"> </span><span class="n">productoRepository</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ProductoMapper</span><span class="w"> </span><span class="n">productoMapper</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">CategoriaRepository</span><span class="w"> </span><span class="n">categoriaRepository</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">MeterRegistry</span><span class="w"> </span><span class="n">meterRegistry</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// ... listar(), obtener(), actualizar(), eliminar() sin cambios ...</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ProductoResponse</span><span class="w"> </span><span class="nf">crear</span><span class="p">(</span><span class="n">ProductoRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Producto</span><span class="w"> </span><span class="n">producto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">productoMapper</span><span class="p">.</span><span class="na">toEntity</span><span class="p">(</span><span class="n">request</span><span class="p">);</span>
+<span class="w">        </span><span class="n">producto</span><span class="p">.</span><span class="na">setCategoria</span><span class="p">(</span><span class="n">buscarCategoriaOFallar</span><span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="na">getCategoriaId</span><span class="p">()));</span>
+<span class="w">        </span><span class="n">ProductoResponse</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">productoMapper</span><span class="p">.</span><span class="na">toResponse</span><span class="p">(</span><span class="n">productoRepository</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">producto</span><span class="p">));</span>
+<span class="w">        </span><span class="n">meterRegistry</span><span class="p">.</span><span class="na">counter</span><span class="p">(</span><span class="s">"pagatu_productos_creados_total"</span><span class="p">).</span><span class="na">increment</span><span class="p">();</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">response</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Producto</span><span class="w"> </span><span class="nf">buscarOFallar</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">productoRepository</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">orElseThrow</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ResourceNotFoundException</span><span class="p">(</span><span class="s">"Producto no encontrado: "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">id</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Categoria</span><span class="w"> </span><span class="nf">buscarCategoriaOFallar</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">categoriaId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">categoriaRepository</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">categoriaId</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">orElseThrow</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ResourceNotFoundException</span><span class="p">(</span><span class="s">"Categoria no encontrada: "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">categoriaId</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Solo se agregó el campo <code>meterRegistry</code> (Spring lo inyecta solo: <code>micrometer-registry-prometheus</code> ya está en el <code>pom.xml</code> desde S3, 3.10) y una línea al final de <code>crear()</code> — el resto de la clase no cambia. <code>counter(...).increment()</code> suma uno cada vez que se llama; Prometheus lo expone como <code>pagatu_productos_creados_total</code>.</p>
+<p>Registra la búsqueda fallida en <code>GlobalExceptionHandler</code> — un solo lugar captura <strong>todas</strong> las búsquedas por recurso inexistente, sin importar si el <code>id</code> era de una categoría o de un producto:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.exception</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.http.HttpStatus</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.http.ResponseEntity</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.web.bind.MethodArgumentNotValidException</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.web.bind.annotation.ExceptionHandler</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.web.bind.annotation.RestControllerAdvice</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">io.micrometer.core.instrument.MeterRegistry</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lombok.RequiredArgsConstructor</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.time.Instant</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.HashMap</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.Map</span><span class="p">;</span>
+
+<span class="nd">@RestControllerAdvice</span>
+<span class="nd">@RequiredArgsConstructor</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">GlobalExceptionHandler</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">MeterRegistry</span><span class="w"> </span><span class="n">meterRegistry</span><span class="p">;</span>
+
+<span class="w">    </span><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">ResourceNotFoundException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="nf">handleNotFound</span><span class="p">(</span><span class="n">ResourceNotFoundException</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">recurso</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ex</span><span class="p">.</span><span class="na">getMessage</span><span class="p">().</span><span class="na">split</span><span class="p">(</span><span class="s">" "</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="p">.</span><span class="na">toLowerCase</span><span class="p">();</span>
+<span class="w">        </span><span class="n">meterRegistry</span><span class="p">.</span><span class="na">counter</span><span class="p">(</span><span class="s">"pagatu_recursos_no_encontrados_total"</span><span class="p">,</span><span class="w"> </span><span class="s">"recurso"</span><span class="p">,</span><span class="w"> </span><span class="n">recurso</span><span class="p">).</span><span class="na">increment</span><span class="p">();</span>
+
+<span class="w">        </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"timestamp"</span><span class="p">,</span><span class="w"> </span><span class="n">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">());</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"status"</span><span class="p">,</span><span class="w"> </span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">NOT_FOUND</span><span class="p">.</span><span class="na">value</span><span class="p">());</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"error"</span><span class="p">,</span><span class="w"> </span><span class="s">"Not Found"</span><span class="p">);</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"message"</span><span class="p">,</span><span class="w"> </span><span class="n">ex</span><span class="p">.</span><span class="na">getMessage</span><span class="p">());</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">NOT_FOUND</span><span class="p">).</span><span class="na">body</span><span class="p">(</span><span class="n">body</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// ... handleValidation() sin cambios ...</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>El <code>"recurso"</code> como etiqueta (<em>tag</em>) — tomado de la primera palabra del mensaje, <code>"Producto"</code> o <code>"Categoria"</code> (3.5.4, 3.5.8) —, no como parte del nombre de la métrica, es lo que permite en 3.10 desglosar búsquedas fallidas por tipo de recurso sin crear una métrica nueva por cada una.</p>
+<p>Reinicia las dos instancias de <code>pagatu-catalogo-ms</code>, genera al menos tres productos nuevos (<code>POST /api/v1/productos</code>, S1) y al menos una búsqueda a un <code>id</code> inexistente de cada recurso, y verifica que las métricas nuevas aparezcan:</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">Invoke-RestMethod</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:8081/actuator/prometheus"</span><span class="p">)</span> <span class="o">-match</span> <span class="s2">"pagatu_"</span>
+</code></pre></div>
+<p>Resultado esperado: líneas con <code>pagatu_productos_creados_total</code> y <code>pagatu_recursos_no_encontrados_total{recurso="producto",...}</code> / <code>{recurso="categoria",...}</code>.</p>
+<h3 id="310-opcional-anexo-disenar-el-tablero-de-catalogo-en-tiempo-real">3.10 (opcional, anexo) Diseñar el tablero de catálogo en tiempo real<a class="headerlink" href="#310-opcional-anexo-disenar-el-tablero-de-catalogo-en-tiempo-real" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> un tablero de Grafana con el catálogo en vivo — productos creados por minuto y búsquedas fallidas por recurso —, actualizándose solo.</p>
+<p>Abre <code>http://localhost:13000</code> (3.7, más arriba) y crea un tablero <strong>nuevo</strong>, distinto del de infraestructura (3.8): <strong>Dashboards → New → New dashboard</strong>. Cada panel se agrega con <strong>Add visualization</strong>, eligiendo la fuente <code>Prometheus</code>, pegando la consulta, y ajustando el tipo de visualización a la derecha.</p>
+<p><strong>Panel 1 — Productos creados por minuto (Time series):</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kr">rate</span><span class="o">(</span><span class="nv">pagatu_productos_creados_total</span><span class="p">[</span><span class="s">1m</span><span class="p">]</span><span class="o">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">60</span>
+</code></pre></div>
+<p><code>rate()</code> calcula la velocidad de crecimiento del contador por segundo, dentro de la ventana <code>[1m]</code>; multiplicar por <code>60</code> la convierte a "productos por minuto", una unidad que se lee de un vistazo.</p>
+<p><strong>Panel 2 — Total de productos creados, últimos 5 minutos (Stat):</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kr">increase</span><span class="o">(</span><span class="nv">pagatu_productos_creados_total</span><span class="p">[</span><span class="s">5m</span><span class="p">]</span><span class="o">)</span>
+</code></pre></div>
+<p><code>increase()</code> es <code>rate()</code> sin normalizar a "por segundo" — directamente cuánto creció el contador dentro de la ventana.</p>
+<p><strong>Panel 3 — Búsquedas fallidas por recurso (Bar gauge):</strong></p>
+<div class="highlight"><pre><span></span><code><span class="k">sum</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="nv">recurso</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="nv">pagatu_recursos_no_encontrados_total</span><span class="o">)</span>
+</code></pre></div>
+<p><code>sum by (recurso)</code> agrupa por la etiqueta agregada en 3.9 — con dos recursos hoy (<code>producto</code>, <code>categoria</code>), el panel ya muestra dos barras; queda listo para un tercer recurso sin cambiar la consulta.</p>
+<p><strong>Actualización casi en vivo:</strong> en la esquina superior derecha del tablero, abre el selector de rango de tiempo y elige <strong>Last 30 minutes</strong>; al lado, en el selector de refresco, escribe <code>10s</code>. Con eso el tablero vuelve a consultar Prometheus cada 10 segundos — coherente con las ventanas <code>[1m]</code>/<code>[5m]</code> de las consultas: un refresco más lento que la ventana haría que el tablero se sintiera desactualizado; uno mucho más rápido no aporta nada, porque Prometheus solo tiene datos nuevos cada 15 segundos (el <code>scrape_interval</code> de <code>prometheus-dev.yml</code>).</p>
+<p>Guarda el tablero con el nombre <code>Pagatu - Catálogo en tiempo real</code>.</p>
+<p><strong>Negocio e infraestructura, uno al lado del otro:</strong> con los dos tableros abiertos en pestañas distintas — <code>Pagatu - Infraestructura</code> (3.8) y <code>Pagatu - Catálogo en tiempo real</code> (arriba) —, un salto en "Búsquedas fallidas por recurso" se explica mirando, en el mismo rango de tiempo, el panel de errores del tablero de infraestructura. Es la misma correlación métricas-logs de S3 (3.14), ahora visible sin cambiar de herramienta ni escribir una consulta nueva — solo cambiando de pestaña.</p>
+<h3 id="311-opcional-anexo-guardar-los-tableros-como-codigo">3.11 (opcional, anexo) Guardar los tableros como código<a class="headerlink" href="#311-opcional-anexo-guardar-los-tableros-como-codigo" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> los dos tableros (3.8 y 3.10) provisionados automáticamente, igual que ya están las fuentes de datos (3.7) — sobreviven a un <code>docker compose down</code> sin reconstruirlos a mano.</p>
+<p>Exporta el JSON de cada tablero por separado: ícono de engranaje (<strong>Dashboard settings</strong>) → <strong>JSON Model</strong> → copia el contenido completo. Guarda cada uno con su propio nombre:</p>
+<ul>
+<li><code>obs/grafana/provisioning/dashboards/pagatu-infraestructura.json</code> (3.8)</li>
+<li><code>obs/grafana/provisioning/dashboards/pagatu-catalogo.json</code> (3.10)</li>
+</ul>
+<p>Las reglas de alerta (3.8) se exportan aparte, desde <strong>Alerting → Alert rules</strong>, con el mismo ícono de exportar de cada regla; guárdalas como <code>obs/grafana/provisioning/alerting/pagatu-alertas-dev.yml</code> si quieres que también se autoprovisionen — opcional, no imprescindible para esta sesión.</p>
+<p>Crea <code>obs/grafana/provisioning/dashboards/dashboards-dev.yml</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+
+<span class="nt">providers</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pagatu</span>
+<span class="w">    </span><span class="nt">folder</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pagatu</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">file</span>
+<span class="w">    </span><span class="nt">options</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/grafana/provisioning/dashboards</span>
+</code></pre></div>
+<p>Un único proveedor carga <strong>todos</strong> los archivos <code>.json</code> que encuentre en esa carpeta, sin necesitar una entrada por tablero. No hace falta agregar ningún volumen nuevo a <code>compose-dev.yml</code>: <code>./grafana/provisioning:/etc/grafana/provisioning:ro</code> (3.7, más arriba) ya monta toda la carpeta, incluidas estas subcarpetas nuevas.</p>
+<p>Reinicia el contenedor de Grafana y confirma que los dos tableros aparecen solos, en la carpeta <code>Pagatu</code>, sin haberlos importado a mano:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>obs
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-dev.yml<span class="w"> </span>restart<span class="w"> </span>pagatu-grafana
+</code></pre></div>
+<p>Con esto, el stack completo de observabilidad de DIST (Prometheus, Loki, Grafana, datasources y los dos tableros) queda como código en el repositorio — reproducible por cualquier integrante del equipo con un solo <code>docker compose up</code>, sin pasos manuales en la UI.</p>
+<h3 id="312-opcional-punto-unico-de-acceso-en-produccion-local">3.12 (opcional) Punto único de acceso en producción local<a class="headerlink" href="#312-opcional-punto-unico-de-acceso-en-produccion-local" title="Permanent link">&para;</a></h3>
 <div class="admonition note">
-<p class="admonition-title">3.8 es opcional</p>
+<p class="admonition-title">3.12 es opcional</p>
 <p>El alcance evaluado de S4 termina en 3.6 (4.4, 4.6) — igual que 3.15 de S3, producción local con Docker es contenido adicional.</p>
 </div>
 <p><strong>Producto del paso:</strong> <code>pagatu-gateway</code> operativo en Docker, dentro de la misma red compartida (<code>pagatu-prod-net</code>, S2) — el único componente del sistema con un puerto expuesto al host.</p>
@@ -2262,6 +2594,10 @@ docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> 
 <li>Rutas hacia <code>pagatu-catalogo-ms</code> (<code>/api/v1/categorias</code>, <code>/api/v1/productos</code>) resueltas por el Gateway, sin usar los puertos directos de las instancias.</li>
 <li>Balanceo de carga verificado con peticiones consecutivas resueltas por instancias distintas.</li>
 <li>(Opcional) Grafana con Prometheus y Loki como fuentes de datos, mostrando métricas y logs en un solo tablero.</li>
+<li>(Opcional) Tablero de infraestructura con seis paneles y dos alertas configuradas y probadas.</li>
+<li>(Opcional) Métricas de negocio propias (<code>pagatu_productos_creados_total</code>, <code>pagatu_recursos_no_encontrados_total</code>) emitidas por <code>pagatu-catalogo-ms</code>.</li>
+<li>(Opcional) Tablero de catálogo en tiempo real, con datos correlacionados contra el tablero de infraestructura.</li>
+<li>(Opcional) Los dos tableros y las alertas provisionados como código, reproducibles sin pasos manuales en la UI.</li>
 <li>(Opcional) <code>pagatu-gateway</code> operativo también en producción local, como único componente con puerto de negocio expuesto al host.</li>
 </ul>
 <h2 id="4-crea-actividad-autonoma">4. Crea: actividad autónoma<a class="headerlink" href="#4-crea-actividad-autonoma" title="Permanent link">&para;</a></h2>
