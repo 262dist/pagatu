@@ -1,6 +1,6 @@
 # Sistema Integral de Gestión de Producción y Comercialización
 
-**Figura 1. Los 8 módulos del Sistema Integral de Gestión de Producción y Comercialización**
+**Figura 1. Los 8 módulos del ERP interno, con el Portal Web como entrada única**
 
 ```text
  ┌───────────────────────┐
@@ -32,13 +32,14 @@
              │  Inventario de arriba, no de un
              │  segundo módulo)
              ▼
- ┌───────────────────────┐
- │ 5. VENTAS              │
- │ clientes, cotizaciones,│
- │ pedidos, precios       │
- └───────────┬─────────────┘
-             ▼
- ┌───────────────────────┐
+ ┌───────────────────────┐   solicitud de   ┌────────────────────────┐
+ │ 5. VENTAS              │◄──contacto/──────│ 9. PORTAL WEB           │
+ │ clientes, cotizaciones,│    pedido        │ · anónimo: catálogo +   │
+ │ pedidos, precios       │                  │   formulario de contacto│
+ └───────────┬─────────────┘                  │ · con sesión: login +   │
+             ▼                                │   menú de módulos según │
+                                              │   el rol del usuario    │
+ ┌───────────────────────┐                    └────────────────────────┘
  │ 6. DESPACHO            │
  │ picking, transportista,│
  │ entrega, devoluciones  │
@@ -62,210 +63,170 @@
  │ compartidos, parametrización, auditoría         │
  └────────────────────────────────────────────────┘
 
-
-    ═══ CAPACIDADES TRANSVERSALES (no son módulos de despliegue) ═══
-
- 
- ┌────────────────────────────────────────────────┐
- │ TRAZABILIDAD                                    │
- │ proveedor → lote de MP → orden de producción →  │
- │ lote de PT → venta → cliente (y a la inversa)   │
- └────────────────────────────────────────────────┘
-
- ┌────────────────────────────────────────────────┐
- │ COSTOS                                          │
- │ costo de producción, costo unitario, márgenes   │
- └────────────────────────────────────────────────┘
 ```
 
-## Cómo implementarlo: monolito modular vs. microservicios
+Trazabilidad, Costos, Calidad y Reportes no son módulos ni despliegues — son capacidades que se apoyan en los datos de los ocho módulos de arriba, por eso no tienen caja propia en el diagrama (se describen en "Calidad, costos, trazabilidad y reportes", más abajo).
 
-Igual que en el [Sistema académico (referencia)](acad.md), cualquiera de los 8 módulos de arriba puede construirse dentro de **un solo desplegable** (monolito modular) o como **servicios independientes** (microservicios) — la elección no cambia el modelo de dominio, cambia solo dónde termina un proceso y empieza otro. Los dos diagramas de abajo se quedan a nivel **contenedor** (C2 del C4 model): módulos/servicios y sus bases de datos, y cómo se llaman entre sí — sin bajar al detalle interno de cada uno (eso ya se ve en ADS S04, 2.4).
+El `Portal Web` tampoco es un módulo del ERP: vive fuera de la red interna, en su propio despliegue (ver "Arquitectura", más abajo). Se incluye en el diagrama porque es la puerta de entrada de todo lo demás. **Ningún usuario entra directo al ERP**: todos —visitante anónimo, comprador, almacenista, operario de planta, vendedor, despachador, cajero— pasan primero por el Portal. Lo que cambia es qué ve cada uno adentro: el visitante anónimo, catálogo y contacto; el usuario con sesión iniciada, el menú de los módulos que su rol le permite (definidos en `Administración`).
 
-### A. Monolito modular — un solo despliegue
+## Qué hace cada módulo
 
-**Figura 2. Monolito modular (C2 — contenedores)**
+El sistema se organiza en ocho módulos internos, cada uno con responsabilidades y límites explícitos — ningún módulo asume una función que le corresponde a otro, aunque el flujo de negocio los recorra en secuencia (Figura 1) —, más un componente adicional que mira hacia afuera: el `Portal Web`.
+
+**1. Compras.** Gestiona proveedores, solicitudes de cotización, cotizaciones, órdenes de compra, precios, cantidades y condiciones de compra de materias primas, insumos de producción, materiales de empaque y demás artículos que la empresa necesita. Su alcance termina en la emisión y el seguimiento de la orden de compra — la recepción física es responsabilidad de `Recepción`, nunca de este módulo: `Compras` decide qué y cuánto comprar, no si lo que llegó cumple.
+
+**2. Recepción.** Registra la llegada física de lo que `Compras` ordenó: relación con la orden de compra, proveedor, procedencia, fecha y condiciones de llegada. Para materias primas como el maíz, además del pesaje (bruto, tara, neto) aplica los controles de calidad que la empresa defina (humedad, impurezas, entre otros). De ese control depende una decisión con consecuencia real — aceptar, observar, rechazar o devolver al proveedor —: solo lo aceptado genera lote y entra a `Inventario`.
+
+**3. Inventario.** Es el registro único de existencias físicas — materias primas, insumos, materiales de empaque, productos en proceso, productos terminados, subproductos y materiales auxiliares — con sus almacenes, ubicaciones, lotes y estado. No decide nada por sí mismo (ver aclaraciones, más abajo): solo refleja los movimientos que le informan `Recepción`, `Producción` y `Despacho`, y responde con exactitud cuánto hay disponible cuando se le pregunta.
+
+**4. Producción.** Transforma lo que `Inventario` tiene disponible en purina y otros derivados, siguiendo fórmulas o recetas. Administra órdenes de producción, cantidades planificadas frente a reales, el lote de materia prima consumido, y lo que resulta de ejecutar la orden: productos terminados, subproductos, mermas, desperdicios y reprocesos. Es también la fuente de la información necesaria para calcular el costo de producción — sin `Producción`, `Costos` no tiene de dónde partir.
+
+**5. Ventas.** Gestiona clientes, cotizaciones, pedidos, listas de precios, descuentos y condiciones comerciales, tanto mayoristas como minoristas. Antes de comprometer un pedido, consulta a `Inventario` la disponibilidad real — nunca vende sobre una cifra que no verificó — y entrega el pedido aprobado a `Despacho` para su atención.
+
+**6. Despacho.** Convierte el pedido aprobado en una entrega física: picking, selección de lotes, carga, transportista, vehículo, ruta y confirmación de entrega. Genera la salida correspondiente en `Inventario` y es también el punto de entrada de las devoluciones del cliente — decide si el producto devuelto reingresa, queda observado, se reprocesa o se da de baja.
+
+**7. Finanzas.** Traduce a términos económicos lo que `Compras` y `Ventas` generan: cuentas por pagar (de las compras), cuentas por cobrar (de las ventas), facturación, pagos, anticipos, cobranzas y caja. Es, junto a `Producción`, el módulo con un agregado real que proteger (ver más abajo): el saldo de cada cuenta, con la garantía de que nunca se le aplica más pago o cobranza del que le corresponde.
+
+**8. Administración.** No participa en el flujo de negocio (Figura 1) — lo sostiene desde abajo: usuarios, roles, permisos, seguridad de acceso, parámetros generales y los catálogos compartidos que los demás módulos necesitan (unidades de medida, categorías, almacenes, ubicaciones, presentaciones, motivos de devolución o de merma). También concentra el registro de auditoría de lo que los usuarios hacen en el resto de módulos. Es, además, la fuente de la verdad de **qué módulo ve cada usuario** dentro del `Portal Web`: el rol vive aquí, el menú solo lo refleja.
+
+**9. Portal Web.** Es la única puerta de entrada — nadie accede a los otros ocho módulos por otra vía. Para un visitante anónimo, es un sitio de promoción: catálogo de productos (ficha, descripción, imágenes) y un formulario de contacto para pedir información o un pedido. Cada envío llega a `Ventas` como una **solicitud de contacto**, que un vendedor revisa y decide si convierte en cotización o pedido real — no vende en línea, no hay carrito, checkout ni pago todavía. Para un usuario con sesión iniciada (comprador, almacenista, operario de planta, vendedor, despachador, cajero), el Portal muestra un **menú con los módulos a los que su rol le da acceso** — el mismo rol que administra `Administración` — y ahí adentro navega el módulo correspondiente (Compras, Inventario, Producción, etc.). La empresa ya anticipó una v2 con **ventas en línea** (carrito, pago); esta v1 se construye de manera que esa evolución no obligue a rehacerlo (ver "Arquitectura", más abajo).
+
+### Tipos de artículos
+
+El sistema distingue explícitamente entre lo que fluye por cada etapa, porque el mismo artículo cambia de naturaleza según en qué módulo está:
+
+**Tabla 1. Tipos de artículo gestionados por el sistema**
+
+| Tipo | Ejemplos | Dónde nace / dónde se consume |
+|---|---|---|
+| Materia prima | Maíz y otras materias primas de producción | Nace en `Recepción`, se consume en `Producción` |
+| Insumo de producción | Vitaminas, minerales, aditivos y otros componentes | Nace en `Recepción`/`Compras`, se consume en `Producción` |
+| Material de empaque | Sacos, bolsas, envases, etiquetas | Nace en `Recepción`/`Compras`, se consume en `Producción` |
+| Producto en proceso | Intermedio de una orden de producción todavía no cerrada | Nace y se consume dentro de `Producción` |
+| Producto terminado | Purina y otros derivados | Nace en `Producción`, se consume en `Ventas`/`Despacho` |
+| Subproducto | Resultado secundario de la transformación | Nace en `Producción` |
+| Material auxiliar o consumible | Insumo de soporte que no forma parte del producto final | Se consume donde la operación lo requiera |
+
+### Calidad, costos, trazabilidad y reportes: capacidades, no módulos aparte
+
+Cuatro capacidades atraviesan los ocho módulos sin ser un despliegue propio (ya adelantado en la Figura 1):
+
+- **Calidad** vive donde ocurre el control real: en `Recepción` (parámetros, resultados y aceptación/rechazo de lo que llega) y en `Producción` (parámetros y resultados del proceso y del producto obtenido). No hay un módulo de "Calidad" separado porque el control siempre pertenece a quien genera el dato, no a un tercero que lo audita después.
+- **Costos** se arma con lo que `Compras`, `Inventario`, `Producción` y `Finanzas` ya registran — materia prima, insumos, empaque, mermas y demás costos atribuibles — para llegar a costo de producción, costo unitario, márgenes y rentabilidad. No es una fuente de datos propia, es un cálculo sobre las demás.
+- **Trazabilidad** es la capacidad de recorrer la cadena completa — proveedor, compra, recepción, lote de materia prima, movimiento de inventario, orden de producción, insumos usados, lote de producto terminado, venta y cliente — en ambos sentidos: hacia adelante (de un lote de materia prima a los clientes que recibieron algo hecho con él) y hacia atrás (de un producto terminado a los proveedores y lotes que lo originaron).
+- **Reportes** los entrega cada módulo sobre su propio ámbito — adquisiciones y proveedores (`Compras`), ingresos y controles (`Recepción`), existencias y movimientos (`Inventario`), consumo y rendimiento (`Producción`), operaciones comerciales (`Ventas`), salidas y entregas (`Despacho`), operaciones económicas (`Finanzas`), usuarios y auditoría (`Administración`) — sin un módulo de reportería centralizado que dependa de todos los demás.
+
+## Arquitectura: monolito modular, organizado por capas — y el Portal Web aparte
+
+El **ERP interno** tiene usuarios acotados (compradores, almacenistas, operarios de planta, vendedores, despachadores, cajeros) y un cuello de botella real en la planta física — la báscula, el laboratorio de calidad, la línea de producción —, no en el tráfico digital. Sin un argumento de escala o de sistema externo que lo justifique, sus ocho módulos se construyen como **un solo desplegable**: corren en el mismo proceso, se llaman entre sí con una llamada Java directa (verificada en tiempo de compilación, p. ej. `ApplicationModules.verify()` de Spring Modulith) y comparten una única base de datos con schemas separados por módulo.
+
+Por dentro, los ocho módulos se organizan **por capas** (`Controller` → `Service` → `Repository`): es la opción más simple y rápida de construir, y ninguno acumula hoy un caso de uso lo bastante complejo — ni siquiera `Producción` o `Finanzas` — como para pagar el costo extra de aislar el dominio (hexagonal/Clean, ADS S04 2.4-2.5). Si eso cambia más adelante, se evalúa entonces, con el código real delante, no antes.
+
+**El `Portal Web` es la única excepción real del sistema.** A diferencia de los ocho módulos anteriores, aquí sí hay un argumento concreto de separación — el mismo criterio de ADS S04 (2.7, "servicios con necesidades de escala muy distintas entre sí") que ya usa el ejemplo académico para `Matrícula` y `Pagos en línea`:
+
+- **Perímetro de seguridad distinto.** El Portal es lo único expuesto a internet — el ERP interno nunca debe quedar accesible directamente ni de casualidad. Para el visitante anónimo, el Portal solo conoce una vista de catálogo curada (nombre, descripción, imagen — no costos, no stock exacto, no datos de proveedor) y un único endpoint de escritura pública: recibir la solicitud de contacto. Para el usuario con sesión iniciada, el Portal valida sus credenciales y su rol contra `Administración` antes de dejarlo entrar a cualquier módulo — nunca asume el rol por su cuenta.
+- **Tráfico con un patrón distinto.** Una campaña de marketing puede disparar visitas al catálogo sin ninguna relación con la carga del ERP interno (que depende de cuántos empleados están trabajando, no de cuánta gente ve un anuncio) — aunque ambos flujos (público y con sesión) entren por el mismo Portal.
+- **Ya se sabe que va a crecer.** La empresa anticipó una v2 con ventas en línea (carrito, checkout, pasarela de pago) — ese es justo el tipo de crecimiento que conviene no tener acoplado al ERP interno desde el principio, para no separarlo después bajo presión.
+
+Por eso el `Portal Web` se construye **desde el día uno como su propio desplegable** — la única capa de presentación de todo el sistema, tanto para el público como para el personal interno —, no como un noveno módulo del monolito. Se organiza también **por capas** (mostrar catálogo, guardar un formulario, o pedirle a `Administración` el menú del usuario y redirigir al módulo autorizado — nada de eso exige aislar un dominio), pero como proceso aparte que le habla al ERP interno solo por su API, nunca a su base de datos directamente.
+
+**Figura 2. C2 (contenedores): el Portal Web como entrada única de todo el sistema**
 
 ```mermaid
 flowchart TB
-    Usuario["Usuario interno<br/>(Compras / Almacén)"]
-    subgraph APP["Aplicación (1 despliegue, 1 proceso)"]
-        Compras["Módulo Compras"]
-        Recepcion["Módulo Recepción"]
-        Inventario["Módulo Inventario"]
-        Compras -->|"llamada Java directa"| Recepcion
-        Recepcion -->|"llamada Java directa"| Inventario
+    Visitante(["Visitante / Cliente<br/>(anónimo, internet)"])
+    Usuario(["Usuario interno<br/>(Compras, Almacén, Planta,<br/>Ventas, Despacho, Caja)"])
+    Proveedor(["Proveedor<br/>(sin cuenta propia)"])
+
+    subgraph PORTAL["Portal Web (despliegue propio, por capas)"]
+        PortalPublico["Catálogo público<br/>+ formulario de contacto"]
+        PortalMenu["Login + menú de módulos<br/>según el rol"]
     end
+
+    subgraph APP["ERP interno (1 despliegue, 1 proceso, por capas)"]
+        Administracion["Administración"]
+        CadenaAbastecimiento["Compras + Recepción"]
+        Inventario["Inventario"]
+        Produccion["Producción"]
+        Comercial["Ventas + Despacho"]
+        Finanzas["Finanzas"]
+
+        CadenaAbastecimiento -->|"llamada Java directa"| Inventario
+        Produccion -->|"llamada Java directa"| Inventario
+        Inventario -->|"llamada Java directa"| Produccion
+        Comercial -->|"llamada Java directa"| Inventario
+        CadenaAbastecimiento -->|"llamada Java directa"| Finanzas
+        Comercial -->|"llamada Java directa"| Finanzas
+
+        CadenaAbastecimiento --> Administracion
+        Inventario --> Administracion
+        Produccion --> Administracion
+        Comercial --> Administracion
+        Finanzas --> Administracion
+    end
+
     DB[("Base de datos<br/>schemas separados por módulo")]
 
-    Usuario --> APP
-    Compras --> DB
-    Recepcion --> DB
+    Visitante --> PortalPublico
+    Usuario --> PortalMenu
+    Proveedor -->|"sin login — lo registra Compras"| CadenaAbastecimiento
+
+    PortalPublico -.->|"HTTP: catálogo (lectura)<br/>+ solicitud de contacto (escritura)"| Comercial
+    PortalMenu -.->|"HTTP: login y permisos"| Administracion
+    PortalMenu -.->|"HTTP: solo el módulo autorizado"| APP
+
+    Administracion --> DB
+    CadenaAbastecimiento --> DB
     Inventario --> DB
-```
-
-Los tres módulos corren en el mismo proceso — `Compras` llama a `Recepción` y esta a `Inventario` con una llamada directa en Java (verificada en tiempo de compilación, p. ej. `ApplicationModules.verify()` de Spring Modulith), sin red de por medio.
-
-### B. Microservicios — un despliegue por servicio
-
-**Figura 3. Microservicios (C2 — contenedores)**
-
-```mermaid
-flowchart TB
-    Usuario["Usuario interno"]
-    Gateway["API Gateway"]
-    Compras["Servicio Compras"]
-    Recepcion["Servicio Recepción"]
-    Inventario["Servicio Inventario"]
-    DBCompras[("BD Compras")]
-    DBRecepcion[("BD Recepción")]
-    DBInventario[("BD Inventario")]
-
-    Usuario --> Gateway
-    Gateway --> Compras
-    Gateway --> Recepcion
-    Gateway --> Inventario
-    Compras -.->|"HTTP / mensajería"| Recepcion
-    Recepcion -.->|"HTTP / mensajería"| Inventario
-    Compras --> DBCompras
-    Recepcion --> DBRecepcion
-    Inventario --> DBInventario
-```
-
-Cada servicio es su propio proceso, con su propia base de datos — la comunicación ya no es una llamada Java, es red (HTTP/mensajería), con todo lo que eso trae: *service discovery*, tolerancia a fallos, observabilidad distribuida.
-
-### Lo que no cambia entre A y B
-
-Un nivel más abajo (C3, no dibujado aquí — ver ADS S04, 2.4), cada módulo/servicio sigue siendo el mismo hexágono: dominio en el centro, puertos primarios/secundarios alrededor, adaptadores primarios/secundarios hacia el exterior. Lo único que cambia entre A y B es el borde exterior: si ese límite es una llamada de método dentro del mismo proceso, o una llamada de red entre dos procesos distintos. Por eso un módulo bien delimitado en A se puede extraer a microservicio en B sin rediseñar su interior: el puerto que ya tenía se convierte en el contrato de red.
-
-### C3: dentro de un módulo/servicio — dos formas de organizarlo (zoom a `producción`)
-
-Dentro de cada caja "Módulo Producción"/"Servicio Producción" de A y B hay todavía una decisión más: cómo se organiza el código *adentro*. Dos opciones, no una — la misma comparación que hace ADS S04 (2.3-2.4), aplicada aquí al módulo con más reglas de negocio reales del sistema.
-
-**Figura 4. Por capas (organización tradicional)**
-
-```mermaid
-flowchart TB
-    subgraph MODCAPAS["módulo: producción (por capas)"]
-        direction TB
-        CTRL["Controller"] --> SERV["Service"] --> REPO["Repository"]
-    end
-```
-
-**Figura 5. Hexagonal (dominio aislado)**
-
-```mermaid
-flowchart TB
-    subgraph MOD["módulo: producción (hexagonal)"]
-        direction TB
-        AP["adaptadores primarios<br/>(equivalente: Controller)"] --> PP["puertos primarios<br/>(interfaz UseCase)"]
-        PP --> DOM{{"dominio<br/>(equivalente: Service, puro)"}}
-        DOM --> PS["puertos secundarios<br/>(interfaz RepositoryPort)"]
-        PS --> AS["adaptadores secundarios<br/>(equivalente: Repository)"]
-    end
-
-    classDef dominio fill:#a8e6b0,stroke:#2f7d3c,stroke-width:2px,color:#111;
-    class DOM dominio;
-```
-
-Esto es lo que A y B esconden detrás de cada caja "Módulo Producción"/"Servicio Producción" — el mismo detalle que ADS S04 (2.4, Figura 6 de ese anexo) muestra con adaptadores concretos (REST, CLI, eventos por el lado primario; PostgreSQL/Oracle, báscula, laboratorio de calidad por el secundario) en vez de las etiquetas genéricas de aquí.
-
-**Figura 6. Clean Architecture (si algún módulo llega a necesitarlo)**
-
-```mermaid
-flowchart TB
-    subgraph FRAMEWORKS["Frameworks y drivers (Spring, JPA, HTTP)"]
-        subgraph ADAPTERS["Adaptadores de interfaz<br/>(equivalente: Controller/Repository impl.)"]
-            subgraph USECASES["Casos de uso<br/>(orquestación)"]
-                ENTITIES["Entidades del dominio<br/>(reglas atómicas, más interno)"]
-            end
-        end
-    end
-```
-
-Hexagonal es, en la práctica, un caso concreto de aplicación de Clean Architecture (SACAViX Tech, ver ADS S04 2.5) — no un tercer patrón aparte. La diferencia real de Clean sobre Hexagonal es separar formalmente **Entidades** (reglas atómicas) de **Casos de uso** (orquestación entre varias entidades), algo que el "dominio" de la Figura 5 todavía trata como una sola pieza. Esa separación solo aporta claridad cuando un módulo acumula muchos casos de uso complejos — ninguno de los 8 módulos la necesita hoy.
-
-**Tabla 1. Capas vs. Hexagonal vs. Clean, dentro de un módulo**
-
-| | Por capas | Hexagonal | Clean Architecture |
-|---|---|---|---|
-| **Ventaja** | Simple y rápido de construir — sin interfaces ni indirección extra, natural para CRUD. | Dominio aislado de la tecnología: se prueba sin base de datos ni báscula/laboratorio reales, y se cambia de proveedor (BD, pasarela de pago, servicio de facturación) escribiendo solo un adaptador nuevo. | Mismo aislamiento que Hexagonal, más una separación explícita entre reglas atómicas (Entidades) y orquestación (Casos de uso) — útil si un módulo tiene muchos casos de uso complejos que comparten las mismas entidades. |
-| **Desventaja** | El dominio queda acoplado directo a Spring/JPA — cambiar de framework o de motor de base de datos obliga a tocar la lógica de negocio. | Más clases e interfaces que mantener; *over-engineering* si el módulo es CRUD simple sin reglas de negocio reales que proteger. | Todo el costo de Hexagonal, más una capa adicional que la mayoría de los módulos no necesita — el *over-engineering* de Hexagonal, un escalón más arriba. |
-| **Cuándo usarla aquí** | La mayoría de los 8 módulos, al menos al inicio — CRUD con validaciones simples (Compras, Recepción, Ventas, Despacho, Administración). | Un módulo que acumule reglas de negocio genuinamente complejas — candidatos reales: `Producción` (fórmulas, consumo real vs. planificado, rendimientos, mermas) y `Finanzas` (saldos de cuentas por cobrar/pagar, con invariantes que proteger). | Ninguno de los 8 módulos lo justifica hoy — quedaría reservado para un módulo que, además de complejo, acumule tantos casos de uso que separarlos de las entidades aporte claridad real. |
-
-No es una decisión de una sola vez para todo el sistema: cada módulo se evalúa por separado, con el mismo criterio de ADS S04 (2.11) — capas por defecto, hexagonal cuando el dominio ya lo justifica, Clean solo si además el volumen de casos de uso lo pide.
-
-## Decisión aplicada: cadena operativa, producción, finanzas y el resto
-
-**Una diferencia real con el [Sistema académico (referencia)](acad.md) antes de la tabla:** ahí, `Matrícula` era candidato a microservicio por **escala** — miles de estudiantes inscribiéndose al mismo tiempo por internet, mientras el resto del sistema tenía tráfico normal (ADS S04, 2.7). Aquí no aparece ese mismo argumento en ningún módulo: los usuarios son internos y acotados (compradores, almacenistas, operarios de planta, vendedores, despachadores, cajeros), y el cuello de botella real está en la **planta física** — la báscula, el laboratorio de calidad, la línea de producción — no en el tráfico digital. Por eso, a diferencia del ejemplo académico, ningún módulo tiene aquí un argumento de escala lo bastante fuerte como para justificar un proceso propio desde el diseño.
-
-**Tabla 2. Decisión de arquitectura por módulo**
-
-| Grupo | Módulos | Organización interna | Topología de despliegue | Por qué |
-|---|---|---|---|---|
-| **Base (universal)** | 8. Administración | **Capas** | **Monolito modular** (A) | Usuarios, roles, permisos y catálogos compartidos (unidades de medida, almacenes, motivos de merma/devolución) los consulta literalmente todo lo demás — CRUD de parametrización, sin regla de negocio propia que aislar. |
-| **Cadena de abastecimiento** | 1-2: Compras, Recepción | **Capas** | **Monolito modular** (A) | CRUD con validaciones — cotizar/ordenar (Compras) y registrar pesaje/calidad (Recepción) no tienen hoy un agregado real que proteger más allá de "la orden existe" o "el lote quedó aceptado/rechazado". |
-| **Núcleo de existencias** | 3. Inventario | **Capas** por defecto | **Monolito modular** (A) | Es la "base operativa" que Compras/Recepción/Producción/Ventas/Despacho leen y escriben constantemente — mientras el modelo siga siendo entradas/salidas/transferencias por lote, capas alcanza. Candidato a revisarse solo si el número de almacenes/ubicaciones crece al punto de necesitar un motor de reservas propio — se evalúa cuando el código lo pida, no antes. |
-| **Núcleo de producción — excepción DDD** | 4. Producción | **Hexagonal desde el inicio** | **Monolito modular** (A) | Único candidato real a agregado DDD del sistema: una orden de producción con fórmula, consumo real vs. planificado, rendimiento y mermas — con un invariante genuino que proteger (lo que se consume no puede superar lo reservado en Inventario). Mismo criterio que `Finanzas del Estudiante` en el ejemplo académico: hexagonal por el dominio, no por volumen de tráfico. |
-| **Comercial y logístico** | 5-6: Ventas, Despacho | **Capas** | **Monolito modular** (A) | Cotizar, tomar pedidos, hacer picking y despachar es gestión de registros con reglas simples (disponibilidad, condiciones comerciales) — sin complejidad de dominio ni volumen concurrente que hoy lo justifique. |
-| **Administrativo-financiero — excepción DDD** | 7. Finanzas | **Hexagonal desde el inicio** | **Monolito modular al inicio** — candidato a extraerse a microservicio (B) solo si aparece un requisito real de aislamiento (auditoría independiente, integración de facturación electrónica) | Dueño real del saldo de cada cuenta por cobrar/pagar, con un invariante genuino: la suma de pagos o cobranzas nunca supera el monto original. Mismo patrón que `Finanzas del Estudiante` en el ejemplo académico — hexagonal por el agregado, no porque hoy haya un pico de tráfico que atender. |
-| **Transversal** | Trazabilidad, Costos, Calidad, Reportes | **No aplica el eje hexagonal** | No son despliegues propios — se apoyan en los datos que ya generan los 8 módulos | Trazabilidad recorre proveedor→lote→orden→lote→venta→cliente consultando lo que Compras/Recepción/Inventario/Producción/Ventas/Despacho ya registran; Costos se arma con datos de Compras+Inventario+Producción+Finanzas; Calidad vive dentro de Recepción y Producción (no es un módulo aparte); Reportes es una vista de cada módulo sobre su propio ámbito. |
-
-**Decisión de topología, en una frase:** el sistema entero arranca — y se queda, mientras el texto no diga lo contrario — como **monolito modular** (Figura 2): a diferencia del ejemplo académico, aquí ningún módulo tiene hoy un argumento real de escala o de sistema externo que justifique separarlo en su propio proceso. La única decisión arquitectónica real está **adentro**: `Producción` y `Finanzas` se organizan en **hexagonal** desde el día uno porque protegen un agregado genuino (consumo vs. reserva; saldo vs. pagos), y los seis módulos restantes se organizan en **capas** porque, por ahora, son CRUD con validaciones.
-
-## C2 real: la decisión completa
-
-**Figura 7. C2 (contenedores) con la decisión completa**
-
-```mermaid
-flowchart TB
-    Proveedor["Proveedor"]
-    Cliente["Cliente"]
-    Usuario["Usuario interno<br/>(Compras, Almacén, Planta,<br/>Ventas, Despacho, Caja)"]
-    Gateway["Aplicación (1 despliegue)"]
-
-    Proveedor --> Gateway
-    Cliente --> Gateway
-    Usuario --> Gateway
-
-    Gateway --> CadenaAbastecimiento["Compras + Recepción<br/>(capas)"]
-    Gateway --> Inventario["Inventario<br/>(capas)"]
-    Gateway --> Produccion["Producción<br/>(hexagonal)"]
-    Gateway --> Comercial["Ventas + Despacho<br/>(capas)"]
-    Gateway --> Finanzas["Finanzas<br/>(hexagonal)"]
-    Gateway --> Administracion["Administración<br/>(capas)"]
-
-    CadenaAbastecimiento -->|"llamada Java directa"| Inventario
-    Produccion -->|"llamada Java directa"| Inventario
-    Inventario -->|"llamada Java directa"| Produccion
-    Comercial -->|"llamada Java directa"| Inventario
-    CadenaAbastecimiento -->|"llamada Java directa"| Finanzas
-    Comercial -->|"llamada Java directa"| Finanzas
-
-    CadenaAbastecimiento --> Administracion
-    Inventario --> Administracion
-    Produccion --> Administracion
-    Comercial --> Administracion
-    Finanzas --> Administracion
+    Produccion --> DB
+    Comercial --> DB
+    Finanzas --> DB
 
     Finanzas -.->|"opcional, si se integra"| SUNAT["Facturación electrónica<br/>(externo, ej. SUNAT/OSE)"]
     Administracion -.->|"opcional, si se integra"| Keycloak["Identity Provider<br/>(externo, ej. Keycloak)"]
 ```
 
-**Cómo leer el diagrama:** flecha sólida = llamada Java directa, mismo proceso — todos los módulos de negocio, porque los ocho viven en el mismo monolito modular. Flecha punteada = HTTP, proceso distinto — únicamente las dos integraciones externas opcionales (`Facturación electrónica`, `Identity Provider`), que hoy no están construidas: se agregan el día que el negocio realmente las necesite, no antes. Cada flecha muestra una dependencia, no una secuencia de pasos — el orden real está en la lista de abajo.
+**Figura 3. Por capas: la misma organización interna, en los dos despliegues**
+
+```mermaid
+flowchart TB
+    subgraph MOD["cualquiera de los 8 módulos del ERP, o el Portal Web"]
+        direction TB
+        CTRL["Controller"] --> SERV["Service"] --> REPO["Repository"]
+    end
+```
+
+**Cómo leer el diagrama:** flecha sólida = llamada Java directa, mismo proceso — dentro del ERP interno, porque sus ocho módulos viven en el mismo monolito modular; también `Proveedor → Compras + Recepción`, porque el proveedor no tiene cuenta propia, quien registra el dato es el personal de `Compras`. Flecha punteada = HTTP, proceso distinto — el `Portal Web` hablándole al ERP por su API (tanto la pública de catálogo/contacto como la protegida de cada módulo), y las dos integraciones externas opcionales (`Facturación electrónica`, `Identity Provider`), que hoy no están construidas: se agregan el día que el negocio realmente las necesite.
+
+**Tabla 2. Por qué cada componente va donde va**
+
+| Componente(s) | Despliegue | Por qué |
+|---|---|---|
+| `Administración` | ERP interno, por capas | Base universal — usuarios, roles, catálogos compartidos. Es también quien decide qué módulos ve cada usuario en el menú del Portal. |
+| `Compras` + `Recepción` | ERP interno, por capas | CRUD con validaciones — cotizar/ordenar y registrar pesaje/calidad no tienen hoy un caso más complejo que "la orden existe" o "el lote quedó aceptado/rechazado". |
+| `Inventario` | ERP interno, por capas | Es la base operativa que los demás módulos leen y escriben constantemente — mientras el modelo siga siendo entradas/salidas/transferencias por lote, capas alcanza. |
+| `Producción` | ERP interno, por capas | El módulo con más reglas de negocio del sistema (fórmulas, consumo real vs. planificado, mermas) — pero todavía CRUD con validaciones sobre esas reglas, no un caso que hoy exija aislarse del framework. |
+| `Ventas` + `Despacho` | ERP interno, por capas | Cotizar, tomar pedidos, hacer picking y despachar es gestión de registros con reglas simples de disponibilidad y condiciones comerciales. |
+| `Finanzas` | ERP interno, por capas | Cuentas por cobrar/pagar con un saldo que cuidar — que la suma de pagos no supere el monto se resuelve con una validación de servicio simple, sin necesitar aislar el dominio todavía. |
+| `Portal Web` | **Despliegue propio, por capas** | Es la única presentación de todo el sistema (público y con sesión) — tráfico público/anónimo que no debe tocar el ERP interno directamente; escala distinta (campañas de marketing); va a crecer a ventas en línea en v2. Separarlo ahora evita rehacerlo bajo presión después. |
+| Trazabilidad, Costos, Calidad, Reportes | No son despliegues | Se apoyan en los datos que ya generan los 8 módulos del ERP. |
+
+**Decisión, en una frase:** el **ERP interno** es un **monolito modular** organizado **por capas**, sin excepciones entre sus ocho módulos; el **`Portal Web`** es la única excepción del sistema completo — su propio despliegue, también por capas, porque a diferencia de los ocho módulos internos sí tiene un argumento real de perímetro público y de escala distinta.
 
 **Quién es quién:**
 
-- **`Administración`**: la base universal — usuarios, roles, permisos, catálogos compartidos. La consulta todo lo demás. Puede delegar la autenticación a un Identity Provider externo (Keycloak) el día que el negocio lo pida, sin dejar de ser dueña de los catálogos y la parametrización propios.
+- **`Administración`**: la base universal — usuarios, roles, permisos, catálogos compartidos. La consulta todo lo demás, incluido el `Portal Web` para saber qué módulos le muestra a cada usuario. Puede delegar la autenticación a un Identity Provider externo (Keycloak) el día que el negocio lo pida, sin dejar de ser dueña de los catálogos, los roles y la parametrización propios.
 - **`Compras + Recepción`**: la cadena de abastecimiento — desde la orden de compra hasta el lote aceptado en planta.
 - **`Inventario`**: el núcleo de existencias — todo lo demás lee y escribe aquí, nunca al revés.
-- **`Producción`**: el único módulo con un agregado DDD real — orden de producción, fórmula, consumo, rendimiento, mermas.
+- **`Producción`**: el módulo con más reglas de negocio del sistema — orden de producción, fórmula, consumo, rendimiento, mermas.
 - **`Ventas + Despacho`**: el lado comercial — desde la cotización hasta la entrega confirmada al cliente.
-- **`Finanzas`**: el segundo agregado DDD real — cuentas por cobrar (de Ventas) y por pagar (de Compras), con su propio saldo.
+- **`Finanzas`**: cuentas por cobrar (de Ventas) y por pagar (de Compras), con su propio saldo.
+- **`Portal Web`**: la entrada única del sistema, en su propio despliegue. Al visitante anónimo le muestra catálogo y contacto, y le entrega las solicitudes a `Ventas` sin convertirlas en pedido por sí mismo; al usuario con sesión le muestra el menú de módulos que su rol autoriza y lo deja operar ahí — nunca decide permisos por su cuenta, siempre se los pregunta a `Administración`.
 - **`Facturación electrónica`/`Identity Provider`**: sistemas externos opcionales — se integran, no se construyen, el día que aparezcan (cumplimiento tributario, SSO corporativo).
 
 **El flujo, de punta a punta:**
 
+0. Un visitante anónimo entra al `Portal Web`, revisa el catálogo de productos y llena el formulario de contacto. El Portal envía esa solicitud al ERP interno; un vendedor la recibe en `Ventas`, se comunica con el interesado y, si prospera, la convierte manualmente en una cotización o un pedido — el Portal nunca genera un pedido por sí mismo (todavía no hay carrito ni pago; eso es v2). Ese mismo vendedor, para hacer esto, primero inició sesión en el `Portal Web` con su usuario: el Portal le pidió el rol a `Administración`, confirmó que tiene acceso a `Ventas`, y recién ahí le mostró la pantalla — el mismo camino que sigue cualquier otro empleado (comprador, almacenista, operario de planta, despachador, cajero) para entrar a su propio módulo.
 1. `Compras` genera una orden de compra a un `Proveedor` (maíz u otro insumo/material de empaque), y de paso informa a `Finanzas` el compromiso de pago (cuenta por pagar programada, aún no exigible).
 2. El proveedor entrega físicamente la mercadería y `Recepción` la registra: pesaje (bruto, tara, neto para el maíz), controles de calidad (humedad, impurezas) y la decisión de aceptar, observar o rechazar. Lo aceptado genera lotes y su correspondiente entrada en `Inventario`.
 3. Cuando `Recepción` confirma la entrega, la cuenta por pagar de `Finanzas` pasa de "programada" a "exigible" según los términos pactados con el proveedor.
@@ -273,12 +234,14 @@ flowchart TB
 5. Al ejecutar la orden, `Producción` registra el consumo real (que puede diferir del planificado), el rendimiento, las mermas y los subproductos, y entrega a `Inventario` los lotes de producto terminado resultantes (purina u otros derivados).
 6. `Ventas` cotiza y toma pedidos contra la disponibilidad que le reporta `Inventario` (el mismo módulo del paso 2, con productos terminados en vez de materia prima), y al confirmar un pedido informa a `Finanzas` la cuenta por cobrar correspondiente al `Cliente`.
 7. `Despacho` prepara el pedido aprobado (picking, selección de lotes, transporte) y confirma la entrega, generando la salida correspondiente en `Inventario`. Una devolución del cliente reingresa a `Inventario` (o queda observada/dada de baja) y ajusta la cuenta por cobrar en `Finanzas` si corresponde.
-8. `Administración` no aparece en ningún paso del flujo de negocio — sostiene a los siete anteriores desde el inicio (usuarios, roles, catálogos, auditoría), igual que `Personas`/`Institucional` en el ejemplo académico.
+8. `Administración` no genera ningún documento del flujo de negocio — pero sí aparece en cada paso, de forma implícita: es a quien el `Portal Web` le pregunta el rol antes de dejar entrar a `Compras`, `Recepción`, `Producción`, `Ventas`, `Despacho` o `Finanzas` en los pasos 1-7. Sostiene a los siete módulos operativos desde el inicio (usuarios, roles, catálogos, auditoría), igual que `Personas`/`Institucional` en el ejemplo académico.
 
-**Tres aclaraciones que vale la pena dejar explícitas:**
+**Cinco aclaraciones que vale la pena dejar explícitas:**
 
 - **`Inventario` no decide nada, solo refleja.** No decide cuánto comprar ni cuánto producir — esas decisiones son de `Compras` y `Producción`. `Inventario` únicamente registra el movimiento que cada módulo le informa y responde "cuánto hay disponible" cuando se le pregunta.
 - **`Producción` no reserva stock de forma optimista.** Antes de iniciar una orden, confirma con `Inventario` la disponibilidad real de insumos — si no alcanza, la orden queda en espera o se ejecuta parcial, nunca se descuenta un consumo que la planta no puede cubrir.
 - **`Finanzas` no conoce plan de cuentas contable ni centro de costo.** Cada cuenta por pagar o por cobrar lleva proveedor/cliente, concepto y referencia comercial (orden de compra, pedido) — lenguaje del negocio, no de contabilidad formal. Traducir eso a cuenta contable es trabajo de un sistema contable externo, el día que exista esa integración — nunca antes, mismo criterio que `ERP Administrativo` en el ejemplo académico.
+- **El `Portal Web` no decide permisos, solo los aplica.** Que un usuario vea `Compras` o `Finanzas` en su menú lo decide el rol que le asignó `Administración`, no el Portal — si mañana cambia el rol de alguien, el menú cambia solo porque `Administración` cambió, sin tocar una línea del Portal.
+- **El `Portal Web` ya tiene sesión, pero no vende en línea todavía.** El login y el menú por rol (para el personal interno) se construyen en esta v1; lo que falta es el lado del cliente: carrito, checkout y pago. Eso es alcance de v2, y en ese momento se evalúa si el Portal necesita su propia base de datos o una integración con una pasarela de pago — nada de eso se construye ahora solo porque "ya se sabe que viene".
 
-La Figura 7 dibuja los 8 módulos completos — a diferencia del ejemplo académico (que mostraba 8 de 22 dominios como muestra), aquí el sistema completo cabe en un solo diagrama porque el dominio, aunque tiene reglas de negocio reales (fórmulas, saldos), tiene muchos menos módulos y ningún candidato genuino a microservicio o sistema externo obligatorio.
+La Figura 2 dibuja los 8 módulos del ERP interno como un monolito modular, más el `Portal Web` como su única excepción — separado desde el día uno por perímetro público y por lo que se anticipa en v2, no por volumen de tráfico actual. A diferencia del ejemplo académico (22 dominios, con varios candidatos reales a microservicio), aquí el ERP interno no tiene ninguno: el `Portal Web` es el único componente del sistema completo que se construye fuera del monolito.
