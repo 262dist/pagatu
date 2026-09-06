@@ -1005,13 +1005,13 @@
 <p><strong>Figura 1. Los 22 dominios del Sistema Universitario Integrado</strong></p>
 <div class="highlight"><pre><span></span><code> ┌───────────────────────────┐                   ┌───────────────────────────┐
  │ 1. INSTITUCIONAL          │                   │ 2. PERSONAS               │
- │ Y ORGANIZACIÓN            │                   │                           │
- │ institución, campus,      │                   │ persona, identificación,  │
- │ sedes, facultades,        │                   │ datos personales          │
- │ escuelas, programas,      │                   │ contactos                 │
- │ periodos, calendarios     │                   │ documentos                │
- └─────────────┬─────────────┘                   └─────────────┬─────────────┘
-               │                                               │
+ │ Y ORGANIZACIÓN            │      ┌─────┐      │                           │
+ │ institución, campus,      │      │ 22  │      │ persona, identificación,  │
+ │ sedes, facultades,        │      └─────┘      │ datos personales          │
+ │ escuelas, programas,      │        │          │ contactos                 │
+ │ periodos, calendarios     │        │          │ documentos                │
+ └─────────────┬─────────────┘        │          └─────────────┬─────────────┘
+               │                      │                        │
                └──────────────────────┬────────────────────────┘
                                       │
                        ┌──────────────┴──────────────┐
@@ -1162,6 +1162,10 @@
  * El historial académico NO constituye una segunda fuente de verdad.
    Se deriva de matrícula + evaluación + actas/cierre +
    convalidaciones/reconocimientos y demás movimientos académicos.
+
+ 22 = su autorización (roles, permisos, auditoría) se integra a
+      1 y 2; su autenticación la resuelve un Identity Provider
+      externo (Keycloak) — ver C2, Figura 7.
 </code></pre></div>
 <h2 id="como-implementarlo-monolito-modular-vs-microservicios">Cómo implementarlo: monolito modular vs. microservicios<a class="headerlink" href="#como-implementarlo-monolito-modular-vs-microservicios" title="Permanent link">&para;</a></h2>
 <p>Cualquiera de los 22 dominios de arriba puede construirse dentro de <strong>un solo desplegable</strong> (monolito modular) o como <strong>servicios independientes</strong> (microservicios) — la elección no cambia el modelo de dominio, cambia solo dónde termina un proceso y empieza otro. Los dos diagramas de abajo se quedan a nivel <strong>contenedor</strong> (C2 del C4 model): módulos/servicios y sus bases de datos, y cómo se llaman entre sí — sin bajar al detalle interno de cada uno (eso ya se ve en ADS S04, 2.4).</p>
@@ -1381,7 +1385,7 @@
 
     ERP["ERP Administrativo (externo)"] -.-&gt;|"plan presupuestal (config.) / consulta ingresos"| Finanzas
 
-    Base["Base universal&lt;br/&gt;Personas, Institucional"]
+    Base["Base universal&lt;br/&gt;Personas, Institucional&lt;br/&gt;+22"]
     CoreAcademico --&gt; Base
     Matricula -.-&gt; Base
     Finanzas -.-&gt; Base
@@ -1390,7 +1394,7 @@
 <p><strong>Cómo leer el diagrama:</strong> flecha sólida = llamada Java directa, mismo proceso (<code>Cliente</code>/<code>Cajero → Gateway</code>, <code>Gateway → *</code> por ser enrutamiento, y <code>Core académico → Base</code> porque ambos viven en el mismo monolito modular). Flecha punteada = HTTP, procesos distintos — todo lo demás, incluidos los tres microservicios propios (<code>Matrícula</code>, <code>Finanzas del Estudiante</code>, <code>Pagos en línea</code>) y los cuatro sistemas externos (<code>Keycloak</code>, <code>Admisión</code>, <code>ERP Administrativo</code>, <code>Pasarela</code>). Cada flecha muestra una dependencia, no una secuencia de pasos — el orden real de la conversación está en la lista de abajo.</p>
 <p><strong>Quién es quién:</strong></p>
 <ul>
-<li><strong>Base universal</strong> (<code>Personas</code>, <code>Institucional</code>): la consulta literalmente todo el sistema, interno y externo. Vive en el monolito modular.</li>
+<li><strong>Base universal</strong> (<code>Personas</code>, <code>Institucional</code>, +22): la consulta literalmente todo el sistema, interno y externo. Vive en el monolito modular.</li>
 <li><strong>Core académico</strong> (<code>Currículo</code>, <code>Planificación</code>): también en el monolito modular, un escalón más específico que la base.</li>
 <li><strong><code>Matrícula</code></strong>: microservicio propio por <strong>escala</strong> (picos en periodo de matrícula), no por complejidad de dominio — sigue organizada por capas por dentro.</li>
 <li><strong><code>Admisión</code></strong>: incluso con el mismo problema de escala (examen/resultados), <strong>no se construye</strong> — se resuelve con un CRM externo (ej. Bitrix24), igual que Keycloak resuelve seguridad.</li>

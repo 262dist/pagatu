@@ -493,6 +493,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#configuracion-de-la-empresa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuración de la empresa
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#calidad-costos-trazabilidad-y-reportes-capacidades-no-modulos-aparte" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -516,6 +527,34 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Arquitectura: monolito modular, organizado por capas — y el Portal Web aparte">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vista-de-contexto-c1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vista de contexto (C1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vista-de-contenedores-c2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vista de contenedores (C2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -889,6 +928,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#configuracion-de-la-empresa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuración de la empresa
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#calidad-costos-trazabilidad-y-reportes-capacidades-no-modulos-aparte" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -913,6 +963,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Arquitectura: monolito modular, organizado por capas — y el Portal Web aparte">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vista-de-contexto-c1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vista de contexto (C1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vista-de-contenedores-c2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vista de contenedores (C2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -936,80 +1014,52 @@
 
 
 <h1 id="sistema-integral-de-gestion-de-produccion-y-comercializacion">Sistema Integral de Gestión de Producción y Comercialización<a class="headerlink" href="#sistema-integral-de-gestion-de-produccion-y-comercializacion" title="Permanent link">&para;</a></h1>
-<p><strong>Figura 1. Los 8 módulos del ERP interno, con el Portal Web como entrada única</strong></p>
-<div class="highlight"><pre><span></span><code> ┌───────────────────────┐
- │ 1. COMPRAS             │
- │ proveedores, cotiza-   │
- │ ciones, órdenes de     │
- │ compra                 │
- └───────────┬─────────────┘
-             ▼
- ┌───────────────────────┐
- │ 2. RECEPCIÓN           │
- │ pesaje (bruto/tara/    │
- │ neto), humedad,        │
- │ impurezas, lotes       │
- └───────────┬─────────────┘
-             ▼
- ┌───────────────────────┐
- │ 3. INVENTARIO          │◄────────────────────┐
- │ almacenes, ubicaciones,│                      │
- │ lotes, entradas/salidas│                      │
- └───────────┬─────────────┘                      │
-             ▼                                    │
- ┌───────────────────────┐    productos terminados,
- │ 4. PRODUCCIÓN          │    subproductos, mermas
- │ fórmulas, órdenes,     │────────────────────────┘
- │ consumo, rendimiento   │
- └───────────┬─────────────┘
-             │ (el flujo de venta sale del mismo
-             │  Inventario de arriba, no de un
-             │  segundo módulo)
-             ▼
- ┌───────────────────────┐   solicitud de   ┌────────────────────────┐
- │ 5. VENTAS              │◄──contacto/──────│ 9. PORTAL WEB           │
- │ clientes, cotizaciones,│    pedido        │ · anónimo: catálogo +   │
- │ pedidos, precios       │                  │   formulario de contacto│
- └───────────┬─────────────┘                  │ · con sesión: login +   │
-             ▼                                │   menú de módulos según │
-                                              │   el rol del usuario    │
- ┌───────────────────────┐                    └────────────────────────┘
- │ 6. DESPACHO            │
- │ picking, transportista,│
- │ entrega, devoluciones  │
- └───────────┬─────────────┘
-             ▼
-          CLIENTE
+<p><strong>Figura 1. Flujo funcional: los 6 módulos del ERP interno, con el Portal Web como entrada única</strong></p>
+<pre class="mermaid"><code>flowchart TB
+    Compras["1. COMPRAS&lt;br/&gt;proveedores, cotizaciones,&lt;br/&gt;órdenes de compra"]
+    Inventario["2. INVENTARIO&lt;br/&gt;recepción (pesaje, calidad, lotes),&lt;br/&gt;almacenes y existencias,&lt;br/&gt;despacho (picking, entrega)"]
+    Produccion["3. PRODUCCIÓN&lt;br/&gt;fórmulas, órdenes,&lt;br/&gt;consumo, rendimiento"]
+    Ventas["4. VENTAS&lt;br/&gt;clientes, cotizaciones,&lt;br/&gt;pedidos, precios"]
+    Cliente(["CLIENTE"])
+    Portal(["PORTAL WEB&lt;br/&gt;· anónimo: catálogo + contacto&lt;br/&gt;· con sesión: login + menú por rol"])
 
+    Compras --&gt;|"orden de compra&lt;br/&gt;(recepción)"| Inventario
+    Inventario --&gt; Produccion
+    Produccion --&gt;|"productos terminados,&lt;br/&gt;subproductos, mermas"| Inventario
+    Inventario --&gt;|"disponibilidad"| Ventas
+    Ventas --&gt;|"pedido aprobado&lt;br/&gt;(despacho)"| Inventario
+    Inventario --&gt; Cliente
+    Portal --&gt;|"solicitud de&lt;br/&gt;contacto/pedido"| Ventas
 
-        ═══════════ MÓDULOS DE SOPORTE ═══════════
+    Finanzas["5. FINANZAS&lt;br/&gt;cuentas por pagar (Compras),&lt;br/&gt;cuentas por cobrar (Ventas), caja"]
+    Administracion["6. ADMINISTRACIÓN&lt;br/&gt;usuarios, roles, permisos,&lt;br/&gt;catálogos compartidos, auditoría"]
 
-
- ┌────────────────────────────────────────────────┐
- │ 7. FINANZAS                                     │
- │ cuentas por pagar (de Compras), cuentas por     │
- │ cobrar (de Ventas), caja, cobranzas             │
- └────────────────────────────────────────────────┘
-
- ┌────────────────────────────────────────────────┐
- │ 8. ADMINISTRACIÓN                               │
- │ usuarios, roles, permisos, catálogos            │
- │ compartidos, parametrización, auditoría         │
- └────────────────────────────────────────────────┘
-</code></pre></div>
-<p>Trazabilidad, Costos, Calidad y Reportes no son módulos ni despliegues — son capacidades que se apoyan en los datos de los ocho módulos de arriba, por eso no tienen caja propia en el diagrama (se describen en "Calidad, costos, trazabilidad y reportes", más abajo).</p>
-<p>El <code>Portal Web</code> tampoco es un módulo del ERP: vive fuera de la red interna, en su propio despliegue (ver "Arquitectura", más abajo). Se incluye en el diagrama porque es la puerta de entrada de todo lo demás. <strong>Ningún usuario entra directo al ERP</strong>: todos —visitante anónimo, comprador, almacenista, operario de planta, vendedor, despachador, cajero— pasan primero por el Portal. Lo que cambia es qué ve cada uno adentro: el visitante anónimo, catálogo y contacto; el usuario con sesión iniciada, el menú de los módulos que su rol le permite (definidos en <code>Administración</code>).</p>
+    Compras --&gt;|"cuenta por pagar"| Finanzas
+    Ventas --&gt;|"cuenta por cobrar"| Finanzas</code></pre>
+<p>Esta figura es el <strong>flujo funcional</strong>: qué módulos existen y en qué orden pasa la operación de negocio, sin entrar en cómo se despliega técnicamente cada uno (eso son las Figuras 2 y 3, más abajo — contexto, actores, procesos, base de datos, sistemas externos). Por eso todas las flechas se dibujan igual aquí: la diferencia entre "mismo proceso" y "HTTP a otro despliegue" no es información de negocio, es arquitectura.</p>
+<p><code>Inventario</code> concentra tres operaciones sobre el mismo almacén — <strong>recepción</strong> (lo que entra desde <code>Compras</code>), <strong>existencias</strong> (almacenes, ubicaciones, lotes, entradas/salidas) y <strong>despacho</strong> (lo que sale hacia el <code>Cliente</code> por un pedido de <code>Ventas</code>) — en vez de ser tres módulos separados. Es el mismo criterio que usa Odoo, el ERP de código abierto más usado: <code>purchase</code> y <code>sale</code> son apps separadas porque negocian con dos contrapartes distintas (proveedor y cliente), pero recibir y despachar son dos tipos de operación (<code>stock.picking</code>) dentro de una sola app, <code>stock</code> — no apps aparte, porque ambas son la misma naturaleza de trabajo: mover físicamente el almacén.</p>
+<p><code>Administración</code> no aparece conectada a ningún módulo en este diagrama porque no participa del flujo secuencial: sostiene a los demás de forma transversal (roles, catálogos, parametrización — ver su descripción más abajo), no en un punto fijo de la cadena.</p>
+<p>Trazabilidad, Costos, Calidad y Reportes no son módulos ni despliegues — son capacidades que se apoyan en los datos de los seis módulos de arriba, por eso no tienen caja propia en el diagrama (se describen en "Calidad, costos, trazabilidad y reportes", más abajo).</p>
+<p>El <code>Portal Web</code> tampoco es un módulo del ERP: vive fuera de la red interna, en su propio despliegue (ver "Arquitectura", más abajo). Se incluye en el diagrama porque es la puerta de entrada de todo lo demás. <strong>Ningún usuario entra directo al ERP</strong>: todos —visitante anónimo, comprador, personal de almacén, operario de planta, vendedor, cajero— pasan primero por el Portal. Lo que cambia es qué ve cada uno adentro: el visitante anónimo, catálogo y contacto; el usuario con sesión iniciada, el menú de los módulos que su rol le permite (definidos en <code>Administración</code>).</p>
 <h2 id="que-hace-cada-modulo">Qué hace cada módulo<a class="headerlink" href="#que-hace-cada-modulo" title="Permanent link">&para;</a></h2>
-<p>El sistema se organiza en ocho módulos internos, cada uno con responsabilidades y límites explícitos — ningún módulo asume una función que le corresponde a otro, aunque el flujo de negocio los recorra en secuencia (Figura 1) —, más un componente adicional que mira hacia afuera: el <code>Portal Web</code>.</p>
-<p><strong>1. Compras.</strong> Gestiona proveedores, solicitudes de cotización, cotizaciones, órdenes de compra, precios, cantidades y condiciones de compra de materias primas, insumos de producción, materiales de empaque y demás artículos que la empresa necesita. Su alcance termina en la emisión y el seguimiento de la orden de compra — la recepción física es responsabilidad de <code>Recepción</code>, nunca de este módulo: <code>Compras</code> decide qué y cuánto comprar, no si lo que llegó cumple.</p>
-<p><strong>2. Recepción.</strong> Registra la llegada física de lo que <code>Compras</code> ordenó: relación con la orden de compra, proveedor, procedencia, fecha y condiciones de llegada. Para materias primas como el maíz, además del pesaje (bruto, tara, neto) aplica los controles de calidad que la empresa defina (humedad, impurezas, entre otros). De ese control depende una decisión con consecuencia real — aceptar, observar, rechazar o devolver al proveedor —: solo lo aceptado genera lote y entra a <code>Inventario</code>.</p>
-<p><strong>3. Inventario.</strong> Es el registro único de existencias físicas — materias primas, insumos, materiales de empaque, productos en proceso, productos terminados, subproductos y materiales auxiliares — con sus almacenes, ubicaciones, lotes y estado. No decide nada por sí mismo (ver aclaraciones, más abajo): solo refleja los movimientos que le informan <code>Recepción</code>, <code>Producción</code> y <code>Despacho</code>, y responde con exactitud cuánto hay disponible cuando se le pregunta.</p>
-<p><strong>4. Producción.</strong> Transforma lo que <code>Inventario</code> tiene disponible en purina y otros derivados, siguiendo fórmulas o recetas. Administra órdenes de producción, cantidades planificadas frente a reales, el lote de materia prima consumido, y lo que resulta de ejecutar la orden: productos terminados, subproductos, mermas, desperdicios y reprocesos. Es también la fuente de la información necesaria para calcular el costo de producción — sin <code>Producción</code>, <code>Costos</code> no tiene de dónde partir.</p>
-<p><strong>5. Ventas.</strong> Gestiona clientes, cotizaciones, pedidos, listas de precios, descuentos y condiciones comerciales, tanto mayoristas como minoristas. Antes de comprometer un pedido, consulta a <code>Inventario</code> la disponibilidad real — nunca vende sobre una cifra que no verificó — y entrega el pedido aprobado a <code>Despacho</code> para su atención.</p>
-<p><strong>6. Despacho.</strong> Convierte el pedido aprobado en una entrega física: picking, selección de lotes, carga, transportista, vehículo, ruta y confirmación de entrega. Genera la salida correspondiente en <code>Inventario</code> y es también el punto de entrada de las devoluciones del cliente — decide si el producto devuelto reingresa, queda observado, se reprocesa o se da de baja.</p>
-<p><strong>7. Finanzas.</strong> Traduce a términos económicos lo que <code>Compras</code> y <code>Ventas</code> generan: cuentas por pagar (de las compras), cuentas por cobrar (de las ventas), facturación, pagos, anticipos, cobranzas y caja. Es, junto a <code>Producción</code>, el módulo con un agregado real que proteger (ver más abajo): el saldo de cada cuenta, con la garantía de que nunca se le aplica más pago o cobranza del que le corresponde.</p>
-<p><strong>8. Administración.</strong> No participa en el flujo de negocio (Figura 1) — lo sostiene desde abajo: usuarios, roles, permisos, seguridad de acceso, parámetros generales y los catálogos compartidos que los demás módulos necesitan (unidades de medida, categorías, almacenes, ubicaciones, presentaciones, motivos de devolución o de merma). También concentra el registro de auditoría de lo que los usuarios hacen en el resto de módulos. Es, además, la fuente de la verdad de <strong>qué módulo ve cada usuario</strong> dentro del <code>Portal Web</code>: el rol vive aquí, el menú solo lo refleja.</p>
-<p><strong>9. Portal Web.</strong> Es la única puerta de entrada — nadie accede a los otros ocho módulos por otra vía. Para un visitante anónimo, es un sitio de promoción: catálogo de productos (ficha, descripción, imágenes) y un formulario de contacto para pedir información o un pedido. Cada envío llega a <code>Ventas</code> como una <strong>solicitud de contacto</strong>, que un vendedor revisa y decide si convierte en cotización o pedido real — no vende en línea, no hay carrito, checkout ni pago todavía. Para un usuario con sesión iniciada (comprador, almacenista, operario de planta, vendedor, despachador, cajero), el Portal muestra un <strong>menú con los módulos a los que su rol le da acceso</strong> — el mismo rol que administra <code>Administración</code> — y ahí adentro navega el módulo correspondiente (Compras, Inventario, Producción, etc.). La empresa ya anticipó una v2 con <strong>ventas en línea</strong> (carrito, pago); esta v1 se construye de manera que esa evolución no obligue a rehacerlo (ver "Arquitectura", más abajo).</p>
+<p>El sistema se organiza en seis módulos internos, cada uno con responsabilidades y límites explícitos — ningún módulo asume una función que le corresponde a otro, aunque el flujo de negocio los recorra en secuencia (Figura 1) —, más un componente adicional que mira hacia afuera: el <code>Portal Web</code>.</p>
+<p><strong>1. Compras.</strong> Gestiona proveedores, solicitudes de cotización, cotizaciones, órdenes de compra, precios, cantidades y condiciones de compra de materias primas, insumos de producción, materiales de empaque y demás artículos que la empresa necesita. Su alcance termina en la emisión y el seguimiento de la orden de compra — la recepción física es responsabilidad de <code>Inventario</code>, nunca de este módulo: <code>Compras</code> decide qué y cuánto comprar, no si lo que llegó cumple. <code>Proveedor</code> es un rol sobre <code>Persona</code> (natural o jurídica, dato que vive en <code>Administración</code>) — <code>Compras</code> no guarda su propia ficha de identidad ni de contacto.</p>
+<p><strong>2. Inventario.</strong> Ejecuta los movimientos físicos de existencias — materias primas, insumos, materiales de empaque, productos en proceso, productos terminados, subproductos y materiales auxiliares —, con tres operaciones sobre el mismo almacén:</p>
+<ul>
+<li><strong>Recepción</strong>: registra la llegada física de lo que <code>Compras</code> ordenó — relación con la orden de compra, proveedor, procedencia, fecha y condiciones de llegada. Para materias primas como el maíz, además del pesaje (bruto, tara, neto) aplica los controles de calidad que la empresa defina (humedad, impurezas, entre otros). Decide aceptar, observar, rechazar o devolver al proveedor — solo lo aceptado genera lote y entra a existencias.</li>
+<li><strong>Existencias</strong>: almacenes, ubicaciones, lotes, entradas, salidas, transferencias, ajustes y bajas. No decide nada por sí mismo (ver aclaraciones, más abajo): solo refleja el movimiento que cada operación le informa, y responde con exactitud cuánto hay disponible cuando se le pregunta.</li>
+<li><strong>Despacho</strong>: convierte el pedido aprobado por <code>Ventas</code> en una entrega física — picking, selección de lotes, carga, transportista, vehículo, ruta y confirmación de entrega. También es el punto de entrada de las devoluciones del cliente — decide si el producto devuelto reingresa, queda observado, se reprocesa o se da de baja.</li>
+</ul>
+<p><strong>3. Producción.</strong> Transforma lo que <code>Inventario</code> tiene disponible en purina y otros derivados, siguiendo fórmulas o recetas. Administra órdenes de producción, cantidades planificadas frente a reales, el lote de materia prima consumido, y lo que resulta de ejecutar la orden: productos terminados, subproductos, mermas, desperdicios y reprocesos. Es también la fuente de la información necesaria para calcular el costo de producción — sin <code>Producción</code>, <code>Costos</code> no tiene de dónde partir.</p>
+<p><strong>4. Ventas.</strong> Gestiona clientes, cotizaciones, pedidos, listas de precios, descuentos y condiciones comerciales, tanto mayoristas como minoristas. Antes de comprometer un pedido, consulta a <code>Inventario</code> la disponibilidad real — nunca vende sobre una cifra que no verificó — y entrega el pedido aprobado a <code>Inventario</code> para su despacho. Igual que <code>Proveedor</code> en <code>Compras</code>, <code>Cliente</code> es un rol sobre <code>Persona</code> — la misma persona podría ser cliente de un almacén y, a la vez, proveedor de otro insumo, sin duplicar su documento de identidad en dos módulos.</p>
+<p><strong>5. Finanzas.</strong> Traduce a términos económicos lo que <code>Compras</code> y <code>Ventas</code> generan: cuentas por pagar (de las compras), cuentas por cobrar (de las ventas), facturación, pagos, anticipos, cobranzas y caja. Es, junto a <code>Producción</code>, el módulo con un agregado real que proteger (ver más abajo): el saldo de cada cuenta, con la garantía de que nunca se le aplica más pago o cobranza del que le corresponde.</p>
+<p><strong>6. Administración.</strong> No participa en el flujo de negocio (Figura 1) — lo sostiene desde abajo:</p>
+<ul>
+<li><strong>Institucional (configuración de la empresa)</strong> — equivalente al dominio 1 del ejemplo académico: datos de la empresa, sucursales, almacenes y tiendas — la jerarquía física del negocio que los demás módulos referencian (<code>Inventario</code> registra un movimiento en un almacén ya configurado aquí; <code>Ventas</code> asocia un pedido a una tienda o sucursal), pero que <code>Administración</code> es quien crea y mantiene (detalle en "Configuración de la empresa", más abajo).</li>
+<li><strong>Personas</strong> — equivalente al dominio 2 del ejemplo académico: registro único de persona natural o jurídica — documento de identidad o RUC, nombres o razón social, teléfonos, direcciones, correos —, del que <code>Proveedor</code> (en <code>Compras</code>), <code>Cliente</code> (en <code>Ventas</code>) y el <code>Usuario</code> que inicia sesión son roles que una misma persona puede tener, no tres fichas independientes. Evita duplicar el mismo documento de identidad en tres módulos, y resuelve en un solo lugar el caso real de que un cliente frecuente sea también la persona de contacto de un proveedor.</li>
+<li><strong>Plataforma transversal</strong> — seguridad, roles, permisos, SSO, auditoría, parametrización, APIs: usuarios, roles, permisos, y el menú de módulos que cada rol ve en el <code>Portal Web</code> — el rol vive aquí, el menú del Portal solo lo refleja. Aquí es donde se traza la línea con Keycloak, si se integra: Keycloak resuelve la <strong>autenticación</strong> (confirmar que el usuario es quien dice ser, con su login y contraseña, y emitir un token) — es un producto genérico, no sabe qué es <code>Compras</code> ni <code>Ventas</code>. <code>Administración</code> resuelve la <strong>autorización de negocio</strong>: qué rol tiene ese usuario ya autenticado y qué módulos le da ese rol — una regla específica de este sistema que ningún Identity Provider conoce por sí solo. Delegar la autenticación a Keycloak no vacía a <code>Administración</code>: solo deja de guardar la contraseña, sigue siendo dueña del rol y de a qué da acceso. De ahí también vienen los catálogos compartidos (unidades de medida, categorías, presentaciones, motivos de devolución o de merma) y el registro de auditoría de lo que los usuarios hacen en el resto de módulos.</li>
+</ul>
+<p><strong>Portal Web.</strong> Es la única puerta de entrada — nadie accede a los otros seis módulos por otra vía. Para un visitante anónimo, es un sitio de promoción: catálogo de productos (ficha, descripción, imágenes) y un formulario de contacto para pedir información o un pedido. Cada envío llega a <code>Ventas</code> como una <strong>solicitud de contacto</strong>, que un vendedor revisa y decide si convierte en cotización o pedido real — no vende en línea, no hay carrito, checkout ni pago todavía. Para un usuario con sesión iniciada (comprador, personal de almacén, operario de planta, vendedor, cajero), el Portal muestra un <strong>menú con los módulos a los que su rol le da acceso</strong> — el mismo rol que administra <code>Administración</code> — y ahí adentro navega el módulo correspondiente (Compras, Inventario, Producción, etc.). La empresa ya anticipó una v2 con <strong>ventas en línea</strong> (carrito, pago); esta v1 se construye de manera que esa evolución no obligue a rehacerlo (ver "Arquitectura", más abajo).</p>
 <h3 id="tipos-de-articulos">Tipos de artículos<a class="headerlink" href="#tipos-de-articulos" title="Permanent link">&para;</a></h3>
 <p>El sistema distingue explícitamente entre lo que fluye por cada etapa, porque el mismo artículo cambia de naturaleza según en qué módulo está:</p>
 <p><strong>Tabla 1. Tipos de artículo gestionados por el sistema</strong></p>
@@ -1025,17 +1075,17 @@
 <tr>
 <td>Materia prima</td>
 <td>Maíz y otras materias primas de producción</td>
-<td>Nace en <code>Recepción</code>, se consume en <code>Producción</code></td>
+<td>Nace en <code>Inventario</code> (recepción), se consume en <code>Producción</code></td>
 </tr>
 <tr>
 <td>Insumo de producción</td>
 <td>Vitaminas, minerales, aditivos y otros componentes</td>
-<td>Nace en <code>Recepción</code>/<code>Compras</code>, se consume en <code>Producción</code></td>
+<td>Nace en <code>Inventario</code> (recepción)/<code>Compras</code>, se consume en <code>Producción</code></td>
 </tr>
 <tr>
 <td>Material de empaque</td>
 <td>Sacos, bolsas, envases, etiquetas</td>
-<td>Nace en <code>Recepción</code>/<code>Compras</code>, se consume en <code>Producción</code></td>
+<td>Nace en <code>Inventario</code> (recepción)/<code>Compras</code>, se consume en <code>Producción</code></td>
 </tr>
 <tr>
 <td>Producto en proceso</td>
@@ -1045,7 +1095,7 @@
 <tr>
 <td>Producto terminado</td>
 <td>Purina y otros derivados</td>
-<td>Nace en <code>Producción</code>, se consume en <code>Ventas</code>/<code>Despacho</code></td>
+<td>Nace en <code>Producción</code>, se consume en <code>Ventas</code>/<code>Inventario</code> (despacho)</td>
 </tr>
 <tr>
 <td>Subproducto</td>
@@ -1059,28 +1109,89 @@
 </tr>
 </tbody>
 </table>
+<h3 id="configuracion-de-la-empresa">Configuración de la empresa<a class="headerlink" href="#configuracion-de-la-empresa" title="Permanent link">&para;</a></h3>
+<p>Antes de que cualquier módulo registre un movimiento, <code>Administración</code> necesita tener configurada la jerarquía física del negocio — de dónde sale cada almacén y cada tienda:</p>
+<p><strong>Tabla 2. Jerarquía de configuración de la empresa</strong></p>
+<table>
+<thead>
+<tr>
+<th>Nivel</th>
+<th>Qué es</th>
+<th>Ejemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Empresa</td>
+<td>La organización dueña del sistema</td>
+<td>"Molinos XYZ S.A.C."</td>
+</tr>
+<tr>
+<td>Sucursal</td>
+<td>Una ubicación física de negocio de la empresa</td>
+<td>Planta de producción, oficina administrativa</td>
+</tr>
+<tr>
+<td>Almacén</td>
+<td>Espacio físico de existencias dentro de una sucursal — lo que <code>Inventario</code> referencia en cada movimiento</td>
+<td>Almacén de materia prima, almacén de producto terminado</td>
+</tr>
+<tr>
+<td>Tienda</td>
+<td>Punto de venta al público dentro de una sucursal, para la venta minorista presencial</td>
+<td>Tienda de fábrica</td>
+</tr>
+</tbody>
+</table>
+<p>Hoy el sistema opera para <strong>una sola empresa</strong> (mono-tenant): una fila en <code>Empresa</code>, con sus sucursales, almacenes y tiendas colgando de ella. Si más adelante el negocio se ofrece como <strong>SaaS</strong> a varias empresas, <code>Empresa</code> es la entidad que se convierte en raíz de aislamiento (<em>tenant</em>): cada sucursal, almacén y tienda —y en cascada, cada movimiento de los otros cinco módulos— queda asociado a su <code>empresa_id</code>. Construir <code>Empresa</code> como entidad explícita desde ahora, aunque hoy exista una sola fila, evita rediseñar el modelo de datos cuando llegue ese momento — mismo criterio que ya se aplicó al <code>Portal Web</code> para la v2 de ventas en línea: la migración a SaaS no se construye hoy, pero tampoco se bloquea con un diseño que la ignore.</p>
 <h3 id="calidad-costos-trazabilidad-y-reportes-capacidades-no-modulos-aparte">Calidad, costos, trazabilidad y reportes: capacidades, no módulos aparte<a class="headerlink" href="#calidad-costos-trazabilidad-y-reportes-capacidades-no-modulos-aparte" title="Permanent link">&para;</a></h3>
-<p>Cuatro capacidades atraviesan los ocho módulos sin ser un despliegue propio (ya adelantado en la Figura 1):</p>
+<p>Cuatro capacidades atraviesan los seis módulos sin ser un despliegue propio (ya adelantado en la Figura 1):</p>
 <ul>
-<li><strong>Calidad</strong> vive donde ocurre el control real: en <code>Recepción</code> (parámetros, resultados y aceptación/rechazo de lo que llega) y en <code>Producción</code> (parámetros y resultados del proceso y del producto obtenido). No hay un módulo de "Calidad" separado porque el control siempre pertenece a quien genera el dato, no a un tercero que lo audita después.</li>
+<li><strong>Calidad</strong> vive donde ocurre el control real: en <code>Inventario</code> (durante la operación de recepción: parámetros, resultados y aceptación/rechazo de lo que llega) y en <code>Producción</code> (parámetros y resultados del proceso y del producto obtenido). No hay un módulo de "Calidad" separado porque el control siempre pertenece a quien genera el dato, no a un tercero que lo audita después.</li>
 <li><strong>Costos</strong> se arma con lo que <code>Compras</code>, <code>Inventario</code>, <code>Producción</code> y <code>Finanzas</code> ya registran — materia prima, insumos, empaque, mermas y demás costos atribuibles — para llegar a costo de producción, costo unitario, márgenes y rentabilidad. No es una fuente de datos propia, es un cálculo sobre las demás.</li>
 <li><strong>Trazabilidad</strong> es la capacidad de recorrer la cadena completa — proveedor, compra, recepción, lote de materia prima, movimiento de inventario, orden de producción, insumos usados, lote de producto terminado, venta y cliente — en ambos sentidos: hacia adelante (de un lote de materia prima a los clientes que recibieron algo hecho con él) y hacia atrás (de un producto terminado a los proveedores y lotes que lo originaron).</li>
-<li><strong>Reportes</strong> los entrega cada módulo sobre su propio ámbito — adquisiciones y proveedores (<code>Compras</code>), ingresos y controles (<code>Recepción</code>), existencias y movimientos (<code>Inventario</code>), consumo y rendimiento (<code>Producción</code>), operaciones comerciales (<code>Ventas</code>), salidas y entregas (<code>Despacho</code>), operaciones económicas (<code>Finanzas</code>), usuarios y auditoría (<code>Administración</code>) — sin un módulo de reportería centralizado que dependa de todos los demás.</li>
+<li><strong>Reportes</strong> los entrega cada módulo sobre su propio ámbito — adquisiciones y proveedores (<code>Compras</code>), existencias y movimientos, incluidas la recepción y el despacho (<code>Inventario</code>), consumo y rendimiento (<code>Producción</code>), operaciones comerciales (<code>Ventas</code>), operaciones económicas (<code>Finanzas</code>), usuarios y auditoría (<code>Administración</code>) — sin un módulo de reportería centralizado que dependa de todos los demás.</li>
 </ul>
 <h2 id="arquitectura-monolito-modular-organizado-por-capas-y-el-portal-web-aparte">Arquitectura: monolito modular, organizado por capas — y el Portal Web aparte<a class="headerlink" href="#arquitectura-monolito-modular-organizado-por-capas-y-el-portal-web-aparte" title="Permanent link">&para;</a></h2>
-<p>El <strong>ERP interno</strong> tiene usuarios acotados (compradores, almacenistas, operarios de planta, vendedores, despachadores, cajeros) y un cuello de botella real en la planta física — la báscula, el laboratorio de calidad, la línea de producción —, no en el tráfico digital. Sin un argumento de escala o de sistema externo que lo justifique, sus ocho módulos se construyen como <strong>un solo desplegable</strong>: corren en el mismo proceso, se llaman entre sí con una llamada Java directa (verificada en tiempo de compilación, p. ej. <code>ApplicationModules.verify()</code> de Spring Modulith) y comparten una única base de datos con schemas separados por módulo.</p>
-<p>Por dentro, los ocho módulos se organizan <strong>por capas</strong> (<code>Controller</code> → <code>Service</code> → <code>Repository</code>): es la opción más simple y rápida de construir, y ninguno acumula hoy un caso de uso lo bastante complejo — ni siquiera <code>Producción</code> o <code>Finanzas</code> — como para pagar el costo extra de aislar el dominio (hexagonal/Clean, ADS S04 2.4-2.5). Si eso cambia más adelante, se evalúa entonces, con el código real delante, no antes.</p>
-<p><strong>El <code>Portal Web</code> es la única excepción real del sistema.</strong> A diferencia de los ocho módulos anteriores, aquí sí hay un argumento concreto de separación — el mismo criterio de ADS S04 (2.7, "servicios con necesidades de escala muy distintas entre sí") que ya usa el ejemplo académico para <code>Matrícula</code> y <code>Pagos en línea</code>:</p>
+<p>Las figuras de esta sección siguen el <strong>modelo C4</strong> (Context, Containers, Components, Code) de Simon Brown — cada nivel hace zoom sobre el anterior, sin saltarse ninguno (<a href="https://c4model.com/">c4model.com</a>).</p>
+<h3 id="vista-de-contexto-c1">Vista de contexto (C1)<a class="headerlink" href="#vista-de-contexto-c1" title="Permanent link">&para;</a></h3>
+<p>La vista de contexto muestra el sistema completo como una sola caja negra: quién lo usa y con qué otros sistemas conversa — sin tecnología, y sin distinguir todavía entre <code>Portal Web</code> y ERP interno (esa distinción aparece recién en C2, la Figura 3). Mismo patrón que usa <a href="https://c4model.com/diagrams/system-context">c4model.com/diagrams/system-context</a>:</p>
+<p><strong>Figura 2. Vista de contexto (C1)</strong></p>
+<pre class="mermaid"><code>flowchart LR
+    Proveedor(["Proveedor"])
+    Personal(["Personal interno&lt;br/&gt;(compras, almacén, planta,&lt;br/&gt;ventas, caja)"])
+    Visitante(["Visitante / Cliente"])
+    Sistema["Sistema Integral de Gestión de&lt;br/&gt;Producción y Comercialización"]
+    Sunat["SUNAT/OSE&lt;br/&gt;facturación electrónica (gobierno)"]
+    Keycloak["Identity Provider&lt;br/&gt;(externo, ej. Keycloak)"]
+
+    Proveedor --&gt;|"entrega materia prima,&lt;br/&gt;insumos y materiales de empaque"| Sistema
+    Personal --&gt;|"opera compras, inventario&lt;br/&gt;(recepción y despacho),&lt;br/&gt;producción, ventas y finanzas"| Sistema
+    Visitante --&gt;|"consulta catálogo,&lt;br/&gt;solicita contacto o pedido"| Sistema
+    Sistema --&gt;|"emite comprobantes electrónicos&lt;br/&gt;(opcional, si se integra)"| Sunat
+    Sistema --&gt;|"valida identidad e inicia sesión&lt;br/&gt;(opcional, si se integra)"| Keycloak
+
+    classDef system fill:#eef6ff,stroke:#2b6cb0,stroke-width:2px,color:#111;
+    classDef external fill:#fff3cd,stroke:#b7791f,stroke-width:2px,color:#5f370e;
+    classDef gov fill:#fde2e2,stroke:#b71c1c,stroke-width:2px,color:#5f1616;
+    class Sistema system;
+    class Keycloak external;
+    class Sunat gov;</code></pre>
+<p>Ningún nombre de tecnología aparece aquí (nada de "Spring Boot", "Mermaid" ni "Oracle") — a este nivel eso no importa todavía, solo quién usa el sistema y con qué otros sistemas conversa. <code>Facturación electrónica</code> e <code>Identity Provider</code> se dibujan aunque hoy sean integraciones opcionales, sin construir, por la misma razón que en el ejemplo académico: C1 responde "con qué conversará el sistema", no "qué ya está construido" — eso se aclara en la etiqueta de cada flecha, no omitiendo la caja.</p>
+<h3 id="vista-de-contenedores-c2">Vista de contenedores (C2)<a class="headerlink" href="#vista-de-contenedores-c2" title="Permanent link">&para;</a></h3>
+<p>El <strong>ERP interno</strong> tiene usuarios acotados (compradores, personal de almacén, operarios de planta, vendedores, cajeros) y un cuello de botella real en la planta física — la báscula, el laboratorio de calidad, la línea de producción —, no en el tráfico digital. Sin un argumento de escala o de sistema externo que lo justifique, sus seis módulos se construyen como <strong>un solo desplegable</strong>: corren en el mismo proceso, se llaman entre sí con una llamada Java directa (verificada en tiempo de compilación, p. ej. <code>ApplicationModules.verify()</code> de Spring Modulith) y comparten una única base de datos con schemas separados por módulo.</p>
+<p>Por dentro, los seis módulos se organizan <strong>por capas</strong> (<code>Controller</code> → <code>Service</code> → <code>Repository</code>): es la opción más simple y rápida de construir, y ninguno acumula hoy un caso de uso lo bastante complejo — ni siquiera <code>Producción</code> o <code>Finanzas</code> — como para pagar el costo extra de aislar el dominio (hexagonal/Clean, ADS S04 2.4-2.5). <code>Inventario</code> tampoco lo necesita solo por concentrar tres operaciones: cada una (recepción, existencias, despacho) sigue siendo simple por separado. Si eso cambia más adelante, se evalúa entonces, con el código real delante, no antes.</p>
+<p><strong>El <code>Portal Web</code> es la única excepción real del sistema.</strong> A diferencia de los seis módulos anteriores, aquí sí hay un argumento concreto de separación — el mismo criterio de ADS S04 (2.7, "servicios con necesidades de escala muy distintas entre sí") que ya usa el ejemplo académico para <code>Matrícula</code> y <code>Pagos en línea</code>:</p>
 <ul>
 <li><strong>Perímetro de seguridad distinto.</strong> El Portal es lo único expuesto a internet — el ERP interno nunca debe quedar accesible directamente ni de casualidad. Para el visitante anónimo, el Portal solo conoce una vista de catálogo curada (nombre, descripción, imagen — no costos, no stock exacto, no datos de proveedor) y un único endpoint de escritura pública: recibir la solicitud de contacto. Para el usuario con sesión iniciada, el Portal valida sus credenciales y su rol contra <code>Administración</code> antes de dejarlo entrar a cualquier módulo — nunca asume el rol por su cuenta.</li>
 <li><strong>Tráfico con un patrón distinto.</strong> Una campaña de marketing puede disparar visitas al catálogo sin ninguna relación con la carga del ERP interno (que depende de cuántos empleados están trabajando, no de cuánta gente ve un anuncio) — aunque ambos flujos (público y con sesión) entren por el mismo Portal.</li>
 <li><strong>Ya se sabe que va a crecer.</strong> La empresa anticipó una v2 con ventas en línea (carrito, checkout, pasarela de pago) — ese es justo el tipo de crecimiento que conviene no tener acoplado al ERP interno desde el principio, para no separarlo después bajo presión.</li>
 </ul>
-<p>Por eso el <code>Portal Web</code> se construye <strong>desde el día uno como su propio desplegable</strong> — la única capa de presentación de todo el sistema, tanto para el público como para el personal interno —, no como un noveno módulo del monolito. Se organiza también <strong>por capas</strong> (mostrar catálogo, guardar un formulario, o pedirle a <code>Administración</code> el menú del usuario y redirigir al módulo autorizado — nada de eso exige aislar un dominio), pero como proceso aparte que le habla al ERP interno solo por su API, nunca a su base de datos directamente.</p>
-<p><strong>Figura 2. C2 (contenedores): el Portal Web como entrada única de todo el sistema</strong></p>
+<p>Por eso el <code>Portal Web</code> se construye <strong>desde el día uno como su propio desplegable</strong> — la única capa de presentación de todo el sistema, tanto para el público como para el personal interno —, no como un séptimo módulo del monolito. Se organiza también <strong>por capas</strong> (mostrar catálogo, guardar un formulario, o pedirle a <code>Administración</code> el menú del usuario y redirigir al módulo autorizado — nada de eso exige aislar un dominio), pero como proceso aparte que le habla al ERP interno solo por su API, nunca a su base de datos directamente.</p>
+<p><strong>Figura 3. Vista de contenedores (C2): el Portal Web como entrada única de todo el sistema</strong></p>
 <pre class="mermaid"><code>flowchart TB
     Visitante(["Visitante / Cliente&lt;br/&gt;(anónimo, internet)"])
-    Usuario(["Usuario interno&lt;br/&gt;(Compras, Almacén, Planta,&lt;br/&gt;Ventas, Despacho, Caja)"])
+    Usuario(["Usuario interno&lt;br/&gt;(Compras, Almacén, Planta,&lt;br/&gt;Ventas, Caja)"])
     Proveedor(["Proveedor&lt;br/&gt;(sin cuenta propia)"])
 
     subgraph PORTAL["Portal Web (despliegue propio, por capas)"]
@@ -1089,24 +1200,24 @@
     end
 
     subgraph APP["ERP interno (1 despliegue, 1 proceso, por capas)"]
-        Administracion["Administración"]
-        CadenaAbastecimiento["Compras + Recepción"]
-        Inventario["Inventario"]
-        Produccion["Producción"]
-        Comercial["Ventas + Despacho"]
-        Finanzas["Finanzas"]
+        Administracion["6. Administración"]
+        Compras["1. Compras"]
+        Inventario["2. Inventario&lt;br/&gt;(recepción, existencias, despacho)"]
+        Produccion["3. Producción"]
+        Ventas["4. Ventas"]
+        Finanzas["5. Finanzas"]
 
-        CadenaAbastecimiento --&gt;|"llamada Java directa"| Inventario
+        Compras --&gt;|"llamada Java directa"| Inventario
         Produccion --&gt;|"llamada Java directa"| Inventario
         Inventario --&gt;|"llamada Java directa"| Produccion
-        Comercial --&gt;|"llamada Java directa"| Inventario
-        CadenaAbastecimiento --&gt;|"llamada Java directa"| Finanzas
-        Comercial --&gt;|"llamada Java directa"| Finanzas
+        Ventas --&gt;|"llamada Java directa"| Inventario
+        Compras --&gt;|"llamada Java directa"| Finanzas
+        Ventas --&gt;|"llamada Java directa"| Finanzas
 
-        CadenaAbastecimiento --&gt; Administracion
+        Compras --&gt; Administracion
         Inventario --&gt; Administracion
         Produccion --&gt; Administracion
-        Comercial --&gt; Administracion
+        Ventas --&gt; Administracion
         Finanzas --&gt; Administracion
     end
 
@@ -1114,29 +1225,29 @@
 
     Visitante --&gt; PortalPublico
     Usuario --&gt; PortalMenu
-    Proveedor --&gt;|"sin login — lo registra Compras"| CadenaAbastecimiento
+    Proveedor --&gt;|"sin login — lo registra"| Compras
 
-    PortalPublico -.-&gt;|"HTTP: catálogo (lectura)&lt;br/&gt;+ solicitud de contacto (escritura)"| Comercial
+    PortalPublico -.-&gt;|"HTTP: catálogo (lectura)&lt;br/&gt;+ solicitud de contacto (escritura)"| Ventas
     PortalMenu -.-&gt;|"HTTP: login y permisos"| Administracion
     PortalMenu -.-&gt;|"HTTP: solo el módulo autorizado"| APP
 
     Administracion --&gt; DB
-    CadenaAbastecimiento --&gt; DB
+    Compras --&gt; DB
     Inventario --&gt; DB
     Produccion --&gt; DB
-    Comercial --&gt; DB
+    Ventas --&gt; DB
     Finanzas --&gt; DB
 
     Finanzas -.-&gt;|"opcional, si se integra"| SUNAT["Facturación electrónica&lt;br/&gt;(externo, ej. SUNAT/OSE)"]
-    Administracion -.-&gt;|"opcional, si se integra"| Keycloak["Identity Provider&lt;br/&gt;(externo, ej. Keycloak)"]</code></pre>
-<p><strong>Figura 3. Por capas: la misma organización interna, en los dos despliegues</strong></p>
+    Administracion -.-&gt;|"delega solo autenticación&lt;br/&gt;(opcional, si se integra)"| Keycloak["Identity Provider&lt;br/&gt;(externo, ej. Keycloak)"]</code></pre>
+<p><strong>Figura 4. Por capas: la misma organización interna, en los dos despliegues</strong></p>
 <pre class="mermaid"><code>flowchart TB
-    subgraph MOD["cualquiera de los 8 módulos del ERP, o el Portal Web"]
+    subgraph MOD["cualquiera de los 6 módulos del ERP, o el Portal Web"]
         direction TB
         CTRL["Controller"] --&gt; SERV["Service"] --&gt; REPO["Repository"]
     end</code></pre>
-<p><strong>Cómo leer el diagrama:</strong> flecha sólida = llamada Java directa, mismo proceso — dentro del ERP interno, porque sus ocho módulos viven en el mismo monolito modular; también <code>Proveedor → Compras + Recepción</code>, porque el proveedor no tiene cuenta propia, quien registra el dato es el personal de <code>Compras</code>. Flecha punteada = HTTP, proceso distinto — el <code>Portal Web</code> hablándole al ERP por su API (tanto la pública de catálogo/contacto como la protegida de cada módulo), y las dos integraciones externas opcionales (<code>Facturación electrónica</code>, <code>Identity Provider</code>), que hoy no están construidas: se agregan el día que el negocio realmente las necesite.</p>
-<p><strong>Tabla 2. Por qué cada componente va donde va</strong></p>
+<p><strong>Cómo leer el diagrama:</strong> flecha sólida = llamada Java directa, mismo proceso — dentro del ERP interno, porque sus seis módulos viven en el mismo monolito modular; también <code>Proveedor → Compras</code>, porque el proveedor no tiene cuenta propia, quien registra el dato es el personal de <code>Compras</code>. Flecha punteada = HTTP, proceso distinto — el <code>Portal Web</code> hablándole al ERP por su API (tanto la pública de catálogo/contacto como la protegida de cada módulo), y las dos integraciones externas opcionales (<code>Facturación electrónica</code>, <code>Identity Provider</code>), que hoy no están construidas: se agregan el día que el negocio realmente las necesite.</p>
+<p><strong>Tabla 3. Por qué cada componente va donde va</strong></p>
 <table>
 <thead>
 <tr>
@@ -1149,17 +1260,17 @@
 <tr>
 <td><code>Administración</code></td>
 <td>ERP interno, por capas</td>
-<td>Base universal — usuarios, roles, catálogos compartidos. Es también quien decide qué módulos ve cada usuario en el menú del Portal.</td>
+<td>Institucional + Personas + Plataforma transversal (dominios 1, 2 y 22 del ejemplo académico, juntos aquí por ser un sistema de 6 módulos) — configuración de la empresa, persona natural/jurídica, usuarios, roles, catálogos compartidos. Es también quien decide qué módulos ve cada usuario en el menú del Portal.</td>
 </tr>
 <tr>
-<td><code>Compras</code> + <code>Recepción</code></td>
+<td><code>Compras</code></td>
 <td>ERP interno, por capas</td>
-<td>CRUD con validaciones — cotizar/ordenar y registrar pesaje/calidad no tienen hoy un caso más complejo que "la orden existe" o "el lote quedó aceptado/rechazado".</td>
+<td>CRUD con validaciones — cotizar y ordenar no tiene hoy un caso más complejo que "la orden existe".</td>
 </tr>
 <tr>
 <td><code>Inventario</code></td>
 <td>ERP interno, por capas</td>
-<td>Es la base operativa que los demás módulos leen y escriben constantemente — mientras el modelo siga siendo entradas/salidas/transferencias por lote, capas alcanza.</td>
+<td>Concentra recepción, existencias y despacho — es la base operativa que los demás módulos leen y escriben constantemente; ninguna de sus tres operaciones tiene hoy una regla más compleja que "el lote quedó aceptado/rechazado" o "la salida quedó confirmada".</td>
 </tr>
 <tr>
 <td><code>Producción</code></td>
@@ -1167,9 +1278,9 @@
 <td>El módulo con más reglas de negocio del sistema (fórmulas, consumo real vs. planificado, mermas) — pero todavía CRUD con validaciones sobre esas reglas, no un caso que hoy exija aislarse del framework.</td>
 </tr>
 <tr>
-<td><code>Ventas</code> + <code>Despacho</code></td>
+<td><code>Ventas</code></td>
 <td>ERP interno, por capas</td>
-<td>Cotizar, tomar pedidos, hacer picking y despachar es gestión de registros con reglas simples de disponibilidad y condiciones comerciales.</td>
+<td>Cotizar y tomar pedidos es gestión de registros con reglas simples de disponibilidad y condiciones comerciales.</td>
 </tr>
 <tr>
 <td><code>Finanzas</code></td>
@@ -1184,43 +1295,45 @@
 <tr>
 <td>Trazabilidad, Costos, Calidad, Reportes</td>
 <td>No son despliegues</td>
-<td>Se apoyan en los datos que ya generan los 8 módulos del ERP.</td>
+<td>Se apoyan en los datos que ya generan los 6 módulos del ERP.</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Decisión, en una frase:</strong> el <strong>ERP interno</strong> es un <strong>monolito modular</strong> organizado <strong>por capas</strong>, sin excepciones entre sus ocho módulos; el <strong><code>Portal Web</code></strong> es la única excepción del sistema completo — su propio despliegue, también por capas, porque a diferencia de los ocho módulos internos sí tiene un argumento real de perímetro público y de escala distinta.</p>
+<p><strong>Decisión, en una frase:</strong> el <strong>ERP interno</strong> es un <strong>monolito modular</strong> organizado <strong>por capas</strong>, sin excepciones entre sus seis módulos; el <strong><code>Portal Web</code></strong> es la única excepción del sistema completo — su propio despliegue, también por capas, porque a diferencia de los seis módulos internos sí tiene un argumento real de perímetro público y de escala distinta.</p>
 <p><strong>Quién es quién:</strong></p>
 <ul>
-<li><strong><code>Administración</code></strong>: la base universal — usuarios, roles, permisos, catálogos compartidos. La consulta todo lo demás, incluido el <code>Portal Web</code> para saber qué módulos le muestra a cada usuario. Puede delegar la autenticación a un Identity Provider externo (Keycloak) el día que el negocio lo pida, sin dejar de ser dueña de los catálogos, los roles y la parametrización propios.</li>
-<li><strong><code>Compras + Recepción</code></strong>: la cadena de abastecimiento — desde la orden de compra hasta el lote aceptado en planta.</li>
-<li><strong><code>Inventario</code></strong>: el núcleo de existencias — todo lo demás lee y escribe aquí, nunca al revés.</li>
+<li><strong><code>Administración</code></strong>: junta Institucional, Personas y Plataforma transversal (dominios 1, 2 y 22 del ejemplo académico) — configuración de la empresa, persona natural/jurídica, usuarios, roles, permisos, catálogos compartidos. La consulta todo lo demás, incluido el <code>Portal Web</code> para saber qué módulos le muestra a cada usuario. Puede delegar la autenticación a un Identity Provider externo (Keycloak) el día que el negocio lo pida, sin dejar de ser dueña de los catálogos, los roles y la parametrización propios.</li>
+<li><strong><code>Compras</code></strong>: negocia y ordena — proveedores, cotizaciones, órdenes de compra.</li>
+<li><strong><code>Inventario</code></strong>: concentra tres operaciones sobre el almacén — recibe lo que <code>Compras</code> ordenó (pesaje, calidad, lotes), mantiene el núcleo de existencias que todo lo demás lee y escribe, y despacha lo que <code>Ventas</code> aprobó (picking, transporte, confirmación de entrega).</li>
 <li><strong><code>Producción</code></strong>: el módulo con más reglas de negocio del sistema — orden de producción, fórmula, consumo, rendimiento, mermas.</li>
-<li><strong><code>Ventas + Despacho</code></strong>: el lado comercial — desde la cotización hasta la entrega confirmada al cliente.</li>
+<li><strong><code>Ventas</code></strong>: negocia con el cliente — clientes, cotizaciones, pedidos, precios; entrega el pedido aprobado a <code>Inventario</code> para su despacho.</li>
 <li><strong><code>Finanzas</code></strong>: cuentas por cobrar (de Ventas) y por pagar (de Compras), con su propio saldo.</li>
 <li><strong><code>Portal Web</code></strong>: la entrada única del sistema, en su propio despliegue. Al visitante anónimo le muestra catálogo y contacto, y le entrega las solicitudes a <code>Ventas</code> sin convertirlas en pedido por sí mismo; al usuario con sesión le muestra el menú de módulos que su rol autoriza y lo deja operar ahí — nunca decide permisos por su cuenta, siempre se los pregunta a <code>Administración</code>.</li>
 <li><strong><code>Facturación electrónica</code>/<code>Identity Provider</code></strong>: sistemas externos opcionales — se integran, no se construyen, el día que aparezcan (cumplimiento tributario, SSO corporativo).</li>
 </ul>
 <p><strong>El flujo, de punta a punta:</strong></p>
 <ol>
-<li>Un visitante anónimo entra al <code>Portal Web</code>, revisa el catálogo de productos y llena el formulario de contacto. El Portal envía esa solicitud al ERP interno; un vendedor la recibe en <code>Ventas</code>, se comunica con el interesado y, si prospera, la convierte manualmente en una cotización o un pedido — el Portal nunca genera un pedido por sí mismo (todavía no hay carrito ni pago; eso es v2). Ese mismo vendedor, para hacer esto, primero inició sesión en el <code>Portal Web</code> con su usuario: el Portal le pidió el rol a <code>Administración</code>, confirmó que tiene acceso a <code>Ventas</code>, y recién ahí le mostró la pantalla — el mismo camino que sigue cualquier otro empleado (comprador, almacenista, operario de planta, despachador, cajero) para entrar a su propio módulo.</li>
+<li>Un visitante anónimo entra al <code>Portal Web</code>, revisa el catálogo de productos y llena el formulario de contacto. El Portal envía esa solicitud al ERP interno; un vendedor la recibe en <code>Ventas</code>, se comunica con el interesado y, si prospera, la convierte manualmente en una cotización o un pedido — el Portal nunca genera un pedido por sí mismo (todavía no hay carrito ni pago; eso es v2). Ese mismo vendedor, para hacer esto, primero inició sesión en el <code>Portal Web</code> con su usuario: el Portal le pidió el rol a <code>Administración</code>, confirmó que tiene acceso a <code>Ventas</code>, y recién ahí le mostró la pantalla — el mismo camino que sigue cualquier otro empleado (comprador, personal de almacén, operario de planta, cajero) para entrar a su propio módulo.</li>
 <li><code>Compras</code> genera una orden de compra a un <code>Proveedor</code> (maíz u otro insumo/material de empaque), y de paso informa a <code>Finanzas</code> el compromiso de pago (cuenta por pagar programada, aún no exigible).</li>
-<li>El proveedor entrega físicamente la mercadería y <code>Recepción</code> la registra: pesaje (bruto, tara, neto para el maíz), controles de calidad (humedad, impurezas) y la decisión de aceptar, observar o rechazar. Lo aceptado genera lotes y su correspondiente entrada en <code>Inventario</code>.</li>
-<li>Cuando <code>Recepción</code> confirma la entrega, la cuenta por pagar de <code>Finanzas</code> pasa de "programada" a "exigible" según los términos pactados con el proveedor.</li>
+<li>El proveedor entrega físicamente la mercadería e <code>Inventario</code> la registra (operación de recepción): pesaje (bruto, tara, neto para el maíz), controles de calidad (humedad, impurezas) y la decisión de aceptar, observar o rechazar. Lo aceptado genera lotes y su correspondiente entrada en existencias.</li>
+<li>Cuando <code>Inventario</code> confirma la recepción, la cuenta por pagar de <code>Finanzas</code> pasa de "programada" a "exigible" según los términos pactados con el proveedor.</li>
 <li><code>Producción</code> toma una fórmula/receta, planifica una orden de producción y consulta a <code>Inventario</code> la disponibilidad real de materias primas, insumos y materiales de empaque antes de iniciar — no reserva de forma optimista.</li>
 <li>Al ejecutar la orden, <code>Producción</code> registra el consumo real (que puede diferir del planificado), el rendimiento, las mermas y los subproductos, y entrega a <code>Inventario</code> los lotes de producto terminado resultantes (purina u otros derivados).</li>
 <li><code>Ventas</code> cotiza y toma pedidos contra la disponibilidad que le reporta <code>Inventario</code> (el mismo módulo del paso 2, con productos terminados en vez de materia prima), y al confirmar un pedido informa a <code>Finanzas</code> la cuenta por cobrar correspondiente al <code>Cliente</code>.</li>
-<li><code>Despacho</code> prepara el pedido aprobado (picking, selección de lotes, transporte) y confirma la entrega, generando la salida correspondiente en <code>Inventario</code>. Una devolución del cliente reingresa a <code>Inventario</code> (o queda observada/dada de baja) y ajusta la cuenta por cobrar en <code>Finanzas</code> si corresponde.</li>
-<li><code>Administración</code> no genera ningún documento del flujo de negocio — pero sí aparece en cada paso, de forma implícita: es a quien el <code>Portal Web</code> le pregunta el rol antes de dejar entrar a <code>Compras</code>, <code>Recepción</code>, <code>Producción</code>, <code>Ventas</code>, <code>Despacho</code> o <code>Finanzas</code> en los pasos 1-7. Sostiene a los siete módulos operativos desde el inicio (usuarios, roles, catálogos, auditoría), igual que <code>Personas</code>/<code>Institucional</code> en el ejemplo académico.</li>
+<li><code>Inventario</code> prepara el pedido aprobado por <code>Ventas</code> (operación de despacho: picking, selección de lotes, transporte) y confirma la entrega. Una devolución del cliente reingresa a existencias (o queda observada/dada de baja) y ajusta la cuenta por cobrar en <code>Finanzas</code> si corresponde.</li>
+<li><code>Administración</code> no genera ningún documento del flujo de negocio — pero sí aparece en cada paso, de forma implícita: es a quien el <code>Portal Web</code> le pregunta el rol antes de dejar entrar a <code>Compras</code>, <code>Inventario</code>, <code>Producción</code>, <code>Ventas</code> o <code>Finanzas</code> en los pasos 1-7. Sostiene a los cinco módulos operativos desde el inicio (usuarios, roles, catálogos, auditoría), igual que <code>Personas</code>/<code>Institucional</code> en el ejemplo académico.</li>
 </ol>
-<p><strong>Cinco aclaraciones que vale la pena dejar explícitas:</strong></p>
+<p><strong>Siete aclaraciones que vale la pena dejar explícitas:</strong></p>
 <ul>
-<li><strong><code>Inventario</code> no decide nada, solo refleja.</strong> No decide cuánto comprar ni cuánto producir — esas decisiones son de <code>Compras</code> y <code>Producción</code>. <code>Inventario</code> únicamente registra el movimiento que cada módulo le informa y responde "cuánto hay disponible" cuando se le pregunta.</li>
+<li><strong><code>Inventario</code> no decide nada, solo ejecuta.</strong> No decide cuánto comprar, cuánto producir ni si vender — esas decisiones son de <code>Compras</code>, <code>Producción</code> y <code>Ventas</code>. <code>Inventario</code> únicamente ejecuta el movimiento (recepción, entrada, salida, despacho) que cada módulo le informa y responde "cuánto hay disponible" cuando se le pregunta.</li>
+<li><strong>Recepción y despacho no son módulos aparte, y no es un atajo.</strong> Ambos son la misma naturaleza de trabajo — mover físicamente el almacén — sin importar si el origen es una compra o el destino es una venta; por eso viven dentro de <code>Inventario</code>, igual que hace Odoo con su módulo <code>stock</code> frente a <code>purchase</code> y <code>sale</code>.</li>
 <li><strong><code>Producción</code> no reserva stock de forma optimista.</strong> Antes de iniciar una orden, confirma con <code>Inventario</code> la disponibilidad real de insumos — si no alcanza, la orden queda en espera o se ejecuta parcial, nunca se descuenta un consumo que la planta no puede cubrir.</li>
 <li><strong><code>Finanzas</code> no conoce plan de cuentas contable ni centro de costo.</strong> Cada cuenta por pagar o por cobrar lleva proveedor/cliente, concepto y referencia comercial (orden de compra, pedido) — lenguaje del negocio, no de contabilidad formal. Traducir eso a cuenta contable es trabajo de un sistema contable externo, el día que exista esa integración — nunca antes, mismo criterio que <code>ERP Administrativo</code> en el ejemplo académico.</li>
 <li><strong>El <code>Portal Web</code> no decide permisos, solo los aplica.</strong> Que un usuario vea <code>Compras</code> o <code>Finanzas</code> en su menú lo decide el rol que le asignó <code>Administración</code>, no el Portal — si mañana cambia el rol de alguien, el menú cambia solo porque <code>Administración</code> cambió, sin tocar una línea del Portal.</li>
-<li><strong>El <code>Portal Web</code> ya tiene sesión, pero no vende en línea todavía.</strong> El login y el menú por rol (para el personal interno) se construyen en esta v1; lo que falta es el lado del cliente: carrito, checkout y pago. Eso es alcance de v2, y en ese momento se evalúa si el Portal necesita su propia base de datos o una integración con una pasarela de pago — nada de eso se construye ahora solo porque "ya se sabe que viene".</li>
+<li><strong>La separación autenticación/autorización no depende de monolito modular vs. microservicios.</strong> Es un eje aparte (ADS S04, 2.7): en microservicios, Keycloak seguiría resolviendo solo identidad, cada servicio se registraría como su propio <em>client</em> con sus propios roles, y el menú agregado por rol lo seguiría armando la aplicación (un <em>Backend for Frontend</em>, o la versión distribuida de <code>Administración</code>) — nunca el Identity Provider por sí solo, tenga el sistema 1 proceso o 10.</li>
+<li><strong>El <code>Portal Web</code> ya tiene sesión, pero no vende en línea todavía.</strong> El login y el menú por rol (para el personal interno) se construyen en esta v1; lo que falta es el lado del cliente: carrito, checkout y pago. Eso es alcance de v2, y en ese momento se evalúa si el Portal necesita su propia base de datos o una integración con una pasarela de pago; nada de eso se construye ahora solo porque "ya se sabe que viene".</li>
 </ul>
-<p>La Figura 2 dibuja los 8 módulos del ERP interno como un monolito modular, más el <code>Portal Web</code> como su única excepción — separado desde el día uno por perímetro público y por lo que se anticipa en v2, no por volumen de tráfico actual. A diferencia del ejemplo académico (22 dominios, con varios candidatos reales a microservicio), aquí el ERP interno no tiene ninguno: el <code>Portal Web</code> es el único componente del sistema completo que se construye fuera del monolito.</p>
+<p>La Figura 3 dibuja los 6 módulos del ERP interno como un monolito modular, más el <code>Portal Web</code> como su única excepción — separado desde el día uno por perímetro público y por lo que se anticipa en v2, no por volumen de tráfico actual. A diferencia del ejemplo académico (22 dominios, con varios candidatos reales a microservicio), aquí el ERP interno no tiene ninguno: el <code>Portal Web</code> es el único componente del sistema completo que se construye fuera del monolito.</p>
 
 
 
