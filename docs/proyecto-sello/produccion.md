@@ -65,7 +65,7 @@
 
     ═══ CAPACIDADES TRANSVERSALES (no son módulos de despliegue) ═══
 
-
+ 
  ┌────────────────────────────────────────────────┐
  │ TRAZABILIDAD                                    │
  │ proveedor → lote de MP → orden de producción →  │
