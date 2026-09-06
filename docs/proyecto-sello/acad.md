@@ -5,13 +5,13 @@
 ```text
  ┌───────────────────────────┐                   ┌───────────────────────────┐
  │ 1. INSTITUCIONAL          │                   │ 2. PERSONAS               │
- │ Y ORGANIZACIÓN            │                   │                           │
- │ institución, campus,      │                   │ persona, identificación,  │
- │ sedes, facultades,        │                   │ datos personales          │
- │ escuelas, programas,      │                   │ contactos                 │
- │ periodos, calendarios     │                   │ documentos                │
- └─────────────┬─────────────┘                   └─────────────┬─────────────┘
-               │                                               │
+ │ Y ORGANIZACIÓN            │      ┌─────┐      │                           │
+ │ institución, campus,      │      │ 22  │      │ persona, identificación,  │
+ │ sedes, facultades,        │      └─────┘      │ datos personales          │
+ │ escuelas, programas,      │        │          │ contactos                 │
+ │ periodos, calendarios     │        │          │ documentos                │
+ └─────────────┬─────────────┘        │          └─────────────┬─────────────┘
+               │                      │                        │
                └──────────────────────┬────────────────────────┘
                                       │
                        ┌──────────────┴──────────────┐
@@ -162,6 +162,10 @@
  * El historial académico NO constituye una segunda fuente de verdad.
    Se deriva de matrícula + evaluación + actas/cierre +
    convalidaciones/reconocimientos y demás movimientos académicos.
+
+ 22 = su autorización (roles, permisos, auditoría) se integra a
+      1 y 2; su autenticación la resuelve un Identity Provider
+      externo (Keycloak) — ver C2, Figura 7.
 ```
 
 ## Cómo implementarlo: monolito modular vs. microservicios
@@ -328,7 +332,7 @@ flowchart TB
 
     ERP["ERP Administrativo (externo)"] -.->|"plan presupuestal (config.) / consulta ingresos"| Finanzas
 
-    Base["Base universal<br/>Personas, Institucional"]
+    Base["Base universal<br/>Personas, Institucional<br/>+22"]
     CoreAcademico --> Base
     Matricula -.-> Base
     Finanzas -.-> Base
@@ -340,7 +344,7 @@ flowchart TB
 
 **Quién es quién:**
 
-- **Base universal** (`Personas`, `Institucional`): la consulta literalmente todo el sistema, interno y externo. Vive en el monolito modular.
+- **Base universal** (`Personas`, `Institucional`, +22): la consulta literalmente todo el sistema, interno y externo. Vive en el monolito modular.
 - **Core académico** (`Currículo`, `Planificación`): también en el monolito modular, un escalón más específico que la base.
 - **`Matrícula`**: microservicio propio por **escala** (picos en periodo de matrícula), no por complejidad de dominio — sigue organizada por capas por dentro.
 - **`Admisión`**: incluso con el mismo problema de escala (examen/resultados), **no se construye** — se resuelve con un CRM externo (ej. Bitrix24), igual que Keycloak resuelve seguridad.
