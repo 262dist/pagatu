@@ -1382,6 +1382,7 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
 package pe.edu.upeu.catalogo.dto;
 
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -1406,6 +1407,10 @@ public class ProductoRequest {
 
     @NotNull
     private Boolean activo;
+
+    @NotNull
+    @Min(0)
+    private Integer stock;
 
     @NotNull
     private Long categoriaId;
@@ -2142,6 +2147,8 @@ Y en el `maven-compiler-plugin`, junto al `annotationProcessorPaths` que ya tien
 </annotationProcessorPaths>
 ```
 
+**El proyecto generado trae este mismo bloque `annotationProcessorPaths` dos veces dentro de `maven-compiler-plugin`**: una en la ejecución `default-compile` (compila `src/main`) y otra en `default-testCompile` (compila `src/test`), esta última con Lombok solo. Agrega el `<path>` de MapStruct en **las dos**, no solo en `default-compile` — dejar `default-testCompile` sin MapStruct deja el proyecto en un estado inconsistente entre main y test que el compilador incremental del propio IDE no siempre resuelve solo, y puede hacer que un aviso de MapStruct (como `Unmapped target property`) siga apareciendo aunque el mapper ya esté bien escrito.
+
 `CategoriaMapper` y `ProductoMapper` pasan de clase a interfaz. Reemplaza el contenido completo de cada archivo (mismo paquete, mismo nombre de archivo que en 3.5.4 y su equivalente de `Producto`) — no solo el cuerpo de la interfaz, para no dejar colgado el `import` de `Component` que ya no se usa:
 
 **`mapper/CategoriaMapper.java`**
@@ -2154,12 +2161,14 @@ import pe.edu.upeu.catalogo.dto.CategoriaResponse;
 import pe.edu.upeu.catalogo.entity.Categoria;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface CategoriaMapper {
 
     CategoriaResponse toResponse(Categoria categoria);
 
+    @Mapping(target = "id", ignore = true)
     Categoria toEntity(CategoriaRequest request);
 }
 ```
@@ -2179,6 +2188,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", uses = CategoriaMapper.class)
 public interface ProductoMapper {
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "categoria", ignore = true)
     Producto toEntity(ProductoRequest request);
 
@@ -2188,7 +2198,7 @@ public interface ProductoMapper {
 
 Nota: `import org.springframework.stereotype.Component;` de la versión manual (3.5.4) ya no hace falta — `@Mapper(componentModel = "spring")` es lo que le dice a MapStruct que genere la implementación como un bean de Spring (`@Component` incluido), sin declararlo a mano.
 
-Como `Producto.categoria` y `ProductoResponse.categoria` se llaman igual, MapStruct los relaciona sin configuración adicional y usa `CategoriaMapper` (declarado en `uses`) para convertir el objeto anidado. `toEntity` sigue ignorando `categoria` — `ProductoRequest` solo trae `categoriaId`, y asignar la `Categoria` real sigue siendo responsabilidad del service (`buscarCategoriaOFallar`, 3.5.8), igual que en la versión manual.
+Como `Producto.categoria` y `ProductoResponse.categoria` se llaman igual, MapStruct los relaciona sin configuración adicional y usa `CategoriaMapper` (declarado en `uses`) para convertir el objeto anidado. `toEntity` ignora dos campos: `id` (`ProductoRequest` no lo trae — lo genera la base de datos al insertar) y `categoria` (`ProductoRequest` solo trae `categoriaId`; asignar la `Categoria` real sigue siendo responsabilidad del service, `buscarCategoriaOFallar`, 3.5.8) — igual que en la versión manual. Sin el `@Mapping(target = "id", ignore = true)`, MapStruct advierte `Unmapped target property: id` en cada build, aunque el resto del mapeo sea correcto; el mismo caso aplica a `CategoriaMapper.toEntity`, arriba.
 
 **Ventajas frente al mapeo manual (3.5.19):**
 

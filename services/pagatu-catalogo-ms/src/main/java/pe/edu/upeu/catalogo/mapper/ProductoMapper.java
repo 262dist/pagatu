@@ -10,6 +10,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", uses = CategoriaMapper.class)
 public interface ProductoMapper {
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "categoria", ignore = true)
     Producto toEntity(ProductoRequest request);
 
