@@ -1886,6 +1886,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../S06_Comunicacion_Sincrona_Resiliente/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S6 - Comunicación síncrona resiliente entre servicios
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../S12_Evaluacion_Unidad_2/" class="md-nav__link">
         
   
@@ -3320,7 +3348,7 @@ code<span class="w"> </span>--install-extension<span class="w"> </span>vmware.vs
 </tr>
 <tr>
 <td>Spring Boot</td>
-<td><strong>4.0.7</strong></td>
+<td><strong>4.1.1</strong></td>
 </tr>
 <tr>
 <td>Language</td>
@@ -3356,7 +3384,7 @@ code<span class="w"> </span>--install-extension<span class="w"> </span>vmware.vs
 </tr>
 </tbody>
 </table>
-<p>Nota sobre la versión: el generador de Spring Initializr ya no ofrece ninguna versión 3.x — las únicas opciones son líneas 4.x. Se fija <strong>4.0.7</strong> por el mismo motivo verificado en LP2 (ver <code>docs/lp2/adr/ADR-003-spring-boot-4.md</code> del repo <code>bomerp</code>): dentro de la línea 4.x, SpringDoc OpenAPI declara compatibilidad solo hasta <code>4.1.0-M1</code>, así que 4.0.7 es la versión estable dentro de ese rango. Si al generar el proyecto ves <code>spring-boot-starter-web</code> reemplazado por <code>spring-boot-starter-webmvc</code>, o starters de prueba granulares en vez de uno solo, es esperado en esta línea de Boot — no lo corrijas.</p>
+<p>Nota sobre la versión: el generador de Spring Initializr ya no ofrece ninguna versión 3.x — las únicas opciones son líneas 4.x. Se fija <strong>4.1.1</strong> (la última estable de la línea 4.1 a la fecha): SpringDoc OpenAPI, que hasta mediados de 2026 solo declaraba compatibilidad hasta <code>4.1.0-M1</code>, ya soporta oficialmente toda la línea 4.1.x desde su propia versión 3.1.0 — ya no hace falta quedarse en 4.0.x por esa restricción. Si al generar el proyecto ves <code>spring-boot-starter-web</code> reemplazado por <code>spring-boot-starter-webmvc</code>, o starters de prueba granulares en vez de uno solo, es esperado en esta línea de Boot — no lo corrijas.</p>
 <p>Dependencias a seleccionar:</p>
 <p><strong>Tabla 4. Dependencias del proyecto</strong></p>
 <table>
@@ -3390,7 +3418,7 @@ code<span class="w"> </span>--install-extension<span class="w"> </span>vmware.vs
 </tr>
 </tbody>
 </table>
-<p>Referencia visual (selección real en VS Code con Spring Boot 4.0.7, las 9 dependencias de la tabla):</p>
+<p>Referencia visual (selección real en VS Code con Spring Boot 4.1.1, las 9 dependencias de la tabla):</p>
 <p><strong>Figura 6. Selección de dependencias en Spring Initializr (1/2)</strong></p>
 <p><img alt="Selección de dependencias en Spring Initializr (1/2): Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI, Spring Boot Actuator" src="../img/s01-3.2.1-dependencias-1.png" /></p>
 <p><strong>Figura 7. Selección de dependencias en Spring Initializr (2/2)</strong></p>
@@ -5323,7 +5351,7 @@ Indica 2 fortalezas y 2 recomendaciones.
 <li>Eclipse Adoptium. (2024). <em>Temurin releases</em>. Eclipse Foundation. <a href="https://adoptium.net/">https://adoptium.net/</a></li>
 <li>Flyway. (2024). <em>Flyway documentation</em>. Redgate. <a href="https://documentation.red-gate.com/fd">https://documentation.red-gate.com/fd</a></li>
 <li>PostgreSQL Global Development Group. (2024). <em>PostgreSQL 16 documentation</em>. <a href="https://www.postgresql.org/docs/16/">https://www.postgresql.org/docs/16/</a></li>
-<li>Spring. (2024). <em>Spring Boot reference documentation</em> (versión 4.0.7). VMware. <a href="https://docs.spring.io/spring-boot/">https://docs.spring.io/spring-boot/</a></li>
+<li>Spring. (2024). <em>Spring Boot reference documentation</em> (versión 4.1.1). VMware. <a href="https://docs.spring.io/spring-boot/">https://docs.spring.io/spring-boot/</a></li>
 <li>Spring. (2024). <em>Spring Data JPA reference documentation</em>. VMware. <a href="https://docs.spring.io/spring-data/jpa/reference/">https://docs.spring.io/spring-data/jpa/reference/</a></li>
 <li>Springdoc. (2024). <em>SpringDoc OpenAPI documentation</em>. <a href="https://springdoc.org/">https://springdoc.org/</a></li>
 </ol>
