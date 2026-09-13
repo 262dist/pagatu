@@ -7,7 +7,7 @@
 | Campo | Valor |
 |---|---|
 | Project | Maven Project |
-| Spring Boot | **4.0.7** |
+| Spring Boot | **4.1.1** |
 | Language | Java |
 | Group Id | `pe.edu.upeu` |
 | Artifact Id | `pagatu-orden-ms` |
@@ -132,7 +132,7 @@ CREATE TABLE IF NOT EXISTS orden_detalles (
 | Campo | Valor |
 |---|---|
 | Project | Maven Project |
-| Spring Boot | **4.0.7** |
+| Spring Boot | **4.1.1** |
 | Language | Java |
 | Group Id | `pe.edu.upeu` |
 | Artifact Id | `pagatu-cliente-ms` |

@@ -1,0 +1,1382 @@
+# S6 - Comunicación síncrona resiliente entre servicios
+
+*Por: Angel Sullon Macalupu @asullom - 2026*
+
+## 1. Introducción
+
+Tiempo: 20 min.
+
+### 1.1 Presentación de la sesión
+
+Hasta S5, `pagatu-catalogo-ms` fue el único microservicio con CRUD completo — cada operación resolvía todo con su propia base de datos, sin necesitar nada de otro servicio. Esta sesión construye `pagatu-orden-ms`, el segundo microservicio del proyecto, y con él aparece un problema nuevo: para registrar una orden, `pagatu-orden-ms` necesita el precio *real* de cada producto — un dato que vive en la base de datos de `pagatu-catalogo-ms`, no en la propia. Esta sesión resuelve ese problema en dos partes, en orden: primero cómo se hace esa llamada entre servicios (Feign), después qué hacer cuando esa llamada falla (Circuit Breaker).
+
+### 1.2 Índice
+
+1. Comunicación declarativa entre microservicios.
+2. Circuit Breaker: respuesta controlada ante fallos.
+3. Observabilidad y diagnóstico.
+
+### 1.3 Propósito de aprendizaje
+
+Al concluir la clase, estarás en condiciones de:
+
+- **Construir e implementar** un segundo microservicio persistente y observable, que consulta a otro microservicio ya existente de forma declarativa por su nombre lógico en el registro de servicios, protegiendo esa llamada con un patrón de tolerancia a fallos (Circuit Breaker) que evita que un servicio caído tumbe también al que lo consulta.
+
+### 1.4 Producto de sesión
+
+`pagatu-orden-ms` funcional — con CRUD de órdenes, conectado a Config Server y a Eureka — que al registrar una orden consulta a `pagatu-catalogo-ms` (por Feign) para validar y copiar el precio real de cada producto, con una respuesta controlada (Circuit Breaker) si `pagatu-catalogo-ms` no responde.
+
+### 1.5 Metodología
+
+**Tabla 1. Metodología de la sesión**
+
+| Actividades a Realizar en el Periodo | Orientaciones generales (Orientaciones Metodológicas) | Material de estudio recomendado |
+|---|---|---|
+| Revisión previa individual | Confirmar que `pagatu-config`, `pagatu-eureka`, `pagatu-gateway` y `pagatu-catalogo-ms` (S2-S4) siguen arrancando en DEV. Revisar el estado propio de `pagatu-orden-ms`, si ya se avanzó algo en la actividad autónoma de S2 (4.1). Trabajo individual, antes de clase. | Evidencia individual de S2-S4, [Alcance por microservicio y proyecto base](../proyecto-sello/alcance-microservicios.md) (si aún no se revisó). |
+| Clase presencial | Construcción guiada de `pagatu-orden-ms` de punta a punta, conexión por Feign hacia `pagatu-catalogo-ms`, y protección de esa llamada con Circuit Breaker. Trabajo individual, siguiendo al docente paso a paso; consulta inmediata ante errores de conexión entre servicios. | Pasos 3.1 a 3.23 de esta guía. |
+| Evaluación formativa | Revisión en clase de `pagatu-orden-ms` registrando una orden con precio real (caso correcto) y con `pagatu-catalogo-ms` detenido (caso de error controlado). La evidencia se completa y sustenta de forma individual, fuera del aula, según los criterios mínimos de la sección 4.4. | Indicaciones de entrega (4.3), rúbrica de evaluación (4.6). |
+
+### 1.6 Motivación de la sesión
+
+#### 1.6.1 Caso: la orden que necesita un precio que no es suyo
+
+`pagatu-orden-ms` guarda órdenes y sus líneas de detalle. Cada línea necesita un precio — pero `pagatu-orden-ms` no es dueño de ningún precio: los precios viven en `productos`, dentro de la base de datos de `pagatu-catalogo-ms`. Copiar el precio a mano (pedirle al cliente que lo mande en el request) no sirve: cualquiera podría mandar un precio inventado. La única fuente confiable del precio real es preguntarle directamente a `pagatu-catalogo-ms`.
+
+Eso obliga a una llamada HTTP entre dos microservicios — y abre una pregunta que S1-S5 no tuvieron que responder: ¿qué pasa si, justo cuando alguien intenta crear una orden, `pagatu-catalogo-ms` está caído, lento, o responde con error? Sin nada que lo controle, ese fallo se propaga sin control y tumba también a `pagatu-orden-ms`, aunque el problema real esté en el otro servicio.
+
+**Preguntas de análisis**
+
+**Activación de conocimientos previos**
+
+1. ¿Por qué `pagatu-orden-ms` no puede simplemente copiar la tabla `productos` en su propia base de datos?
+2. Si `pagatu-catalogo-ms` no respondiera justo cuando alguien crea una orden, ¿qué debería pasar con esa orden?
+
+**Comprensión de comunicación resiliente**
+
+1. ¿Qué diferencia hay entre llamar a otro microservicio por su dirección fija (`http://localhost:8080`) y llamarlo por su nombre lógico en Eureka?
+2. ¿Por qué "esperar más tiempo" (un timeout más largo) no es lo mismo que "dejar de intentar" (un circuito abierto)?
+
+En esta sesión se construye `pagatu-orden-ms` y se resuelven, en orden, las dos partes de ese problema: cómo se hace la llamada (Feign) y qué hacer cuando falla (Circuit Breaker).
+
+### 1.7 Ubicación en el curso
+
+- Unidad: U2 - Sistema distribuido robusto.
+- Producto del curso: Proyecto Sello: sistema distribuido de microservicios end-to-end, configurable, escalable, seguro, resiliente, consistente, observable, integrado con frontend y defendido técnicamente.
+- Producto de unidad: sistema distribuido seguro, resiliente, consistente, observable e integrado con cliente frontend.
+- Avance del producto en esta sesión: segundo microservicio del proyecto (`pagatu-orden-ms`), con comunicación síncrona resiliente hacia `pagatu-catalogo-ms`.
+
+**Figura 1. Roadmap del producto de la unidad**
+
+```mermaid
+flowchart TB
+    ClientePrueba["Cliente de prueba<br/>PowerShell / bash / Swagger"]
+    ClienteAngular["Cliente real<br/>Angular 21+ (S11)"]
+    Gateway["pagatu-gateway<br/>construido en S4<br/>puerto 18080 (DEV)"]
+    Orden["pagatu-orden-ms<br/>HOY<br/>Feign + Circuit Breaker<br/>hacia catalogo-ms<br/>(S9: coordina Saga)"]
+    Catalogo["pagatu-catalogo-ms<br/>construido en S1<br/>REST + BD + health"]
+    Eureka["pagatu-eureka<br/>construido en S3<br/>puerto 18761 (DEV)"]
+    Config["pagatu-config<br/>construido en S2"]
+    Kafka[("Kafka<br/>candidato, futuro (S8)")]
+    Pago["pago-ms<br/>candidato, futuro (S8)<br/>(S9: coordina Saga)"]
+    Obs[("Observabilidad<br/>logs, métricas, paneles<br/>(futuro, S10)")]
+
+    ClientePrueba --> Gateway
+    ClienteAngular --> Gateway
+    Gateway -->|"lb://pagatu-orden-ms"| Orden
+    Gateway -->|"lb://pagatu-catalogo-ms"| Catalogo
+    Orden -->|"Feign: consulta<br/>producto"| Catalogo
+    Gateway -. "descubre<br/>servicios" .-> Eureka
+    Orden -. "registra<br/>instancia" .-> Eureka
+    Catalogo -. "registra<br/>instancia" .-> Eureka
+    Orden -. "carga<br/>configuración" .-> Config
+    Catalogo -. "carga<br/>configuración" .-> Config
+    Orden -.->|"orden.creada"| Kafka
+    Kafka -.->|"consume"| Pago
+    Gateway -. "logs y métricas" .-> Obs
+    Orden -. "logs y métricas" .-> Obs
+    Catalogo -. "logs y métricas" .-> Obs
+    Eureka -. "logs y métricas" .-> Obs
+    Config -. "logs y métricas" .-> Obs
+
+    classDef done fill:#e8f5e9,stroke:#2e7d32,color:#111;
+    classDef today fill:#ffe08a,stroke:#9a6b00,stroke-width:2px,color:#111;
+    classDef futuro fill:#f5f5f5,stroke:#9e9e9e,color:#555,stroke-dasharray: 5 5;
+    class Gateway,Catalogo,Eureka,Config done;
+    class Orden today;
+    class Kafka,Pago,Obs futuro;
+```
+
+`config-repo` (el repositorio de archivos que lee `pagatu-config`) no se dibuja: es un detalle de implementación de `pagatu-config`, no una pieza que la Unidad 2 trate por separado.
+
+Hoy se construye `pagatu-orden-ms`, el segundo microservicio del proyecto, con comunicación resiliente hacia `pagatu-catalogo-ms` (ya registrado en Eureka desde S3, ya expuesto por el Gateway desde S4). `pagatu-cliente-ms` queda como trabajo autónomo (sección 4) — el mismo patrón de construcción, aplicado sobre un tercer microservicio.
+
+El resto de piezas del diagrama todavía no existe, y se muestra igual porque ya está agendado en el sílabo de esta misma unidad, no porque se esté adelantando:
+
+- **Cliente Angular real** — se integra recién en S11, "Integración con cliente frontend"; hasta entonces, el único cliente es el de prueba.
+- **JWT sobre `pagatu-gateway`** — S7, "Seguridad distribuida y control de acceso"; no se dibuja como componente nuevo porque es una capa sobre el Gateway que ya existe, no un servicio aparte.
+- **Kafka y `pago-ms`** — S8, "Mensajería asíncrona entre servicios"; `pagatu-orden-ms`, construido hoy, es candidato natural a publicar el primer evento del proyecto (`orden.creada`).
+- **Saga entre `orden-ms` y `pago-ms`** — S9, "Consistencia distribuida en procesos de negocio"; no se dibuja como componente aparte porque no es un microservicio propio — es lógica de coordinación y compensación que vive dentro de `pagatu-orden-ms` y `pago-ms` (por eso ambos nodos ya anotan "S9: coordina Saga"), activada cuando un pago falla después de confirmada la orden.
+- **Observabilidad** — S10, "Observabilidad y diagnóstico de sistemas distribuidos"; logs, health, métricas y paneles de diagnóstico sobre cada servicio, no solo sobre el tráfico que cruza el Gateway. Monitorear únicamente el Gateway dejaría ciego justo lo que esta sesión construye: la llamada Feign de `pagatu-orden-ms` a `pagatu-catalogo-ms` nunca pasa por el Gateway, y el estado del Circuit Breaker vive dentro de `pagatu-orden-ms`. `pagatu-eureka` se monitorea por la misma razón que Gateway: es una dependencia de tráfico en vivo — cada resolución `lb://` lo consulta en ese instante, y si está degradado, el enrutamiento puede caer sobre instancias muertas. `pagatu-config`, en cambio, se monitorea por un motivo distinto: los microservicios leen su configuración solo al arrancar (*pull on startup*, S2, 3.10), así que si `pagatu-config` cae después de que todo ya arrancó, el tráfico en vivo no lo nota — el problema aparece recién en el próximo reinicio o escalado. Protege la capacidad de operar, no el tráfico de ahora mismo.
+
+  **Que Eureka ya "monitoree" las instancias no reemplaza a Observabilidad — responden preguntas distintas.** Eureka solo confirma que una instancia sigue viva (recibió su heartbeat) y dónde está; no agrega logs, no mide latencia ni uso de recursos, y no sabe nada del estado interno de un servicio. Ejemplo con lo de hoy: si el Circuit Breaker de `pagatu-orden-ms` está en `OPEN` y todas las órdenes caen en `PENDIENTE_VALIDACION`, Eureka lo seguiría mostrando como `UP` — la instancia está viva, el problema es de lógica de negocio degradada, invisible para un registro de servicios. Eso solo lo revela Observabilidad (Actuator + métricas de Resilience4j, S10).
+
+## 2. Explica
+
+Tiempo: 25 min.
+
+### 2.1 Arquitectura de la sesión
+
+**Figura 2. De `pagatu-orden-ms` a `pagatu-catalogo-ms`, con Feign y Circuit Breaker**
+
+```mermaid
+flowchart TB
+    Orden["pagatu-orden-ms<br/>crear orden"]
+    Feign["Feign: ProductoClient<br/>resuelve pagatu-catalogo-ms<br/>por nombre lógico (Eureka)"]
+    CB["Circuit Breaker<br/>CLOSED / OPEN / HALF_OPEN"]
+    Catalogo["pagatu-catalogo-ms<br/>GET /api/v1/productos/id"]
+    Fallback["Fallback:<br/>orden PENDIENTE_VALIDACION"]
+
+    Orden -->|"1. consulta producto"| Feign
+    Feign -->|"2. delega en"| CB
+    CB -->|"3a. circuito cerrado:<br/>llamada real"| Catalogo
+    CB -.->|"3b. circuito abierto:<br/>sin llamar"| Fallback
+    Catalogo -->|"4a. precio real"| Orden
+    Fallback -.->|"4b. sin precio"| Orden
+```
+
+Lectura del diagrama: `pagatu-orden-ms` nunca llama directo a una dirección de `pagatu-catalogo-ms` — llama a través de Feign (paso 1-2), que resuelve el nombre lógico contra Eureka, y esa llamada queda envuelta en un Circuit Breaker (paso 3) que decide, según el historial reciente de fallos, si intenta la llamada real o ejecuta de inmediato el *fallback*. Los dos caminos (3a con precio real, 3b sin precio) terminan igual (paso 4): la orden se guarda de todas formas, con o sin precio confirmado — eso lo decide el código de `crear()` (3.17), no un componente aparte. Este diagrama es el mapa que guía el resto de la explicación: **2.2 desarrolla los pasos 1-2** (Feign, cómo se resuelve la llamada); **2.3 desarrolla los pasos 3-4** (Circuit Breaker, qué pasa cuando la llamada real falla) — en el mismo orden del Índice (1.2).
+
+Ese mecanismo es el mismo en DEV y en producción local — lo que cambia es la red por la que viaja la llamada:
+
+**Figura 3. La misma llamada Feign, en DEV y en producción local**
+
+```mermaid
+flowchart LR
+    subgraph DEV["DEV — Maven, en el host"]
+        direction LR
+        OrdenDev["pagatu-orden-ms<br/>puerto 8082"]
+        CatalogoDev["pagatu-catalogo-ms<br/>puerto 8080"]
+        OrdenDev -->|"Feign: http://pagatu-catalogo-ms<br/>vía localhost:18761/eureka"| CatalogoDev
+    end
+
+    subgraph PROD["PROD local — Docker, red pagatu-prod-net"]
+        direction LR
+        OrdenProd["pagatu-orden-ms<br/>8082 interno"]
+        CatalogoProd["pagatu-catalogo-ms<br/>8080 interno"]
+        OrdenProd -->|"Feign: http://pagatu-catalogo-ms:8080<br/>vía pagatu-eureka:8761/eureka"| CatalogoProd
+    end
+```
+
+En DEV, ambos microservicios corren con Maven en el host y se descubren entre sí contra `localhost:18761/eureka` (S3); en producción local, los dos corren dentro de `pagatu-prod-net` (S4) y se descubren contra `pagatu-eureka:8761/eureka` — Feign resuelve el nombre lógico `pagatu-catalogo-ms` igual en los dos casos, sin que el código de `ProductoClient` (3.12) cambie una sola línea entre ambientes.
+
+### 2.2 Comunicación declarativa entre microservicios
+
+Cualquier microservicio que necesita datos que pertenecen a otro se comunica a través de su API, nunca accediendo directamente a su base de datos — cada microservicio es dueño exclusivo de los datos que administra, uno de los principios centrales de la arquitectura de microservicios. Esa llamada se puede escribir a mano (un cliente HTTP genérico), o de forma **declarativa**: una interfaz anotada describe el endpoint, y un framework arma la llamada HTTP por debajo, sin una sola línea que construya la URL o parsee la respuesta a mano.
+
+Que un cliente resuelva el nombre lógico de un servicio consultando directamente a un registro (en vez de pasar por un intermediario como un Gateway) es, además, un patrón con nombre propio: **Client-Side Service Discovery** (Richardson, s.f.) — el mismo mecanismo que ya aplican, sin nombrarlo así, cualquier Gateway que resuelve `lb://` y cualquier cliente de un registro de servicios, aplicado ahora a una llamada entre microservicios en vez de a una ruta externa.
+
+**OpenFeign** es la implementación concreta de ambas ideas que usa `pagatu-orden-ms` hoy: una interfaz anotada con `@FeignClient(name = "...")`, con un método anotado como si fuera un `@Controller` (`@GetMapping`), es en tiempo de ejecución un cliente HTTP completo. `name` no es una dirección fija: es el `spring.application.name` con el que el otro servicio ya está registrado en `pagatu-eureka` (S3) — Feign resuelve ese nombre contra Eureka en tiempo de ejecución, el mismo mecanismo de balanceo de carga que ya usa el Gateway desde S4.
+
+**DTO entre servicios**: el contrato que un microservicio expone a otros no es su entidad JPA. `pagatu-orden-ms` no necesita todo lo que `Producto` guarda en `pagatu-catalogo-ms` — necesita el mínimo para armar una línea de orden: id, nombre y precio. Por la misma razón, `id_producto` en `orden_detalles` no lleva `FOREIGN KEY` hacia `productos` (ver 3.3): esa tabla vive en la base de datos de otro microservicio, y la única forma válida de llegar a ella es esta llamada declarativa, nunca una relación directa entre bases de datos separadas.
+
+**Error frecuente**: llamar a `pagatu-catalogo-ms` por su dirección fija (`http://localhost:8080`) en vez de por su nombre lógico (`pagatu-catalogo-ms`) registrado en Eureka. Funciona en la laptop de quien lo escribió y se rompe apenas hay una segunda instancia (S3, puerto `8081`) o el sistema corre en Docker (S4) con otra red — exactamente el problema que Eureka y el Gateway ya resuelven para las llamadas *externas* desde S3-S4; Feign aplica el mismo criterio a las llamadas *internas*.
+
+### 2.3 Circuit Breaker: respuesta controlada ante fallos
+
+En una llamada síncrona entre dos microservicios, si el servicio que responde no está disponible, responde lento, o falla, y no hay nada que lo controle, esa excepción se propaga tal cual hacia quien hizo la llamada — un problema del servicio que falló termina siendo, también, un problema del que lo consume.
+
+**Circuit Breaker** (interruptor de circuito) evita ese contagio: envuelve una llamada que puede fallar y decide, según cuántas veces falló recientemente, si sigue intentando la llamada real o si corta el circuito y ejecuta de inmediato una alternativa (*fallback*) — sin siquiera intentar una llamada que probablemente va a fallar.
+
+**Tabla 2. Los tres estados de un Circuit Breaker**
+
+| Estado | Qué hace | Cuándo pasa al siguiente |
+|---|---|---|
+| **CLOSED** (cerrado) | Deja pasar las llamadas normalmente hacia el servicio real. | Si la tasa de fallos supera el umbral configurado, pasa a `OPEN`. |
+| **OPEN** (abierto) | Corta el circuito: ninguna llamada llega al servicio real, se ejecuta el *fallback* de inmediato. | Después de un tiempo de espera configurado, pasa a `HALF_OPEN` para probar si el servicio ya se recuperó. |
+| **HALF_OPEN** (medio abierto) | Deja pasar un número limitado de llamadas de prueba hacia el servicio real. | Si esas llamadas de prueba tienen éxito, vuelve a `CLOSED`; si vuelven a fallar, regresa a `OPEN`. |
+
+**Figura 4. Ciclo de estados del Circuit Breaker**
+
+```mermaid
+flowchart LR
+    Closed["CLOSED<br/>llamadas pasan normal"]
+    Open["OPEN<br/>corta el circuito,<br/>ejecuta fallback"]
+    HalfOpen["HALF_OPEN<br/>prueba con pocas llamadas"]
+
+    Closed -->|"tasa de fallos<br/>supera el umbral"| Open
+    Open -->|"pasa el tiempo<br/>de espera"| HalfOpen
+    HalfOpen -->|"llamadas de prueba<br/>tienen éxito"| Closed
+    HalfOpen -->|"llamadas de prueba<br/>vuelven a fallar"| Open
+```
+
+En esta sesión, Feign (2.2) ya resuelve *cómo* se hace la llamada de `pagatu-orden-ms` hacia `pagatu-catalogo-ms`; Circuit Breaker, con Resilience4j (3.15-3.17), decide *qué pasa* cuando esa llamada específica falla.
+
+**Fallback**: el método que se ejecuta en vez de la llamada real cuando el circuito está `OPEN`, o cuando la llamada real lanza una excepción. Recibe los mismos parámetros que el método protegido, más la excepción real (`Throwable`) — permite decidir una respuesta controlada en vez de dejar que el error se propague sin control.
+
+**Error frecuente**: confundir *timeout* con Circuit Breaker. Un timeout solo decide cuánto tiempo esperar antes de dar por fallida una llamada puntual; el Circuit Breaker decide, además, si vale la pena *seguir intentando* después de varios fallos seguidos — sin él, cada llamada nueva esperaría su propio timeout completo contra un servicio que ya se sabe caído, en vez de fallar rápido.
+
+**Dos formas de contar la tasa de fallos.** Según SACAViX System Design (2026), un Circuit Breaker puede decidir cuándo abrirse de dos formas distintas — y solo una de las dos es la que `pagatu-orden-ms` aplica hoy.
+
+**Criterio de apertura aplicado en esta sesión: Count-based Sliding Window.** Cuenta el resultado de las últimas N llamadas, sin importar cuánto tiempo tomen en ocurrir — es exactamente lo que ya configuramos en 3.16 (`sliding-window-size: 5`, `failure-rate-threshold: 50`), aunque hasta ahora no le habíamos puesto nombre al criterio:
+
+**Figura 5. Count-based Sliding Window, con la configuración real de `pagatu-orden-ms`**
+
+```mermaid
+flowchart LR
+    Ventana["Últimas 5 llamadas<br/>sliding-window-size: 5"]
+    Conteo["Ventana: 3 fallos de 5<br/>60% de fallos"]
+    Umbral{"¿% fallos ≥ 50%?<br/>failure-rate-threshold: 50"}
+    Open["OPEN<br/>abrir circuito"]
+    Closed["CLOSED<br/>seguir cerrado"]
+
+    Ventana --> Conteo --> Umbral
+    Umbral -->|"Sí: 60% ≥ 50%"| Open
+    Umbral -.->|"No"| Closed
+```
+
+*Nota.* Adaptado de *Circuit Breaker* (SACAViX System Design, 2026), con los valores reales de `pagatu-orden-ms` (3.16) en vez del ejemplo genérico de la fuente.
+
+Es predecible en cuántas muestras analiza (siempre las últimas 5), pero en un servicio con tráfico bajo la ventana puede tardar en llenarse, retrasando la detección de una falla real — con solo 2 o 3 órdenes al día, `pagatu-orden-ms` podría tardar horas en acumular 5 llamadas y recién ahí evaluar si `pagatu-catalogo-ms` está fallando.
+
+**Criterio no aplicado, para contraste: Time-based Sliding Window.** Cuenta las llamadas dentro de una ventana de tiempo fija, sin importar cuántas ocurrieron:
+
+**Figura 6. Time-based Sliding Window, ejemplo genérico (no es el criterio de esta sesión)**
+
+```mermaid
+flowchart LR
+    Ventana["Últimos 60 segundos<br/>sliding-window-type: TIME_BASED"]
+    Conteo["Ventana: 8 llamadas, 6 fallos<br/>75% de fallos"]
+    Umbral{"¿% fallos ≥ umbral?"}
+    Open["OPEN<br/>abrir circuito"]
+    Closed["CLOSED<br/>seguir cerrado"]
+
+    Ventana --> Conteo --> Umbral
+    Umbral -->|"Sí"| Open
+    Umbral -.->|"No"| Closed
+```
+
+*Nota.* Adaptado de *Circuit Breaker* (SACAViX System Design, 2026).
+
+Reacciona de forma más consistente en el tiempo real (siempre evalúa "el último minuto", sin importar el volumen), pero con tráfico bajo puede evaluar el umbral con muy pocas muestras (en el ejemplo, solo 8 llamadas en 60 segundos), haciendo el porcentaje poco confiable. Resilience4j usa Count-based por defecto — el mismo tipo que ya configuramos en 3.16, sin necesidad de declararlo explícitamente; cambiar a Time-based exige agregar `sliding-window-type: TIME_BASED` a la configuración, algo que esta sesión no hace.
+
+**Slow Call Rate, fuera del alcance de esta sesión.** Además de contar fallos por excepción, un Circuit Breaker puede abrirse si el porcentaje de llamadas *lentas* (más de un umbral de duración configurado, por ejemplo 2 segundos) supera un umbral propio — una llamada que tarda 8 segundos bloqueando un hilo es tan dañina para el sistema como una que falla con una excepción. `pagatu-orden-ms` no lo configura hoy; queda como una mejora posible, no como algo que falte en esta sesión.
+
+**Trade-offs y errores comunes** (SACAViX System Design, 2026): agrega complejidad al cliente que llama al servicio, y exige un fallback adecuado — sin uno, el patrón no protege nada. Los umbrales (tasa de fallos, tamaño de ventana) necesitan calibrarse con datos reales, no un valor arbitrario, y un umbral demasiado sensible puede abrir el circuito por un simple pico de tráfico momentáneo. **No monitorear el estado del circuito en producción** es, según esa misma fuente, uno de los errores más comunes al implementar este patrón — la razón concreta por la que 2.4 y la Figura 1 (1.7) insisten en conectar Observabilidad a `pagatu-orden-ms`, no solo al Gateway.
+
+**Patrones relacionados** (SACAViX System Design, 2026; fuera del alcance de esta sesión): *Bulkhead* (aísla recursos — por ejemplo, un pool de conexiones propio por dependencia — para que agotar uno no afecte a los demás); *Retry Pattern* (reintenta una llamada fallida antes de darla por perdida, normalmente combinado con Circuit Breaker, nunca en su reemplazo); *Timeout Pattern* (decide cuánto esperar antes de dar por fallida una llamada puntual, ver el "Error frecuente" anterior); *Rate Limiting* (limita cuántas llamadas se permiten en un periodo, para proteger al servicio que las recibe, no al que las hace).
+
+### 2.4 Observabilidad y diagnóstico
+
+Cuando una llamada entre dos servicios falla, diagnosticar el problema exige más que revisar el propio código: hay que poder rastrear una misma petición a través de los servicios que atravesó, y conocer el estado interno de cualquier mecanismo de tolerancia a fallos que la haya interceptado — sin eso, un fallo controlado (el fallback) es indistinguible de un error real para quien solo mira el resultado final.
+
+En esta sesión, eso significa revisar logs de `pagatu-orden-ms`, logs de `pagatu-catalogo-ms`, el `traceId` de cada petición (S1, 3.4), `/actuator/health` de ambos servicios, y en qué estado quedó el Circuit Breaker (`CLOSED`/`OPEN`/`HALF_OPEN`) cuando `pagatu-catalogo-ms` no responde.
+
+## 3. Aplica: actividad práctica guiada
+
+Tiempo: 4h.
+
+La sesión tiene tres partes, en orden: primero se construye `pagatu-orden-ms` como microservicio completo (sin Feign todavía) — si ya avanzaste esto como parte del trabajo autónomo de S2 (4.1), verifica que coincide con 3.1-3.9 y continúa desde la Parte B; después se conecta a `pagatu-catalogo-ms` con Feign (Tema 1), y al final se protege esa llamada con Circuit Breaker (Tema 2).
+
+### Parte A — Construir `pagatu-orden-ms`
+
+#### 3.1 Crear el proyecto base de `pagatu-orden-ms`
+
+**Producto del paso:** proyecto `pagatu-orden-ms` creado, con las mismas dependencias base que `pagatu-catalogo-ms` (S1).
+
+**Tabla 3. Configuración de `pagatu-orden-ms` en Spring Initializr**
+
+| Campo | Valor |
+|---|---|
+| Project | Maven Project |
+| Spring Boot | **4.1.1** |
+| Language | Java |
+| Group Id | `pe.edu.upeu` |
+| Artifact Id | `pagatu-orden-ms` |
+| Package name | `pe.edu.upeu.orden` |
+| Packaging | Jar |
+| Java | 21 |
+| Dependencias | Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway — las mismas de `pagatu-catalogo-ms` (S1, Tabla 4). **Además**, agrega MapStruct a mano en el `pom.xml` (S1, 3.5.20) — Spring Initializr no lo ofrece como opción, y sin él el proyecto no compila apenas escribas el primer `Mapper`. |
+| Ubicación sugerida | `services/pagatu-orden-ms` |
+
+El puerto de base de datos (`15434` DEV / `25434` PROD local) y el nombre `pagatu_orden_db` ya estaban reservados desde la arquitectura del proyecto (`docs/index.md`) — no se inventan en esta sesión. El puerto de aplicación en DEV (`8082`, fijo) sigue el mismo criterio de S1 (puerto fijo, sin argumento) — distinto de `8080`, que ya usa `pagatu-catalogo-ms`.
+
+#### 3.2 Levantar la base de datos de `pagatu-orden-ms`
+
+**Producto del paso:** PostgreSQL de `pagatu-orden-ms` corriendo en DEV.
+
+**`services/pagatu-orden-ms/compose-dev.yml`:**
+
+```yaml
+name: pagatu-orden-dev
+
+services:
+  postgres-orden-dev:
+    image: postgres:16-alpine
+    container_name: pagatu-postgres-orden-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: pagatu_orden_db
+      POSTGRES_USER: pagatu
+      POSTGRES_PASSWORD: pagatu
+    ports:
+      - "15434:5432"
+    volumes:
+      - pagatu_orden_dev_data:/var/lib/postgresql/data
+
+volumes:
+  pagatu_orden_dev_data:
+```
+
+PowerShell / bash macOS/Linux:
+
+```bash
+cd services/pagatu-orden-ms
+docker compose -f compose-dev.yml up -d
+```
+
+#### 3.3 Crear la migración Flyway de `pagatu-orden-ms`
+
+**Producto del paso:** tablas `ordenes` y `orden_detalles` creadas.
+
+Crea:
+
+```text
+services/pagatu-orden-ms/src/main/resources/db/migration/V1__create_orden_tables.sql
+```
+
+Pega:
+
+```sql
+CREATE TABLE IF NOT EXISTS ordenes (
+    id BIGINT GENERATED BY DEFAULT AS IDENTITY,
+    id_cliente BIGINT,
+    nombre_cliente VARCHAR(150),
+    direccion_cliente VARCHAR(200),
+    fecha_creacion TIMESTAMP NOT NULL DEFAULT now(),
+    estado VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE',
+    tipo_comprobante VARCHAR(20) NOT NULL DEFAULT 'BOLETA_SIMPLE',
+    metodo_pago VARCHAR(20) NOT NULL,
+    momento_pago VARCHAR(20) NOT NULL DEFAULT 'ADELANTADO',
+    total NUMERIC(10,2) NOT NULL DEFAULT 0,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS orden_detalles (
+    id BIGINT GENERATED BY DEFAULT AS IDENTITY,
+    id_orden BIGINT NOT NULL REFERENCES ordenes(id),
+    id_producto BIGINT NOT NULL,
+    cantidad INTEGER NOT NULL,
+    precio_unitario NUMERIC(10,2),
+    PRIMARY KEY (id)
+);
+```
+
+`id_orden` sí es una llave foránea normal (`REFERENCES ordenes(id)`): `ordenes` y `orden_detalles` viven en la misma base de datos de `pagatu-orden-ms`. `id_producto`, en cambio, **no** lleva `REFERENCES` — el producto vive en la base de datos de `pagatu-catalogo-ms`, otro microservicio con su propia base de datos; validar que exista y obtener su precio real es responsabilidad del código (la llamada Feign de la Parte B), no de una llave foránea entre bases de datos separadas. `precio_unitario` acepta `NULL` a propósito: una línea que no pudo validarse contra `pagatu-catalogo-ms` (Parte C, Circuit Breaker) queda registrada sin precio confirmado, en vez de no registrarse en absoluto. `id_producto`, en cambio, sigue siendo `NOT NULL` incluso en ese mismo escenario de falla: ese valor nunca se consulta a `pagatu-catalogo-ms`, llega directo en el request (`item.getIdProducto()`, 3.5) — lo único que depende de la llamada externa (y por eso puede faltar) es el precio, no el identificador del producto que el cliente pidió. `id_cliente`, en cambio, sí acepta `NULL` — pero no por la misma razón que `precio_unitario`, y no en todos los casos. La regla de negocio depende de quién registra la orden: si la registra el personal de `pagatu` (mostrador, venta al contado sin cuenta), el cliente puede no estar identificado y `id_cliente` queda en `NULL`; si la registra el propio cliente por autoservicio web, `id_cliente` es obligatorio — sin él, la orden no tiene dueño. Esta sesión solo construye el primer caso: el único cliente que existe hasta S11 ("Integración con cliente frontend") es el cliente de prueba (Figura 1, 1.7), que cumple el mismo rol que el personal de `pagatu` operando manualmente. Por eso `id_cliente` queda `NULL`-able aquí, sin ninguna validación condicional en el código: exigirla ahora sería validar un canal (autoservicio web) que todavía no existe en el sistema. Cuando S11 construya ese canal, esa sesión es la que debe declarar `id_cliente` obligatorio en el punto donde el propio cliente autenticado crea su orden — no algo que esta sesión tenga que anticipar. `nombre_cliente` y `direccion_cliente` quedan declaradas desde ahora, por la misma razón que `tipo_comprobante`/`metodo_pago`/`momento_pago`: el negocio real de `pagatu` las necesita en la orden (una orden es un documento histórico — igual que el precio, el nombre y la dirección del cliente en el momento de la venta no deben depender de una consulta en vivo a otro servicio más adelante). A diferencia de esas tres columnas, no llevan `DEFAULT` ni `NOT NULL`: ningún valor por defecto tiene sentido para un nombre o una dirección, y nada las llena todavía en esta sesión — quedan en `NULL` hasta que `pagatu-cliente-ms` exista y `pagatu-orden-ms` las copie desde ahí, con el mismo patrón de Feign ya aplicado hoy a `precio_unitario` (3.11-3.13). `tipo_comprobante`, `metodo_pago` y `momento_pago` quedan declarados desde ahora (el negocio real de `pagatu` los necesita), aunque esta sesión no profundiza en sus reglas — eso se retoma cuando `pago-ms` procese el pago real.
+
+#### 3.4 Crear las entidades `Orden` y `OrdenDetalle`
+
+Crea:
+
+```text
+services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/entity/Orden.java
+```
+
+```java
+package pe.edu.upeu.orden.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "ordenes")
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Orden {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "id_cliente")
+    private Long idCliente;
+
+    @Column(name = "nombre_cliente", length = 150)
+    private String nombreCliente;
+
+    @Column(name = "direccion_cliente", length = 200)
+    private String direccionCliente;
+
+    @Column(name = "fecha_creacion", nullable = false)
+    @Builder.Default
+    private LocalDateTime fechaCreacion = LocalDateTime.now();
+
+    @Column(nullable = false, length = 20)
+    @Builder.Default
+    private String estado = "PENDIENTE";
+
+    @Column(name = "tipo_comprobante", nullable = false, length = 20)
+    @Builder.Default
+    private String tipoComprobante = "BOLETA_SIMPLE";
+
+    @Column(name = "metodo_pago", nullable = false, length = 20)
+    private String metodoPago;
+
+    @Column(name = "momento_pago", nullable = false, length = 20)
+    @Builder.Default
+    private String momentoPago = "ADELANTADO";
+
+    @Column(nullable = false)
+    @Builder.Default
+    private BigDecimal total = BigDecimal.ZERO;
+
+    @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<OrdenDetalle> detalles = new ArrayList<>();
+}
+```
+
+Crea:
+
+```text
+services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/entity/OrdenDetalle.java
+```
+
+```java
+package pe.edu.upeu.orden.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+import java.math.BigDecimal;
+
+@Entity
+@Table(name = "orden_detalles")
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class OrdenDetalle {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_orden", nullable = false)
+    private Orden orden;
+
+    @Column(name = "id_producto", nullable = false)
+    private Long idProducto;
+
+    @Column(nullable = false)
+    private Integer cantidad;
+
+    @Column(name = "precio_unitario")
+    private BigDecimal precioUnitario;
+}
+```
+
+`OrdenDetalle` no tiene una relación `@ManyToOne` hacia ninguna entidad `Producto` — no existe tal entidad dentro de `pagatu-orden-ms`. Solo guarda `idProducto` (un `Long` simple) y, desde la Parte B, una copia del precio consultado a `pagatu-catalogo-ms` en el momento de crear la orden.
+
+#### 3.5 Crear los DTO de entrada y salida
+
+Crea:
+
+```text
+services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/dto/DetalleOrdenRequest.java
+services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/dto/OrdenRequest.java
+services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/dto/DetalleOrdenResponse.java
+services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/dto/OrdenResponse.java
+```
+
+```java
+package pe.edu.upeu.orden.dto;
+
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import lombok.*;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class DetalleOrdenRequest {
+
+    @NotNull
+    private Long idProducto;
+
+    @NotNull
+    @Positive
+    private Integer cantidad;
+}
+```
+
+```java
+package pe.edu.upeu.orden.dto;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.*;
+import java.util.List;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class OrdenRequest {
+
+    private Long idCliente;
+
+    @NotBlank
+    private String metodoPago;
+
+    @NotEmpty
+    @Valid
+    private List<DetalleOrdenRequest> detalles;
+}
+```
+
+```java
+package pe.edu.upeu.orden.dto;
+
+import lombok.*;
+import java.math.BigDecimal;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class DetalleOrdenResponse {
+    private Long idProducto;
+    private String nombreProducto;
+    private Integer cantidad;
+    private BigDecimal precioUnitario;
+    private BigDecimal subtotal;
+}
+```
+
+```java
+package pe.edu.upeu.orden.dto;
+
+import lombok.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class OrdenResponse {
+    private Long id;
+    private Long idCliente;
+    private LocalDateTime fechaCreacion;
+    private String estado;
+    private BigDecimal total;
+    private List<DetalleOrdenResponse> detalles;
+}
+```
+
+`nombreProducto` en `DetalleOrdenResponse` no existe en ninguna columna de `pagatu-orden-ms` — se completa en tiempo de ejecución, con la respuesta de `pagatu-catalogo-ms` (Parte B). `tipoComprobante` y `momentoPago` no se piden en `OrdenRequest`: quedan con el valor por defecto de la entidad (3.4) hasta que una sesión posterior trabaje esas reglas de negocio; esta sesión se enfoca en la comunicación entre servicios, no en el ciclo completo de facturación.
+
+#### 3.6 Crear repositorio, servicio y controlador base (sin Feign todavía)
+
+Crea:
+
+```text
+services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/repository/OrdenRepository.java
+```
+
+```java
+package pe.edu.upeu.orden.repository;
+
+import pe.edu.upeu.orden.entity.Orden;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface OrdenRepository extends JpaRepository<Orden, Long> {
+}
+```
+
+Crea:
+
+```text
+services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/service/OrdenService.java
+services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/service/OrdenServiceImpl.java
+```
+
+```java
+package pe.edu.upeu.orden.service;
+
+import pe.edu.upeu.orden.dto.OrdenRequest;
+import pe.edu.upeu.orden.dto.OrdenResponse;
+
+public interface OrdenService {
+    OrdenResponse crear(OrdenRequest request);
+    OrdenResponse findById(Long id);
+}
+```
+
+```java
+package pe.edu.upeu.orden.service;
+
+import pe.edu.upeu.orden.dto.*;
+import pe.edu.upeu.orden.entity.Orden;
+import pe.edu.upeu.orden.entity.OrdenDetalle;
+import pe.edu.upeu.orden.repository.OrdenRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class OrdenServiceImpl implements OrdenService {
+
+    private final OrdenRepository ordenRepository;
+
+    @Override
+    @Transactional
+    public OrdenResponse crear(OrdenRequest request) {
+        Orden orden = Orden.builder()
+                .idCliente(request.getIdCliente())
+                .metodoPago(request.getMetodoPago())
+                .build();
+
+        List<OrdenDetalle> detalles = new ArrayList<>();
+
+        for (DetalleOrdenRequest item : request.getDetalles()) {
+            detalles.add(OrdenDetalle.builder()
+                    .orden(orden)
+                    .idProducto(item.getIdProducto())
+                    .cantidad(item.getCantidad())
+                    .precioUnitario(null) // se completa en la Parte B, con Feign
+                    .build());
+        }
+
+        orden.setDetalles(detalles);
+        orden.setTotal(BigDecimal.ZERO);
+
+        Orden guardada = ordenRepository.save(orden);
+        return toResponse(guardada);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public OrdenResponse findById(Long id) {
+        Orden orden = ordenRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Orden no encontrada: " + id));
+        return toResponse(orden);
+    }
+
+    private OrdenResponse toResponse(Orden orden) {
+        List<DetalleOrdenResponse> detalles = orden.getDetalles().stream()
+                .map(d -> DetalleOrdenResponse.builder()
+                        .idProducto(d.getIdProducto())
+                        .nombreProducto(null)
+                        .cantidad(d.getCantidad())
+                        .precioUnitario(d.getPrecioUnitario())
+                        .subtotal(null)
+                        .build())
+                .collect(Collectors.toList());
+
+        return OrdenResponse.builder()
+                .id(orden.getId())
+                .idCliente(orden.getIdCliente())
+                .fechaCreacion(orden.getFechaCreacion())
+                .estado(orden.getEstado())
+                .total(orden.getTotal())
+                .detalles(detalles)
+                .build();
+    }
+}
+```
+
+Crea:
+
+```text
+services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/controller/OrdenController.java
+```
+
+```java
+package pe.edu.upeu.orden.controller;
+
+import pe.edu.upeu.orden.dto.OrdenRequest;
+import pe.edu.upeu.orden.dto.OrdenResponse;
+import pe.edu.upeu.orden.service.OrdenService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/v1/ordenes")
+@RequiredArgsConstructor
+public class OrdenController {
+
+    private final OrdenService ordenService;
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public OrdenResponse crear(@Valid @RequestBody OrdenRequest request) {
+        return ordenService.crear(request);
+    }
+
+    @GetMapping("/{id}")
+    public OrdenResponse findById(@PathVariable Long id) {
+        return ordenService.findById(id);
+    }
+}
+```
+
+**Producto del paso:** en este punto, `pagatu-orden-ms` ya guarda órdenes con sus detalles, pero cada `precioUnitario` y `nombreProducto` queda vacío — todavía no consulta a `pagatu-catalogo-ms`. Eso se resuelve en la Parte B.
+
+#### 3.7 Conectar `pagatu-orden-ms` a `pagatu-config`
+
+**Producto del paso:** `pagatu-orden-ms` leyendo configuración externa, mismo patrón que `pagatu-catalogo-ms` desde S2.
+
+En `services/pagatu-orden-ms/src/main/resources/application.yml`:
+
+```yaml
+spring:
+  application:
+    name: pagatu-orden-ms
+  config:
+    import: "configserver:http://localhost:18888"
+  profiles:
+    active: dev
+```
+
+Crea, en `infra/pagatu-config/config-repo`:
+
+```text
+infra/pagatu-config/config-repo/orden-ms-dev.yml
+infra/pagatu-config/config-repo/orden-ms-prod.yml
+```
+
+`orden-ms-dev.yml`:
+
+```yaml
+server:
+  port: 8082
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:15434/pagatu_orden_db
+    username: pagatu
+    password: pagatu
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    pe.edu.upeu.orden: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+```
+
+`orden-ms-prod.yml`:
+
+```yaml
+server:
+  port: 8082
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASS}
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+```
+
+`server.port: 8082` se repite igual en DEV y en PROD local — igual criterio que `pagatu-catalogo-ms` desde S1: puerto fijo, no dinámico. En PROD local ese `8082` es el puerto *interno* del contenedor, no el que el cliente usa desde el host (eso lo resuelve el Gateway, ver 3.9).
+
+#### 3.8 Conectar `pagatu-orden-ms` a `pagatu-eureka`
+
+**Producto del paso:** `pagatu-orden-ms` registrado en Eureka, mismo patrón que `pagatu-catalogo-ms` desde S3.
+
+En `pom.xml`, agrega Eureka Discovery Client (ya lo tiene `pagatu-catalogo-ms` desde S3).
+
+Agrega, al final de `orden-ms-dev.yml` (3.7) — junto a lo que ya existe, `server.port: 8082` se queda tal cual está, no se toca:
+
+```yaml
+eureka:
+  instance:
+    hostname: localhost
+    prefer-ip-address: false
+    instance-id: ${spring.application.name}:${server.port}
+  client:
+    service-url:
+      defaultZone: http://localhost:18761/eureka
+```
+
+Y al final de `orden-ms-prod.yml`:
+
+```yaml
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${random.value}
+  client:
+    service-url:
+      defaultZone: http://pagatu-eureka:8761/eureka
+```
+
+En DEV seguimos con puerto fijo, igual que `pagatu-catalogo-ms` desde S1-S3: el `instance-id` usa `${server.port}` directamente, no `${random.value}`. Si alguna vez necesitas una segunda instancia de `pagatu-orden-ms` en paralelo, se levanta igual que la segunda instancia de `pagatu-catalogo-ms` (S1, 3.4.1; S3, 3.9): pasando un puerto distinto por línea de comandos (`--server.port=8083`), no un puerto asignado al azar. En PROD local, con `docker compose --scale`, todas las réplicas comparten el mismo `8082` interno — por eso ahí sí hace falta `${random.value}` (mismo criterio que S3, 633-639, aplicado a este segundo microservicio).
+
+#### 3.9 Agregar la ruta de `pagatu-orden-ms` al Gateway
+
+**Producto del paso:** `pagatu-orden-ms` accesible a través del Gateway, no solo por su puerto directo.
+
+En `config-repo/pagatu-gateway-dev.yml` y `config-repo/pagatu-gateway-prod.yml` (ver S4, 3.9), agrega esta ruta, junto a las que ya existen para `pagatu-catalogo-ms`:
+
+```yaml
+            - id: pagatu-orden-ordenes
+              uri: lb://pagatu-orden-ms
+              predicates:
+                - Path=/api/v1/ordenes/**
+```
+
+### Parte B — Tema 1: Feign, `pagatu-orden-ms` consulta `pagatu-catalogo-ms`
+
+#### 3.10 Agregar la dependencia de OpenFeign
+
+**Producto del paso:** `pagatu-orden-ms` preparado para usar OpenFeign.
+
+En `services/pagatu-orden-ms/pom.xml`:
+
+```xml
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-openfeign</artifactId>
+</dependency>
+```
+
+En la clase principal de `pagatu-orden-ms`, habilita Feign:
+
+```java
+package pe.edu.upeu.orden;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
+
+@SpringBootApplication
+@EnableFeignClients
+public class OrdenApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(OrdenApplication.class, args);
+    }
+}
+```
+
+#### 3.11 Crear el DTO de producto
+
+**Producto del paso:** contrato de datos recibido desde `pagatu-catalogo-ms`.
+
+Crea:
+
+```text
+services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/dto/ProductoDto.java
+```
+
+```java
+package pe.edu.upeu.orden.dto;
+
+import lombok.*;
+import java.math.BigDecimal;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ProductoDto {
+    private Long id;
+    private String nombre;
+    private BigDecimal precio;
+    private Boolean activo;
+}
+```
+
+Este DTO no es una copia de la entidad `Producto` de `pagatu-catalogo-ms` (S1) — es solo lo que `pagatu-orden-ms` necesita para armar una línea de orden: identificarlo, mostrarlo, calcular su subtotal y confirmar que sigue activo para la venta.
+
+#### 3.12 Crear el cliente Feign hacia `pagatu-catalogo-ms`
+
+**Producto del paso:** cliente Feign que consulta `pagatu-catalogo-ms` por nombre lógico.
+
+Crea:
+
+```text
+services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/client/ProductoClient.java
+```
+
+```java
+package pe.edu.upeu.orden.client;
+
+import pe.edu.upeu.orden.dto.ProductoDto;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+@FeignClient(name = "pagatu-catalogo-ms")
+public interface ProductoClient {
+
+    @GetMapping("/api/v1/productos/{id}")
+    ProductoDto findById(@PathVariable("id") Long id);
+}
+```
+
+`name = "pagatu-catalogo-ms"` es, literalmente, el mismo valor que `pagatu-catalogo-ms` ya usa como `spring.application.name` desde S1 — Feign no necesita ninguna URL: resuelve ese nombre contra `pagatu-eureka` en tiempo de ejecución, el mismo Eureka donde `pagatu-catalogo-ms` ya está registrado desde S3. `/api/v1/productos/{id}` ya existe: es el `findById` del CRUD de `Producto` construido en S1 (3.5.8) — esta sesión no crea ningún endpoint nuevo en `pagatu-catalogo-ms`, solo lo consume desde otro servicio.
+
+#### 3.13 Integrar el cliente Feign en `OrdenServiceImpl`
+
+**Producto del paso:** `pagatu-orden-ms` calcula el precio real de cada línea consultando a `pagatu-catalogo-ms`, en vez de dejarlo vacío.
+
+Agrega el campo `productoClient` (`private final ProductoClient productoClient;`) junto a `ordenRepository` en `OrdenServiceImpl` — `@RequiredArgsConstructor` genera el constructor con ambos automáticamente. Reemplaza el cuerpo de `crear()` (3.6) por esta versión:
+
+```java
+@Override
+@Transactional
+public OrdenResponse crear(OrdenRequest request) {
+    Orden orden = Orden.builder()
+            .idCliente(request.getIdCliente())
+            .metodoPago(request.getMetodoPago())
+            .build();
+
+    List<OrdenDetalle> detalles = new ArrayList<>();
+    BigDecimal total = BigDecimal.ZERO;
+
+    for (DetalleOrdenRequest item : request.getDetalles()) {
+        ProductoDto producto = productoClient.findById(item.getIdProducto());
+
+        BigDecimal subtotal = producto.getPrecio()
+                .multiply(BigDecimal.valueOf(item.getCantidad()));
+        total = total.add(subtotal);
+
+        detalles.add(OrdenDetalle.builder()
+                .orden(orden)
+                .idProducto(item.getIdProducto())
+                .cantidad(item.getCantidad())
+                .precioUnitario(producto.getPrecio())
+                .build());
+    }
+
+    orden.setDetalles(detalles);
+    orden.setTotal(total);
+    orden.setEstado("CONFIRMADA");
+
+    Orden guardada = ordenRepository.save(orden);
+    return toResponse(guardada);
+}
+```
+
+**Producto del paso, verificado:** con `pagatu-catalogo-ms` corriendo y registrado en Eureka, crear una orden ahora sí devuelve el precio real de cada producto, copiado desde `pagatu-catalogo-ms` en el momento de la venta: si el precio de un producto cambia después, una orden ya creada no debe recalcularse sola — es un documento histórico, no una vista en vivo del catálogo.
+
+**Error frecuente**: dejar `precioUnitario` sin copiar y, en su lugar, guardar solo `idProducto` y volver a consultar `pagatu-catalogo-ms` cada vez que alguien lee la orden. Eso hace que el total de una orden ya cerrada cambie solo porque el precio del producto cambió después.
+
+### Parte C — Tema 2: Circuit Breaker, respuesta controlada si `pagatu-catalogo-ms` falla
+
+Con Feign ya funcionando (Parte B), `crear()` depende por completo de que `pagatu-catalogo-ms` responda. Esta parte prueba, a propósito, qué pasa cuando no responde — y lo corrige.
+
+#### 3.14 Probar el problema sin protección todavía
+
+**Producto del paso:** confirmar, de primera mano, que sin Circuit Breaker el fallo de `pagatu-catalogo-ms` tumba también a `pagatu-orden-ms`.
+
+Con `pagatu-catalogo-ms` **detenido**, intenta crear una orden (3.19, más abajo). La petición debe fallar con un error `500` genérico, y el stack trace de `pagatu-orden-ms` en consola debe mostrar una excepción de conexión rechazada (`FeignException` o similar) — el fallo de un servicio ajeno se propagó tal cual.
+
+#### 3.15 Agregar la dependencia de Resilience4j
+
+**Producto del paso:** `pagatu-orden-ms` preparado para usar Circuit Breaker.
+
+En `services/pagatu-orden-ms/pom.xml`:
+
+```xml
+<dependency>
+    <groupId>io.github.resilience4j</groupId>
+    <artifactId>resilience4j-spring-boot3</artifactId>
+</dependency>
+```
+
+#### 3.16 Configurar el Circuit Breaker nombrado `catalogo`
+
+**Producto del paso:** parámetros del Circuit Breaker declarados en la configuración externa.
+
+Agrega, al final de `orden-ms-dev.yml` (3.7-3.8):
+
+```yaml
+resilience4j:
+  circuitbreaker:
+    instances:
+      catalogo:
+        sliding-window-size: 5
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 3
+```
+
+**Tabla 4. Qué decide cada parámetro**
+
+| Parámetro | Qué decide |
+|---|---|
+| `sliding-window-size` | Cuántas llamadas recientes se cuentan para calcular la tasa de fallos. |
+| `failure-rate-threshold` | Porcentaje de fallos, dentro de esa ventana, que abre el circuito. |
+| `wait-duration-in-open-state` | Cuánto tiempo se mantiene `OPEN` antes de pasar a `HALF_OPEN` a probar de nuevo. |
+| `permitted-number-of-calls-in-half-open-state` | Cuántas llamadas de prueba se permiten en `HALF_OPEN` antes de decidir si vuelve a `CLOSED` o a `OPEN`. |
+
+`catalogo` (el nombre de esta instancia) no es un valor arbitrario: es exactamente el mismo texto que va a usarse en `@CircuitBreaker(name = "catalogo", ...)` en el siguiente paso — si los dos nombres no coinciden, Resilience4j aplica la configuración por defecto en vez de esta, sin avisar con ningún error.
+
+#### 3.17 Proteger la llamada a `pagatu-catalogo-ms` con `@CircuitBreaker`
+
+**Producto del paso:** llamada protegida, con un método de respuesta alternativa.
+
+Modifica `crear()` en `OrdenServiceImpl` para envolver la parte que llama a `productoClient` en un método propio, protegido con `@CircuitBreaker`:
+
+```java
+@Override
+@Transactional
+public OrdenResponse crear(OrdenRequest request) {
+    Orden orden = Orden.builder()
+            .idCliente(request.getIdCliente())
+            .metodoPago(request.getMetodoPago())
+            .build();
+
+    List<OrdenDetalle> detalles = new ArrayList<>();
+    BigDecimal total = BigDecimal.ZERO;
+    boolean validacionCompleta = true;
+
+    for (DetalleOrdenRequest item : request.getDetalles()) {
+        ProductoDto producto = consultarProducto(item.getIdProducto());
+
+        if (producto == null) {
+            validacionCompleta = false;
+            detalles.add(OrdenDetalle.builder()
+                    .orden(orden)
+                    .idProducto(item.getIdProducto())
+                    .cantidad(item.getCantidad())
+                    .precioUnitario(null)
+                    .build());
+            continue;
+        }
+
+        BigDecimal subtotal = producto.getPrecio()
+                .multiply(BigDecimal.valueOf(item.getCantidad()));
+        total = total.add(subtotal);
+
+        detalles.add(OrdenDetalle.builder()
+                .orden(orden)
+                .idProducto(item.getIdProducto())
+                .cantidad(item.getCantidad())
+                .precioUnitario(producto.getPrecio())
+                .build());
+    }
+
+    orden.setDetalles(detalles);
+    orden.setTotal(total);
+    orden.setEstado(validacionCompleta ? "CONFIRMADA" : "PENDIENTE_VALIDACION");
+
+    Orden guardada = ordenRepository.save(orden);
+    return toResponse(guardada);
+}
+
+@CircuitBreaker(name = "catalogo", fallbackMethod = "fallbackProducto")
+public ProductoDto consultarProducto(Long idProducto) {
+    return productoClient.findById(idProducto);
+}
+
+public ProductoDto fallbackProducto(Long idProducto, Throwable ex) {
+    return null;
+}
+```
+
+No agregues el import de `CircuitBreaker` a mano en el orden equivocado — VS Code lo resuelve automáticamente al guardar (`io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker`).
+
+`fallbackProducto` recibe los mismos parámetros que `consultarProducto` (`idProducto`), más la excepción real (`ex`) — aquí no se usa `ex` porque la decisión de negocio es la misma sin importar *por qué* falló (`pagatu-catalogo-ms` caído, timeout, error 500): la orden se guarda igual, pero queda marcada como `PENDIENTE_VALIDACION`, con esa línea sin precio confirmado, en vez de romper toda la operación.
+
+**Error frecuente**: anotar `@CircuitBreaker` directamente sobre `crear()` en vez de sobre un método más chico que solo hace la llamada a `pagatu-catalogo-ms`. Si todo el método queda protegido, un fallback tendría que reconstruir toda la respuesta de la orden — mucho más difícil de mantener que un fallback que solo decide qué hacer cuando un producto puntual no se pudo consultar.
+
+#### 3.18 Levantar infraestructura en DEV
+
+PowerShell / bash macOS/Linux:
+
+```bash
+cd infra/pagatu-config
+mvn spring-boot:run
+```
+
+En otra terminal:
+
+```bash
+cd infra/pagatu-eureka
+mvn spring-boot:run
+```
+
+En otra terminal:
+
+```bash
+cd infra/pagatu-gateway
+mvn spring-boot:run
+```
+
+#### 3.19 Levantar `pagatu-catalogo-ms` y `pagatu-orden-ms` en DEV
+
+PowerShell / bash macOS/Linux:
+
+```bash
+cd services/pagatu-catalogo-ms
+docker compose -f compose-dev.yml up -d
+mvn spring-boot:run
+```
+
+En otra terminal:
+
+```bash
+cd services/pagatu-orden-ms
+docker compose -f compose-dev.yml up -d
+mvn spring-boot:run
+```
+
+#### 3.20 Probar el flujo correcto (Feign funcionando)
+
+Con `pagatu-catalogo-ms` corriendo y al menos un producto ya sembrado (S1), crea una orden:
+
+PowerShell:
+
+```powershell
+Invoke-RestMethod -Method Post -Uri "http://localhost:18080/api/v1/ordenes" `
+  -ContentType "application/json" `
+  -Body '{"idCliente": 1, "metodoPago": "YAPE_PLIN", "detalles": [{"idProducto": 1, "cantidad": 2}]}'
+```
+
+bash macOS/Linux:
+
+```bash
+curl -X POST http://localhost:18080/api/v1/ordenes \
+  -H "Content-Type: application/json" \
+  -d '{"idCliente": 1, "metodoPago": "YAPE_PLIN", "detalles": [{"idProducto": 1, "cantidad": 2}]}'
+```
+
+Resultado esperado: `estado: "CONFIRMADA"`, con `precioUnitario` y `total` calculados con el precio real que `pagatu-orden-ms` recibió de `pagatu-catalogo-ms` por Feign.
+
+#### 3.21 Probar el Circuit Breaker: `pagatu-catalogo-ms` caído
+
+Detén `pagatu-catalogo-ms` (`Ctrl+C` en su terminal) y repite la misma petición de 3.20.
+
+Resultado esperado: la petición **no** falla con `500` — responde `201` con `estado: "PENDIENTE_VALIDACION"` y `precioUnitario: null` en el detalle que no pudo validarse. Este es el mismo escenario de 3.14, ahora controlado.
+
+#### 3.22 Provocar la apertura del circuito
+
+Con `pagatu-catalogo-ms` todavía caído, repite la misma petición de 3.20 al menos 5 veces seguidas (el `sliding-window-size` configurado en 3.16). A partir de cierto punto, el circuito debería pasar a `OPEN` — las siguientes llamadas ejecutan el fallback de inmediato, sin siquiera intentar la conexión de red (revisa el log: la respuesta ya no debería tardar el tiempo de un timeout de red, sino ser inmediata).
+
+#### 3.23 Validar trazabilidad en logs
+
+Revisa los logs de `pagatu-orden-ms` para confirmar, con el `traceId` de cada petición: la llamada Feign hacia `pagatu-catalogo-ms`, la excepción capturada cuando falla, y la ejecución del fallback.
+
+## 4. Crea: actividad autónoma
+
+Tiempo: 4h fuera del aula.
+
+### 4.1 Actividad
+
+Construcción de `pagatu-cliente-ms`, replicando el mismo patrón aplicado hoy a `pagatu-orden-ms` (Parte A), documentada en evidencia individual.
+
+Completa y evidencia estas tareas:
+
+1. Construir `pagatu-cliente-ms` ([Alcance por microservicio y proyecto base](../proyecto-sello/alcance-microservicios.md)), con el mismo patrón de proyecto, base de datos, entidad, DTO, repositorio, servicio, controlador, Config Server y Eureka aplicado hoy a `pagatu-orden-ms`.
+2. Evidenciar la llamada declarativa (Feign) de `pagatu-orden-ms` hacia `pagatu-catalogo-ms`.
+3. Probar el caso exitoso y el error controlado (Circuit Breaker) con `pagatu-catalogo-ms` detenido.
+4. Explicar por qué no se comparte base de datos entre los tres microservicios del proyecto.
+5. Registrar aporte individual.
+
+### 4.2 Propósito
+
+Que cada estudiante demuestre, de forma individual y fuera del aula, que puede replicar el patrón de construcción de un microservicio y aplicar comunicación resiliente sin el acompañamiento del docente.
+
+Esta actividad autónoma se desarrolla sobre el proyecto de fin de curso del equipo. El producto de la unidad se construye por acumulación de los avances de cada sesión; por eso, la evidencia de esta sesión debe incorporarse a la documentación del proyecto y quedar trazable en GitHub.
+
+### 4.3 Indicaciones
+
+Entrega un PDF con el siguiente nombre:
+
+```text
+S06_Equipo##_ApellidoNombre.pdf
+```
+
+Cada captura de pantalla del informe debe mostrar, sin recortar, el reloj del sistema (fecha y hora) y tu usuario o foto de perfil (Windows, VS Code o navegador) visibles en pantalla — es lo que permite verificar que la evidencia es tuya y que corresponde al momento real de tu trabajo.
+
+#### 4.3.1 Estructura del informe
+
+**Datos del estudiante**
+
+- Nombre:
+- Equipo:
+- Sesión: S06 - Comunicación síncrona resiliente entre servicios
+- Rol o aporte realizado:
+- Link de GitHub:
+
+**Evidencia técnica**
+
+Incluye capturas o extractos con una breve explicación debajo de cada uno, organizados en los mismos 4 bloques de la rúbrica (4.6):
+
+1. *`pagatu-orden-ms` construido*
+    - Captura del microservicio corriendo, registrado en Eureka y con configuración externa (trabajo de clase).
+2. *Comunicación Feign*
+    - Petición exitosa creando una orden, con precio real obtenido de `pagatu-catalogo-ms`.
+3. *Circuit Breaker*
+    - `pagatu-catalogo-ms` detenido, orden creada igual con `estado: PENDIENTE_VALIDACION`, y captura del estado `OPEN`.
+4. *`pagatu-cliente-ms` construido*
+    - Microservicio replicado, registrado en Eureka y con configuración externa (trabajo autónomo).
+
+**Error o hallazgo**
+
+Describe un error real: un `name` de `@FeignClient` que no coincidía con el `spring.application.name` real, un Circuit Breaker que nunca abrió porque el `sliding-window-size` no se alcanzó, o una inyección fallida por olvidar el campo `final`.
+
+**Reflexión técnica breve**
+
+Responde en 5 a 8 líneas:
+
+```text
+¿Por qué proteger la llamada a pagatu-catalogo-ms con Circuit Breaker
+es distinto de simplemente aumentar el timeout de esa llamada?
+```
+
+**Anexo: Feedback de la sesión**
+
+Pega esta página como la última hoja del PDF, con tus respuestas.
+
+1. ¿Cuál es el aprendizaje más importante que te llevas de la clase de hoy?
+2. ¿Qué punto de la clase te resultó más confuso o te dejó con dudas?
+3. ¿Tienes alguna pregunta que te gustaría que sea respondida la siguiente clase?
+4. Sobre tu nivel de comprensión de la clase de hoy, marca una opción:
+    - ¡Entendido! - Lo domino y podría explicarlo.
+    - Más o menos. - Entendí la idea general, pero tengo dudas.
+    - Necesito ayuda. - Me siento perdido/a con este tema.
+5. ¿Cómo puedo ayudarte a comprender mejor el tema?
+6. Pensando en tu participación y esfuerzo en la clase de hoy, ¿cómo te autoevaluarías? Marca una opción:
+    - Muy Comprometido/a: Me esforcé al máximo.
+    - Comprometido/a: Sé que podría haberme esforzado un poco más.
+    - Poco Comprometido/a: Hoy no di mi mejor esfuerzo.
+7. Mi satisfacción con la clase fue... (califica del 1 al 10, donde 1 es insatisfecho y 10 es muy satisfecho).
+
+### 4.4 Criterios mínimos de aceptación
+
+- PDF con nombre correcto.
+- `pagatu-cliente-ms` evidenciado, registrado en Eureka y con configuración externa.
+- Evidencia de comunicación por Feign entre `pagatu-orden-ms` y `pagatu-catalogo-ms`.
+- Evidencia de caso correcto y de error controlado con Circuit Breaker (no solo mencionado, con captura del estado `OPEN`).
+- Aporte individual verificable.
+
+### 4.5 Preguntas de defensa
+
+1. ¿Por qué `id_producto` en `orden_detalles` no lleva `FOREIGN KEY`, a diferencia de `id_orden`?
+2. ¿Qué problema resuelve Feign que no resolvía llamar a `pagatu-catalogo-ms` con una dirección fija?
+3. ¿Qué diferencia hay entre un timeout y un Circuit Breaker?
+4. ¿Qué pasa con una orden si `pagatu-catalogo-ms` está caído, y por qué esa respuesta es mejor que un error `500`?
+5. ¿Cómo demuestras que el circuito pasó de `CLOSED` a `OPEN`?
+
+### 4.6 Rúbrica de evaluación
+
+| Dimensión | Peso | 3 - Logro destacado | 2 - Logro | 1 - Proceso | 0 - Inicio | Puntuación obtenida |
+|---|---:|---|---|---|---|---:|
+| 1. `pagatu-orden-ms` construido | 2 | Microservicio completo: entidad, DTO, repositorio, servicio, controlador, registrado en Eureka y con configuración externa. | Microservicio funcional con partes menores incompletas. | Microservicio parcial. | No evidencia el microservicio nuevo. | |
+| 2. Comunicación Feign | 2 | Evidencia llamada declarativa por nombre lógico, sin dirección fija, con DTO propio. | Evidencia llamada funcional con Feign. | Evidencia parcial o poco clara. | No evidencia comunicación por Feign. | |
+| 3. Circuit Breaker | 2 | Evidencia los tres estados (`CLOSED`/`OPEN`/`HALF_OPEN`) con capturas y explica el fallback. | Evidencia fallback funcional ante fallo. | Circuit Breaker configurado pero no probado a fallar. | No evidencia Circuit Breaker. | |
+| 4. Contrato y datos | 1 | Usa DTOs propios en ambos servicios, sin exponer entidades JPA. | Usa contrato funcional. | Contrato parcial o confuso. | No evidencia contrato. | |
+| 5. Observabilidad | 1 | Evidencia logs/`traceId` del flujo completo, éxito y fallo. | Evidencia logs suficientes. | Evidencia limitada. | No evidencia diagnóstico. | |
+| 6. Aporte individual | 1 | Aporte claro y verificable. | Aporte identificable. | Aporte general. | No se identifica aporte. | |
+| 7. Orden y reflexión | 1 | PDF ordenado y reflexión técnica clara. | Evidencia suficiente. | Evidencia poco clara. | PDF insuficiente. | |
+
+Puntuación acumulada = suma de (`Peso` × `Puntuación obtenida`) = ____.
+
+Nota final = (`Puntuación acumulada` / 30) × 20 = ____.
+
+Para usar la rúbrica con IA, solicita:
+
+```text
+Evalúa el PDF usando la rúbrica de la sesión.
+Para cada dimensión selecciona la puntuación obtenida usando la escala Inicio=0, Proceso=1, Logro=2, Logro destacado=3.
+Justifica brevemente cada puntuación.
+Calcula la puntuación acumulada con la fórmula: suma de (Peso × Puntuación obtenida).
+Calcula la nota final sobre 20 con la fórmula: (Puntuación acumulada / 30) × 20.
+Indica 2 fortalezas y 2 recomendaciones.
+```
+
+## 5. Cierre
+
+Tiempo: 5 min.
+
+**Resumen breve:** hoy el sistema ganó su segundo microservicio (`pagatu-orden-ms`) y su primera comunicación resiliente entre servicios: Feign resuelve la llamada por nombre lógico contra Eureka, y Circuit Breaker decide qué hacer cuando esa llamada falla — sin que un servicio caído tumbe al que lo consulta.
+
+**Dinámica participativa:** en una ronda rápida, cada estudiante comparte en una frase qué vio cambiar en el log de `pagatu-orden-ms` cuando el circuito pasó de `CLOSED` a `OPEN`.
+
+**Metacognición:** ¿qué parte de la sesión te costó más entender — que Feign resuelve el nombre lógico contra Eureka en vez de una dirección fija, o que el fallback no es un error sino una respuesta de negocio válida (`PENDIENTE_VALIDACION`)?
+
+**Proyección:** S7 protege las rutas de `pagatu-gateway` con seguridad distribuida (JWT); S8 agrega mensajería asíncrona entre servicios desacoplados, con Kafka. Es muy probable que `pagatu-orden-ms` —el mismo que se construyó hoy— sea el productor del primer evento del proyecto (`orden.creada`), consumido por un microservicio de pagos que todavía no existe. Ninguna comunicación de hoy queda obsoleta: Kafka resuelve un problema distinto (desacoplar en el tiempo, para que ninguno de los dos servicios necesite que el otro esté arriba en el mismo instante) — no reemplaza a Feign+Circuit Breaker donde sí hace falta una respuesta inmediata, como el precio real de un producto al crear la orden.
+
+## Bibliografía
+
+- Richardson, C. (s.f.). *Pattern: Client-side service discovery*. microservices.io. https://microservices.io/patterns/client-side-discovery.html
+- SACAViX. (2026). *Circuit Breaker*. SACAViX System Design — Circuit Breaker. https://systemdesign.sacavix.com/patterns/circuit-breaker
+- Fowler, M. (2014). *CircuitBreaker*. https://martinfowler.com/bliki/CircuitBreaker.html
+- Nygard, M. (2018). *Release It!: Design and Deploy Production-Ready Software* (2nd ed.). Pragmatic Bookshelf.
+- Spring Cloud Team. (2024). *Spring Cloud OpenFeign Reference Documentation*. https://docs.spring.io/spring-cloud-openfeign/reference/
+- Resilience4j. (2024). *CircuitBreaker*. https://resilience4j.readme.io/docs/circuitbreaker

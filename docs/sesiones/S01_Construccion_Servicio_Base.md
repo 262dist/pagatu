@@ -409,7 +409,7 @@ Usa la siguiente configuración:
 | Campo | Valor |
 |---|---|
 | Project | Maven Project |
-| Spring Boot | **4.0.7** |
+| Spring Boot | **4.1.1** |
 | Language | Java |
 | Group Id | `pe.edu.upeu` |
 | Artifact Id | `pagatu-catalogo-ms` |
@@ -419,7 +419,7 @@ Usa la siguiente configuración:
 | Dependencias | Seleccionar dependencias del proyecto |
 | Ubicación sugerente | `services/pagatu-catalogo-ms` puedes poner en cualquier lugar |
 
-Nota sobre la versión: el generador de Spring Initializr ya no ofrece ninguna versión 3.x — las únicas opciones son líneas 4.x. Se fija **4.0.7** por el mismo motivo verificado en LP2 (ver `docs/lp2/adr/ADR-003-spring-boot-4.md` del repo `bomerp`): dentro de la línea 4.x, SpringDoc OpenAPI declara compatibilidad solo hasta `4.1.0-M1`, así que 4.0.7 es la versión estable dentro de ese rango. Si al generar el proyecto ves `spring-boot-starter-web` reemplazado por `spring-boot-starter-webmvc`, o starters de prueba granulares en vez de uno solo, es esperado en esta línea de Boot — no lo corrijas.
+Nota sobre la versión: el generador de Spring Initializr ya no ofrece ninguna versión 3.x — las únicas opciones son líneas 4.x. Se fija **4.1.1** (la última estable de la línea 4.1 a la fecha): SpringDoc OpenAPI, que hasta mediados de 2026 solo declaraba compatibilidad hasta `4.1.0-M1`, ya soporta oficialmente toda la línea 4.1.x desde su propia versión 3.1.0 — ya no hace falta quedarse en 4.0.x por esa restricción. Si al generar el proyecto ves `spring-boot-starter-web` reemplazado por `spring-boot-starter-webmvc`, o starters de prueba granulares en vez de uno solo, es esperado en esta línea de Boot — no lo corrijas.
 
 Dependencias a seleccionar:
 
@@ -432,7 +432,7 @@ Dependencias a seleccionar:
 | Documentación y operación | SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator | Documentar la API con Swagger y verificar health |
 | Persistencia | Spring Data JPA, PostgreSQL Driver, Flyway | Acceso a datos, conexión a PostgreSQL y migraciones de BD |
 
-Referencia visual (selección real en VS Code con Spring Boot 4.0.7, las 9 dependencias de la tabla):
+Referencia visual (selección real en VS Code con Spring Boot 4.1.1, las 9 dependencias de la tabla):
 
 **Figura 6. Selección de dependencias en Spring Initializr (1/2)**
 
@@ -2802,6 +2802,6 @@ Tiempo: 5 min.
 2. Eclipse Adoptium. (2024). *Temurin releases*. Eclipse Foundation. https://adoptium.net/
 3. Flyway. (2024). *Flyway documentation*. Redgate. https://documentation.red-gate.com/fd
 4. PostgreSQL Global Development Group. (2024). *PostgreSQL 16 documentation*. https://www.postgresql.org/docs/16/
-5. Spring. (2024). *Spring Boot reference documentation* (versión 4.0.7). VMware. https://docs.spring.io/spring-boot/
+5. Spring. (2024). *Spring Boot reference documentation* (versión 4.1.1). VMware. https://docs.spring.io/spring-boot/
 6. Spring. (2024). *Spring Data JPA reference documentation*. VMware. https://docs.spring.io/spring-data/jpa/reference/
 7. Springdoc. (2024). *SpringDoc OpenAPI documentation*. https://springdoc.org/

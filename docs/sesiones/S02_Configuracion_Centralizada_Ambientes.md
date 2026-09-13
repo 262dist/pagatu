@@ -428,7 +428,7 @@ Desde VS Code, usa Spring Initializr (`Spring Initializr: Create a Maven Project
 | Campo | Valor |
 |---|---|
 | Project | Maven Project |
-| Spring Boot | **4.0.7** |
+| Spring Boot | **4.1.1** |
 | Language | Java |
 | Group Id | `pe.edu.upeu` |
 | Artifact Id | `pagatu-config` |
@@ -457,7 +457,7 @@ En `pom.xml`, la dependencia clave es:
 </dependency>
 ```
 
-Spring Cloud necesita su propio BOM, con la versión compatible con Spring Boot 4.0.7 — **Spring Cloud 2025.1.2** (release *Oakwood*):
+Spring Cloud necesita su propio BOM, con la versión compatible con Spring Boot 4.1.1 — **Spring Cloud 2025.1.2** (release *Oakwood*), el mismo release train que ya cubría 4.0.x y ahora también cubre oficialmente la línea 4.1.x:
 
 ```xml
 <properties>
@@ -1188,6 +1188,6 @@ Tiempo: 5 min.
 
 - VMware Tanzu / Broadcom Inc. (2026). *Spring Cloud Config reference documentation*. https://docs.spring.io/spring-cloud-config/reference/
 - VMware Tanzu / Broadcom Inc. (2026). *Spring Cloud 2025.1.2 (aka Oakwood) release notes*. https://spring.io/blog/2026/06/11/spring-cloud-2025-1-2-aka-oakwood-has-been-released/
-- Broadcom Inc. (2025). *Spring Boot reference documentation* (versión 4.0.7). VMware Tanzu. https://docs.spring.io/spring-boot/index.html
+- Broadcom Inc. (2025). *Spring Boot reference documentation* (versión 4.1.1). VMware Tanzu. https://docs.spring.io/spring-boot/index.html
 - SACAViX. (2026). *Catálogo de patrones*. SACAViX System Design. https://systemdesign.sacavix.com/patterns
 - SACAViX. (2026). *Centralized Configuration*. SACAViX System Design — Centralized Config. https://systemdesign.sacavix.com/patterns/centralized-config

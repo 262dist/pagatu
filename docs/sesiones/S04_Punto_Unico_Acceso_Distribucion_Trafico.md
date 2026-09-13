@@ -365,7 +365,7 @@ Desde VS Code, usa Spring Initializr (`Spring Initializr: Create a Maven Project
 | Campo | Valor |
 |---|---|
 | Project | Maven Project |
-| Spring Boot | La última estable que ofrezca Spring Initializr en ese momento (verificado: **4.0.8**) |
+| Spring Boot | La última estable que ofrezca Spring Initializr en ese momento (verificado: **4.1.1**, alineado con `pagatu-catalogo-ms` desde S1) |
 | Language | Java |
 | Group Id | `pe.edu.upeu` |
 | Artifact Id | `pagatu-gateway` |
