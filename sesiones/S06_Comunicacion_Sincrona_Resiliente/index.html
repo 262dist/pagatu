@@ -3655,9 +3655,11 @@ curl<span class="w"> </span>http://localhost:18888/pagatu-orden-ms/prod
 <p>En <code>services/pagatu-orden-ms/pom.xml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">&lt;dependency&gt;</span>
 <span class="w">    </span><span class="nt">&lt;groupId&gt;</span>io.github.resilience4j<span class="nt">&lt;/groupId&gt;</span>
-<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>resilience4j-spring-boot3<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>resilience4j-spring-boot4<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;version&gt;</span>2.4.0<span class="nt">&lt;/version&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div>
+<p><strong>El artefacto correcto es <code>resilience4j-spring-boot4</code>, no <code>resilience4j-spring-boot3</code></strong> — a pesar de que el nombre de la dependencia en versiones anteriores de este mismo proyecto (S1-S5) siempre siguió el patrón <code>-boot3</code>, Resilience4j publica un artefacto <strong>separado</strong> para Spring Boot 4 (el que usa <code>pagatu-orden-ms</code> desde 3.1, <code>4.1.1</code>), no una sola dependencia que sirva para ambos. Si usas <code>resilience4j-spring-boot3</code> por costumbre (aunque fijes la versión a <code>2.4.0</code>), la propia librería lo detecta en tiempo de ejecución y falla el arranque con un mensaje explícito: <code>"Module 'io.github.resilience4j:resilience4j-spring-boot3' is only compatible with Spring Boot 3.x"</code>, con la solución ya indicada en el mismo error (<code>Action: Update your project to use 'io.github.resilience4j:resilience4j-spring-boot4'</code>). El import de Java no cambia (<code>io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker</code> sigue viniendo de <code>resilience4j-annotations</code>, un módulo compartido) — el único cambio real es el <code>artifactId</code> en el <code>pom.xml</code>.</p>
 <h4 id="316-configurar-el-circuit-breaker-nombrado-catalogo">3.16 Configurar el Circuit Breaker nombrado <code>catalogo</code><a class="headerlink" href="#316-configurar-el-circuit-breaker-nombrado-catalogo" title="Permanent link">&para;</a></h4>
 <p><strong>Producto del paso:</strong> parámetros del Circuit Breaker declarados en la configuración externa.</p>
 <p>Agrega, al final de <code>pagatu-orden-ms-dev.yml</code> (3.7-3.8):</p>
@@ -3700,7 +3702,84 @@ curl<span class="w"> </span>http://localhost:18888/pagatu-orden-ms/prod
 <p><code>catalogo</code> (el nombre de esta instancia) no es un valor arbitrario: es exactamente el mismo texto que va a usarse en <code>@CircuitBreaker(name = "catalogo", ...)</code> en el siguiente paso — si los dos nombres no coinciden, Resilience4j aplica la configuración por defecto en vez de esta, sin avisar con ningún error.</p>
 <h4 id="317-proteger-la-llamada-a-pagatu-catalogo-ms-con-circuitbreaker">3.17 Proteger la llamada a <code>pagatu-catalogo-ms</code> con <code>@CircuitBreaker</code><a class="headerlink" href="#317-proteger-la-llamada-a-pagatu-catalogo-ms-con-circuitbreaker" title="Permanent link">&para;</a></h4>
 <p><strong>Producto del paso:</strong> llamada protegida, con un método de respuesta alternativa.</p>
-<p>Modifica <code>crear()</code> en <code>OrdenServiceImpl</code> para envolver la parte que llama a <code>productoClient</code> en un método propio, protegido con <code>@CircuitBreaker</code>:</p>
+<p><strong>❌ Antes — la versión que parece razonable, pero no activa el Circuit Breaker.</strong> El primer instinto es agregar <code>consultarProducto()</code>/<code>fallbackProducto()</code> como dos métodos más dentro de <code>OrdenServiceImpl</code>, junto a <code>crear()</code>, y llamarlos como <code>this.consultarProducto(...)</code> (o simplemente <code>consultarProducto(...)</code>, que es lo mismo):</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Service</span>
+<span class="nd">@RequiredArgsConstructor</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">OrdenServiceImpl</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">OrdenService</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">OrdenRepository</span><span class="w"> </span><span class="n">ordenRepository</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ProductoClient</span><span class="w"> </span><span class="n">productoClient</span><span class="p">;</span>
+
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="nd">@Transactional</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">OrdenResponse</span><span class="w"> </span><span class="nf">crear</span><span class="p">(</span><span class="n">OrdenRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// ...</span>
+<span class="w">        </span><span class="n">ProductoDto</span><span class="w"> </span><span class="n">producto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">consultarProducto</span><span class="p">(</span><span class="n">item</span><span class="p">.</span><span class="na">getIdProducto</span><span class="p">());</span><span class="w"> </span><span class="c1">// llamada dentro de la MISMA clase</span>
+<span class="w">        </span><span class="c1">// ...</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nd">@CircuitBreaker</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"catalogo"</span><span class="p">,</span><span class="w"> </span><span class="n">fallbackMethod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"fallbackProducto"</span><span class="p">)</span><span class="w"> </span><span class="c1">// se ignora en silencio</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ProductoDto</span><span class="w"> </span><span class="nf">consultarProducto</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">idProducto</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">productoClient</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">idProducto</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ProductoDto</span><span class="w"> </span><span class="nf">fallbackProducto</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">idProducto</span><span class="p">,</span><span class="w"> </span><span class="n">Throwable</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Esto <strong>compila perfecto, arranca sin errores, y en apariencia funciona</strong> — hasta que <code>pagatu-catalogo-ms</code> realmente se cae. Ahí sí falla: la petición responde <code>500</code> con el stack trace de Feign, exactamente igual que en 3.14, como si <code>@CircuitBreaker</code> nunca se hubiera escrito.</p>
+<p><strong>Por qué falla — el proxy nunca se activa.</strong> <code>@CircuitBreaker</code> funciona con un <em>proxy</em>: Spring envuelve el bean real con un objeto intermedio que intercepta la llamada, cuenta fallos y decide si ejecuta el método real o el fallback. Ese proxy solo intercepta llamadas que llegan <strong>desde afuera del bean</strong> — por ejemplo, cuando <code>OrdenController</code> llama a <code>ordenService.crear(...)</code>, esa sí pasa por el proxy de <code>OrdenServiceImpl</code>. Pero una vez que la ejecución ya está <em>dentro</em> de <code>crear()</code>, llamar a <code>this.consultarProducto(...)</code> es una llamada directa de Java a Java: el objeto <code>this</code> ahí es la instancia real, no el proxy — Spring nunca se entera de que ocurrió. Esto se llama <em>auto-invocación</em> (self-invocation), y es el mismo problema que ya afecta a <code>@Transactional</code>/<code>@Cacheable</code>/<code>@Async</code> cuando se llaman así.</p>
+<p><strong>Figura 7. Por qué la auto-invocación deja <code>@CircuitBreaker</code> sin efecto</strong></p>
+<pre class="mermaid"><code>flowchart TB
+    subgraph Antes["❌ Antes: consultarProducto() dentro de OrdenServiceImpl"]
+        direction LR
+        C1["OrdenController"] --&gt;|"1\. llamada externa"| P1["Proxy de OrdenServiceImpl"]
+        P1 --&gt;|"2\. delega en"| R1["OrdenServiceImpl real&lt;br/&gt;crear()"]
+        R1 -.-&gt;|"3\. this.consultarProducto()&lt;br/&gt;Java puro, sin pasar por Spring"| M1["consultarProducto()&lt;br/&gt;@CircuitBreaker IGNORADO"]
+    end
+
+    subgraph Despues["✅ Después: consultarProducto() en ProductoConsultaService"]
+        direction LR
+        C2["OrdenController"] --&gt;|"1\. llamada externa"| P2["Proxy de OrdenServiceImpl"]
+        P2 --&gt;|"2\. delega en"| R2["OrdenServiceImpl real&lt;br/&gt;crear()"]
+        R2 --&gt;|"3\. productoConsultaService.consultarProducto()&lt;br/&gt;cruza a otro bean"| P3["Proxy de ProductoConsultaService"]
+        P3 --&gt;|"4\. @CircuitBreaker SÍ se aplica aquí"| R3["ProductoConsultaService real&lt;br/&gt;consultarProducto()"]
+    end</code></pre>
+<p>La diferencia entre los dos caminos no es el código dentro de <code>consultarProducto()</code> — es <em>quién</em> recibe la llamada. En el camino de abajo, <code>productoConsultaService</code> es una referencia inyectada a otro bean completo, con su propio proxy — cruzar ese límite es justo lo que activa la intercepción de Resilience4j.</p>
+<p><strong>✅ Después — la corrección: sacar el método a otro bean.</strong> Crea:</p>
+<div class="highlight"><pre><span></span><code>services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/service/ProductoConsultaService.java
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.orden.service</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.orden.client.ProductoClient</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.orden.dto.ProductoDto</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lombok.RequiredArgsConstructor</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lombok.extern.slf4j.Slf4j</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.stereotype.Service</span><span class="p">;</span>
+
+<span class="nd">@Slf4j</span>
+<span class="nd">@Service</span>
+<span class="nd">@RequiredArgsConstructor</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ProductoConsultaService</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ProductoClient</span><span class="w"> </span><span class="n">productoClient</span><span class="p">;</span>
+
+<span class="w">    </span><span class="nd">@CircuitBreaker</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"catalogo"</span><span class="p">,</span><span class="w"> </span><span class="n">fallbackMethod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"fallbackProducto"</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ProductoDto</span><span class="w"> </span><span class="nf">consultarProducto</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">idProducto</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">productoClient</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">idProducto</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ProductoDto</span><span class="w"> </span><span class="nf">fallbackProducto</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">idProducto</span><span class="p">,</span><span class="w"> </span><span class="n">Throwable</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">log</span><span class="p">.</span><span class="na">warn</span><span class="p">(</span><span class="s">"[CATALOGO] Fallback activado para idProducto {}. Motivo: {}"</span><span class="p">,</span><span class="w"> </span><span class="n">idProducto</span><span class="p">,</span><span class="w"> </span><span class="n">ex</span><span class="p">.</span><span class="na">getMessage</span><span class="p">());</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>No agregues el import de <code>CircuitBreaker</code> a mano en el orden equivocado — VS Code lo resuelve automáticamente al guardar (<code>io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker</code>).</p>
+<p><code>log.warn(...)</code> en <code>fallbackProducto</code> no es solo para la consola: ese mismo mensaje cae en <code>logs/orden.log</code> (el <code>CorrelationIdFilter</code> de 3.2.2 ya le agrega el <code>traceId</code> de la petición), y si conectaste <code>pagatu-orden-ms</code> a Loki (3.2.2, sección opcional), queda consultable en Grafana con <code>{application="pagatu-orden-ms"} |= "Fallback activado"</code> — una forma de ver, sin entrar a la consola del servidor, cuántas veces el circuito tuvo que usar el fallback y con qué <code>idProducto</code>. <code>ex.getMessage()</code> alcanza aquí (no hace falta el stack completo): la decisión de negocio ya es la misma sin importar el motivo exacto (mismo criterio que justifica no usar <code>ex</code> en el resto de <code>fallbackProducto</code>), el log es solo para que quede evidencia de que ocurrió.</p>
+<p>Ahora reemplaza el cuerpo de <code>crear()</code> en <code>OrdenServiceImpl</code>, e inyecta <code>ProductoConsultaService</code> en vez de <code>ProductoClient</code> directamente (<code>private final ProductoConsultaService productoConsultaService;</code>, junto a <code>ordenRepository</code>):</p>
 <div class="highlight"><pre><span></span><code><span class="nd">@Override</span>
 <span class="nd">@Transactional</span>
 <span class="kd">public</span><span class="w"> </span><span class="n">OrdenResponse</span><span class="w"> </span><span class="nf">crear</span><span class="p">(</span><span class="n">OrdenRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
@@ -3714,7 +3793,7 @@ curl<span class="w"> </span>http://localhost:18888/pagatu-orden-ms/prod
 <span class="w">    </span><span class="kt">boolean</span><span class="w"> </span><span class="n">validacionCompleta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
 
 <span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">DetalleOrdenRequest</span><span class="w"> </span><span class="n">item</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">getDetalles</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">ProductoDto</span><span class="w"> </span><span class="n">producto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">consultarProducto</span><span class="p">(</span><span class="n">item</span><span class="p">.</span><span class="na">getIdProducto</span><span class="p">());</span>
+<span class="w">        </span><span class="n">ProductoDto</span><span class="w"> </span><span class="n">producto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">productoConsultaService</span><span class="p">.</span><span class="na">consultarProducto</span><span class="p">(</span><span class="n">item</span><span class="p">.</span><span class="na">getIdProducto</span><span class="p">());</span>
 
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">producto</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="n">validacionCompleta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
@@ -3748,20 +3827,12 @@ curl<span class="w"> </span>http://localhost:18888/pagatu-orden-ms/prod
 <span class="w">    </span><span class="n">Orden</span><span class="w"> </span><span class="n">guardada</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ordenRepository</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">orden</span><span class="p">);</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">toResponse</span><span class="p">(</span><span class="n">guardada</span><span class="p">);</span>
 <span class="p">}</span>
-
-<span class="nd">@CircuitBreaker</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"catalogo"</span><span class="p">,</span><span class="w"> </span><span class="n">fallbackMethod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"fallbackProducto"</span><span class="p">)</span>
-<span class="kd">public</span><span class="w"> </span><span class="n">ProductoDto</span><span class="w"> </span><span class="nf">consultarProducto</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">idProducto</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">productoClient</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">idProducto</span><span class="p">);</span>
-<span class="p">}</span>
-
-<span class="kd">public</span><span class="w"> </span><span class="n">ProductoDto</span><span class="w"> </span><span class="nf">fallbackProducto</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">idProducto</span><span class="p">,</span><span class="w"> </span><span class="n">Throwable</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
-<span class="p">}</span>
 </code></pre></div>
-<p>No agregues el import de <code>CircuitBreaker</code> a mano en el orden equivocado — VS Code lo resuelve automáticamente al guardar (<code>io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker</code>).</p>
+<p><code>OrdenServiceImpl</code> ya no necesita <code>ProductoClient</code> directamente — quítalo del constructor si lo tenías ahí desde la Parte B (3.13); ahora solo <code>ProductoConsultaService</code> lo usa, internamente. La llamada <code>productoConsultaService.consultarProducto(...)</code> sí cruza un límite real entre beans (de <code>OrdenServiceImpl</code> a <code>ProductoConsultaService</code>), así que Spring sí intercepta la llamada con el proxy del Circuit Breaker — exactamente lo que la auto-invocación de la versión anterior no permitía.</p>
 <p><code>fallbackProducto</code> recibe los mismos parámetros que <code>consultarProducto</code> (<code>idProducto</code>), más la excepción real (<code>ex</code>) — aquí no se usa <code>ex</code> porque la decisión de negocio es la misma sin importar <em>por qué</em> falló (<code>pagatu-catalogo-ms</code> caído, timeout, error 500): la orden se guarda igual, esa línea queda sin precio ni nombre confirmados, y la orden completa se queda en <code>CARRITO</code> en vez de romper toda la operación — el mismo estado con el que se creó, no uno especial de "esperando validación": una orden cuyos precios no se pudieron confirmar todavía no dejó de ser, en esencia, un carrito.</p>
 <p><strong><code>orden.setTotal(validacionCompleta ? total : null)</code> no es una comprobación cosmética.</strong> Antes de esta condición, <code>total</code> terminaba guardando la suma de <em>solo</em> las líneas que sí se validaron — un número real, con dos decimales, indistinguible de un total completo para cualquiera que lo mirara, aunque a la orden le faltara confirmar el precio de otra línea más. Una orden que se queda en <code>CARRITO</code> con <code>total: null</code> es honesta sobre lo que sabe: "todavía no se puede calcular un importe final" — mostrar la suma parcial como si fuera el total, y dejar que alguien la cobre o la muestre como definitiva, es exactamente el error que esta condición evita. El total real, completo, recién se calcula cuando el cliente vuelve a intentar (fuera del alcance de esta sesión: esta sesión no reintenta nada automáticamente) y <code>pagatu-catalogo-ms</code> puede validar todas las líneas, momento en el que la orden pasa a <code>PENDIENTE_PAGO</code>.</p>
 <p><strong>Error frecuente</strong>: anotar <code>@CircuitBreaker</code> directamente sobre <code>crear()</code> en vez de sobre un método más chico que solo hace la llamada a <code>pagatu-catalogo-ms</code>. Si todo el método queda protegido, un fallback tendría que reconstruir toda la respuesta de la orden — mucho más difícil de mantener que un fallback que solo decide qué hacer cuando un producto puntual no se pudo consultar.</p>
+<p><strong>Error frecuente, más fácil de cometer que el anterior</strong>: mover <code>consultarProducto</code>/<code>fallbackProducto</code> de vuelta a <code>OrdenServiceImpl</code> "para no crear una clase de más" — parece inofensivo, compila igual, pero rompe el Circuit Breaker en silencio (la auto-invocación explicada arriba). No hay ningún error en consola que lo delate: <code>pagatu-catalogo-ms</code> caído sigue devolviendo <code>500</code> con el stack trace de Feign, exactamente como en 3.14, en vez de la orden en <code>CARRITO</code> que se espera. Si después de 3.18-3.20 la orden nunca cae en <code>CARRITO</code> y el <code>500</code> no desaparece, esta es la primera causa a revisar — confirma que <code>consultarProducto</code> sigue en una clase separada (<code>ProductoConsultaService</code>), no en <code>OrdenServiceImpl</code>.</p>
 <h4 id="318-levantar-infraestructura-en-dev">3.18 Levantar infraestructura en DEV<a class="headerlink" href="#318-levantar-infraestructura-en-dev" title="Permanent link">&para;</a></h4>
 <p>PowerShell / bash macOS/Linux:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>infra/pagatu-config
