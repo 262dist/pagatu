@@ -1,6 +1,8 @@
 package pe.edu.upeu.orden.service;
 
+import pe.edu.upeu.orden.client.ProductoClient;
 import pe.edu.upeu.orden.dto.*;
+import pe.edu.upeu.orden.entity.EstadoOrden;
 import pe.edu.upeu.orden.entity.Orden;
 import pe.edu.upeu.orden.entity.OrdenDetalle;
 import pe.edu.upeu.orden.repository.OrdenRepository;
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
 public class OrdenServiceImpl implements OrdenService {
 
     private final OrdenRepository ordenRepository;
+    private final ProductoClient productoClient;
 
     @Override
     @Transactional
@@ -27,18 +30,27 @@ public class OrdenServiceImpl implements OrdenService {
                 .build();
 
         List<OrdenDetalle> detalles = new ArrayList<>();
+        BigDecimal total = BigDecimal.ZERO;
 
         for (DetalleOrdenRequest item : request.getDetalles()) {
+            ProductoDto producto = productoClient.findById(item.getIdProducto());
+
+            BigDecimal subtotal = producto.getPrecio()
+                    .multiply(BigDecimal.valueOf(item.getCantidad()));
+            total = total.add(subtotal);
+
             detalles.add(OrdenDetalle.builder()
                     .orden(orden)
                     .idProducto(item.getIdProducto())
-                    .nombreProducto(null) // se completa en la Parte B, con Feign
+                    .nombreProducto(producto.getNombre())
                     .cantidad(item.getCantidad())
-                    .precioUnitario(null) // se completa en la Parte B, con Feign
+                    .precioUnitario(producto.getPrecio())
                     .build());
         }
 
         orden.setDetalles(detalles);
+        orden.setTotal(total);
+        orden.setEstado(EstadoOrden.PENDIENTE_PAGO);
 
         Orden guardada = ordenRepository.save(orden);
         return toResponse(guardada);
