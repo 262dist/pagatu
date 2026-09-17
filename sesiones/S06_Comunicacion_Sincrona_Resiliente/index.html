@@ -1186,6 +1186,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#321-crear-las-excepciones-y-el-manejador-global-de-errores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2.1 Crear las excepciones y el manejador global de errores
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#322-crear-el-filtro-de-trazabilidad-correlationidfilter-y-configurar-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2.2 Crear el filtro de trazabilidad CorrelationIdFilter y configurar logs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#33-crear-la-migracion-flyway-de-pagatu-orden-ms" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1256,6 +1278,17 @@
     <span class="md-ellipsis">
       
         3.9 Agregar la ruta de pagatu-orden-ms al Gateway
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#391-probar-pagatu-orden-ms-de-punta-a-punta-sin-feign-todavia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.9.1 Probar pagatu-orden-ms de punta a punta (sin Feign todavía)
       
     </span>
   </a>
@@ -1953,6 +1986,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#321-crear-las-excepciones-y-el-manejador-global-de-errores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2.1 Crear las excepciones y el manejador global de errores
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#322-crear-el-filtro-de-trazabilidad-correlationidfilter-y-configurar-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2.2 Crear el filtro de trazabilidad CorrelationIdFilter y configurar logs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#33-crear-la-migracion-flyway-de-pagatu-orden-ms" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2023,6 +2078,17 @@
     <span class="md-ellipsis">
       
         3.9 Agregar la ruta de pagatu-orden-ms al Gateway
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#391-probar-pagatu-orden-ms-de-punta-a-punta-sin-feign-todavia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.9.1 Probar pagatu-orden-ms de punta a punta (sin Feign todavía)
       
     </span>
   </a>
@@ -2605,7 +2671,7 @@
 <p><strong>Patrones relacionados</strong> (SACAViX System Design, 2026; fuera del alcance de esta sesión): <em>Bulkhead</em> (aísla recursos — por ejemplo, un pool de conexiones propio por dependencia — para que agotar uno no afecte a los demás); <em>Retry Pattern</em> (reintenta una llamada fallida antes de darla por perdida, normalmente combinado con Circuit Breaker, nunca en su reemplazo); <em>Timeout Pattern</em> (decide cuánto esperar antes de dar por fallida una llamada puntual, ver el "Error frecuente" anterior); <em>Rate Limiting</em> (limita cuántas llamadas se permiten en un periodo, para proteger al servicio que las recibe, no al que las hace).</p>
 <h3 id="24-observabilidad-y-diagnostico">2.4 Observabilidad y diagnóstico<a class="headerlink" href="#24-observabilidad-y-diagnostico" title="Permanent link">&para;</a></h3>
 <p>Cuando una llamada entre dos servicios falla, diagnosticar el problema exige más que revisar el propio código: hay que poder rastrear una misma petición a través de los servicios que atravesó, y conocer el estado interno de cualquier mecanismo de tolerancia a fallos que la haya interceptado — sin eso, un fallo controlado (el fallback) es indistinguible de un error real para quien solo mira el resultado final.</p>
-<p>En esta sesión, eso significa revisar logs de <code>pagatu-orden-ms</code>, logs de <code>pagatu-catalogo-ms</code>, el <code>traceId</code> de cada petición (S1, 3.4), <code>/actuator/health</code> de ambos servicios, y en qué estado quedó el Circuit Breaker (<code>CLOSED</code>/<code>OPEN</code>/<code>HALF_OPEN</code>) cuando <code>pagatu-catalogo-ms</code> no responde.</p>
+<p>En esta sesión, eso significa revisar logs de <code>pagatu-orden-ms</code>, logs de <code>pagatu-catalogo-ms</code>, el <code>traceId</code> de cada petición (mismo <code>CorrelationIdFilter</code> de S1, 3.3.2, replicado en <code>pagatu-orden-ms</code> en 3.2.2), <code>/actuator/health</code> de ambos servicios, y en qué estado quedó el Circuit Breaker (<code>CLOSED</code>/<code>OPEN</code>/<code>HALF_OPEN</code>) cuando <code>pagatu-catalogo-ms</code> no responde.</p>
 <h2 id="3-aplica-actividad-practica-guiada">3. Aplica: actividad práctica guiada<a class="headerlink" href="#3-aplica-actividad-practica-guiada" title="Permanent link">&para;</a></h2>
 <p>Tiempo: 4h.</p>
 <p><strong>Actividad:</strong> construcción guiada de <code>pagatu-orden-ms</code>, el segundo microservicio del proyecto, que consulta a <code>pagatu-catalogo-ms</code> por Feign para validar y copiar el precio real de cada producto, con una respuesta controlada (Circuit Breaker) cuando esa llamada falla (Producto de la sesión en 1.4).</p>
@@ -2616,6 +2682,8 @@
 <ul>
 <li><strong>3.1</strong> Crear el proyecto base de <code>pagatu-orden-ms</code>.</li>
 <li><strong>3.2</strong> Levantar la base de datos de <code>pagatu-orden-ms</code>.</li>
+<li><strong>3.2.1</strong> Crear las excepciones y el manejador global de errores.</li>
+<li><strong>3.2.2</strong> Crear el filtro de trazabilidad <code>CorrelationIdFilter</code> y configurar logs.</li>
 <li><strong>3.3</strong> Crear la migración Flyway de <code>pagatu-orden-ms</code>.</li>
 <li><strong>3.4</strong> Crear las entidades <code>Orden</code> y <code>OrdenDetalle</code>.</li>
 <li><strong>3.5</strong> Crear los DTO de entrada y salida.</li>
@@ -2623,6 +2691,7 @@
 <li><strong>3.7</strong> Conectar <code>pagatu-orden-ms</code> a <code>pagatu-config</code>.</li>
 <li><strong>3.8</strong> Conectar <code>pagatu-orden-ms</code> a <code>pagatu-eureka</code>.</li>
 <li><strong>3.9</strong> Agregar la ruta de <code>pagatu-orden-ms</code> al Gateway.</li>
+<li><strong>3.9.1</strong> Probar <code>pagatu-orden-ms</code> de punta a punta (sin Feign todavía).</li>
 </ul>
 <p><em>Parte B — Tema 1: Feign, <code>pagatu-orden-ms</code> consulta <code>pagatu-catalogo-ms</code>:</em></p>
 <ul>
@@ -2647,7 +2716,7 @@
 <p><strong>Punto de partida común:</strong> todo el equipo debe comenzar exactamente desde donde quedó S4 (Gateway y balanceo de carga), no desde su propio avance individual. Clona la rama <code>s04-gateway-lb</code>:</p>
 <div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>--branch<span class="w"> </span>s04-gateway-lb<span class="w"> </span>https://github.com/262dist/pagatu.git
 </code></pre></div>
-<p>Levanta en DEV los servicios base ya construidos hasta S4 (<code>pagatu-config</code>, <code>pagatu-eureka</code>, <code>pagatu-gateway</code>, <code>pagatu-catalogo-ms</code>) antes de tocar código nuevo — si alguno falla en arrancar, el problema es de una sesión anterior, no de esta. Recién a partir de aquí continúa con las tres partes de la sesión, en orden: primero se construye <code>pagatu-orden-ms</code> como microservicio completo (sin Feign todavía) — si ya avanzaste esto como parte del trabajo autónomo de S2 (4.1), verifica que coincide con 3.1-3.9 y continúa desde la Parte B; después se conecta a <code>pagatu-catalogo-ms</code> con Feign (Tema 1), y al final se protege esa llamada con Circuit Breaker (Tema 2).</p>
+<p>Levanta en DEV los servicios base ya construidos hasta S4 (<code>pagatu-config</code>, <code>pagatu-eureka</code>, <code>pagatu-gateway</code>, <code>pagatu-catalogo-ms</code>) antes de tocar código nuevo — si alguno falla en arrancar, el problema es de una sesión anterior, no de esta. Recién a partir de aquí continúa con las tres partes de la sesión, en orden: primero se construye <code>pagatu-orden-ms</code> como microservicio completo (sin Feign todavía) — si ya avanzaste esto como parte del trabajo autónomo de S1 (4.1, CRUD base), S2 (4.1, Config Client) o S3 (4.1, Eureka Client), verifica que coincide con 3.1-3.9 (incluye las clases de trazabilidad, 3.2.1-3.2.2, que S1 sí pedía replicar) y continúa desde la Parte B; después se conecta a <code>pagatu-catalogo-ms</code> con Feign (Tema 1), y al final se protege esa llamada con Circuit Breaker (Tema 2).</p>
 <h3 id="parte-a-construir-pagatu-orden-ms">Parte A — Construir <code>pagatu-orden-ms</code><a class="headerlink" href="#parte-a-construir-pagatu-orden-ms" title="Permanent link">&para;</a></h3>
 <h4 id="31-crear-el-proyecto-base-de-pagatu-orden-ms">3.1 Crear el proyecto base de <code>pagatu-orden-ms</code><a class="headerlink" href="#31-crear-el-proyecto-base-de-pagatu-orden-ms" title="Permanent link">&para;</a></h4>
 <p><strong>Producto del paso:</strong> proyecto <code>pagatu-orden-ms</code> creado, con las mismas dependencias base que <code>pagatu-catalogo-ms</code> (S1).</p>
@@ -2694,7 +2763,7 @@
 </tr>
 <tr>
 <td>Dependencias</td>
-<td>Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway — las mismas de <code>pagatu-catalogo-ms</code> (S1, Tabla 4). <strong>Además</strong>, agrega MapStruct a mano en el <code>pom.xml</code> (S1, 3.5.20) — Spring Initializr no lo ofrece como opción, y sin él el proyecto no compila apenas escribas el primer <code>Mapper</code>.</td>
+<td>Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway — las mismas de <code>pagatu-catalogo-ms</code> (S1, Tabla 4). Agrega también <strong>Prometheus</strong> (categoría <em>Observability</em>, la ofrece el propio buscador de Spring Initializr — agrega <code>io.micrometer:micrometer-registry-prometheus</code>, scope <code>runtime</code>): si ya tienes <code>obs/</code> corriendo (Prometheus descubre por Eureka, S3 3.11), <code>pagatu-orden-ms</code> queda visible ahí desde que arranca, sin ningún paso adicional. <strong>Además</strong>, agrega MapStruct a mano en el <code>pom.xml</code> (S1, 3.5.20) — a diferencia de Prometheus, Spring Initializr no lo ofrece como opción, y sin él el proyecto no compila apenas escribas el primer <code>Mapper</code>.</td>
 </tr>
 <tr>
 <td>Ubicación sugerida</td>
@@ -2702,7 +2771,7 @@
 </tr>
 </tbody>
 </table>
-<p>El puerto de base de datos (<code>15434</code> DEV / <code>25434</code> PROD local) y el nombre <code>pagatu_orden_db</code> ya estaban reservados desde la arquitectura del proyecto (<code>docs/index.md</code>) — no se inventan en esta sesión. El puerto de aplicación en DEV (<code>8082</code>, fijo) sigue el mismo criterio de S1 (puerto fijo, sin argumento) — distinto de <code>8080</code>, que ya usa <code>pagatu-catalogo-ms</code>.</p>
+<p>El puerto de base de datos (<code>15434</code> DEV / <code>25434</code> PROD local) y el nombre <code>pagatu_orden_db</code> ya estaban reservados desde la arquitectura del proyecto (<code>docs/index.md</code>) — no se inventan en esta sesión. El puerto de aplicación en DEV (<code>8082</code>, fijo) sigue el mismo criterio de S1 (puerto fijo, sin argumento) — distinto de <code>8080</code>, que ya usa <code>pagatu-catalogo-ms</code>. <code>prometheus</code> se agrega a <code>management.endpoints.web.exposure.include</code> en <code>pagatu-orden-ms-dev.yml</code> (3.7) junto a <code>health,info,metrics</code>, igual que ya hace <code>pagatu-catalogo-ms-dev.yml</code> desde S3 — sin ese endpoint expuesto, la dependencia sola no sirve de nada.</p>
 <h4 id="32-levantar-la-base-de-datos-de-pagatu-orden-ms">3.2 Levantar la base de datos de <code>pagatu-orden-ms</code><a class="headerlink" href="#32-levantar-la-base-de-datos-de-pagatu-orden-ms" title="Permanent link">&para;</a></h4>
 <p><strong>Producto del paso:</strong> PostgreSQL de <code>pagatu-orden-ms</code> corriendo en DEV.</p>
 <p><strong><code>services/pagatu-orden-ms/compose-dev.yml</code>:</strong></p>
@@ -2729,6 +2798,135 @@
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>services/pagatu-orden-ms
 docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-dev.yml<span class="w"> </span>up<span class="w"> </span>-d
 </code></pre></div>
+<p>Antes de seguir, comprueba desde la consola que PostgreSQL DEV está listo y que la base de datos existe — mismo criterio que S1 (3.2.4):</p>
+<p>PowerShell / bash macOS/Linux:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-orden-dev<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_orden_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">"SELECT current_database();"</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-orden-dev<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_orden_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">"\dt"</span>
+</code></pre></div>
+<p>Resultado esperado: <code>current_database</code> devuelve <code>pagatu_orden_db</code>, y <code>\dt</code> responde <code>No relations found.</code> (o "Did not find any relations.") — todavía no hay tablas, porque la migración Flyway (3.3) ni siquiera se ha creado. Es solo la prueba de que el contenedor está arriba y la base existe.</p>
+<h4 id="321-crear-las-excepciones-y-el-manejador-global-de-errores">3.2.1 Crear las excepciones y el manejador global de errores<a class="headerlink" href="#321-crear-las-excepciones-y-el-manejador-global-de-errores" title="Permanent link">&para;</a></h4>
+<p><strong>Producto del paso:</strong> <code>pagatu-orden-ms</code> con el mismo manejo de errores que <code>pagatu-catalogo-ms</code> desde S1 — no algo que se improvise sesión a sesión.</p>
+<p>Estas clases son <strong>compartidas</strong>: no son específicas de <code>Orden</code> ni de <code>OrdenDetalle</code>, cualquier módulo de <code>pagatu-orden-ms</code> las reutiliza tal cual. Es exactamente el mismo par de clases que ya existe en <code>pagatu-catalogo-ms</code> (S1, 3.3.1), copiado y reempaquetado.</p>
+<p><strong><code>exception/ResourceNotFoundException.java</code></strong></p>
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.orden.exception</span><span class="p">;</span>
+
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ResourceNotFoundException</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">RuntimeException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">ResourceNotFoundException</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">mensaje</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">super</span><span class="p">(</span><span class="n">mensaje</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong><code>exception/GlobalExceptionHandler.java</code></strong></p>
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.orden.exception</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.http.HttpStatus</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.http.ResponseEntity</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.web.bind.MethodArgumentNotValidException</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.web.bind.annotation.ExceptionHandler</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.web.bind.annotation.RestControllerAdvice</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.time.Instant</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.HashMap</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.Map</span><span class="p">;</span>
+
+<span class="nd">@RestControllerAdvice</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">GlobalExceptionHandler</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">ResourceNotFoundException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="nf">handleNotFound</span><span class="p">(</span><span class="n">ResourceNotFoundException</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"timestamp"</span><span class="p">,</span><span class="w"> </span><span class="n">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">());</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"status"</span><span class="p">,</span><span class="w"> </span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">NOT_FOUND</span><span class="p">.</span><span class="na">value</span><span class="p">());</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"error"</span><span class="p">,</span><span class="w"> </span><span class="s">"Not Found"</span><span class="p">);</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"message"</span><span class="p">,</span><span class="w"> </span><span class="n">ex</span><span class="p">.</span><span class="na">getMessage</span><span class="p">());</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">NOT_FOUND</span><span class="p">).</span><span class="na">body</span><span class="p">(</span><span class="n">body</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">MethodArgumentNotValidException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="nf">handleValidation</span><span class="p">(</span><span class="n">MethodArgumentNotValidException</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"timestamp"</span><span class="p">,</span><span class="w"> </span><span class="n">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">());</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"status"</span><span class="p">,</span><span class="w"> </span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">BAD_REQUEST</span><span class="p">.</span><span class="na">value</span><span class="p">());</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"error"</span><span class="p">,</span><span class="w"> </span><span class="s">"Bad Request"</span><span class="p">);</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"message"</span><span class="p">,</span><span class="w"> </span><span class="s">"Error de validación en los datos enviados"</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">BAD_REQUEST</span><span class="p">).</span><span class="na">body</span><span class="p">(</span><span class="n">body</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><code>findById()</code> (3.6) todavía usa <code>RuntimeException</code> a mano en vez de <code>ResourceNotFoundException</code> — queda así, sin tocar, no es parte de esta sesión: el enfoque de hoy es la comunicación entre servicios, no cerrar ese detalle pendiente del CRUD base.</p>
+<h4 id="322-crear-el-filtro-de-trazabilidad-correlationidfilter-y-configurar-logs">3.2.2 Crear el filtro de trazabilidad <code>CorrelationIdFilter</code> y configurar logs<a class="headerlink" href="#322-crear-el-filtro-de-trazabilidad-correlationidfilter-y-configurar-logs" title="Permanent link">&para;</a></h4>
+<p><strong>Producto del paso:</strong> <code>pagatu-orden-ms</code> generando el mismo <code>traceId</code> por petición que <code>pagatu-catalogo-ms</code> desde S1 — la pieza que 2.4 y 3.23 (más abajo) dan por hecha.</p>
+<p>Mismo filtro, mismo criterio que S1 (3.3.2): agrega un identificador de trazabilidad a cada request usando el header <code>X-Trace-ID</code> — si el cliente no lo envía, el filtro genera un UUID.</p>
+<p><strong><code>filter/CorrelationIdFilter.java</code></strong></p>
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.orden.filter</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">jakarta.servlet.FilterChain</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jakarta.servlet.ServletException</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jakarta.servlet.http.HttpServletRequest</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jakarta.servlet.http.HttpServletResponse</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.slf4j.MDC</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.stereotype.Component</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.web.filter.OncePerRequestFilter</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.io.IOException</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.UUID</span><span class="p">;</span>
+
+<span class="nd">@Component</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CorrelationIdFilter</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">OncePerRequestFilter</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">TRACE_ID_HEADER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"X-Trace-ID"</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">MDC_KEY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"traceId"</span><span class="p">;</span>
+
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">doFilterInternal</span><span class="p">(</span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">,</span>
+<span class="w">                                     </span><span class="n">HttpServletResponse</span><span class="w"> </span><span class="n">response</span><span class="p">,</span>
+<span class="w">                                     </span><span class="n">FilterChain</span><span class="w"> </span><span class="n">filterChain</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">ServletException</span><span class="p">,</span><span class="w"> </span><span class="n">IOException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">traceId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">getHeader</span><span class="p">(</span><span class="n">TRACE_ID_HEADER</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">traceId</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">traceId</span><span class="p">.</span><span class="na">isBlank</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">traceId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UUID</span><span class="p">.</span><span class="na">randomUUID</span><span class="p">().</span><span class="na">toString</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">MDC</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">MDC_KEY</span><span class="p">,</span><span class="w"> </span><span class="n">traceId</span><span class="p">);</span>
+<span class="w">            </span><span class="n">response</span><span class="p">.</span><span class="na">setHeader</span><span class="p">(</span><span class="n">TRACE_ID_HEADER</span><span class="p">,</span><span class="w"> </span><span class="n">traceId</span><span class="p">);</span>
+<span class="w">            </span><span class="n">filterChain</span><span class="p">.</span><span class="na">doFilter</span><span class="p">(</span><span class="n">request</span><span class="p">,</span><span class="w"> </span><span class="n">response</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">MDC</span><span class="p">.</span><span class="na">remove</span><span class="p">(</span><span class="n">MDC_KEY</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Crea también <code>src/main/resources/logback-spring.xml</code>, con salida por consola y por archivo en <code>logs/orden.log</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;configuration&gt;</span>
+<span class="w">    </span><span class="nt">&lt;include</span><span class="w"> </span><span class="na">resource=</span><span class="s">"org/springframework/boot/logging/logback/defaults.xml"</span><span class="nt">/&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"LOG_PATTERN"</span>
+<span class="w">              </span><span class="na">value=</span><span class="s">"%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId}] %-5level %logger{36} - %msg%n"</span><span class="nt">/&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;appender</span><span class="w"> </span><span class="na">name=</span><span class="s">"CONSOLE"</span><span class="w"> </span><span class="na">class=</span><span class="s">"ch.qos.logback.core.ConsoleAppender"</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="nt">&lt;encoder&gt;</span>
+<span class="w">            </span><span class="nt">&lt;pattern&gt;</span>${LOG_PATTERN}<span class="nt">&lt;/pattern&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/encoder&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/appender&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;appender</span><span class="w"> </span><span class="na">name=</span><span class="s">"FILE"</span><span class="w"> </span><span class="na">class=</span><span class="s">"ch.qos.logback.core.rolling.RollingFileAppender"</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="nt">&lt;file&gt;</span>logs/orden.log<span class="nt">&lt;/file&gt;</span>
+<span class="w">        </span><span class="nt">&lt;encoder&gt;</span>
+<span class="w">            </span><span class="nt">&lt;pattern&gt;</span>${LOG_PATTERN}<span class="nt">&lt;/pattern&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/encoder&gt;</span>
+<span class="w">        </span><span class="nt">&lt;rollingPolicy</span><span class="w"> </span><span class="na">class=</span><span class="s">"ch.qos.logback.core.rolling.TimeBasedRollingPolicy"</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="nt">&lt;fileNamePattern&gt;</span>logs/orden-%d{yyyy-MM-dd}.log<span class="nt">&lt;/fileNamePattern&gt;</span>
+<span class="w">            </span><span class="nt">&lt;maxHistory&gt;</span>7<span class="nt">&lt;/maxHistory&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/rollingPolicy&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/appender&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;root</span><span class="w"> </span><span class="na">level=</span><span class="s">"INFO"</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="nt">&lt;appender-ref</span><span class="w"> </span><span class="na">ref=</span><span class="s">"CONSOLE"</span><span class="nt">/&gt;</span>
+<span class="w">        </span><span class="nt">&lt;appender-ref</span><span class="w"> </span><span class="na">ref=</span><span class="s">"FILE"</span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/root&gt;</span>
+<span class="nt">&lt;/configuration&gt;</span>
+</code></pre></div>
+<p>Este <code>traceId</code> identifica una petición <strong>dentro de</strong> <code>pagatu-orden-ms</code> (3.23: la llamada a <code>consultarProducto</code>, la excepción capturada, el fallback ejecutado, todo bajo el mismo valor en <code>logs/orden.log</code>) — no viaja todavía dentro de la llamada Feign hacia <code>pagatu-catalogo-ms</code>, que genera su propio <code>traceId</code> independiente para esa petición entrante. Propagar un mismo <code>traceId</code> de extremo a extremo entre microservicios (un <code>RequestInterceptor</code> de Feign que copie el valor del MDC al header saliente) queda fuera del alcance de esta sesión.</p>
 <h4 id="33-crear-la-migracion-flyway-de-pagatu-orden-ms">3.3 Crear la migración Flyway de <code>pagatu-orden-ms</code><a class="headerlink" href="#33-crear-la-migracion-flyway-de-pagatu-orden-ms" title="Permanent link">&para;</a></h4>
 <p><strong>Producto del paso:</strong> tablas <code>ordenes</code> y <code>orden_detalles</code> creadas.</p>
 <p>Crea:</p>
@@ -2765,6 +2963,10 @@ docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> 
 <p>Esta sesión no guarda <code>subtotal</code> como columna propia, a propósito: es siempre <code>cantidad × precio_unitario</code>, un valor derivado que cualquier consulta puede calcular al vuelo — persistirlo aparte solo crearía una segunda fuente de verdad que podría desincronizarse del precio real si alguien actualiza uno sin el otro. <code>total</code> sí es una columna real de <code>ordenes</code> (una decisión de negocio, no solo aritmética: qué línea entra en la suma cuando alguna no tiene precio, ver más abajo), pero ya no lleva <code>NOT NULL DEFAULT 0</code>: una orden puede quedar sin un total definitivo, y forzar un <code>0</code> numérico ahí sería indistinguible de "esta orden vale cero soles" para quien solo mire la columna.</p>
 <p><code>expira_en</code> pertenece al carrito completo, no a cada línea: una orden en <code>CARRITO</code> tiene un plazo (por ejemplo, 30 minutos desde que se creó o se modificó por última vez) antes de que el sistema la dé por abandonada. Esta sesión declara la columna (<code>NULL</code>-able, sin <code>DEFAULT</code>) pero no llega a poblarla con un valor real ni a construir el proceso que la revise (un job programado, o una consulta al momento de leer la orden, que compare <code>expira_en</code> contra la hora actual y decida si la orden pasó a <code>EXPIRADA</code>) — eso es trabajo de una sesión futura de autoservicio (S11), cuando exista de verdad un carrito que un cliente construye a lo largo de varias peticiones, no una orden que <code>crear()</code> arma completa en una sola llamada. Declararla ya, aunque no se use todavía, evita otra migración más adelante sobre una tabla que para entonces ya tendrá filas reales. Una precisión importante para cuando esa sesión exista: pasar de <code>CARRITO</code> a <code>PENDIENTE_PAGO</code> no reinicia el plazo automáticamente — el vencimiento se decide sobre el carrito, no sobre cada estado por el que pasa.</p>
 <p><strong>Por qué <code>estado</code> arranca en <code>CARRITO</code>, no en <code>PENDIENTE</code>.</strong> A diferencia de una versión anterior de este diseño, <code>CARRITO</code> ya no es aquí un valor por defecto sin efecto práctico: cuando la validación contra <code>pagatu-catalogo-ms</code> falla (Parte C, Circuit Breaker), la orden se queda en <code>CARRITO</code> en vez de avanzar — exactamente el mismo estado con el que se creó, no uno especial de "esperando validación". Esto es deliberado y calza con el negocio real: una orden cuyos precios no se pudieron confirmar todavía no es una orden confirmada, sigue siendo, en esencia, un carrito al que le falta completar la validación antes de poder pagar. Hasta S11 ("Integración con cliente frontend"), <code>crear()</code> construye y valida una orden completa en una sola llamada — nunca hay un carrito de verdad, con productos que se agregan de a uno antes de confirmar —, pero el nombre y el comportamiento del estado ya son los correctos: cuando S11 construya ese flujo de autoservicio, no hace falta renombrar nada ni cambiar la lógica de qué pasa cuando una orden se queda "atrás", porque <code>CARRITO</code> ya significa exactamente eso desde hoy.</p>
+<p><strong>Error frecuente</strong>: probar <code>pagatu-orden-ms</code> con una versión anterior de este archivo (por ejemplo, mientras el diseño de <code>ordenes</code>/<code>orden_detalles</code> todavía estaba cambiando), y volver a intentar arrancar la aplicación después de editar <code>V1__create_orden_tables.sql</code>. Flyway falla con <code>Validate failed: Migrations have failed validation... Migration checksum mismatch for migration version 1</code> — no es un error de sintaxis SQL, es que <code>flyway_schema_history</code> (en la base de datos) ya tiene registrado el checksum de la versión <em>anterior</em> de este mismo archivo, y ya no coincide con el archivo actual. Como en DEV la base de datos es desechable, la solución no es editar <code>flyway_schema_history</code> a mano ni correr <code>flyway repair</code> — es resetear el volumen y dejar que Flyway aplique la migración desde cero:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-dev.yml<span class="w"> </span>down<span class="w"> </span>-v
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-dev.yml<span class="w"> </span>up<span class="w"> </span>-d
+</code></pre></div>
 <h4 id="34-crear-las-entidades-orden-y-ordendetalle">3.4 Crear las entidades <code>Orden</code> y <code>OrdenDetalle</code><a class="headerlink" href="#34-crear-las-entidades-orden-y-ordendetalle" title="Permanent link">&para;</a></h4>
 <p>Crea:</p>
 <div class="highlight"><pre><span></span><code>services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/entity/EstadoOrden.java
@@ -2889,9 +3091,6 @@ docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> 
 <h4 id="35-crear-los-dto-de-entrada-y-salida">3.5 Crear los DTO de entrada y salida<a class="headerlink" href="#35-crear-los-dto-de-entrada-y-salida" title="Permanent link">&para;</a></h4>
 <p>Crea:</p>
 <div class="highlight"><pre><span></span><code>services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/dto/DetalleOrdenRequest.java
-services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/dto/OrdenRequest.java
-services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/dto/DetalleOrdenResponse.java
-services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/dto/OrdenResponse.java
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.orden.dto</span><span class="p">;</span>
 
@@ -2913,6 +3112,9 @@ services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/dto/OrdenResponse.java
 <span class="w">    </span><span class="nd">@Positive</span>
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Integer</span><span class="w"> </span><span class="n">cantidad</span><span class="p">;</span>
 <span class="p">}</span>
+</code></pre></div>
+<p>Crea:</p>
+<div class="highlight"><pre><span></span><code>services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/dto/OrdenRequest.java
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.orden.dto</span><span class="p">;</span>
 
@@ -2939,6 +3141,9 @@ services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/dto/OrdenResponse.java
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">DetalleOrdenRequest</span><span class="o">&gt;</span><span class="w"> </span><span class="n">detalles</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div>
+<p>Crea:</p>
+<div class="highlight"><pre><span></span><code>services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/dto/DetalleOrdenResponse.java
+</code></pre></div>
 <div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.orden.dto</span><span class="p">;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">lombok.*</span><span class="p">;</span>
@@ -2956,6 +3161,9 @@ services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/dto/OrdenResponse.java
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">precioUnitario</span><span class="p">;</span>
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">subtotal</span><span class="p">;</span>
 <span class="p">}</span>
+</code></pre></div>
+<p>Crea:</p>
+<div class="highlight"><pre><span></span><code>services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/dto/OrdenResponse.java
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.orden.dto</span><span class="p">;</span>
 
@@ -2993,17 +3201,21 @@ services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/dto/OrdenResponse.java
 </code></pre></div>
 <p>Crea:</p>
 <div class="highlight"><pre><span></span><code>services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/service/OrdenService.java
-services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/service/OrdenServiceImpl.java
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.orden.service</span><span class="p">;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.orden.dto.OrdenRequest</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.orden.dto.OrdenResponse</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.List</span><span class="p">;</span>
 
 <span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">OrdenService</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">OrdenResponse</span><span class="w"> </span><span class="nf">crear</span><span class="p">(</span><span class="n">OrdenRequest</span><span class="w"> </span><span class="n">request</span><span class="p">);</span>
 <span class="w">    </span><span class="n">OrdenResponse</span><span class="w"> </span><span class="nf">findById</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">);</span>
+<span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">OrdenResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">listar</span><span class="p">();</span>
 <span class="p">}</span>
+</code></pre></div>
+<p>Crea:</p>
+<div class="highlight"><pre><span></span><code>services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/service/OrdenServiceImpl.java
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.orden.service</span><span class="p">;</span>
 
@@ -3059,6 +3271,14 @@ services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/service/OrdenServiceImp
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">toResponse</span><span class="p">(</span><span class="n">orden</span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>
 
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="nd">@Transactional</span><span class="p">(</span><span class="n">readOnly</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">OrdenResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">listar</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ordenRepository</span><span class="p">.</span><span class="na">findAll</span><span class="p">().</span><span class="na">stream</span><span class="p">()</span>
+<span class="w">                </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="k">this</span><span class="p">::</span><span class="n">toResponse</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">collect</span><span class="p">(</span><span class="n">Collectors</span><span class="p">.</span><span class="na">toList</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">OrdenResponse</span><span class="w"> </span><span class="nf">toResponse</span><span class="p">(</span><span class="n">Orden</span><span class="w"> </span><span class="n">orden</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="n">List</span><span class="o">&lt;</span><span class="n">DetalleOrdenResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="n">detalles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">orden</span><span class="p">.</span><span class="na">getDetalles</span><span class="p">().</span><span class="na">stream</span><span class="p">()</span>
 <span class="w">                </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">d</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">DetalleOrdenResponse</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
@@ -3096,6 +3316,7 @@ services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/service/OrdenServiceImp
 <span class="kn">import</span><span class="w"> </span><span class="nn">lombok.RequiredArgsConstructor</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.http.HttpStatus</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.web.bind.annotation.*</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.List</span><span class="p">;</span>
 
 <span class="nd">@RestController</span>
 <span class="nd">@RequestMapping</span><span class="p">(</span><span class="s">"/api/v1/ordenes"</span><span class="p">)</span>
@@ -3110,29 +3331,34 @@ services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/service/OrdenServiceImp
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ordenService</span><span class="p">.</span><span class="na">crear</span><span class="p">(</span><span class="n">request</span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>
 
+<span class="w">    </span><span class="nd">@GetMapping</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">OrdenResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">listar</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ordenService</span><span class="p">.</span><span class="na">listar</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+
 <span class="w">    </span><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/{id}"</span><span class="p">)</span>
 <span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">OrdenResponse</span><span class="w"> </span><span class="nf">findById</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ordenService</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
-<p><strong>Producto del paso:</strong> en este punto, <code>pagatu-orden-ms</code> ya guarda órdenes con sus detalles, pero cada <code>precioUnitario</code> y <code>nombreProducto</code> queda vacío — todavía no consulta a <code>pagatu-catalogo-ms</code>. Eso se resuelve en la Parte B.</p>
+<p><code>listar()</code> va sobre la ruta raíz (<code>@GetMapping</code>, sin <code>/{id}</code>) — mismo patrón que <code>CategoriaController</code>/<code>ProductoController</code> desde S1: un <code>GET</code> a <code>/api/v1/ordenes</code> sin identificador devuelve la colección completa, uno con <code>/{id}</code> devuelve un solo recurso. <code>OrdenRepository.findAll()</code> (heredado de <code>JpaRepository</code>, sin código propio que escribir) ya alcanza para esto — no necesita una consulta a medida como sí la necesitó <code>ProductoService</code> (S1) para traer la categoría relacionada.</p>
+<p><strong>Producto del paso:</strong> en este punto, <code>pagatu-orden-ms</code> ya guarda y lista órdenes con sus detalles, pero cada <code>precioUnitario</code> y <code>nombreProducto</code> queda vacío — todavía no consulta a <code>pagatu-catalogo-ms</code>. Eso se resuelve en la Parte B.</p>
 <h4 id="37-conectar-pagatu-orden-ms-a-pagatu-config">3.7 Conectar <code>pagatu-orden-ms</code> a <code>pagatu-config</code><a class="headerlink" href="#37-conectar-pagatu-orden-ms-a-pagatu-config" title="Permanent link">&para;</a></h4>
 <p><strong>Producto del paso:</strong> <code>pagatu-orden-ms</code> leyendo configuración externa, mismo patrón que <code>pagatu-catalogo-ms</code> desde S2.</p>
 <p>En <code>services/pagatu-orden-ms/src/main/resources/application.yml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">spring</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">application</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-orden-ms</span>
-<span class="w">  </span><span class="nt">config</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">import</span><span class="p">:</span><span class="w"> </span><span class="s">"configserver:http://localhost:18888"</span>
 <span class="w">  </span><span class="nt">profiles</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">active</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dev</span>
+<span class="w">  </span><span class="nt">config</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">import</span><span class="p">:</span><span class="w"> </span><span class="s">"optional:configserver:${CONFIG_SERVER_URL:http://localhost:18888}"</span>
 </code></pre></div>
+<p><code>optional:</code> evita que <code>pagatu-orden-ms</code> falle al arrancar si <code>pagatu-config</code> estuviera caído (degrada a la configuración local en vez de no arrancar); <code>${CONFIG_SERVER_URL:http://localhost:18888}</code> deja <code>18888</code> como valor por defecto en DEV, pero permite sobreescribirlo con una variable de entorno en otros ambientes — mismo patrón exacto que ya usa <code>pagatu-catalogo-ms</code> desde S2.</p>
 <p>Crea, en <code>infra/pagatu-config/config-repo</code>:</p>
-<div class="highlight"><pre><span></span><code>infra/pagatu-config/config-repo/orden-ms-dev.yml
-infra/pagatu-config/config-repo/orden-ms-prod.yml
+<div class="highlight"><pre><span></span><code>infra/pagatu-config/config-repo/pagatu-orden-ms-dev.yml
 </code></pre></div>
-<p><code>orden-ms-dev.yml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">server</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8082</span>
 
@@ -3165,14 +3391,16 @@ infra/pagatu-config/config-repo/orden-ms-prod.yml
 <span class="w">  </span><span class="nt">endpoints</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">web</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">exposure</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health,info,metrics</span>
+<span class="w">        </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health,info,metrics,prometheus</span>
 <span class="w">  </span><span class="nt">endpoint</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">health</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">show-details</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always</span>
 </code></pre></div>
-<p><code>orden-ms-prod.yml</code>:</p>
+<p>Crea:</p>
+<div class="highlight"><pre><span></span><code>infra/pagatu-config/config-repo/pagatu-orden-ms-prod.yml
+</code></pre></div>
 <div class="highlight"><pre><span></span><code><span class="nt">server</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8082</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span>
 
 <span class="nt">spring</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">datasource</span><span class="p">:</span>
@@ -3201,16 +3429,39 @@ infra/pagatu-config/config-repo/orden-ms-prod.yml
 <span class="w">  </span><span class="nt">endpoints</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">web</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">exposure</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health,info</span>
+<span class="w">        </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health,info,metrics,prometheus</span>
 <span class="w">  </span><span class="nt">endpoint</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">health</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">show-details</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">never</span>
+
+<span class="nt">eureka</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">instance</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">instance-id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${spring.application.name}:${random.value}</span>
+<span class="w">  </span><span class="nt">client</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">service-url</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">defaultZone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://pagatu-eureka:8761/eureka</span>
 </code></pre></div>
-<p><code>server.port: 8082</code> se repite igual en DEV y en PROD local — igual criterio que <code>pagatu-catalogo-ms</code> desde S1: puerto fijo, no dinámico. En PROD local ese <code>8082</code> es el puerto <em>interno</em> del contenedor, no el que el cliente usa desde el host (eso lo resuelve el Gateway, ver 3.9).</p>
+<p><code>server.port</code> <strong>no</strong> se repite igual en DEV y en PROD local, a propósito: <code>8082</code> es un valor exclusivo de DEV, elegido solo para no chocar con <code>pagatu-catalogo-ms</code> (<code>8080</code>) mientras ambos corren sueltos en el mismo <code>localhost</code> con Maven (3.1). En PROD local, cada microservicio vive en su propio contenedor, con su propia red interna — nada compite por el <code>8080</code> "natural" de Spring Boot, así que no hace falta ese corrimiento: mismo criterio que ya aplican <code>pagatu-config</code>, <code>pagatu-eureka</code> y <code>pagatu-gateway</code> desde S3-S4 (sus puertos DEV con prefijo <code>1</code> vuelven a su valor natural en PROD). Que <code>pagatu-catalogo-ms</code> y <code>pagatu-orden-ms</code> compartan el mismo <code>8080</code> <em>interno</em> en PROD no es un choque: son contenedores distintos, cada uno con su propio espacio de puertos — Docker los distingue por nombre de servicio (<code>pagatu-catalogo-ms:8080</code> y <code>pagatu-orden-ms:8080</code> son direcciones completamente distintas dentro de <code>pagatu-prod-net</code>), no por el número de puerto a secas. Ninguno de los dos publica ese <code>8080</code> al host — solo <code>pagatu-gateway</code> lo hace, en su propio puerto de negocio (<code>28080</code>, S4).</p>
+<p><strong>Antes de ejecutar <code>pagatu-orden-ms</code>, confirma que <code>pagatu-config</code> realmente sirve estos archivos</strong> — mismo criterio que S2 (3.8), y el paso que evita perder tiempo depurando un microservicio que arranca con la configuración por defecto en vez de la real. Con <code>pagatu-config</code> corriendo (3.18, más abajo, o ya arrancado si vienes siguiendo la sesión en orden):</p>
+<p>PowerShell:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18888/pagatu-orden-ms/dev"</span>
+<span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18888/pagatu-orden-ms/prod"</span>
+</code></pre></div>
+<p>bash macOS/Linux:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:18888/pagatu-orden-ms/dev
+curl<span class="w"> </span>http://localhost:18888/pagatu-orden-ms/prod
+</code></pre></div>
+<p>Resultado esperado:</p>
+<ul>
+<li>La respuesta indica <code>"name": "pagatu-orden-ms"</code> y <code>"profiles": ["dev"]</code> (o <code>["prod"]</code>).</li>
+<li>En <code>propertySources</code> aparece un archivo como <code>file:.../config-repo/pagatu-orden-ms-dev.yml</code>.</li>
+<li>Dentro de <code>source</code> se ven propiedades reales: <code>server.port</code> (<code>8082</code>), <code>spring.datasource.url</code>, <code>spring.flyway.enabled</code>.</li>
+</ul>
+<p><strong>Si <code>propertySources</code> sale vacío (<code>[]</code>), no continúes al siguiente paso.</strong> Es la señal exacta de que <code>pagatu-config</code> no encontró el archivo — normalmente porque el nombre no coincide letra por letra con <code>spring.application.name</code> (<code>pagatu-orden-ms</code>, no <code>orden-ms</code>): Spring Cloud Config busca <code>{spring.application.name}-{perfil}.yml</code>, así que un archivo mal nombrado responde <code>200 OK</code> igual, pero sin ninguna propiedad — el error no se ve como un error, se ve como una orden que arranca en el puerto por defecto (<code>8080</code>) sin <code>datasource.url</code> configurado, mucho más difícil de diagnosticar ya con la aplicación corriendo que revisando esta respuesta ahora.</p>
 <h4 id="38-conectar-pagatu-orden-ms-a-pagatu-eureka">3.8 Conectar <code>pagatu-orden-ms</code> a <code>pagatu-eureka</code><a class="headerlink" href="#38-conectar-pagatu-orden-ms-a-pagatu-eureka" title="Permanent link">&para;</a></h4>
 <p><strong>Producto del paso:</strong> <code>pagatu-orden-ms</code> registrado en Eureka, mismo patrón que <code>pagatu-catalogo-ms</code> desde S3.</p>
 <p>En <code>pom.xml</code>, agrega Eureka Discovery Client (ya lo tiene <code>pagatu-catalogo-ms</code> desde S3).</p>
-<p>Agrega, al final de <code>orden-ms-dev.yml</code> (3.7) — junto a lo que ya existe, <code>server.port: 8082</code> se queda tal cual está, no se toca:</p>
+<p>Agrega, al final de <code>pagatu-orden-ms-dev.yml</code> (3.7) — junto a lo que ya existe, <code>server.port: 8082</code> se queda tal cual está, no se toca:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">eureka</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">instance</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span>
@@ -3220,7 +3471,7 @@ infra/pagatu-config/config-repo/orden-ms-prod.yml
 <span class="w">    </span><span class="nt">service-url</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">defaultZone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://localhost:18761/eureka</span>
 </code></pre></div>
-<p>Y al final de <code>orden-ms-prod.yml</code>:</p>
+<p>Y al final de <code>pagatu-orden-ms-prod.yml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">eureka</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">instance</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">prefer-ip-address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
@@ -3238,6 +3489,39 @@ infra/pagatu-config/config-repo/orden-ms-prod.yml
 <span class="w">              </span><span class="nt">predicates</span><span class="p">:</span>
 <span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Path=/api/v1/ordenes/**</span>
 </code></pre></div>
+<h4 id="391-probar-pagatu-orden-ms-de-punta-a-punta-sin-feign-todavia">3.9.1 Probar <code>pagatu-orden-ms</code> de punta a punta (sin Feign todavía)<a class="headerlink" href="#391-probar-pagatu-orden-ms-de-punta-a-punta-sin-feign-todavia" title="Permanent link">&para;</a></h4>
+<p><strong>Producto del paso:</strong> confirmación de que todo lo construido en la Parte A funciona junto — proyecto, BD, migración, entidades, DTOs, repositorio/servicio/controlador, excepciones, <code>traceId</code>, Config Client, Eureka Client y ruta del Gateway — antes de empezar Feign.</p>
+<p>Con <code>pagatu-config</code>, <code>pagatu-eureka</code> y <code>pagatu-orden-ms</code> corriendo (BD levantada, 3.2), crea una orden directo contra <code>pagatu-orden-ms</code> (<code>8082</code>):</p>
+<p>PowerShell:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Post</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:8082/api/v1/ordenes"</span> <span class="p">`</span>
+  <span class="n">-ContentType</span> <span class="s2">"application/json"</span> <span class="p">`</span>
+  <span class="n">-Body</span> <span class="s1">'{"idCliente": 1, "metodoPago": "YAPE_PLIN", "detalles": [{"idProducto": 1, "cantidad": 2}]}'</span>
+</code></pre></div>
+<p>bash macOS/Linux:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8082/api/v1/ordenes<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"idCliente": 1, "metodoPago": "YAPE_PLIN", "detalles": [{"idProducto": 1, "cantidad": 2}]}'</span>
+</code></pre></div>
+<p>Resultado esperado — <code>201 Created</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"idCliente"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"fechaCreacion"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-09-17T10:08:26.725204"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"estado"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CARRITO"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"total"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"detalles"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"idProducto"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"nombreProducto"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"cantidad"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"precioUnitario"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"subtotal"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong><code>estado: "CARRITO"</code>, con <code>nombreProducto</code>/<code>precioUnitario</code>/<code>subtotal</code>/<code>total</code> en <code>null</code>, es el resultado correcto de la Parte A — no un error.</strong> <code>crear()</code> (3.6) todavía no le asigna ningún estado explícito a la orden, así que queda con el valor por defecto de la entidad (<code>@Builder.Default</code>, 3.4); nada en esta parte consulta todavía a <code>pagatu-catalogo-ms</code> para copiar nombre y precio real. Resolver justo eso es el tema de hoy — Feign en la Parte B, Circuit Breaker en la Parte C. Si tu respuesta luce así, la Parte A está completa.</p>
+<p>Revisa también que la respuesta trae el header <code>X-Trace-ID</code> (o <code>x-trace-id</code>, según el cliente) — confirma que <code>CorrelationIdFilter</code> (3.2.2) está funcionando. Prueba también <code>GET http://localhost:8082/api/v1/ordenes</code> (3.6) y confirma que la orden recién creada aparece en la lista; y, si ya completaste 3.9, la misma petición POST funciona igual contra <code>http://localhost:18080/api/v1/ordenes</code> (a través del Gateway, sin usar el puerto <code>8082</code> directo).</p>
 <h3 id="parte-b-tema-1-feign-pagatu-orden-ms-consulta-pagatu-catalogo-ms">Parte B — Tema 1: Feign, <code>pagatu-orden-ms</code> consulta <code>pagatu-catalogo-ms</code><a class="headerlink" href="#parte-b-tema-1-feign-pagatu-orden-ms-consulta-pagatu-catalogo-ms" title="Permanent link">&para;</a></h3>
 <h4 id="310-agregar-la-dependencia-de-openfeign">3.10 Agregar la dependencia de OpenFeign<a class="headerlink" href="#310-agregar-la-dependencia-de-openfeign" title="Permanent link">&para;</a></h4>
 <p><strong>Producto del paso:</strong> <code>pagatu-orden-ms</code> preparado para usar OpenFeign.</p>
@@ -3360,7 +3644,7 @@ infra/pagatu-config/config-repo/orden-ms-prod.yml
 </code></pre></div>
 <h4 id="316-configurar-el-circuit-breaker-nombrado-catalogo">3.16 Configurar el Circuit Breaker nombrado <code>catalogo</code><a class="headerlink" href="#316-configurar-el-circuit-breaker-nombrado-catalogo" title="Permanent link">&para;</a></h4>
 <p><strong>Producto del paso:</strong> parámetros del Circuit Breaker declarados en la configuración externa.</p>
-<p>Agrega, al final de <code>orden-ms-dev.yml</code> (3.7-3.8):</p>
+<p>Agrega, al final de <code>pagatu-orden-ms-dev.yml</code> (3.7-3.8):</p>
 <div class="highlight"><pre><span></span><code><span class="nt">resilience4j</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">circuitbreaker</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">instances</span><span class="p">:</span>

@@ -1272,7 +1272,7 @@
 </tr>
 <tr>
 <td>Dependencias</td>
-<td>Las mismas de <code>pagatu-catalogo-ms</code> (S1, Tabla 4): Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway. <strong>Además</strong>, agrega MapStruct a mano en el <code>pom.xml</code> (S1, 3.5.20) — Spring Initializr no lo ofrece como opción, y sin él el proyecto no compila apenas escribas el primer <code>Mapper</code>.</td>
+<td>Las mismas de <code>pagatu-catalogo-ms</code> (S1, Tabla 4): Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway. Agrega también <strong>Prometheus</strong> (categoría <em>Observability</em>, la ofrece el propio buscador de Spring Initializr — agrega <code>io.micrometer:micrometer-registry-prometheus</code>, scope <code>runtime</code>): si ya tienes <code>obs/</code> corriendo (Prometheus descubre por Eureka, S3 3.11), el microservicio nuevo queda visible ahí desde que arranca, sin ningún paso adicional. <strong>Además</strong>, agrega MapStruct a mano en el <code>pom.xml</code> (S1, 3.5.20) — a diferencia de Prometheus, Spring Initializr no lo ofrece como opción, y sin él el proyecto no compila apenas escribas el primer <code>Mapper</code>.</td>
 </tr>
 <tr>
 <td>Ubicación sugerente</td>
@@ -1281,6 +1281,7 @@
 </tbody>
 </table>
 <p>El puerto de base de datos (<code>15434</code> DEV / <code>25434</code> PROD local) sigue la misma numeración ya reservada para <code>orden_db</code> en la arquitectura del proyecto (<a href="../../"><code>docs/index.md</code></a>), distinta de <code>pagatu_catalogo_db</code> (<code>15432</code>/<code>25432</code>) para que ambos puedan correr al mismo tiempo. El puerto de aplicación en DEV (<code>8082</code>, fijo) sigue el mismo criterio de S1 (puerto fijo, sin argumento) — distinto de <code>8080</code>, que ya usa <code>pagatu-catalogo-ms</code>.</p>
+<p><strong>Puertos de base de datos y de infraestructura (<code>154xx</code>/<code>254xx</code>, <code>18xxx</code>/<code>28xxx</code>) son exclusivos de <code>pagatu</code></strong> — ningún otro repo del alumno (BomERP/LP2, lambda26/BigData) usa esos rangos, así que no chocan aunque corran al mismo tiempo. Los puertos de <strong>aplicación</strong> (<code>8080</code>-<code>808x</code>, sin prefijo) sí son un riesgo real: <code>pagatu-catalogo-ms</code> corre en <code>8080</code> igual que el backend de BomERP/LP2 (que además usa <code>8081</code> para su segunda instancia) — si ambos proyectos corren a la vez en la misma máquina, chocan. Lo mismo va a pasar con el puerto por defecto de Angular (<code>4200</code>) el día que exista <code>pagatu-ng</code> (S11), porque el frontend de LP2 también lo usa. No es un bug que corregir ahora — es una razón concreta para no levantar <code>pagatu</code> y BomERP/LP2 al mismo tiempo en la misma laptop, o para detener uno antes de levantar el otro.</p>
 <p><strong><code>services/pagatu-orden-ms/compose-dev.yml</code></strong></p>
 <div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-orden-dev</span>
 
@@ -1424,7 +1425,7 @@
 </tr>
 <tr>
 <td>Dependencias</td>
-<td>Las mismas de <code>pagatu-catalogo-ms</code> (S1, Tabla 4): Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway. <strong>Además</strong>, agrega MapStruct a mano en el <code>pom.xml</code> (S1, 3.5.20) — Spring Initializr no lo ofrece como opción, y sin él el proyecto no compila apenas escribas el primer <code>Mapper</code>.</td>
+<td>Las mismas de <code>pagatu-catalogo-ms</code> (S1, Tabla 4): Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway. Agrega también <strong>Prometheus</strong> (categoría <em>Observability</em>, la ofrece el propio buscador de Spring Initializr — agrega <code>io.micrometer:micrometer-registry-prometheus</code>, scope <code>runtime</code>): si ya tienes <code>obs/</code> corriendo (Prometheus descubre por Eureka, S3 3.11), el microservicio nuevo queda visible ahí desde que arranca, sin ningún paso adicional. <strong>Además</strong>, agrega MapStruct a mano en el <code>pom.xml</code> (S1, 3.5.20) — a diferencia de Prometheus, Spring Initializr no lo ofrece como opción, y sin él el proyecto no compila apenas escribas el primer <code>Mapper</code>.</td>
 </tr>
 <tr>
 <td>Ubicación sugerente</td>
