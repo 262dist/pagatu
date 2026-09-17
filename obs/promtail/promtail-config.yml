@@ -14,3 +14,9 @@ scrape_configs:
         labels:
           application: pagatu-catalogo-ms
           __path__: /var/log/pagatu-catalogo-ms/*.log
+  - job_name: pagatu-orden-ms
+    static_configs:
+      - targets: [localhost]
+        labels:
+          application: pagatu-orden-ms
+          __path__: /var/log/pagatu-orden-ms/*.log

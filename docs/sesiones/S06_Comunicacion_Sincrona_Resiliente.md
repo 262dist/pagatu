@@ -537,6 +537,25 @@ Crea también `src/main/resources/logback-spring.xml`, con salida por consola y 
 
 Este `traceId` identifica una petición **dentro de** `pagatu-orden-ms` (3.23: la llamada a `consultarProducto`, la excepción capturada, el fallback ejecutado, todo bajo el mismo valor en `logs/orden.log`) — no viaja todavía dentro de la llamada Feign hacia `pagatu-catalogo-ms`, que genera su propio `traceId` independiente para esa petición entrante. Propagar un mismo `traceId` de extremo a extremo entre microservicios (un `RequestInterceptor` de Feign que copie el valor del MDC al header saliente) queda fuera del alcance de esta sesión.
 
+**(Opcional) Conectar `logs/orden.log` a Loki.** Si ya construiste `obs/` en S3 (3.13-3.14), `pagatu-orden-ms` puede sumarse al mismo Promtail sin levantar nada nuevo — mismo criterio que Prometheus (Tabla 3): agrega un `job_name` más en `obs/promtail/promtail-config-dev.yml` y `obs/promtail/promtail-config.yml`:
+
+```yaml
+  - job_name: pagatu-orden-ms
+    static_configs:
+      - targets: [localhost]
+        labels:
+          application: pagatu-orden-ms
+          __path__: /var/log/pagatu-orden-ms/*.log
+```
+
+Y un bind-mount más al servicio `pagatu-promtail`, en `obs/compose-dev.yml` y `obs/compose.yml`:
+
+```yaml
+      - ../services/pagatu-orden-ms/logs:/var/log/pagatu-orden-ms:ro
+```
+
+Reinicia el stack (`cd obs && docker compose -f compose-dev.yml up -d`) para que tome el cambio. En PROD local, este mount queda listo pero vacío hasta que exista un `compose.yml` propio de `pagatu-orden-ms` (fuera del alcance de esta sesión) que bind-monte `./logs:/app/logs`, igual que ya hace `pagatu-catalogo-ms` — sin eso, no hay ningún archivo de log que Promtail pueda leer del lado de producción.
+
 #### 3.3 Crear la migración Flyway de `pagatu-orden-ms`
 
 **Producto del paso:** tablas `ordenes` y `orden_detalles` creadas.
