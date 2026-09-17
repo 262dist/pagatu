@@ -13,3 +13,17 @@ scrape_configs:
         regex: "localhost:(.+)"
         target_label: __address__
         replacement: "host.docker.internal:$1"
+
+  - job_name: "pagatu-config"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["host.docker.internal:18888"]
+        labels:
+          application: pagatu-config
+
+  - job_name: "pagatu-eureka"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["host.docker.internal:18761"]
+        labels:
+          application: pagatu-eureka
