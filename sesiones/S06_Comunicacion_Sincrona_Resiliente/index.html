@@ -2525,12 +2525,12 @@
 <h3 id="22-comunicacion-declarativa-entre-microservicios">2.2 Comunicación declarativa entre microservicios<a class="headerlink" href="#22-comunicacion-declarativa-entre-microservicios" title="Permanent link">&para;</a></h3>
 <p>Cualquier microservicio que necesita datos que pertenecen a otro se comunica a través de su API, nunca accediendo directamente a su base de datos — cada microservicio es dueño exclusivo de los datos que administra, uno de los principios centrales de la arquitectura de microservicios. Esa llamada se puede escribir a mano (un cliente HTTP genérico), o de forma <strong>declarativa</strong>: una interfaz anotada describe el endpoint, y un framework arma la llamada HTTP por debajo, sin una sola línea que construya la URL o parsee la respuesta a mano.</p>
 <p>Que un cliente resuelva el nombre lógico de un servicio consultando directamente a un registro (en vez de pasar por un intermediario como un Gateway) es, además, un patrón con nombre propio: <strong>Client-Side Service Discovery</strong> (Richardson, s.f.) — el mismo mecanismo que ya aplican, sin nombrarlo así, cualquier Gateway que resuelve <code>lb://</code> y cualquier cliente de un registro de servicios, aplicado ahora a una llamada entre microservicios en vez de a una ruta externa.</p>
-<p><strong>OpenFeign</strong> es la implementación concreta de ambas ideas que usa <code>pagatu-orden-ms</code> hoy: una interfaz anotada con <code>@FeignClient(name = "...")</code>, con un método anotado como si fuera un <code>@Controller</code> (<code>@GetMapping</code>), es en tiempo de ejecución un cliente HTTP completo. <code>name</code> no es una dirección fija: es el <code>spring.application.name</code> con el que el otro servicio ya está registrado en <code>pagatu-eureka</code> (S3) — Feign resuelve ese nombre contra Eureka en tiempo de ejecución, el mismo mecanismo de balanceo de carga que ya usa el Gateway desde S4.</p>
+<p><strong>OpenFeign</strong> (Spring Cloud Team, 2024) es la implementación concreta de ambas ideas que usa <code>pagatu-orden-ms</code> hoy: una interfaz anotada con <code>@FeignClient(name = "...")</code>, con un método anotado como si fuera un <code>@Controller</code> (<code>@GetMapping</code>), es en tiempo de ejecución un cliente HTTP completo. <code>name</code> no es una dirección fija: es el <code>spring.application.name</code> con el que el otro servicio ya está registrado en <code>pagatu-eureka</code> (S3) — Feign resuelve ese nombre contra Eureka en tiempo de ejecución, el mismo mecanismo de balanceo de carga que ya usa el Gateway desde S4.</p>
 <p><strong>DTO entre servicios</strong>: el contrato que un microservicio expone a otros no es su entidad JPA. <code>pagatu-orden-ms</code> no necesita todo lo que <code>Producto</code> guarda en <code>pagatu-catalogo-ms</code> — necesita el mínimo para armar una línea de orden: id, nombre y precio. Por la misma razón, <code>id_producto</code> en <code>orden_detalles</code> no lleva <code>FOREIGN KEY</code> hacia <code>productos</code> (ver 3.3): esa tabla vive en la base de datos de otro microservicio, y la única forma válida de llegar a ella es esta llamada declarativa, nunca una relación directa entre bases de datos separadas.</p>
 <p><strong>Error frecuente</strong>: llamar a <code>pagatu-catalogo-ms</code> por su dirección fija (<code>http://localhost:8080</code>) en vez de por su nombre lógico (<code>pagatu-catalogo-ms</code>) registrado en Eureka. Funciona en la laptop de quien lo escribió y se rompe apenas hay una segunda instancia (S3, puerto <code>8081</code>) o el sistema corre en Docker (S4) con otra red — exactamente el problema que Eureka y el Gateway ya resuelven para las llamadas <em>externas</em> desde S3-S4; Feign aplica el mismo criterio a las llamadas <em>internas</em>.</p>
 <h3 id="23-circuit-breaker-respuesta-controlada-ante-fallos">2.3 Circuit Breaker: respuesta controlada ante fallos<a class="headerlink" href="#23-circuit-breaker-respuesta-controlada-ante-fallos" title="Permanent link">&para;</a></h3>
 <p>En una llamada síncrona entre dos microservicios, si el servicio que responde no está disponible, responde lento, o falla, y no hay nada que lo controle, esa excepción se propaga tal cual hacia quien hizo la llamada — un problema del servicio que falló termina siendo, también, un problema del que lo consume.</p>
-<p><strong>Circuit Breaker</strong> (interruptor de circuito) evita ese contagio: envuelve una llamada que puede fallar y decide, según cuántas veces falló recientemente, si sigue intentando la llamada real o si corta el circuito y ejecuta de inmediato una alternativa (<em>fallback</em>) — sin siquiera intentar una llamada que probablemente va a fallar.</p>
+<p><strong>Circuit Breaker</strong> (interruptor de circuito) evita ese contagio: envuelve una llamada que puede fallar y decide, según cuántas veces falló recientemente, si sigue intentando la llamada real o si corta el circuito y ejecuta de inmediato una alternativa (<em>fallback</em>) — sin siquiera intentar una llamada que probablemente va a fallar. El patrón fue descrito formalmente por Fowler (2014) y popularizado como práctica de ingeniería de producción por Nygard (2018); <code>pagatu-orden-ms</code> lo implementa hoy con Resilience4j (Resilience4j, 2024), la librería concreta detrás de <code>@CircuitBreaker</code> (3.15-3.17).</p>
 <p><strong>Tabla 2. Los tres estados de un Circuit Breaker</strong></p>
 <table>
 <thead>
@@ -2608,6 +2608,42 @@
 <p>En esta sesión, eso significa revisar logs de <code>pagatu-orden-ms</code>, logs de <code>pagatu-catalogo-ms</code>, el <code>traceId</code> de cada petición (S1, 3.4), <code>/actuator/health</code> de ambos servicios, y en qué estado quedó el Circuit Breaker (<code>CLOSED</code>/<code>OPEN</code>/<code>HALF_OPEN</code>) cuando <code>pagatu-catalogo-ms</code> no responde.</p>
 <h2 id="3-aplica-actividad-practica-guiada">3. Aplica: actividad práctica guiada<a class="headerlink" href="#3-aplica-actividad-practica-guiada" title="Permanent link">&para;</a></h2>
 <p>Tiempo: 4h.</p>
+<p><strong>Actividad:</strong> construcción guiada de <code>pagatu-orden-ms</code>, el segundo microservicio del proyecto, que consulta a <code>pagatu-catalogo-ms</code> por Feign para validar y copiar el precio real de cada producto, con una respuesta controlada (Circuit Breaker) cuando esa llamada falla (Producto de la sesión en 1.4).</p>
+<p><strong>Propósito de la actividad:</strong> que cada estudiante construya un microservicio que depende de otro ya existente, resolviendo esa dependencia de forma declarativa (Feign, por nombre lógico contra Eureka) y con una respuesta de negocio controlada cuando el servicio consultado no responde (Circuit Breaker) — verificando ambos casos con evidencia real (capturas del estado <code>OPEN</code>, no solo el caso feliz).</p>
+<p><strong>Orientaciones metodológicas:</strong> en el laboratorio, el docente construye <code>pagatu-orden-ms</code> paso a paso frente a la clase, en el mismo orden de las tres partes de la sesión — primero el microservicio completo (Parte A), después la conexión Feign (Parte B), al final el Circuit Breaker (Parte C) —; los estudiantes replican cada paso en su propio equipo, y provocan ellos mismos la caída de <code>pagatu-catalogo-ms</code> (3.21-3.22) para verificar el fallback en su propia consola, no solo leyendo el resultado esperado en la guía.</p>
+<p><strong>Actividades para realizar:</strong></p>
+<p><em>Parte A — Construir <code>pagatu-orden-ms</code>:</em></p>
+<ul>
+<li><strong>3.1</strong> Crear el proyecto base de <code>pagatu-orden-ms</code>.</li>
+<li><strong>3.2</strong> Levantar la base de datos de <code>pagatu-orden-ms</code>.</li>
+<li><strong>3.3</strong> Crear la migración Flyway de <code>pagatu-orden-ms</code>.</li>
+<li><strong>3.4</strong> Crear las entidades <code>Orden</code> y <code>OrdenDetalle</code>.</li>
+<li><strong>3.5</strong> Crear los DTO de entrada y salida.</li>
+<li><strong>3.6</strong> Crear repositorio, servicio y controlador base (sin Feign todavía).</li>
+<li><strong>3.7</strong> Conectar <code>pagatu-orden-ms</code> a <code>pagatu-config</code>.</li>
+<li><strong>3.8</strong> Conectar <code>pagatu-orden-ms</code> a <code>pagatu-eureka</code>.</li>
+<li><strong>3.9</strong> Agregar la ruta de <code>pagatu-orden-ms</code> al Gateway.</li>
+</ul>
+<p><em>Parte B — Tema 1: Feign, <code>pagatu-orden-ms</code> consulta <code>pagatu-catalogo-ms</code>:</em></p>
+<ul>
+<li><strong>3.10</strong> Agregar la dependencia de OpenFeign.</li>
+<li><strong>3.11</strong> Crear el DTO de producto.</li>
+<li><strong>3.12</strong> Crear el cliente Feign hacia <code>pagatu-catalogo-ms</code>.</li>
+<li><strong>3.13</strong> Integrar el cliente Feign en <code>OrdenServiceImpl</code>.</li>
+</ul>
+<p><em>Parte C — Tema 2: Circuit Breaker, respuesta controlada si <code>pagatu-catalogo-ms</code> falla:</em></p>
+<ul>
+<li><strong>3.14</strong> Probar el problema sin protección todavía.</li>
+<li><strong>3.15</strong> Agregar la dependencia de Resilience4j.</li>
+<li><strong>3.16</strong> Configurar el Circuit Breaker nombrado <code>catalogo</code>.</li>
+<li><strong>3.17</strong> Proteger la llamada a <code>pagatu-catalogo-ms</code> con <code>@CircuitBreaker</code>.</li>
+<li><strong>3.18</strong> Levantar infraestructura en DEV.</li>
+<li><strong>3.19</strong> Levantar <code>pagatu-catalogo-ms</code> y <code>pagatu-orden-ms</code> en DEV.</li>
+<li><strong>3.20</strong> Probar el flujo correcto (Feign funcionando).</li>
+<li><strong>3.21</strong> Probar el Circuit Breaker: <code>pagatu-catalogo-ms</code> caído.</li>
+<li><strong>3.22</strong> Provocar la apertura del circuito.</li>
+<li><strong>3.23</strong> Validar trazabilidad en logs.</li>
+</ul>
 <p><strong>Punto de partida común:</strong> todo el equipo debe comenzar exactamente desde donde quedó S4 (Gateway y balanceo de carga), no desde su propio avance individual. Clona la rama <code>s04-gateway-lb</code>:</p>
 <div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>--branch<span class="w"> </span>s04-gateway-lb<span class="w"> </span>https://github.com/262dist/pagatu.git
 </code></pre></div>
@@ -3470,6 +3506,14 @@ mvn<span class="w"> </span>spring-boot:run
 <p>Con <code>pagatu-catalogo-ms</code> todavía caído, repite la misma petición de 3.20 al menos 5 veces seguidas (el <code>sliding-window-size</code> configurado en 3.16). A partir de cierto punto, el circuito debería pasar a <code>OPEN</code> — las siguientes llamadas ejecutan el fallback de inmediato, sin siquiera intentar la conexión de red (revisa el log: la respuesta ya no debería tardar el tiempo de un timeout de red, sino ser inmediata).</p>
 <h4 id="323-validar-trazabilidad-en-logs">3.23 Validar trazabilidad en logs<a class="headerlink" href="#323-validar-trazabilidad-en-logs" title="Permanent link">&para;</a></h4>
 <p>Revisa los logs de <code>pagatu-orden-ms</code> para confirmar, con el <code>traceId</code> de cada petición: la llamada Feign hacia <code>pagatu-catalogo-ms</code>, la excepción capturada cuando falla, y la ejecución del fallback.</p>
+<p><strong>Evidencia de aprendizaje:</strong></p>
+<ul>
+<li><code>pagatu-orden-ms</code> operativo en DEV, registrado en <code>pagatu-eureka</code> y con configuración externa desde <code>pagatu-config</code>.</li>
+<li>Orden creada con éxito, con <code>nombreProducto</code>/<code>precioUnitario</code>/<code>total</code> reales, obtenidos de <code>pagatu-catalogo-ms</code> por Feign (sin dirección fija).</li>
+<li>Orden creada con <code>pagatu-catalogo-ms</code> detenido, con <code>estado: CARRITO</code> y <code>total: null</code> en vez de un error <code>500</code>.</li>
+<li>Circuito capturado en sus tres estados (<code>CLOSED</code>/<code>OPEN</code>/<code>HALF_OPEN</code>), con al menos una captura del estado <code>OPEN</code>.</li>
+<li>Logs de <code>pagatu-orden-ms</code> con el <code>traceId</code> de una petición, mostrando la llamada Feign y la ejecución del fallback.</li>
+</ul>
 <h2 id="4-crea-actividad-autonoma">4. Crea: actividad autónoma<a class="headerlink" href="#4-crea-actividad-autonoma" title="Permanent link">&para;</a></h2>
 <p>Tiempo: 4h fuera del aula.</p>
 <h3 id="41-actividad">4.1 Actividad<a class="headerlink" href="#41-actividad" title="Permanent link">&para;</a></h3>
@@ -3578,7 +3622,7 @@ es distinto de simplemente aumentar el timeout de esa llamada?
 </thead>
 <tbody>
 <tr>
-<td>1. <code>pagatu-orden-ms</code> construido</td>
+<td>1. <code>pagatu-cliente-ms</code> construido</td>
 <td style="text-align: right;">2</td>
 <td>Microservicio completo: entidad, DTO, repositorio, servicio, controlador, registrado en Eureka y con configuración externa.</td>
 <td>Microservicio funcional con partes menores incompletas.</td>
