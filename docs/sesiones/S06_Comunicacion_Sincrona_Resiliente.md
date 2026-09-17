@@ -1289,6 +1289,14 @@ Revisa también que la respuesta trae el header `X-Trace-ID` (o `x-trace-id`, se
 
 ### Parte B — Tema 1: Feign, `pagatu-orden-ms` consulta `pagatu-catalogo-ms`
 
+**(Opcional) ¿Te quedaste atrás en la Parte A?** Clona la rama `s06-orden-ms-base` — es el checkpoint con `pagatu-orden-ms` completo tal como queda al cerrar 3.9 (proyecto, BD, migración, entidades, DTOs, repositorio/servicio/controlador, excepciones, `traceId`, Config Client, Eureka Client y ruta del Gateway; sin Feign todavía):
+
+```bash
+git clone --branch s06-orden-ms-base https://github.com/262dist/pagatu.git
+```
+
+Verifica que arranca igual que en 3.9.1 antes de seguir con Feign.
+
 #### 3.10 Agregar la dependencia de OpenFeign
 
 **Producto del paso:** `pagatu-orden-ms` preparado para usar OpenFeign.

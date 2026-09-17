@@ -309,6 +309,7 @@ Tiempo: 2h.
 - **3.5** Probar `pagatu-gateway` en DEV.
 - **3.6** Verificar balanceo de carga entre instancias.
 - **3.7** (opcional, anexo) Grafana sobre Prometheus y Loki.
+- **3.7.1** (opcional) Exponer métricas de `pagatu-gateway` para Prometheus.
 - **3.8** (opcional, anexo) Tablero y alertas de infraestructura.
 - **3.9** (opcional, anexo) Métricas de negocio con Micrometer.
 - **3.10** (opcional, anexo) Diseñar el tablero de catálogo en tiempo real.
@@ -663,14 +664,14 @@ flowchart TB
     Prometheus -->|"eureka_sd_configs"| Eureka
     Prometheus -->|"scrape /actuator/prometheus"| I1
     Prometheus -->|"scrape /actuator/prometheus"| I2
-    Prometheus -.->|"scrape opcional"| Gateway
+    Prometheus -->|"scrape /actuator/prometheus"| Gateway
 
     Promtail -->|"lee logs de"| I1
     Promtail -->|"lee logs de"| I2
     Promtail -->|"push"| Loki
 ```
 
-Mismo esquema que la Figura 9 — la diferencia no es de conexiones, es de red y de puertos: en DEV, cada herramienta corre suelta en el host (`host.docker.internal`, prefijo `1`); en PROD, todo vive dentro de `pagatu-prod-net` y se habla por nombre de servicio (S3, 3.15), con el prefijo `2` reservado para PROD (`23000`, `29090`, `23100`) y `instance-id` aleatorio para las réplicas de `pagatu-catalogo-ms` (3.9 de S3) en vez del puerto fijo de DEV. `pagatu-gateway` (3.12) no expone métricas propias en este anexo — la flecha punteada marca dónde se agregaría si más adelante se decide incluirlo (mismo patrón de 3.10 de S3 aplicado a `pagatu-gateway`).
+Mismo esquema que la Figura 9 — la diferencia no es de conexiones, es de red y de puertos: en DEV, cada herramienta corre suelta en el host (`host.docker.internal`, prefijo `1`); en PROD, todo vive dentro de `pagatu-prod-net` y se habla por nombre de servicio (S3, 3.15), con el prefijo `2` reservado para PROD (`23000`, `29090`, `23100`) y `instance-id` aleatorio para las réplicas de `pagatu-catalogo-ms` (3.9 de S3) en vez del puerto fijo de DEV. `pagatu-gateway` (3.12) sí expone métricas propias en este anexo (3.7.1) — a diferencia de `pagatu-config`/`pagatu-eureka` (S3, 3.10-3.11), `pagatu-gateway` ya se registra en Eureka, así que el mismo `eureka_sd_configs` que descubre a `pagatu-catalogo-ms` lo descubre también, sin ningún target estático que agregar.
 
 Crea `obs/grafana/provisioning/datasources/datasources-dev.yml`:
 
@@ -727,6 +728,42 @@ Crea un panel nuevo (**Dashboards → New → New dashboard → Add visualizatio
 - Con `Loki`: `{application="pagatu-catalogo-ms"}` (S3, 3.14) — logs recientes del servicio.
 
 Lo que cambia no es el dato ni la consulta — es tener métricas y logs en el mismo tablero, algo que ni Prometheus ni Loki ofrecen por separado. Los pasos siguientes (3.8-3.11) construyen un tablero real sobre esta base, no solo un panel de prueba.
+
+#### 3.7.1 (opcional) Exponer métricas de `pagatu-gateway` para Prometheus
+
+**Producto del paso:** `pagatu-gateway` visible en Prometheus junto a `pagatu-catalogo-ms` — el punto único de acceso también se monitorea, no solo lo que hay detrás de él.
+
+Agrega la dependencia en `infra/pagatu-gateway/pom.xml`:
+
+```xml
+<dependency>
+    <groupId>io.micrometer</groupId>
+    <artifactId>micrometer-registry-prometheus</artifactId>
+    <scope>runtime</scope>
+</dependency>
+```
+
+En `config-repo/pagatu-gateway-dev.yml`, agrega `prometheus` a los endpoints ya expuestos:
+
+```yaml
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+```
+
+Reinicia `pagatu-gateway` y verifica:
+
+```powershell
+Invoke-RestMethod -Method Get -Uri "http://localhost:18080/actuator/prometheus"
+```
+
+No hace falta tocar `obs/prometheus/prometheus-dev.yml` (S3, 3.11) ni agregar ningún target estático: `pagatu-gateway` ya se registra en `pagatu-eureka` (3.4, `eureka:` en su propia configuración) para poder resolver `lb://` — el mismo `eureka_sd_configs` que ya descubre a `pagatu-catalogo-ms` lo descubre a él también, apenas expone el endpoint. Esto es justo lo que distingue a `pagatu-gateway` de `pagatu-config`/`pagatu-eureka` (S3, 3.10-3.11): esos dos sí necesitaron un target estático a mano, porque ninguno se registra como cliente de Eureka.
+
+Confirma en `http://localhost:19090/targets` (S3, 3.12): ahora deberían verse tres entradas bajo el job `pagatu-microservicios` — las dos instancias de `pagatu-catalogo-ms` más `pagatu-gateway` —, además de los dos targets estáticos de `pagatu-config`/`pagatu-eureka` (S3).
+
+**(Opcional dentro de lo opcional) Repite en PROD** — agrega la misma dependencia (ya la tiene si seguiste este paso) y `prometheus` en `config-repo/pagatu-gateway-prod.yml`; `obs/prometheus/prometheus.yml` (S3, 3.15) tampoco necesita cambios, por la misma razón: `pagatu-gateway` se descubre solo.
 
 ### 3.8 (opcional, anexo) Tablero y alertas de infraestructura
 
