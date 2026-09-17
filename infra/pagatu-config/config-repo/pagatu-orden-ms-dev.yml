@@ -47,3 +47,12 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:18761/eureka
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      catalogo:
+        sliding-window-size: 5
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 3

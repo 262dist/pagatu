@@ -1,6 +1,5 @@
 package pe.edu.upeu.orden.service;
 
-import pe.edu.upeu.orden.client.ProductoClient;
 import pe.edu.upeu.orden.dto.*;
 import pe.edu.upeu.orden.entity.EstadoOrden;
 import pe.edu.upeu.orden.entity.Orden;
@@ -19,7 +18,7 @@ import java.util.stream.Collectors;
 public class OrdenServiceImpl implements OrdenService {
 
     private final OrdenRepository ordenRepository;
-    private final ProductoClient productoClient;
+    private final ProductoConsultaService productoConsultaService;
 
     @Override
     @Transactional
@@ -31,9 +30,22 @@ public class OrdenServiceImpl implements OrdenService {
 
         List<OrdenDetalle> detalles = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
+        boolean validacionCompleta = true;
 
         for (DetalleOrdenRequest item : request.getDetalles()) {
-            ProductoDto producto = productoClient.findById(item.getIdProducto());
+            ProductoDto producto = productoConsultaService.consultarProducto(item.getIdProducto());
+
+            if (producto == null) {
+                validacionCompleta = false;
+                detalles.add(OrdenDetalle.builder()
+                        .orden(orden)
+                        .idProducto(item.getIdProducto())
+                        .nombreProducto(null)
+                        .cantidad(item.getCantidad())
+                        .precioUnitario(null)
+                        .build());
+                continue;
+            }
 
             BigDecimal subtotal = producto.getPrecio()
                     .multiply(BigDecimal.valueOf(item.getCantidad()));
@@ -49,8 +61,8 @@ public class OrdenServiceImpl implements OrdenService {
         }
 
         orden.setDetalles(detalles);
-        orden.setTotal(total);
-        orden.setEstado(EstadoOrden.PENDIENTE_PAGO);
+        orden.setTotal(validacionCompleta ? total : null);
+        orden.setEstado(validacionCompleta ? EstadoOrden.PENDIENTE_PAGO : EstadoOrden.CARRITO);
 
         Orden guardada = ordenRepository.save(orden);
         return toResponse(guardada);

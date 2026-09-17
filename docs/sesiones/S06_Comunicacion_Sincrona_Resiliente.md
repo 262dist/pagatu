@@ -1453,9 +1453,12 @@ En `services/pagatu-orden-ms/pom.xml`:
 ```xml
 <dependency>
     <groupId>io.github.resilience4j</groupId>
-    <artifactId>resilience4j-spring-boot3</artifactId>
+    <artifactId>resilience4j-spring-boot4</artifactId>
+    <version>2.4.0</version>
 </dependency>
 ```
+
+**El artefacto correcto es `resilience4j-spring-boot4`, no `resilience4j-spring-boot3`** — a pesar de que el nombre de la dependencia en versiones anteriores de este mismo proyecto (S1-S5) siempre siguió el patrón `-boot3`, Resilience4j publica un artefacto **separado** para Spring Boot 4 (el que usa `pagatu-orden-ms` desde 3.1, `4.1.1`), no una sola dependencia que sirva para ambos. Si usas `resilience4j-spring-boot3` por costumbre (aunque fijes la versión a `2.4.0`), la propia librería lo detecta en tiempo de ejecución y falla el arranque con un mensaje explícito: `"Module 'io.github.resilience4j:resilience4j-spring-boot3' is only compatible with Spring Boot 3.x"`, con la solución ya indicada en el mismo error (`Action: Update your project to use 'io.github.resilience4j:resilience4j-spring-boot4'`). El import de Java no cambia (`io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker` sigue viniendo de `resilience4j-annotations`, un módulo compartido) — el único cambio real es el `artifactId` en el `pom.xml`.
 
 #### 3.16 Configurar el Circuit Breaker nombrado `catalogo`
 
@@ -1489,7 +1492,101 @@ resilience4j:
 
 **Producto del paso:** llamada protegida, con un método de respuesta alternativa.
 
-Modifica `crear()` en `OrdenServiceImpl` para envolver la parte que llama a `productoClient` en un método propio, protegido con `@CircuitBreaker`:
+**❌ Antes — la versión que parece razonable, pero no activa el Circuit Breaker.** El primer instinto es agregar `consultarProducto()`/`fallbackProducto()` como dos métodos más dentro de `OrdenServiceImpl`, junto a `crear()`, y llamarlos como `this.consultarProducto(...)` (o simplemente `consultarProducto(...)`, que es lo mismo):
+
+```java
+@Service
+@RequiredArgsConstructor
+public class OrdenServiceImpl implements OrdenService {
+
+    private final OrdenRepository ordenRepository;
+    private final ProductoClient productoClient;
+
+    @Override
+    @Transactional
+    public OrdenResponse crear(OrdenRequest request) {
+        // ...
+        ProductoDto producto = consultarProducto(item.getIdProducto()); // llamada dentro de la MISMA clase
+        // ...
+    }
+
+    @CircuitBreaker(name = "catalogo", fallbackMethod = "fallbackProducto") // se ignora en silencio
+    public ProductoDto consultarProducto(Long idProducto) {
+        return productoClient.findById(idProducto);
+    }
+
+    public ProductoDto fallbackProducto(Long idProducto, Throwable ex) {
+        return null;
+    }
+}
+```
+
+Esto **compila perfecto, arranca sin errores, y en apariencia funciona** — hasta que `pagatu-catalogo-ms` realmente se cae. Ahí sí falla: la petición responde `500` con el stack trace de Feign, exactamente igual que en 3.14, como si `@CircuitBreaker` nunca se hubiera escrito.
+
+**Por qué falla — el proxy nunca se activa.** `@CircuitBreaker` funciona con un *proxy*: Spring envuelve el bean real con un objeto intermedio que intercepta la llamada, cuenta fallos y decide si ejecuta el método real o el fallback. Ese proxy solo intercepta llamadas que llegan **desde afuera del bean** — por ejemplo, cuando `OrdenController` llama a `ordenService.crear(...)`, esa sí pasa por el proxy de `OrdenServiceImpl`. Pero una vez que la ejecución ya está *dentro* de `crear()`, llamar a `this.consultarProducto(...)` es una llamada directa de Java a Java: el objeto `this` ahí es la instancia real, no el proxy — Spring nunca se entera de que ocurrió. Esto se llama *auto-invocación* (self-invocation), y es el mismo problema que ya afecta a `@Transactional`/`@Cacheable`/`@Async` cuando se llaman así.
+
+**Figura 7. Por qué la auto-invocación deja `@CircuitBreaker` sin efecto**
+
+```mermaid
+flowchart TB
+    subgraph Antes["❌ Antes: consultarProducto() dentro de OrdenServiceImpl"]
+        direction LR
+        C1["OrdenController"] -->|"1\. llamada externa"| P1["Proxy de OrdenServiceImpl"]
+        P1 -->|"2\. delega en"| R1["OrdenServiceImpl real<br/>crear()"]
+        R1 -.->|"3\. this.consultarProducto()<br/>Java puro, sin pasar por Spring"| M1["consultarProducto()<br/>@CircuitBreaker IGNORADO"]
+    end
+
+    subgraph Despues["✅ Después: consultarProducto() en ProductoConsultaService"]
+        direction LR
+        C2["OrdenController"] -->|"1\. llamada externa"| P2["Proxy de OrdenServiceImpl"]
+        P2 -->|"2\. delega en"| R2["OrdenServiceImpl real<br/>crear()"]
+        R2 -->|"3\. productoConsultaService.consultarProducto()<br/>cruza a otro bean"| P3["Proxy de ProductoConsultaService"]
+        P3 -->|"4\. @CircuitBreaker SÍ se aplica aquí"| R3["ProductoConsultaService real<br/>consultarProducto()"]
+    end
+```
+
+La diferencia entre los dos caminos no es el código dentro de `consultarProducto()` — es *quién* recibe la llamada. En el camino de abajo, `productoConsultaService` es una referencia inyectada a otro bean completo, con su propio proxy — cruzar ese límite es justo lo que activa la intercepción de Resilience4j.
+
+**✅ Después — la corrección: sacar el método a otro bean.** Crea:
+
+```text
+services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/service/ProductoConsultaService.java
+```
+
+```java
+package pe.edu.upeu.orden.service;
+
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import pe.edu.upeu.orden.client.ProductoClient;
+import pe.edu.upeu.orden.dto.ProductoDto;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class ProductoConsultaService {
+
+    private final ProductoClient productoClient;
+
+    @CircuitBreaker(name = "catalogo", fallbackMethod = "fallbackProducto")
+    public ProductoDto consultarProducto(Long idProducto) {
+        return productoClient.findById(idProducto);
+    }
+
+    public ProductoDto fallbackProducto(Long idProducto, Throwable ex) {
+        log.warn("[CATALOGO] Fallback activado para idProducto {}. Motivo: {}", idProducto, ex.getMessage());
+        return null;
+    }
+}
+```
+
+No agregues el import de `CircuitBreaker` a mano en el orden equivocado — VS Code lo resuelve automáticamente al guardar (`io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker`).
+
+`log.warn(...)` en `fallbackProducto` no es solo para la consola: ese mismo mensaje cae en `logs/orden.log` (el `CorrelationIdFilter` de 3.2.2 ya le agrega el `traceId` de la petición), y si conectaste `pagatu-orden-ms` a Loki (3.2.2, sección opcional), queda consultable en Grafana con `{application="pagatu-orden-ms"} |= "Fallback activado"` — una forma de ver, sin entrar a la consola del servidor, cuántas veces el circuito tuvo que usar el fallback y con qué `idProducto`. `ex.getMessage()` alcanza aquí (no hace falta el stack completo): la decisión de negocio ya es la misma sin importar el motivo exacto (mismo criterio que justifica no usar `ex` en el resto de `fallbackProducto`), el log es solo para que quede evidencia de que ocurrió.
+
+Ahora reemplaza el cuerpo de `crear()` en `OrdenServiceImpl`, e inyecta `ProductoConsultaService` en vez de `ProductoClient` directamente (`private final ProductoConsultaService productoConsultaService;`, junto a `ordenRepository`):
 
 ```java
 @Override
@@ -1505,7 +1602,7 @@ public OrdenResponse crear(OrdenRequest request) {
     boolean validacionCompleta = true;
 
     for (DetalleOrdenRequest item : request.getDetalles()) {
-        ProductoDto producto = consultarProducto(item.getIdProducto());
+        ProductoDto producto = productoConsultaService.consultarProducto(item.getIdProducto());
 
         if (producto == null) {
             validacionCompleta = false;
@@ -1539,24 +1636,17 @@ public OrdenResponse crear(OrdenRequest request) {
     Orden guardada = ordenRepository.save(orden);
     return toResponse(guardada);
 }
-
-@CircuitBreaker(name = "catalogo", fallbackMethod = "fallbackProducto")
-public ProductoDto consultarProducto(Long idProducto) {
-    return productoClient.findById(idProducto);
-}
-
-public ProductoDto fallbackProducto(Long idProducto, Throwable ex) {
-    return null;
-}
 ```
 
-No agregues el import de `CircuitBreaker` a mano en el orden equivocado — VS Code lo resuelve automáticamente al guardar (`io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker`).
+`OrdenServiceImpl` ya no necesita `ProductoClient` directamente — quítalo del constructor si lo tenías ahí desde la Parte B (3.13); ahora solo `ProductoConsultaService` lo usa, internamente. La llamada `productoConsultaService.consultarProducto(...)` sí cruza un límite real entre beans (de `OrdenServiceImpl` a `ProductoConsultaService`), así que Spring sí intercepta la llamada con el proxy del Circuit Breaker — exactamente lo que la auto-invocación de la versión anterior no permitía.
 
 `fallbackProducto` recibe los mismos parámetros que `consultarProducto` (`idProducto`), más la excepción real (`ex`) — aquí no se usa `ex` porque la decisión de negocio es la misma sin importar *por qué* falló (`pagatu-catalogo-ms` caído, timeout, error 500): la orden se guarda igual, esa línea queda sin precio ni nombre confirmados, y la orden completa se queda en `CARRITO` en vez de romper toda la operación — el mismo estado con el que se creó, no uno especial de "esperando validación": una orden cuyos precios no se pudieron confirmar todavía no dejó de ser, en esencia, un carrito.
 
 **`orden.setTotal(validacionCompleta ? total : null)` no es una comprobación cosmética.** Antes de esta condición, `total` terminaba guardando la suma de *solo* las líneas que sí se validaron — un número real, con dos decimales, indistinguible de un total completo para cualquiera que lo mirara, aunque a la orden le faltara confirmar el precio de otra línea más. Una orden que se queda en `CARRITO` con `total: null` es honesta sobre lo que sabe: "todavía no se puede calcular un importe final" — mostrar la suma parcial como si fuera el total, y dejar que alguien la cobre o la muestre como definitiva, es exactamente el error que esta condición evita. El total real, completo, recién se calcula cuando el cliente vuelve a intentar (fuera del alcance de esta sesión: esta sesión no reintenta nada automáticamente) y `pagatu-catalogo-ms` puede validar todas las líneas, momento en el que la orden pasa a `PENDIENTE_PAGO`.
 
 **Error frecuente**: anotar `@CircuitBreaker` directamente sobre `crear()` en vez de sobre un método más chico que solo hace la llamada a `pagatu-catalogo-ms`. Si todo el método queda protegido, un fallback tendría que reconstruir toda la respuesta de la orden — mucho más difícil de mantener que un fallback que solo decide qué hacer cuando un producto puntual no se pudo consultar.
+
+**Error frecuente, más fácil de cometer que el anterior**: mover `consultarProducto`/`fallbackProducto` de vuelta a `OrdenServiceImpl` "para no crear una clase de más" — parece inofensivo, compila igual, pero rompe el Circuit Breaker en silencio (la auto-invocación explicada arriba). No hay ningún error en consola que lo delate: `pagatu-catalogo-ms` caído sigue devolviendo `500` con el stack trace de Feign, exactamente como en 3.14, en vez de la orden en `CARRITO` que se espera. Si después de 3.18-3.20 la orden nunca cae en `CARRITO` y el `500` no desaparece, esta es la primera causa a revisar — confirma que `consultarProducto` sigue en una clase separada (`ProductoConsultaService`), no en `OrdenServiceImpl`.
 
 #### 3.18 Levantar infraestructura en DEV
 
