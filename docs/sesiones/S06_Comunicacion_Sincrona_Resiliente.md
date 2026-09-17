@@ -269,7 +269,7 @@ Reacciona de forma más consistente en el tiempo real (siempre evalúa "el últi
 
 Cuando una llamada entre dos servicios falla, diagnosticar el problema exige más que revisar el propio código: hay que poder rastrear una misma petición a través de los servicios que atravesó, y conocer el estado interno de cualquier mecanismo de tolerancia a fallos que la haya interceptado — sin eso, un fallo controlado (el fallback) es indistinguible de un error real para quien solo mira el resultado final.
 
-En esta sesión, eso significa revisar logs de `pagatu-orden-ms`, logs de `pagatu-catalogo-ms`, el `traceId` de cada petición (S1, 3.4), `/actuator/health` de ambos servicios, y en qué estado quedó el Circuit Breaker (`CLOSED`/`OPEN`/`HALF_OPEN`) cuando `pagatu-catalogo-ms` no responde.
+En esta sesión, eso significa revisar logs de `pagatu-orden-ms`, logs de `pagatu-catalogo-ms`, el `traceId` de cada petición (mismo `CorrelationIdFilter` de S1, 3.3.2, replicado en `pagatu-orden-ms` en 3.2.2), `/actuator/health` de ambos servicios, y en qué estado quedó el Circuit Breaker (`CLOSED`/`OPEN`/`HALF_OPEN`) cuando `pagatu-catalogo-ms` no responde.
 
 ## 3. Aplica: actividad práctica guiada
 
@@ -287,6 +287,8 @@ Tiempo: 4h.
 
 - **3.1** Crear el proyecto base de `pagatu-orden-ms`.
 - **3.2** Levantar la base de datos de `pagatu-orden-ms`.
+- **3.2.1** Crear las excepciones y el manejador global de errores.
+- **3.2.2** Crear el filtro de trazabilidad `CorrelationIdFilter` y configurar logs.
 - **3.3** Crear la migración Flyway de `pagatu-orden-ms`.
 - **3.4** Crear las entidades `Orden` y `OrdenDetalle`.
 - **3.5** Crear los DTO de entrada y salida.
@@ -294,6 +296,7 @@ Tiempo: 4h.
 - **3.7** Conectar `pagatu-orden-ms` a `pagatu-config`.
 - **3.8** Conectar `pagatu-orden-ms` a `pagatu-eureka`.
 - **3.9** Agregar la ruta de `pagatu-orden-ms` al Gateway.
+- **3.9.1** Probar `pagatu-orden-ms` de punta a punta (sin Feign todavía).
 
 *Parte B — Tema 1: Feign, `pagatu-orden-ms` consulta `pagatu-catalogo-ms`:*
 
@@ -321,7 +324,7 @@ Tiempo: 4h.
 git clone --branch s04-gateway-lb https://github.com/262dist/pagatu.git
 ```
 
-Levanta en DEV los servicios base ya construidos hasta S4 (`pagatu-config`, `pagatu-eureka`, `pagatu-gateway`, `pagatu-catalogo-ms`) antes de tocar código nuevo — si alguno falla en arrancar, el problema es de una sesión anterior, no de esta. Recién a partir de aquí continúa con las tres partes de la sesión, en orden: primero se construye `pagatu-orden-ms` como microservicio completo (sin Feign todavía) — si ya avanzaste esto como parte del trabajo autónomo de S2 (4.1), verifica que coincide con 3.1-3.9 y continúa desde la Parte B; después se conecta a `pagatu-catalogo-ms` con Feign (Tema 1), y al final se protege esa llamada con Circuit Breaker (Tema 2).
+Levanta en DEV los servicios base ya construidos hasta S4 (`pagatu-config`, `pagatu-eureka`, `pagatu-gateway`, `pagatu-catalogo-ms`) antes de tocar código nuevo — si alguno falla en arrancar, el problema es de una sesión anterior, no de esta. Recién a partir de aquí continúa con las tres partes de la sesión, en orden: primero se construye `pagatu-orden-ms` como microservicio completo (sin Feign todavía) — si ya avanzaste esto como parte del trabajo autónomo de S1 (4.1, CRUD base), S2 (4.1, Config Client) o S3 (4.1, Eureka Client), verifica que coincide con 3.1-3.9 (incluye las clases de trazabilidad, 3.2.1-3.2.2, que S1 sí pedía replicar) y continúa desde la Parte B; después se conecta a `pagatu-catalogo-ms` con Feign (Tema 1), y al final se protege esa llamada con Circuit Breaker (Tema 2).
 
 ### Parte A — Construir `pagatu-orden-ms`
 
@@ -341,10 +344,10 @@ Levanta en DEV los servicios base ya construidos hasta S4 (`pagatu-config`, `pag
 | Package name | `pe.edu.upeu.orden` |
 | Packaging | Jar |
 | Java | 21 |
-| Dependencias | Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway — las mismas de `pagatu-catalogo-ms` (S1, Tabla 4). **Además**, agrega MapStruct a mano en el `pom.xml` (S1, 3.5.20) — Spring Initializr no lo ofrece como opción, y sin él el proyecto no compila apenas escribas el primer `Mapper`. |
+| Dependencias | Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway — las mismas de `pagatu-catalogo-ms` (S1, Tabla 4). Agrega también **Prometheus** (categoría *Observability*, la ofrece el propio buscador de Spring Initializr — agrega `io.micrometer:micrometer-registry-prometheus`, scope `runtime`): si ya tienes `obs/` corriendo (Prometheus descubre por Eureka, S3 3.11), `pagatu-orden-ms` queda visible ahí desde que arranca, sin ningún paso adicional. **Además**, agrega MapStruct a mano en el `pom.xml` (S1, 3.5.20) — a diferencia de Prometheus, Spring Initializr no lo ofrece como opción, y sin él el proyecto no compila apenas escribas el primer `Mapper`. |
 | Ubicación sugerida | `services/pagatu-orden-ms` |
 
-El puerto de base de datos (`15434` DEV / `25434` PROD local) y el nombre `pagatu_orden_db` ya estaban reservados desde la arquitectura del proyecto (`docs/index.md`) — no se inventan en esta sesión. El puerto de aplicación en DEV (`8082`, fijo) sigue el mismo criterio de S1 (puerto fijo, sin argumento) — distinto de `8080`, que ya usa `pagatu-catalogo-ms`.
+El puerto de base de datos (`15434` DEV / `25434` PROD local) y el nombre `pagatu_orden_db` ya estaban reservados desde la arquitectura del proyecto (`docs/index.md`) — no se inventan en esta sesión. El puerto de aplicación en DEV (`8082`, fijo) sigue el mismo criterio de S1 (puerto fijo, sin argumento) — distinto de `8080`, que ya usa `pagatu-catalogo-ms`. `prometheus` se agrega a `management.endpoints.web.exposure.include` en `pagatu-orden-ms-dev.yml` (3.7) junto a `health,info,metrics`, igual que ya hace `pagatu-catalogo-ms-dev.yml` desde S3 — sin ese endpoint expuesto, la dependencia sola no sirve de nada.
 
 #### 3.2 Levantar la base de datos de `pagatu-orden-ms`
 
@@ -379,6 +382,160 @@ PowerShell / bash macOS/Linux:
 cd services/pagatu-orden-ms
 docker compose -f compose-dev.yml up -d
 ```
+
+Antes de seguir, comprueba desde la consola que PostgreSQL DEV está listo y que la base de datos existe — mismo criterio que S1 (3.2.4):
+
+PowerShell / bash macOS/Linux:
+
+```bash
+docker exec -it pagatu-postgres-orden-dev psql -U pagatu -d pagatu_orden_db -c "SELECT current_database();"
+docker exec -it pagatu-postgres-orden-dev psql -U pagatu -d pagatu_orden_db -c "\dt"
+```
+
+Resultado esperado: `current_database` devuelve `pagatu_orden_db`, y `\dt` responde `No relations found.` (o "Did not find any relations.") — todavía no hay tablas, porque la migración Flyway (3.3) ni siquiera se ha creado. Es solo la prueba de que el contenedor está arriba y la base existe.
+
+#### 3.2.1 Crear las excepciones y el manejador global de errores
+
+**Producto del paso:** `pagatu-orden-ms` con el mismo manejo de errores que `pagatu-catalogo-ms` desde S1 — no algo que se improvise sesión a sesión.
+
+Estas clases son **compartidas**: no son específicas de `Orden` ni de `OrdenDetalle`, cualquier módulo de `pagatu-orden-ms` las reutiliza tal cual. Es exactamente el mismo par de clases que ya existe en `pagatu-catalogo-ms` (S1, 3.3.1), copiado y reempaquetado.
+
+**`exception/ResourceNotFoundException.java`**
+
+```java
+package pe.edu.upeu.orden.exception;
+
+public class ResourceNotFoundException extends RuntimeException {
+    public ResourceNotFoundException(String mensaje) {
+        super(mensaje);
+    }
+}
+```
+
+**`exception/GlobalExceptionHandler.java`**
+
+```java
+package pe.edu.upeu.orden.exception;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
+
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNotFound(ResourceNotFoundException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", Instant.now().toString());
+        body.put("status", HttpStatus.NOT_FOUND.value());
+        body.put("error", "Not Found");
+        body.put("message", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, Object>> handleValidation(MethodArgumentNotValidException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", Instant.now().toString());
+        body.put("status", HttpStatus.BAD_REQUEST.value());
+        body.put("error", "Bad Request");
+        body.put("message", "Error de validación en los datos enviados");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+}
+```
+
+`findById()` (3.6) todavía usa `RuntimeException` a mano en vez de `ResourceNotFoundException` — queda así, sin tocar, no es parte de esta sesión: el enfoque de hoy es la comunicación entre servicios, no cerrar ese detalle pendiente del CRUD base.
+
+#### 3.2.2 Crear el filtro de trazabilidad `CorrelationIdFilter` y configurar logs
+
+**Producto del paso:** `pagatu-orden-ms` generando el mismo `traceId` por petición que `pagatu-catalogo-ms` desde S1 — la pieza que 2.4 y 3.23 (más abajo) dan por hecha.
+
+Mismo filtro, mismo criterio que S1 (3.3.2): agrega un identificador de trazabilidad a cada request usando el header `X-Trace-ID` — si el cliente no lo envía, el filtro genera un UUID.
+
+**`filter/CorrelationIdFilter.java`**
+
+```java
+package pe.edu.upeu.orden.filter;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.MDC;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.UUID;
+
+@Component
+public class CorrelationIdFilter extends OncePerRequestFilter {
+
+    public static final String TRACE_ID_HEADER = "X-Trace-ID";
+    public static final String MDC_KEY = "traceId";
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                     HttpServletResponse response,
+                                     FilterChain filterChain) throws ServletException, IOException {
+        String traceId = request.getHeader(TRACE_ID_HEADER);
+        if (traceId == null || traceId.isBlank()) {
+            traceId = UUID.randomUUID().toString();
+        }
+        try {
+            MDC.put(MDC_KEY, traceId);
+            response.setHeader(TRACE_ID_HEADER, traceId);
+            filterChain.doFilter(request, response);
+        } finally {
+            MDC.remove(MDC_KEY);
+        }
+    }
+}
+```
+
+Crea también `src/main/resources/logback-spring.xml`, con salida por consola y por archivo en `logs/orden.log`:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <property name="LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId}] %-5level %logger{36} - %msg%n"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/orden.log</file>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/orden-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>
+```
+
+Este `traceId` identifica una petición **dentro de** `pagatu-orden-ms` (3.23: la llamada a `consultarProducto`, la excepción capturada, el fallback ejecutado, todo bajo el mismo valor en `logs/orden.log`) — no viaja todavía dentro de la llamada Feign hacia `pagatu-catalogo-ms`, que genera su propio `traceId` independiente para esa petición entrante. Propagar un mismo `traceId` de extremo a extremo entre microservicios (un `RequestInterceptor` de Feign que copie el valor del MDC al header saliente) queda fuera del alcance de esta sesión.
 
 #### 3.3 Crear la migración Flyway de `pagatu-orden-ms`
 
@@ -428,6 +585,13 @@ Esta sesión no guarda `subtotal` como columna propia, a propósito: es siempre 
 `expira_en` pertenece al carrito completo, no a cada línea: una orden en `CARRITO` tiene un plazo (por ejemplo, 30 minutos desde que se creó o se modificó por última vez) antes de que el sistema la dé por abandonada. Esta sesión declara la columna (`NULL`-able, sin `DEFAULT`) pero no llega a poblarla con un valor real ni a construir el proceso que la revise (un job programado, o una consulta al momento de leer la orden, que compare `expira_en` contra la hora actual y decida si la orden pasó a `EXPIRADA`) — eso es trabajo de una sesión futura de autoservicio (S11), cuando exista de verdad un carrito que un cliente construye a lo largo de varias peticiones, no una orden que `crear()` arma completa en una sola llamada. Declararla ya, aunque no se use todavía, evita otra migración más adelante sobre una tabla que para entonces ya tendrá filas reales. Una precisión importante para cuando esa sesión exista: pasar de `CARRITO` a `PENDIENTE_PAGO` no reinicia el plazo automáticamente — el vencimiento se decide sobre el carrito, no sobre cada estado por el que pasa.
 
 **Por qué `estado` arranca en `CARRITO`, no en `PENDIENTE`.** A diferencia de una versión anterior de este diseño, `CARRITO` ya no es aquí un valor por defecto sin efecto práctico: cuando la validación contra `pagatu-catalogo-ms` falla (Parte C, Circuit Breaker), la orden se queda en `CARRITO` en vez de avanzar — exactamente el mismo estado con el que se creó, no uno especial de "esperando validación". Esto es deliberado y calza con el negocio real: una orden cuyos precios no se pudieron confirmar todavía no es una orden confirmada, sigue siendo, en esencia, un carrito al que le falta completar la validación antes de poder pagar. Hasta S11 ("Integración con cliente frontend"), `crear()` construye y valida una orden completa en una sola llamada — nunca hay un carrito de verdad, con productos que se agregan de a uno antes de confirmar —, pero el nombre y el comportamiento del estado ya son los correctos: cuando S11 construya ese flujo de autoservicio, no hace falta renombrar nada ni cambiar la lógica de qué pasa cuando una orden se queda "atrás", porque `CARRITO` ya significa exactamente eso desde hoy.
+
+**Error frecuente**: probar `pagatu-orden-ms` con una versión anterior de este archivo (por ejemplo, mientras el diseño de `ordenes`/`orden_detalles` todavía estaba cambiando), y volver a intentar arrancar la aplicación después de editar `V1__create_orden_tables.sql`. Flyway falla con `Validate failed: Migrations have failed validation... Migration checksum mismatch for migration version 1` — no es un error de sintaxis SQL, es que `flyway_schema_history` (en la base de datos) ya tiene registrado el checksum de la versión *anterior* de este mismo archivo, y ya no coincide con el archivo actual. Como en DEV la base de datos es desechable, la solución no es editar `flyway_schema_history` a mano ni correr `flyway repair` — es resetear el volumen y dejar que Flyway aplique la migración desde cero:
+
+```bash
+docker compose -f compose-dev.yml down -v
+docker compose -f compose-dev.yml up -d
+```
 
 #### 3.4 Crear las entidades `Orden` y `OrdenDetalle`
 
@@ -576,9 +740,6 @@ Crea:
 
 ```text
 services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/dto/DetalleOrdenRequest.java
-services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/dto/OrdenRequest.java
-services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/dto/DetalleOrdenResponse.java
-services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/dto/OrdenResponse.java
 ```
 
 ```java
@@ -602,6 +763,12 @@ public class DetalleOrdenRequest {
     @Positive
     private Integer cantidad;
 }
+```
+
+Crea:
+
+```text
+services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/dto/OrdenRequest.java
 ```
 
 ```java
@@ -631,6 +798,12 @@ public class OrdenRequest {
 }
 ```
 
+Crea:
+
+```text
+services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/dto/DetalleOrdenResponse.java
+```
+
 ```java
 package pe.edu.upeu.orden.dto;
 
@@ -649,6 +822,12 @@ public class DetalleOrdenResponse {
     private BigDecimal precioUnitario;
     private BigDecimal subtotal;
 }
+```
+
+Crea:
+
+```text
+services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/dto/OrdenResponse.java
 ```
 
 ```java
@@ -698,7 +877,6 @@ Crea:
 
 ```text
 services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/service/OrdenService.java
-services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/service/OrdenServiceImpl.java
 ```
 
 ```java
@@ -706,11 +884,19 @@ package pe.edu.upeu.orden.service;
 
 import pe.edu.upeu.orden.dto.OrdenRequest;
 import pe.edu.upeu.orden.dto.OrdenResponse;
+import java.util.List;
 
 public interface OrdenService {
     OrdenResponse crear(OrdenRequest request);
     OrdenResponse findById(Long id);
+    List<OrdenResponse> listar();
 }
+```
+
+Crea:
+
+```text
+services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/service/OrdenServiceImpl.java
 ```
 
 ```java
@@ -768,6 +954,14 @@ public class OrdenServiceImpl implements OrdenService {
         return toResponse(orden);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<OrdenResponse> listar() {
+        return ordenRepository.findAll().stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
     private OrdenResponse toResponse(Orden orden) {
         List<DetalleOrdenResponse> detalles = orden.getDetalles().stream()
                 .map(d -> DetalleOrdenResponse.builder()
@@ -811,6 +1005,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/ordenes")
@@ -825,6 +1020,11 @@ public class OrdenController {
         return ordenService.crear(request);
     }
 
+    @GetMapping
+    public List<OrdenResponse> listar() {
+        return ordenService.listar();
+    }
+
     @GetMapping("/{id}")
     public OrdenResponse findById(@PathVariable Long id) {
         return ordenService.findById(id);
@@ -832,7 +1032,9 @@ public class OrdenController {
 }
 ```
 
-**Producto del paso:** en este punto, `pagatu-orden-ms` ya guarda órdenes con sus detalles, pero cada `precioUnitario` y `nombreProducto` queda vacío — todavía no consulta a `pagatu-catalogo-ms`. Eso se resuelve en la Parte B.
+`listar()` va sobre la ruta raíz (`@GetMapping`, sin `/{id}`) — mismo patrón que `CategoriaController`/`ProductoController` desde S1: un `GET` a `/api/v1/ordenes` sin identificador devuelve la colección completa, uno con `/{id}` devuelve un solo recurso. `OrdenRepository.findAll()` (heredado de `JpaRepository`, sin código propio que escribir) ya alcanza para esto — no necesita una consulta a medida como sí la necesitó `ProductoService` (S1) para traer la categoría relacionada.
+
+**Producto del paso:** en este punto, `pagatu-orden-ms` ya guarda y lista órdenes con sus detalles, pero cada `precioUnitario` y `nombreProducto` queda vacío — todavía no consulta a `pagatu-catalogo-ms`. Eso se resuelve en la Parte B.
 
 #### 3.7 Conectar `pagatu-orden-ms` a `pagatu-config`
 
@@ -844,20 +1046,19 @@ En `services/pagatu-orden-ms/src/main/resources/application.yml`:
 spring:
   application:
     name: pagatu-orden-ms
-  config:
-    import: "configserver:http://localhost:18888"
   profiles:
     active: dev
+  config:
+    import: "optional:configserver:${CONFIG_SERVER_URL:http://localhost:18888}"
 ```
+
+`optional:` evita que `pagatu-orden-ms` falle al arrancar si `pagatu-config` estuviera caído (degrada a la configuración local en vez de no arrancar); `${CONFIG_SERVER_URL:http://localhost:18888}` deja `18888` como valor por defecto en DEV, pero permite sobreescribirlo con una variable de entorno en otros ambientes — mismo patrón exacto que ya usa `pagatu-catalogo-ms` desde S2.
 
 Crea, en `infra/pagatu-config/config-repo`:
 
 ```text
-infra/pagatu-config/config-repo/orden-ms-dev.yml
-infra/pagatu-config/config-repo/orden-ms-prod.yml
+infra/pagatu-config/config-repo/pagatu-orden-ms-dev.yml
 ```
-
-`orden-ms-dev.yml`:
 
 ```yaml
 server:
@@ -892,17 +1093,21 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: health,info,metrics,prometheus
   endpoint:
     health:
       show-details: always
 ```
 
-`orden-ms-prod.yml`:
+Crea:
+
+```text
+infra/pagatu-config/config-repo/pagatu-orden-ms-prod.yml
+```
 
 ```yaml
 server:
-  port: 8082
+  port: 8080
 
 spring:
   datasource:
@@ -931,13 +1136,44 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,metrics,prometheus
   endpoint:
     health:
       show-details: never
+
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${random.value}
+  client:
+    service-url:
+      defaultZone: http://pagatu-eureka:8761/eureka
 ```
 
-`server.port: 8082` se repite igual en DEV y en PROD local — igual criterio que `pagatu-catalogo-ms` desde S1: puerto fijo, no dinámico. En PROD local ese `8082` es el puerto *interno* del contenedor, no el que el cliente usa desde el host (eso lo resuelve el Gateway, ver 3.9).
+`server.port` **no** se repite igual en DEV y en PROD local, a propósito: `8082` es un valor exclusivo de DEV, elegido solo para no chocar con `pagatu-catalogo-ms` (`8080`) mientras ambos corren sueltos en el mismo `localhost` con Maven (3.1). En PROD local, cada microservicio vive en su propio contenedor, con su propia red interna — nada compite por el `8080` "natural" de Spring Boot, así que no hace falta ese corrimiento: mismo criterio que ya aplican `pagatu-config`, `pagatu-eureka` y `pagatu-gateway` desde S3-S4 (sus puertos DEV con prefijo `1` vuelven a su valor natural en PROD). Que `pagatu-catalogo-ms` y `pagatu-orden-ms` compartan el mismo `8080` *interno* en PROD no es un choque: son contenedores distintos, cada uno con su propio espacio de puertos — Docker los distingue por nombre de servicio (`pagatu-catalogo-ms:8080` y `pagatu-orden-ms:8080` son direcciones completamente distintas dentro de `pagatu-prod-net`), no por el número de puerto a secas. Ninguno de los dos publica ese `8080` al host — solo `pagatu-gateway` lo hace, en su propio puerto de negocio (`28080`, S4).
+
+**Antes de ejecutar `pagatu-orden-ms`, confirma que `pagatu-config` realmente sirve estos archivos** — mismo criterio que S2 (3.8), y el paso que evita perder tiempo depurando un microservicio que arranca con la configuración por defecto en vez de la real. Con `pagatu-config` corriendo (3.18, más abajo, o ya arrancado si vienes siguiendo la sesión en orden):
+
+PowerShell:
+
+```powershell
+Invoke-RestMethod -Method Get -Uri "http://localhost:18888/pagatu-orden-ms/dev"
+Invoke-RestMethod -Method Get -Uri "http://localhost:18888/pagatu-orden-ms/prod"
+```
+
+bash macOS/Linux:
+
+```bash
+curl http://localhost:18888/pagatu-orden-ms/dev
+curl http://localhost:18888/pagatu-orden-ms/prod
+```
+
+Resultado esperado:
+
+- La respuesta indica `"name": "pagatu-orden-ms"` y `"profiles": ["dev"]` (o `["prod"]`).
+- En `propertySources` aparece un archivo como `file:.../config-repo/pagatu-orden-ms-dev.yml`.
+- Dentro de `source` se ven propiedades reales: `server.port` (`8082`), `spring.datasource.url`, `spring.flyway.enabled`.
+
+**Si `propertySources` sale vacío (`[]`), no continúes al siguiente paso.** Es la señal exacta de que `pagatu-config` no encontró el archivo — normalmente porque el nombre no coincide letra por letra con `spring.application.name` (`pagatu-orden-ms`, no `orden-ms`): Spring Cloud Config busca `{spring.application.name}-{perfil}.yml`, así que un archivo mal nombrado responde `200 OK` igual, pero sin ninguna propiedad — el error no se ve como un error, se ve como una orden que arranca en el puerto por defecto (`8080`) sin `datasource.url` configurado, mucho más difícil de diagnosticar ya con la aplicación corriendo que revisando esta respuesta ahora.
 
 #### 3.8 Conectar `pagatu-orden-ms` a `pagatu-eureka`
 
@@ -945,7 +1181,7 @@ management:
 
 En `pom.xml`, agrega Eureka Discovery Client (ya lo tiene `pagatu-catalogo-ms` desde S3).
 
-Agrega, al final de `orden-ms-dev.yml` (3.7) — junto a lo que ya existe, `server.port: 8082` se queda tal cual está, no se toca:
+Agrega, al final de `pagatu-orden-ms-dev.yml` (3.7) — junto a lo que ya existe, `server.port: 8082` se queda tal cual está, no se toca:
 
 ```yaml
 eureka:
@@ -958,7 +1194,7 @@ eureka:
       defaultZone: http://localhost:18761/eureka
 ```
 
-Y al final de `orden-ms-prod.yml`:
+Y al final de `pagatu-orden-ms-prod.yml`:
 
 ```yaml
 eureka:
@@ -984,6 +1220,53 @@ En `config-repo/pagatu-gateway-dev.yml` y `config-repo/pagatu-gateway-prod.yml` 
               predicates:
                 - Path=/api/v1/ordenes/**
 ```
+
+#### 3.9.1 Probar `pagatu-orden-ms` de punta a punta (sin Feign todavía)
+
+**Producto del paso:** confirmación de que todo lo construido en la Parte A funciona junto — proyecto, BD, migración, entidades, DTOs, repositorio/servicio/controlador, excepciones, `traceId`, Config Client, Eureka Client y ruta del Gateway — antes de empezar Feign.
+
+Con `pagatu-config`, `pagatu-eureka` y `pagatu-orden-ms` corriendo (BD levantada, 3.2), crea una orden directo contra `pagatu-orden-ms` (`8082`):
+
+PowerShell:
+
+```powershell
+Invoke-RestMethod -Method Post -Uri "http://localhost:8082/api/v1/ordenes" `
+  -ContentType "application/json" `
+  -Body '{"idCliente": 1, "metodoPago": "YAPE_PLIN", "detalles": [{"idProducto": 1, "cantidad": 2}]}'
+```
+
+bash macOS/Linux:
+
+```bash
+curl -X POST http://localhost:8082/api/v1/ordenes \
+  -H "Content-Type: application/json" \
+  -d '{"idCliente": 1, "metodoPago": "YAPE_PLIN", "detalles": [{"idProducto": 1, "cantidad": 2}]}'
+```
+
+Resultado esperado — `201 Created`:
+
+```json
+{
+  "id": 1,
+  "idCliente": 1,
+  "fechaCreacion": "2026-09-17T10:08:26.725204",
+  "estado": "CARRITO",
+  "total": null,
+  "detalles": [
+    {
+      "idProducto": 1,
+      "nombreProducto": null,
+      "cantidad": 2,
+      "precioUnitario": null,
+      "subtotal": null
+    }
+  ]
+}
+```
+
+**`estado: "CARRITO"`, con `nombreProducto`/`precioUnitario`/`subtotal`/`total` en `null`, es el resultado correcto de la Parte A — no un error.** `crear()` (3.6) todavía no le asigna ningún estado explícito a la orden, así que queda con el valor por defecto de la entidad (`@Builder.Default`, 3.4); nada en esta parte consulta todavía a `pagatu-catalogo-ms` para copiar nombre y precio real. Resolver justo eso es el tema de hoy — Feign en la Parte B, Circuit Breaker en la Parte C. Si tu respuesta luce así, la Parte A está completa.
+
+Revisa también que la respuesta trae el header `X-Trace-ID` (o `x-trace-id`, según el cliente) — confirma que `CorrelationIdFilter` (3.2.2) está funcionando. Prueba también `GET http://localhost:8082/api/v1/ordenes` (3.6) y confirma que la orden recién creada aparece en la lista; y, si ya completaste 3.9, la misma petición POST funciona igual contra `http://localhost:18080/api/v1/ordenes` (a través del Gateway, sin usar el puerto `8082` directo).
 
 ### Parte B — Tema 1: Feign, `pagatu-orden-ms` consulta `pagatu-catalogo-ms`
 
@@ -1151,7 +1434,7 @@ En `services/pagatu-orden-ms/pom.xml`:
 
 **Producto del paso:** parámetros del Circuit Breaker declarados en la configuración externa.
 
-Agrega, al final de `orden-ms-dev.yml` (3.7-3.8):
+Agrega, al final de `pagatu-orden-ms-dev.yml` (3.7-3.8):
 
 ```yaml
 resilience4j:

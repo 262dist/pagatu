@@ -14,10 +14,12 @@
 | Package name | `pe.edu.upeu.orden` |
 | Packaging | Jar |
 | Java | 21 |
-| Dependencias | Las mismas de `pagatu-catalogo-ms` (S1, Tabla 4): Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway. **Además**, agrega MapStruct a mano en el `pom.xml` (S1, 3.5.20) — Spring Initializr no lo ofrece como opción, y sin él el proyecto no compila apenas escribas el primer `Mapper`. |
+| Dependencias | Las mismas de `pagatu-catalogo-ms` (S1, Tabla 4): Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway. Agrega también **Prometheus** (categoría *Observability*, la ofrece el propio buscador de Spring Initializr — agrega `io.micrometer:micrometer-registry-prometheus`, scope `runtime`): si ya tienes `obs/` corriendo (Prometheus descubre por Eureka, S3 3.11), el microservicio nuevo queda visible ahí desde que arranca, sin ningún paso adicional. **Además**, agrega MapStruct a mano en el `pom.xml` (S1, 3.5.20) — a diferencia de Prometheus, Spring Initializr no lo ofrece como opción, y sin él el proyecto no compila apenas escribas el primer `Mapper`. |
 | Ubicación sugerente | `services/pagatu-orden-ms` |
 
 El puerto de base de datos (`15434` DEV / `25434` PROD local) sigue la misma numeración ya reservada para `orden_db` en la arquitectura del proyecto ([`docs/index.md`](../index.md)), distinta de `pagatu_catalogo_db` (`15432`/`25432`) para que ambos puedan correr al mismo tiempo. El puerto de aplicación en DEV (`8082`, fijo) sigue el mismo criterio de S1 (puerto fijo, sin argumento) — distinto de `8080`, que ya usa `pagatu-catalogo-ms`.
+
+**Puertos de base de datos y de infraestructura (`154xx`/`254xx`, `18xxx`/`28xxx`) son exclusivos de `pagatu`** — ningún otro repo del alumno (BomERP/LP2, lambda26/BigData) usa esos rangos, así que no chocan aunque corran al mismo tiempo. Los puertos de **aplicación** (`8080`-`808x`, sin prefijo) sí son un riesgo real: `pagatu-catalogo-ms` corre en `8080` igual que el backend de BomERP/LP2 (que además usa `8081` para su segunda instancia) — si ambos proyectos corren a la vez en la misma máquina, chocan. Lo mismo va a pasar con el puerto por defecto de Angular (`4200`) el día que exista `pagatu-ng` (S11), porque el frontend de LP2 también lo usa. No es un bug que corregir ahora — es una razón concreta para no levantar `pagatu` y BomERP/LP2 al mismo tiempo en la misma laptop, o para detener uno antes de levantar el otro.
 
 **`services/pagatu-orden-ms/compose-dev.yml`**
 
@@ -147,7 +149,7 @@ CREATE TABLE IF NOT EXISTS orden_detalles (
 | Package name | `pe.edu.upeu.cliente` |
 | Packaging | Jar |
 | Java | 21 |
-| Dependencias | Las mismas de `pagatu-catalogo-ms` (S1, Tabla 4): Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway. **Además**, agrega MapStruct a mano en el `pom.xml` (S1, 3.5.20) — Spring Initializr no lo ofrece como opción, y sin él el proyecto no compila apenas escribas el primer `Mapper`. |
+| Dependencias | Las mismas de `pagatu-catalogo-ms` (S1, Tabla 4): Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway. Agrega también **Prometheus** (categoría *Observability*, la ofrece el propio buscador de Spring Initializr — agrega `io.micrometer:micrometer-registry-prometheus`, scope `runtime`): si ya tienes `obs/` corriendo (Prometheus descubre por Eureka, S3 3.11), el microservicio nuevo queda visible ahí desde que arranca, sin ningún paso adicional. **Además**, agrega MapStruct a mano en el `pom.xml` (S1, 3.5.20) — a diferencia de Prometheus, Spring Initializr no lo ofrece como opción, y sin él el proyecto no compila apenas escribas el primer `Mapper`. |
 | Ubicación sugerente | `services/pagatu-cliente-ms` |
 
 El puerto de base de datos (`15433` DEV / `25433` PROD local) es el que ya estaba reservado para `cliente_db` en la arquitectura del proyecto ([`docs/index.md`](../index.md)) — el hueco entre `auth_db` (`15431`) y `orden_db` (`15434`). El puerto de aplicación en DEV es `8084`, fijo, distinto de `8080` (`pagatu-catalogo-ms`) y `8082` (`pagatu-orden-ms`); se deja `8081` y `8083` sin usar, por si se necesitan para segundas instancias o para `auth-ms`.

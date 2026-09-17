@@ -15,6 +15,10 @@ spring:
               uri: lb://pagatu-catalogo-ms
               predicates:
                 - Path=/api/v1/productos/**
+            - id: pagatu-orden-ordenes
+              uri: lb://pagatu-orden-ms
+              predicates:
+                - Path=/api/v1/ordenes/**
 
 eureka:
   instance:
