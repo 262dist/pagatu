@@ -1163,10 +1163,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#310-exponer-metricas-de-pagatu-catalogo-ms-para-prometheus" class="md-nav__link">
+  <a href="#310-exponer-metricas-de-pagatu-catalogo-ms-pagatu-config-y-pagatu-eureka-para-prometheus" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.10 Exponer métricas de pagatu-catalogo-ms para Prometheus
+        3.10 Exponer métricas de pagatu-catalogo-ms, pagatu-config y pagatu-eureka para Prometheus
       
     </span>
   </a>
@@ -1979,10 +1979,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#310-exponer-metricas-de-pagatu-catalogo-ms-para-prometheus" class="md-nav__link">
+  <a href="#310-exponer-metricas-de-pagatu-catalogo-ms-pagatu-config-y-pagatu-eureka-para-prometheus" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.10 Exponer métricas de pagatu-catalogo-ms para Prometheus
+        3.10 Exponer métricas de pagatu-catalogo-ms, pagatu-config y pagatu-eureka para Prometheus
       
     </span>
   </a>
@@ -2823,12 +2823,12 @@ docker interno: pagatu-eureka:8761
 </tr>
 </tbody>
 </table>
-<h3 id="310-exponer-metricas-de-pagatu-catalogo-ms-para-prometheus">3.10 Exponer métricas de <code>pagatu-catalogo-ms</code> para Prometheus<a class="headerlink" href="#310-exponer-metricas-de-pagatu-catalogo-ms-para-prometheus" title="Permanent link">&para;</a></h3>
+<h3 id="310-exponer-metricas-de-pagatu-catalogo-ms-pagatu-config-y-pagatu-eureka-para-prometheus">3.10 Exponer métricas de <code>pagatu-catalogo-ms</code>, <code>pagatu-config</code> y <code>pagatu-eureka</code> para Prometheus<a class="headerlink" href="#310-exponer-metricas-de-pagatu-catalogo-ms-pagatu-config-y-pagatu-eureka-para-prometheus" title="Permanent link">&para;</a></h3>
 <div class="admonition note">
 <p class="admonition-title">3.10 a 3.14 son opcionales</p>
 <p>El alcance evaluado de S3 termina en 3.9 (dos instancias de <code>pagatu-catalogo-ms</code> registradas en DEV, 2.2-2.4). Levantar Prometheus, Loki y Promtail junto con Eureka, dos instancias de <code>pagatu-catalogo-ms</code> y <code>pagatu-config</code> a la vez puede exigir más memoria y CPU de la que tiene la laptop de un estudiante — por eso estos cinco pasos quedan como contenido adicional, no como requisito para cerrar la sesión ni para la evaluación (4.4, 4.6). Quien pueda completarlos, sustenta la aplicación práctica de 2.3 (Service Registry aplicado a un consumidor distinto del registro) con evidencia real, no solo en teoría.</p>
 </div>
-<p><strong>Producto del paso:</strong> <code>pagatu-catalogo-ms</code> exponiendo un endpoint de métricas en formato Prometheus.</p>
+<p><strong>Producto del paso:</strong> <code>pagatu-catalogo-ms</code>, <code>pagatu-config</code> y <code>pagatu-eureka</code> exponiendo cada uno un endpoint de métricas en formato Prometheus — no solo el microservicio de negocio, también la infraestructura que lo sostiene.</p>
 <p>Agrega la dependencia en <code>services/pagatu-catalogo-ms/pom.xml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">&lt;dependency&gt;</span>
 <span class="w">    </span><span class="nt">&lt;groupId&gt;</span>io.micrometer<span class="nt">&lt;/groupId&gt;</span>
@@ -2851,6 +2851,32 @@ docker interno: pagatu-eureka:8761
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8080/actuator/prometheus
 </code></pre></div>
 <p>Resultado esperado: una respuesta en texto plano, con métricas como <code>process_uptime_seconds</code> o <code>http_server_requests_seconds_count</code>.</p>
+<p><strong>La misma dependencia, en <code>infra/pagatu-config/pom.xml</code> e <code>infra/pagatu-eureka/pom.xml</code>:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;groupId&gt;</span>io.micrometer<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>micrometer-registry-prometheus<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;scope&gt;</span>runtime<span class="nt">&lt;/scope&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div>
+<p>En <code>infra/pagatu-config/src/main/resources/application.yml</code> (el único archivo de <code>pagatu-config</code> — no lee de <code>config-repo</code> para su propia configuración, 3.4), agrega <code>prometheus</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">management</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">endpoints</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">web</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">exposure</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health,info,metrics,prometheus</span>
+</code></pre></div>
+<p>Y en <code>config-repo/pagatu-eureka-dev.yml</code>, lo mismo:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">management</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">endpoints</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">web</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">exposure</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health,info,metrics,prometheus</span>
+</code></pre></div>
+<p>Reinicia <code>pagatu-config</code> y <code>pagatu-eureka</code>, y verifica igual que con <code>pagatu-catalogo-ms</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18888/actuator/prometheus"</span>
+<span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18761/actuator/prometheus"</span>
+</code></pre></div>
+<p><code>pagatu-config</code> y <code>pagatu-eureka</code> no son "solo infraestructura de arranque" (2.6): también son procesos Java corriendo, con su propio uso de memoria, su propio <em>uptime</em>, sus propias peticiones HTTP — medirlos con las mismas herramientas que al microservicio de negocio es la misma idea de fondo que ya justifica monitorear <code>pagatu-eureka</code> en la Figura 1 de S06 (más adelante en el curso): protegen la capacidad de operar, no solo el tráfico de negocio.</p>
 <h3 id="311-crear-obs-con-prometheus-descubrimiento-via-eureka">3.11 Crear <code>obs</code> con Prometheus (descubrimiento vía Eureka)<a class="headerlink" href="#311-crear-obs-con-prometheus-descubrimiento-via-eureka" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> Prometheus corriendo en Docker, configurado para descubrir instancias preguntándole a <code>pagatu-eureka</code> — no con una lista de direcciones escrita a mano.</p>
 <p>Crea <code>obs/prometheus/prometheus-dev.yml</code>:</p>
@@ -2869,8 +2895,23 @@ docker interno: pagatu-eureka:8761
 <span class="w">        </span><span class="nt">regex</span><span class="p">:</span><span class="w"> </span><span class="s">"localhost:(.+)"</span>
 <span class="w">        </span><span class="nt">target_label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__address__</span>
 <span class="w">        </span><span class="nt">replacement</span><span class="p">:</span><span class="w"> </span><span class="s">"host.docker.internal:$1"</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="s">"pagatu-config"</span>
+<span class="w">    </span><span class="nt">metrics_path</span><span class="p">:</span><span class="w"> </span><span class="s">"/actuator/prometheus"</span>
+<span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"host.docker.internal:18888"</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">application</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-config</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="s">"pagatu-eureka"</span>
+<span class="w">    </span><span class="nt">metrics_path</span><span class="p">:</span><span class="w"> </span><span class="s">"/actuator/prometheus"</span>
+<span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"host.docker.internal:18761"</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">application</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-eureka</span>
 </code></pre></div>
 <p><code>eureka_sd_configs</code> es la pieza clave: Prometheus consulta el registro de <code>pagatu-eureka</code> igual que lo haría cualquier otro cliente de descubrimiento (2.6), y ajusta su lista de <em>targets</em> automáticamente cada vez que una instancia aparece o desaparece del registro. Los dos <code>relabel_configs</code> cumplen roles distintos. El primero solo renombra una etiqueta (<code>__meta_eureka_app_name</code> a <code>application</code>), cosmético. El segundo existe porque <code>pagatu-eureka</code> reporta la dirección de cada instancia usando <code>eureka.instance.hostname: localhost</code> (fijado en 3.7 para que el dashboard se vea limpio) — pero "localhost" dentro del propio contenedor de Prometheus significa el contenedor mismo, no tu máquina; sin corregirlo, Prometheus intentaría conectarse a sí mismo y el target quedaría en <code>DOWN</code> con "connection refused". Ese segundo <code>relabel_configs</code> reescribe <code>localhost:&lt;puerto&gt;</code> a <code>host.docker.internal:&lt;puerto&gt;</code> <strong>solo para el scrape de Prometheus</strong>, sin tocar <code>eureka.instance.hostname</code> — así el dashboard de Eureka se sigue viendo limpio (<code>localhost:8080</code>) y Prometheus igual logra conectarse.</p>
+<p><code>pagatu-config</code> y <code>pagatu-eureka</code> <strong>no</strong> entran por <code>eureka_sd_configs</code>, a propósito: ninguno de los dos se registra a sí mismo como cliente de Eureka. <code>pagatu-eureka</code> lo declara explícito (<code>register-with-eureka: false</code>, 3.4) — un servidor de registro no tiene sentido registrándose contra sí mismo. <code>pagatu-config</code> directamente no tiene ningún bloque <code>eureka:</code> en su configuración — nunca fue cliente de Eureka, ni falta que le hace (3.4-3.5). El descubrimiento automático solo encuentra lo que está en el registro; para estos dos, la única forma de que Prometheus los encuentre es decirle la dirección a mano (<code>static_configs</code>), igual que cualquier sistema que no participa del mecanismo de descubrimiento (2.4).</p>
 <p>Crea <code>obs/compose-dev.yml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-obs-dev</span>
 
@@ -2894,11 +2935,11 @@ docker interno: pagatu-eureka:8761
 docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-dev.yml<span class="w"> </span>up<span class="w"> </span>-d
 </code></pre></div>
 <h3 id="312-verificar-targets-descubiertos-y-metricas-recolectadas">3.12 Verificar targets descubiertos y métricas recolectadas<a class="headerlink" href="#312-verificar-targets-descubiertos-y-metricas-recolectadas" title="Permanent link">&para;</a></h3>
-<p><strong>Producto del paso:</strong> confirmación de que Prometheus descubrió, por su cuenta, las dos instancias de <code>pagatu-catalogo-ms</code> ya registradas en Eureka (3.9).</p>
+<p><strong>Producto del paso:</strong> confirmación de que Prometheus descubrió, por su cuenta, las dos instancias de <code>pagatu-catalogo-ms</code> ya registradas en Eureka (3.9) — y que también recolecta <code>pagatu-config</code> y <code>pagatu-eureka</code> vía sus targets estáticos (3.11).</p>
 <p>Abre en el navegador:</p>
 <div class="highlight"><pre><span></span><code>http://localhost:19090/targets
 </code></pre></div>
-<p>Resultado esperado: dos <em>targets</em> bajo el job <code>pagatu-microservicios</code>, uno por instancia de <code>pagatu-catalogo-ms</code>, ambos en estado <code>UP</code> — ninguno escrito a mano en <code>prometheus-dev.yml</code>.</p>
+<p>Resultado esperado: cuatro <em>targets</em> en total — dos bajo el job <code>pagatu-microservicios</code> (uno por instancia de <code>pagatu-catalogo-ms</code>, ninguno escrito a mano), y uno cada uno bajo <code>pagatu-config</code> y <code>pagatu-eureka</code> (estos sí, con la dirección fija de 3.11) — los cuatro en estado <code>UP</code>.</p>
 <p><strong>Tabla 6. Verificación de observabilidad antes de continuar</strong></p>
 <table>
 <thead>
@@ -2909,12 +2950,12 @@ docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> 
 </thead>
 <tbody>
 <tr>
-<td><code>GET /actuator/prometheus</code> en cada instancia</td>
+<td><code>GET /actuator/prometheus</code> en cada instancia, en <code>pagatu-config</code> y en <code>pagatu-eureka</code></td>
 <td>Métricas en texto plano, <code>200 OK</code></td>
 </tr>
 <tr>
 <td><code>http://localhost:19090/targets</code></td>
-<td>Dos targets <code>pagatu-microservicios</code>, ambos <code>UP</code>, sin configuración manual de direcciones</td>
+<td>Dos targets <code>pagatu-microservicios</code> (descubiertos), más <code>pagatu-config</code> y <code>pagatu-eureka</code> (estáticos) — los cuatro <code>UP</code></td>
 </tr>
 <tr>
 <td>Detener una instancia de <code>pagatu-catalogo-ms</code></td>
@@ -3133,7 +3174,7 @@ docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> 
 <p>Este bloque es la versión en PROD de 3.10-3.14 — mismas dos herramientas, con una diferencia clave: en PROD, Prometheus y Loki no le hablan a <code>host.docker.internal</code>, sino directamente al nombre del servicio dentro de <code>pagatu-prod-net</code> (<code>pagatu-eureka</code>), igual que ya hace <code>pagatu-catalogo-ms</code> para su propia configuración (S2, 3.12).</p>
 <p>Esto no es una preferencia de estilo — en PROD, <code>services/pagatu-catalogo-ms/compose.yml</code> tiene el puerto <code>8080</code> comentado (<code>#ports: #  - "28080:8080"</code>, S2): las réplicas de <code>pagatu-catalogo-ms</code> <strong>no publican ningún puerto al host</strong>, solo son alcanzables dentro de la red Docker. Prometheus no tiene otra forma de llegar a <code>/actuator/prometheus</code> de cada réplica más que compartiendo esa misma red — por eso <code>pagatu-prometheus</code> en <code>obs/compose.yml</code> (abajo) lleva <code>networks: - pagatu-prod-net</code>, igual que <code>pagatu-eureka</code> e <code>infra/compose.yml</code>. Sin esa línea, Prometheus descubre las instancias vía Eureka (que sí conoce sus direcciones internas) pero cada scrape falla con "connection refused" — el contenedor de Prometheus, en su propia red por defecto, no tiene ruta hacia contenedores de otra red. <code>pagatu-loki</code> y <code>pagatu-promtail</code> se unen a la misma red por consistencia, aunque estrictamente ninguno de los dos necesita alcanzar nada fuera de <code>obs/</code> — Loki solo recibe <em>push</em> de Promtail (dentro del mismo <code>compose.yml</code>), y Promtail solo lee un archivo montado del host, no hace llamadas de red hacia otro contenedor.</p>
 <p><strong>1. Nada que agregar al volumen de logs.</strong> <code>services/pagatu-catalogo-ms/compose.yml</code> ya monta <code>./logs:/app/logs</code> desde S2 — un <em>bind mount</em> directo a <code>services/pagatu-catalogo-ms/logs</code> en el host, el mismo archivo que ya lee Promtail en DEV (3.13). No hace falta crear un volumen nombrado ni tocar ese <code>compose.yml</code>: Promtail, en el paso 4, monta esa misma carpeta del host directamente, igual que en DEV.</p>
-<p><strong>Sí hace falta exponer el endpoint de Prometheus en PROD</strong> — 3.10 lo agregó a <code>pagatu-catalogo-ms-dev.yml</code>, pero <code>pagatu-catalogo-ms-prod.yml</code> (<code>config-repo</code>) todavía no lo tiene. Sin esto, Prometheus descubre la instancia vía Eureka pero recibe <code>404</code> al intentar <code>/actuator/prometheus</code>:</p>
+<p><strong>Sí hace falta exponer el endpoint de Prometheus en PROD</strong> — 3.10 lo agregó a <code>pagatu-catalogo-ms-dev.yml</code>, pero <code>pagatu-catalogo-ms-prod.yml</code> (<code>config-repo</code>) todavía no lo tiene. Lo mismo aplica a <code>pagatu-config</code> (<code>application.yml</code>, único archivo) y a <code>pagatu-eureka-prod.yml</code>. Sin esto, Prometheus descubre (o apunta directo, para <code>pagatu-config</code>/<code>pagatu-eureka</code>) pero recibe <code>404</code> al intentar <code>/actuator/prometheus</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">management</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">endpoints</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">web</span><span class="p">:</span>
@@ -3141,7 +3182,7 @@ docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> 
 <span class="w">        </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health,info,metrics,prometheus</span>
 </code></pre></div>
 <p>No hace falta tocar <code>logging.file.name</code> — igual que en DEV (3.13), <code>logback-spring.xml</code> ya fija la ruta del archivo directamente.</p>
-<p><strong>2. Crear <code>obs/prometheus/prometheus.yml</code></strong> (bare, PROD — mismo patrón):</p>
+<p><strong>2. Crear <code>obs/prometheus/prometheus.yml</code></strong> (bare, PROD — mismo patrón, con los mismos dos targets estáticos de 3.11, ahora apuntando al nombre del servicio dentro de <code>pagatu-prod-net</code> en vez de <code>host.docker.internal</code>):</p>
 <div class="highlight"><pre><span></span><code><span class="nt">global</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">scrape_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">15s</span>
 
@@ -3153,6 +3194,20 @@ docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> 
 <span class="w">    </span><span class="nt">relabel_configs</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">source_labels</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">__meta_eureka_app_name</span><span class="p p-Indicator">]</span>
 <span class="w">        </span><span class="nt">target_label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">application</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="s">"pagatu-config"</span>
+<span class="w">    </span><span class="nt">metrics_path</span><span class="p">:</span><span class="w"> </span><span class="s">"/actuator/prometheus"</span>
+<span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"pagatu-config:8888"</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">application</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-config</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="s">"pagatu-eureka"</span>
+<span class="w">    </span><span class="nt">metrics_path</span><span class="p">:</span><span class="w"> </span><span class="s">"/actuator/prometheus"</span>
+<span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"pagatu-eureka:8761"</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">application</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-eureka</span>
 </code></pre></div>
 <p><strong>3. Crear <code>obs/promtail/promtail-config.yml</code></strong> (bare, PROD — mismo patrón):</p>
 <div class="highlight"><pre><span></span><code><span class="nt">server</span><span class="p">:</span>
