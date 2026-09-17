@@ -175,7 +175,7 @@ Cualquier microservicio que necesita datos que pertenecen a otro se comunica a t
 
 Que un cliente resuelva el nombre lógico de un servicio consultando directamente a un registro (en vez de pasar por un intermediario como un Gateway) es, además, un patrón con nombre propio: **Client-Side Service Discovery** (Richardson, s.f.) — el mismo mecanismo que ya aplican, sin nombrarlo así, cualquier Gateway que resuelve `lb://` y cualquier cliente de un registro de servicios, aplicado ahora a una llamada entre microservicios en vez de a una ruta externa.
 
-**OpenFeign** es la implementación concreta de ambas ideas que usa `pagatu-orden-ms` hoy: una interfaz anotada con `@FeignClient(name = "...")`, con un método anotado como si fuera un `@Controller` (`@GetMapping`), es en tiempo de ejecución un cliente HTTP completo. `name` no es una dirección fija: es el `spring.application.name` con el que el otro servicio ya está registrado en `pagatu-eureka` (S3) — Feign resuelve ese nombre contra Eureka en tiempo de ejecución, el mismo mecanismo de balanceo de carga que ya usa el Gateway desde S4.
+**OpenFeign** (Spring Cloud Team, 2024) es la implementación concreta de ambas ideas que usa `pagatu-orden-ms` hoy: una interfaz anotada con `@FeignClient(name = "...")`, con un método anotado como si fuera un `@Controller` (`@GetMapping`), es en tiempo de ejecución un cliente HTTP completo. `name` no es una dirección fija: es el `spring.application.name` con el que el otro servicio ya está registrado en `pagatu-eureka` (S3) — Feign resuelve ese nombre contra Eureka en tiempo de ejecución, el mismo mecanismo de balanceo de carga que ya usa el Gateway desde S4.
 
 **DTO entre servicios**: el contrato que un microservicio expone a otros no es su entidad JPA. `pagatu-orden-ms` no necesita todo lo que `Producto` guarda en `pagatu-catalogo-ms` — necesita el mínimo para armar una línea de orden: id, nombre y precio. Por la misma razón, `id_producto` en `orden_detalles` no lleva `FOREIGN KEY` hacia `productos` (ver 3.3): esa tabla vive en la base de datos de otro microservicio, y la única forma válida de llegar a ella es esta llamada declarativa, nunca una relación directa entre bases de datos separadas.
 
@@ -185,7 +185,7 @@ Que un cliente resuelva el nombre lógico de un servicio consultando directament
 
 En una llamada síncrona entre dos microservicios, si el servicio que responde no está disponible, responde lento, o falla, y no hay nada que lo controle, esa excepción se propaga tal cual hacia quien hizo la llamada — un problema del servicio que falló termina siendo, también, un problema del que lo consume.
 
-**Circuit Breaker** (interruptor de circuito) evita ese contagio: envuelve una llamada que puede fallar y decide, según cuántas veces falló recientemente, si sigue intentando la llamada real o si corta el circuito y ejecuta de inmediato una alternativa (*fallback*) — sin siquiera intentar una llamada que probablemente va a fallar.
+**Circuit Breaker** (interruptor de circuito) evita ese contagio: envuelve una llamada que puede fallar y decide, según cuántas veces falló recientemente, si sigue intentando la llamada real o si corta el circuito y ejecuta de inmediato una alternativa (*fallback*) — sin siquiera intentar una llamada que probablemente va a fallar. El patrón fue descrito formalmente por Fowler (2014) y popularizado como práctica de ingeniería de producción por Nygard (2018); `pagatu-orden-ms` lo implementa hoy con Resilience4j (Resilience4j, 2024), la librería concreta detrás de `@CircuitBreaker` (3.15-3.17).
 
 **Tabla 2. Los tres estados de un Circuit Breaker**
 
@@ -274,6 +274,46 @@ En esta sesión, eso significa revisar logs de `pagatu-orden-ms`, logs de `pagat
 ## 3. Aplica: actividad práctica guiada
 
 Tiempo: 4h.
+
+**Actividad:** construcción guiada de `pagatu-orden-ms`, el segundo microservicio del proyecto, que consulta a `pagatu-catalogo-ms` por Feign para validar y copiar el precio real de cada producto, con una respuesta controlada (Circuit Breaker) cuando esa llamada falla (Producto de la sesión en 1.4).
+
+**Propósito de la actividad:** que cada estudiante construya un microservicio que depende de otro ya existente, resolviendo esa dependencia de forma declarativa (Feign, por nombre lógico contra Eureka) y con una respuesta de negocio controlada cuando el servicio consultado no responde (Circuit Breaker) — verificando ambos casos con evidencia real (capturas del estado `OPEN`, no solo el caso feliz).
+
+**Orientaciones metodológicas:** en el laboratorio, el docente construye `pagatu-orden-ms` paso a paso frente a la clase, en el mismo orden de las tres partes de la sesión — primero el microservicio completo (Parte A), después la conexión Feign (Parte B), al final el Circuit Breaker (Parte C) —; los estudiantes replican cada paso en su propio equipo, y provocan ellos mismos la caída de `pagatu-catalogo-ms` (3.21-3.22) para verificar el fallback en su propia consola, no solo leyendo el resultado esperado en la guía.
+
+**Actividades para realizar:**
+
+*Parte A — Construir `pagatu-orden-ms`:*
+
+- **3.1** Crear el proyecto base de `pagatu-orden-ms`.
+- **3.2** Levantar la base de datos de `pagatu-orden-ms`.
+- **3.3** Crear la migración Flyway de `pagatu-orden-ms`.
+- **3.4** Crear las entidades `Orden` y `OrdenDetalle`.
+- **3.5** Crear los DTO de entrada y salida.
+- **3.6** Crear repositorio, servicio y controlador base (sin Feign todavía).
+- **3.7** Conectar `pagatu-orden-ms` a `pagatu-config`.
+- **3.8** Conectar `pagatu-orden-ms` a `pagatu-eureka`.
+- **3.9** Agregar la ruta de `pagatu-orden-ms` al Gateway.
+
+*Parte B — Tema 1: Feign, `pagatu-orden-ms` consulta `pagatu-catalogo-ms`:*
+
+- **3.10** Agregar la dependencia de OpenFeign.
+- **3.11** Crear el DTO de producto.
+- **3.12** Crear el cliente Feign hacia `pagatu-catalogo-ms`.
+- **3.13** Integrar el cliente Feign en `OrdenServiceImpl`.
+
+*Parte C — Tema 2: Circuit Breaker, respuesta controlada si `pagatu-catalogo-ms` falla:*
+
+- **3.14** Probar el problema sin protección todavía.
+- **3.15** Agregar la dependencia de Resilience4j.
+- **3.16** Configurar el Circuit Breaker nombrado `catalogo`.
+- **3.17** Proteger la llamada a `pagatu-catalogo-ms` con `@CircuitBreaker`.
+- **3.18** Levantar infraestructura en DEV.
+- **3.19** Levantar `pagatu-catalogo-ms` y `pagatu-orden-ms` en DEV.
+- **3.20** Probar el flujo correcto (Feign funcionando).
+- **3.21** Probar el Circuit Breaker: `pagatu-catalogo-ms` caído.
+- **3.22** Provocar la apertura del circuito.
+- **3.23** Validar trazabilidad en logs.
 
 **Punto de partida común:** todo el equipo debe comenzar exactamente desde donde quedó S4 (Gateway y balanceo de carga), no desde su propio avance individual. Clona la rama `s04-gateway-lb`:
 
@@ -1285,6 +1325,14 @@ Con `pagatu-catalogo-ms` todavía caído, repite la misma petición de 3.20 al m
 
 Revisa los logs de `pagatu-orden-ms` para confirmar, con el `traceId` de cada petición: la llamada Feign hacia `pagatu-catalogo-ms`, la excepción capturada cuando falla, y la ejecución del fallback.
 
+**Evidencia de aprendizaje:**
+
+- `pagatu-orden-ms` operativo en DEV, registrado en `pagatu-eureka` y con configuración externa desde `pagatu-config`.
+- Orden creada con éxito, con `nombreProducto`/`precioUnitario`/`total` reales, obtenidos de `pagatu-catalogo-ms` por Feign (sin dirección fija).
+- Orden creada con `pagatu-catalogo-ms` detenido, con `estado: CARRITO` y `total: null` en vez de un error `500`.
+- Circuito capturado en sus tres estados (`CLOSED`/`OPEN`/`HALF_OPEN`), con al menos una captura del estado `OPEN`.
+- Logs de `pagatu-orden-ms` con el `traceId` de una petición, mostrando la llamada Feign y la ejecución del fallback.
+
 ## 4. Crea: actividad autónoma
 
 Tiempo: 4h fuera del aula.
@@ -1391,7 +1439,7 @@ Pega esta página como la última hoja del PDF, con tus respuestas.
 
 | Dimensión | Peso | 3 - Logro destacado | 2 - Logro | 1 - Proceso | 0 - Inicio | Puntuación obtenida |
 |---|---:|---|---|---|---|---:|
-| 1. `pagatu-orden-ms` construido | 2 | Microservicio completo: entidad, DTO, repositorio, servicio, controlador, registrado en Eureka y con configuración externa. | Microservicio funcional con partes menores incompletas. | Microservicio parcial. | No evidencia el microservicio nuevo. | |
+| 1. `pagatu-cliente-ms` construido | 2 | Microservicio completo: entidad, DTO, repositorio, servicio, controlador, registrado en Eureka y con configuración externa. | Microservicio funcional con partes menores incompletas. | Microservicio parcial. | No evidencia el microservicio nuevo. | |
 | 2. Comunicación Feign | 2 | Evidencia llamada declarativa por nombre lógico, sin dirección fija, con DTO propio. | Evidencia llamada funcional con Feign. | Evidencia parcial o poco clara. | No evidencia comunicación por Feign. | |
 | 3. Circuit Breaker | 2 | Evidencia los tres estados (`CLOSED`/`OPEN`/`HALF_OPEN`) con capturas y explica el fallback. | Evidencia fallback funcional ante fallo. | Circuit Breaker configurado pero no probado a fallar. | No evidencia Circuit Breaker. | |
 | 4. Contrato y datos | 1 | Usa DTOs propios en ambos servicios, sin exponer entidades JPA. | Usa contrato funcional. | Contrato parcial o confuso. | No evidencia contrato. | |
