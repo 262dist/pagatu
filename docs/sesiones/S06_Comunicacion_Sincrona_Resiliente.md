@@ -118,7 +118,7 @@ El resto de piezas del diagrama todavía no existe, y se muestra igual porque ya
 - **Saga entre `orden-ms` y `pago-ms`** — S9, "Consistencia distribuida en procesos de negocio"; no se dibuja como componente aparte porque no es un microservicio propio — es lógica de coordinación y compensación que vive dentro de `pagatu-orden-ms` y `pago-ms` (por eso ambos nodos ya anotan "S9: coordina Saga"), activada cuando un pago falla después de confirmada la orden.
 - **Observabilidad** — S10, "Observabilidad y diagnóstico de sistemas distribuidos"; logs, health, métricas y paneles de diagnóstico sobre cada servicio, no solo sobre el tráfico que cruza el Gateway. Monitorear únicamente el Gateway dejaría ciego justo lo que esta sesión construye: la llamada Feign de `pagatu-orden-ms` a `pagatu-catalogo-ms` nunca pasa por el Gateway, y el estado del Circuit Breaker vive dentro de `pagatu-orden-ms`. `pagatu-eureka` se monitorea por la misma razón que Gateway: es una dependencia de tráfico en vivo — cada resolución `lb://` lo consulta en ese instante, y si está degradado, el enrutamiento puede caer sobre instancias muertas. `pagatu-config`, en cambio, se monitorea por un motivo distinto: los microservicios leen su configuración solo al arrancar (*pull on startup*, S2, 3.10), así que si `pagatu-config` cae después de que todo ya arrancó, el tráfico en vivo no lo nota — el problema aparece recién en el próximo reinicio o escalado. Protege la capacidad de operar, no el tráfico de ahora mismo.
 
-  **Que Eureka ya "monitoree" las instancias no reemplaza a Observabilidad — responden preguntas distintas.** Eureka solo confirma que una instancia sigue viva (recibió su heartbeat) y dónde está; no agrega logs, no mide latencia ni uso de recursos, y no sabe nada del estado interno de un servicio. Ejemplo con lo de hoy: si el Circuit Breaker de `pagatu-orden-ms` está en `OPEN` y todas las órdenes caen en `PENDIENTE_VALIDACION`, Eureka lo seguiría mostrando como `UP` — la instancia está viva, el problema es de lógica de negocio degradada, invisible para un registro de servicios. Eso solo lo revela Observabilidad (Actuator + métricas de Resilience4j, S10).
+  **Que Eureka ya "monitoree" las instancias no reemplaza a Observabilidad — responden preguntas distintas.** Eureka solo confirma que una instancia sigue viva (recibió su heartbeat) y dónde está; no agrega logs, no mide latencia ni uso de recursos, y no sabe nada del estado interno de un servicio. Ejemplo con lo de hoy: si el Circuit Breaker de `pagatu-orden-ms` está en `OPEN` y todas las órdenes se quedan en `CARRITO` sin poder avanzar, Eureka lo seguiría mostrando como `UP` — la instancia está viva, el problema es de lógica de negocio degradada, invisible para un registro de servicios. Eso solo lo revela Observabilidad (Actuator + métricas de Resilience4j, S10).
 
 ## 2. Explica
 
@@ -134,7 +134,7 @@ flowchart TB
     Feign["Feign: ProductoClient<br/>resuelve pagatu-catalogo-ms<br/>por nombre lógico (Eureka)"]
     CB["Circuit Breaker<br/>CLOSED / OPEN / HALF_OPEN"]
     Catalogo["pagatu-catalogo-ms<br/>GET /api/v1/productos/id"]
-    Fallback["Fallback:<br/>orden PENDIENTE_VALIDACION"]
+    Fallback["Fallback:<br/>orden permanece en CARRITO"]
 
     Orden -->|"1. consulta producto"| Feign
     Feign -->|"2. delega en"| CB
@@ -275,7 +275,13 @@ En esta sesión, eso significa revisar logs de `pagatu-orden-ms`, logs de `pagat
 
 Tiempo: 4h.
 
-La sesión tiene tres partes, en orden: primero se construye `pagatu-orden-ms` como microservicio completo (sin Feign todavía) — si ya avanzaste esto como parte del trabajo autónomo de S2 (4.1), verifica que coincide con 3.1-3.9 y continúa desde la Parte B; después se conecta a `pagatu-catalogo-ms` con Feign (Tema 1), y al final se protege esa llamada con Circuit Breaker (Tema 2).
+**Punto de partida común:** todo el equipo debe comenzar exactamente desde donde quedó S4 (Gateway y balanceo de carga), no desde su propio avance individual. Clona la rama `s04-gateway-lb`:
+
+```bash
+git clone --branch s04-gateway-lb https://github.com/262dist/pagatu.git
+```
+
+Levanta en DEV los servicios base ya construidos hasta S4 (`pagatu-config`, `pagatu-eureka`, `pagatu-gateway`, `pagatu-catalogo-ms`) antes de tocar código nuevo — si alguno falla en arrancar, el problema es de una sesión anterior, no de esta. Recién a partir de aquí continúa con las tres partes de la sesión, en orden: primero se construye `pagatu-orden-ms` como microservicio completo (sin Feign todavía) — si ya avanzaste esto como parte del trabajo autónomo de S2 (4.1), verifica que coincide con 3.1-3.9 y continúa desde la Parte B; después se conecta a `pagatu-catalogo-ms` con Feign (Tema 1), y al final se protege esa llamada con Circuit Breaker (Tema 2).
 
 ### Parte A — Construir `pagatu-orden-ms`
 
@@ -353,11 +359,12 @@ CREATE TABLE IF NOT EXISTS ordenes (
     nombre_cliente VARCHAR(150),
     direccion_cliente VARCHAR(200),
     fecha_creacion TIMESTAMP NOT NULL DEFAULT now(),
-    estado VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE',
+    estado VARCHAR(20) NOT NULL DEFAULT 'CARRITO',
     tipo_comprobante VARCHAR(20) NOT NULL DEFAULT 'BOLETA_SIMPLE',
     metodo_pago VARCHAR(20) NOT NULL,
     momento_pago VARCHAR(20) NOT NULL DEFAULT 'ADELANTADO',
-    total NUMERIC(10,2) NOT NULL DEFAULT 0,
+    total NUMERIC(10,2),
+    expira_en TIMESTAMP,
     PRIMARY KEY (id)
 );
 
@@ -365,6 +372,7 @@ CREATE TABLE IF NOT EXISTS orden_detalles (
     id BIGINT GENERATED BY DEFAULT AS IDENTITY,
     id_orden BIGINT NOT NULL REFERENCES ordenes(id),
     id_producto BIGINT NOT NULL,
+    nombre_producto VARCHAR(150),
     cantidad INTEGER NOT NULL,
     precio_unitario NUMERIC(10,2),
     PRIMARY KEY (id)
@@ -373,7 +381,37 @@ CREATE TABLE IF NOT EXISTS orden_detalles (
 
 `id_orden` sí es una llave foránea normal (`REFERENCES ordenes(id)`): `ordenes` y `orden_detalles` viven en la misma base de datos de `pagatu-orden-ms`. `id_producto`, en cambio, **no** lleva `REFERENCES` — el producto vive en la base de datos de `pagatu-catalogo-ms`, otro microservicio con su propia base de datos; validar que exista y obtener su precio real es responsabilidad del código (la llamada Feign de la Parte B), no de una llave foránea entre bases de datos separadas. `precio_unitario` acepta `NULL` a propósito: una línea que no pudo validarse contra `pagatu-catalogo-ms` (Parte C, Circuit Breaker) queda registrada sin precio confirmado, en vez de no registrarse en absoluto. `id_producto`, en cambio, sigue siendo `NOT NULL` incluso en ese mismo escenario de falla: ese valor nunca se consulta a `pagatu-catalogo-ms`, llega directo en el request (`item.getIdProducto()`, 3.5) — lo único que depende de la llamada externa (y por eso puede faltar) es el precio, no el identificador del producto que el cliente pidió. `id_cliente`, en cambio, sí acepta `NULL` — pero no por la misma razón que `precio_unitario`, y no en todos los casos. La regla de negocio depende de quién registra la orden: si la registra el personal de `pagatu` (mostrador, venta al contado sin cuenta), el cliente puede no estar identificado y `id_cliente` queda en `NULL`; si la registra el propio cliente por autoservicio web, `id_cliente` es obligatorio — sin él, la orden no tiene dueño. Esta sesión solo construye el primer caso: el único cliente que existe hasta S11 ("Integración con cliente frontend") es el cliente de prueba (Figura 1, 1.7), que cumple el mismo rol que el personal de `pagatu` operando manualmente. Por eso `id_cliente` queda `NULL`-able aquí, sin ninguna validación condicional en el código: exigirla ahora sería validar un canal (autoservicio web) que todavía no existe en el sistema. Cuando S11 construya ese canal, esa sesión es la que debe declarar `id_cliente` obligatorio en el punto donde el propio cliente autenticado crea su orden — no algo que esta sesión tenga que anticipar. `nombre_cliente` y `direccion_cliente` quedan declaradas desde ahora, por la misma razón que `tipo_comprobante`/`metodo_pago`/`momento_pago`: el negocio real de `pagatu` las necesita en la orden (una orden es un documento histórico — igual que el precio, el nombre y la dirección del cliente en el momento de la venta no deben depender de una consulta en vivo a otro servicio más adelante). A diferencia de esas tres columnas, no llevan `DEFAULT` ni `NOT NULL`: ningún valor por defecto tiene sentido para un nombre o una dirección, y nada las llena todavía en esta sesión — quedan en `NULL` hasta que `pagatu-cliente-ms` exista y `pagatu-orden-ms` las copie desde ahí, con el mismo patrón de Feign ya aplicado hoy a `precio_unitario` (3.11-3.13). `tipo_comprobante`, `metodo_pago` y `momento_pago` quedan declarados desde ahora (el negocio real de `pagatu` los necesita), aunque esta sesión no profundiza en sus reglas — eso se retoma cuando `pago-ms` procese el pago real.
 
+`nombre_producto` se agrega por la misma razón de fondo que ya justifica `precio_unitario`: una orden es un documento histórico, y el nombre de un producto en `pagatu-catalogo-ms` puede cambiar después de la venta (una corrección de tipeo, un reetiquetado comercial) sin que eso deba alterar lo que la orden ya registró que se vendió. Guardarlo copiado en `orden_detalles`, en vez de volver a consultarlo cada vez que alguien lee la orden, es exactamente el mismo criterio del "Error frecuente" de abajo, aplicado al nombre en vez de al precio. Es `NULL`-able por la misma razón que `precio_unitario`: una línea que no pudo validarse contra `pagatu-catalogo-ms` (Parte C) tampoco tiene nombre confirmado que copiar.
+
+Esta sesión no guarda `subtotal` como columna propia, a propósito: es siempre `cantidad × precio_unitario`, un valor derivado que cualquier consulta puede calcular al vuelo — persistirlo aparte solo crearía una segunda fuente de verdad que podría desincronizarse del precio real si alguien actualiza uno sin el otro. `total` sí es una columna real de `ordenes` (una decisión de negocio, no solo aritmética: qué línea entra en la suma cuando alguna no tiene precio, ver más abajo), pero ya no lleva `NOT NULL DEFAULT 0`: una orden puede quedar sin un total definitivo, y forzar un `0` numérico ahí sería indistinguible de "esta orden vale cero soles" para quien solo mire la columna.
+
+`expira_en` pertenece al carrito completo, no a cada línea: una orden en `CARRITO` tiene un plazo (por ejemplo, 30 minutos desde que se creó o se modificó por última vez) antes de que el sistema la dé por abandonada. Esta sesión declara la columna (`NULL`-able, sin `DEFAULT`) pero no llega a poblarla con un valor real ni a construir el proceso que la revise (un job programado, o una consulta al momento de leer la orden, que compare `expira_en` contra la hora actual y decida si la orden pasó a `EXPIRADA`) — eso es trabajo de una sesión futura de autoservicio (S11), cuando exista de verdad un carrito que un cliente construye a lo largo de varias peticiones, no una orden que `crear()` arma completa en una sola llamada. Declararla ya, aunque no se use todavía, evita otra migración más adelante sobre una tabla que para entonces ya tendrá filas reales. Una precisión importante para cuando esa sesión exista: pasar de `CARRITO` a `PENDIENTE_PAGO` no reinicia el plazo automáticamente — el vencimiento se decide sobre el carrito, no sobre cada estado por el que pasa.
+
+**Por qué `estado` arranca en `CARRITO`, no en `PENDIENTE`.** A diferencia de una versión anterior de este diseño, `CARRITO` ya no es aquí un valor por defecto sin efecto práctico: cuando la validación contra `pagatu-catalogo-ms` falla (Parte C, Circuit Breaker), la orden se queda en `CARRITO` en vez de avanzar — exactamente el mismo estado con el que se creó, no uno especial de "esperando validación". Esto es deliberado y calza con el negocio real: una orden cuyos precios no se pudieron confirmar todavía no es una orden confirmada, sigue siendo, en esencia, un carrito al que le falta completar la validación antes de poder pagar. Hasta S11 ("Integración con cliente frontend"), `crear()` construye y valida una orden completa en una sola llamada — nunca hay un carrito de verdad, con productos que se agregan de a uno antes de confirmar —, pero el nombre y el comportamiento del estado ya son los correctos: cuando S11 construya ese flujo de autoservicio, no hace falta renombrar nada ni cambiar la lógica de qué pasa cuando una orden se queda "atrás", porque `CARRITO` ya significa exactamente eso desde hoy.
+
 #### 3.4 Crear las entidades `Orden` y `OrdenDetalle`
+
+Crea:
+
+```text
+services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/entity/EstadoOrden.java
+```
+
+```java
+package pe.edu.upeu.orden.entity;
+
+public enum EstadoOrden {
+    CARRITO,
+    PENDIENTE_PAGO,
+    PAGADA,
+    CANCELADA,
+    EXPIRADA
+}
+```
+
+`estado` se maneja con un `enum`, no con `String` a mano, por la misma razón que ya se aplica en otros proyectos del mismo tipo de arquitectura: un typo en un literal de texto (`"PENDIENTE_PGO"`) compila igual y falla recién en tiempo de ejecución — un valor de `EstadoOrden` que no existe ni siquiera compila. `PENDIENTE_PAGO` es el nombre correcto para lo que antes se llamaba `CONFIRMADA`: cuando `pagatu-catalogo-ms` valida todos los productos y `pagatu-orden-ms` calcula el total definitivo, la orden todavía no está pagada — solo está lista para que el cliente pague. Llamarla `CONFIRMADA` sugería un punto final que todavía no existe en el negocio real de `pagatu`; `PENDIENTE_PAGO` describe justo el paso que sigue. `PAGADA`, `CANCELADA` y `EXPIRADA` son distintas a las otras dos: ningún código de esta sesión las asigna todavía — no hay ningún `crear()`, controlador ni fallback que las use —, pero quedan declaradas desde ahora porque es exactamente el tipo de cambio que conviene evitar más adelante: agregar valores nuevos a un `enum` que ya está en producción, con filas reales guardadas con los otros dos, es una migración de código sin riesgo; renombrar o reordenar valores existentes si no se previó el caso sí lo sería.
+
+`PAGADA` en concreto anticipa el diseño con el que ya se viene pensando el pago (`pago-ms`, eventos con Kafka): `pagatu-orden-ms` publica un evento (`orden.pendiente-pago` o similar) cuando una orden llega a `PENDIENTE_PAGO`, `pago-ms` procesa el pago en su propio dominio, y en algún momento le avisa de vuelta a `pagatu-orden-ms` (otro evento, `pago.completado` o similar) para que la orden refleje que ya se pagó — sin ese valor propio, `pagatu-orden-ms` no tendría dónde guardar esa confirmación sin volver a consultar `pago-ms` cada vez que alguien pregunta si una orden está pagada, el mismo problema que ya se evitó con `precio_unitario`/`nombre_producto` copiados en vez de consultados en vivo. `CANCELADA` y `EXPIRADA` cubren dos formas distintas de que una orden nunca llegue a pagarse: `CANCELADA` es una decisión activa (el cliente o el negocio la descartan), `EXPIRADA` es que el plazo de `expira_en` se cumplió sin que nadie la confirmara ni la pagara — dos causas distintas que conviene poder distinguir después, en vez de colapsarlas en un solo "no se completó". Ambas comparten además una misma implicación de negocio, documentada aquí como referencia y explícitamente fuera del alcance de esta sesión: si el stock de un producto se descuenta al agregarlo al carrito (como plantea el diseño completo de autoservicio), una orden que termina en `CANCELADA` o `EXPIRADA` debe devolver ese stock reservado — sin ese paso, el inventario quedaría bloqueado indefinidamente por carritos que nunca se pagaron. Esta sesión no implementa esa reserva ni esa devolución de stock (no existe todavía una tabla de movimientos de stock en `pagatu-catalogo-ms`, ni una llamada Feign para liberarlo): solo deja el `enum` y la columna `expira_en` listos para cuando esa lógica se construya. Cuando esas sesiones futuras (Kafka, `pago-ms`, S11 autoservicio) construyan ese flujo completo, el `enum` ya tiene los valores correctos esperándolos, sin tocar ninguna fila ya guardada.
 
 Crea:
 
@@ -417,9 +455,10 @@ public class Orden {
     @Builder.Default
     private LocalDateTime fechaCreacion = LocalDateTime.now();
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     @Builder.Default
-    private String estado = "PENDIENTE";
+    private EstadoOrden estado = EstadoOrden.CARRITO;
 
     @Column(name = "tipo_comprobante", nullable = false, length = 20)
     @Builder.Default
@@ -432,15 +471,18 @@ public class Orden {
     @Builder.Default
     private String momentoPago = "ADELANTADO";
 
-    @Column(nullable = false)
-    @Builder.Default
-    private BigDecimal total = BigDecimal.ZERO;
+    private BigDecimal total;
+
+    @Column(name = "expira_en")
+    private LocalDateTime expiraEn;
 
     @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<OrdenDetalle> detalles = new ArrayList<>();
 }
 ```
+
+`@Enumerated(EnumType.STRING)` es la única opción correcta aquí, no la que aparece primero en el autocompletado (`EnumType.ORDINAL`, la posición numérica del valor dentro del `enum`). Con `ORDINAL`, la columna guardaría `0`/`1`/`2` en vez de `CARRITO`/`PENDIENTE_PAGO`/`PAGADA` — ilegible para cualquiera que mire la tabla directo, y, peor, frágil ante el propio código: si alguien reordena los valores del `enum` en `EstadoOrden.java` (o inserta uno nuevo en medio), todas las filas ya guardadas cambian de significado sin que nadie haya tocado la base de datos. La migración (3.3) no cambia en nada: sigue siendo `estado VARCHAR(20)`, sea `String` o `enum` del lado de Java — `@Enumerated(EnumType.STRING)` es lo que hace que Hibernate escriba y lea el nombre del valor, no un número.
 
 Crea:
 
@@ -475,6 +517,9 @@ public class OrdenDetalle {
     @Column(name = "id_producto", nullable = false)
     private Long idProducto;
 
+    @Column(name = "nombre_producto", length = 150)
+    private String nombreProducto;
+
     @Column(nullable = false)
     private Integer cantidad;
 
@@ -483,7 +528,7 @@ public class OrdenDetalle {
 }
 ```
 
-`OrdenDetalle` no tiene una relación `@ManyToOne` hacia ninguna entidad `Producto` — no existe tal entidad dentro de `pagatu-orden-ms`. Solo guarda `idProducto` (un `Long` simple) y, desde la Parte B, una copia del precio consultado a `pagatu-catalogo-ms` en el momento de crear la orden.
+`OrdenDetalle` no tiene una relación `@ManyToOne` hacia ninguna entidad `Producto` — no existe tal entidad dentro de `pagatu-orden-ms`. Solo guarda `idProducto` (un `Long` simple) y, desde la Parte B, una copia del nombre y del precio consultados a `pagatu-catalogo-ms` en el momento de crear la orden.
 
 #### 3.5 Crear los DTO de entrada y salida
 
@@ -589,7 +634,7 @@ public class OrdenResponse {
 }
 ```
 
-`nombreProducto` en `DetalleOrdenResponse` no existe en ninguna columna de `pagatu-orden-ms` — se completa en tiempo de ejecución, con la respuesta de `pagatu-catalogo-ms` (Parte B). `tipoComprobante` y `momentoPago` no se piden en `OrdenRequest`: quedan con el valor por defecto de la entidad (3.4) hasta que una sesión posterior trabaje esas reglas de negocio; esta sesión se enfoca en la comunicación entre servicios, no en el ciclo completo de facturación.
+`nombreProducto` en `DetalleOrdenResponse` sí tiene su columna propia en `pagatu-orden-ms` (`nombre_producto`, 3.3) — se copia desde `pagatu-catalogo-ms` una sola vez, al crear la orden (Parte B), no en cada lectura: mismo criterio que `precioUnitario`, por la misma razón (una orden ya creada no debe cambiar porque el catálogo cambió después). `subtotal`, en cambio, no tiene columna: se calcula al armar la respuesta (`precioUnitario × cantidad`, 3.6), nunca se guarda. `tipoComprobante` y `momentoPago` no se piden en `OrdenRequest`: quedan con el valor por defecto de la entidad (3.4) hasta que una sesión posterior trabaje esas reglas de negocio; esta sesión se enfoca en la comunicación entre servicios, no en el ciclo completo de facturación.
 
 #### 3.6 Crear repositorio, servicio y controlador base (sin Feign todavía)
 
@@ -663,13 +708,13 @@ public class OrdenServiceImpl implements OrdenService {
             detalles.add(OrdenDetalle.builder()
                     .orden(orden)
                     .idProducto(item.getIdProducto())
+                    .nombreProducto(null) // se completa en la Parte B, con Feign
                     .cantidad(item.getCantidad())
                     .precioUnitario(null) // se completa en la Parte B, con Feign
                     .build());
         }
 
         orden.setDetalles(detalles);
-        orden.setTotal(BigDecimal.ZERO);
 
         Orden guardada = ordenRepository.save(orden);
         return toResponse(guardada);
@@ -687,10 +732,12 @@ public class OrdenServiceImpl implements OrdenService {
         List<DetalleOrdenResponse> detalles = orden.getDetalles().stream()
                 .map(d -> DetalleOrdenResponse.builder()
                         .idProducto(d.getIdProducto())
-                        .nombreProducto(null)
+                        .nombreProducto(d.getNombreProducto())
                         .cantidad(d.getCantidad())
                         .precioUnitario(d.getPrecioUnitario())
-                        .subtotal(null)
+                        .subtotal(d.getPrecioUnitario() == null
+                                ? null
+                                : d.getPrecioUnitario().multiply(BigDecimal.valueOf(d.getCantidad())))
                         .build())
                 .collect(Collectors.toList());
 
@@ -698,13 +745,15 @@ public class OrdenServiceImpl implements OrdenService {
                 .id(orden.getId())
                 .idCliente(orden.getIdCliente())
                 .fechaCreacion(orden.getFechaCreacion())
-                .estado(orden.getEstado())
+                .estado(orden.getEstado().name())
                 .total(orden.getTotal())
                 .detalles(detalles)
                 .build();
     }
 }
 ```
+
+`subtotal` en `toResponse()` nunca lee un campo de `OrdenDetalle` — no existe tal campo (3.3, 3.4) — se calcula ahí mismo, cada vez que se arma la respuesta. Si `precioUnitario` es `null` (una línea sin validar todavía), `subtotal` también queda `null`, en vez de calcular un producto con un valor que no existe. `.estado(orden.getEstado().name())` convierte el `enum` de vuelta a texto (`"PENDIENTE_PAGO"`, `"CARRITO"`) al cruzar hacia `OrdenResponse` — el `enum` `EstadoOrden` (3.4) es un detalle interno de `pagatu-orden-ms`, no algo que el contrato JSON expuesto a otros clientes deba conocer; `OrdenResponse.estado` sigue siendo `String`, sin cambios.
 
 Crea:
 
@@ -1016,6 +1065,7 @@ public OrdenResponse crear(OrdenRequest request) {
         detalles.add(OrdenDetalle.builder()
                 .orden(orden)
                 .idProducto(item.getIdProducto())
+                .nombreProducto(producto.getNombre())
                 .cantidad(item.getCantidad())
                 .precioUnitario(producto.getPrecio())
                 .build());
@@ -1023,16 +1073,16 @@ public OrdenResponse crear(OrdenRequest request) {
 
     orden.setDetalles(detalles);
     orden.setTotal(total);
-    orden.setEstado("CONFIRMADA");
+    orden.setEstado(EstadoOrden.PENDIENTE_PAGO);
 
     Orden guardada = ordenRepository.save(orden);
     return toResponse(guardada);
 }
 ```
 
-**Producto del paso, verificado:** con `pagatu-catalogo-ms` corriendo y registrado en Eureka, crear una orden ahora sí devuelve el precio real de cada producto, copiado desde `pagatu-catalogo-ms` en el momento de la venta: si el precio de un producto cambia después, una orden ya creada no debe recalcularse sola — es un documento histórico, no una vista en vivo del catálogo.
+**Producto del paso, verificado:** con `pagatu-catalogo-ms` corriendo y registrado en Eureka, crear una orden ahora sí devuelve el nombre y el precio real de cada producto, copiados desde `pagatu-catalogo-ms` en el momento de la venta: si el nombre o el precio de un producto cambian después, una orden ya creada no debe recalcularse sola — es un documento histórico, no una vista en vivo del catálogo.
 
-**Error frecuente**: dejar `precioUnitario` sin copiar y, en su lugar, guardar solo `idProducto` y volver a consultar `pagatu-catalogo-ms` cada vez que alguien lee la orden. Eso hace que el total de una orden ya cerrada cambie solo porque el precio del producto cambió después.
+**Error frecuente**: dejar `precioUnitario`/`nombreProducto` sin copiar y, en su lugar, guardar solo `idProducto` y volver a consultar `pagatu-catalogo-ms` cada vez que alguien lee la orden. Eso hace que el total (o el nombre mostrado) de una orden ya cerrada cambie solo porque el producto cambió después en el catálogo.
 
 ### Parte C — Tema 2: Circuit Breaker, respuesta controlada si `pagatu-catalogo-ms` falla
 
@@ -1112,6 +1162,7 @@ public OrdenResponse crear(OrdenRequest request) {
             detalles.add(OrdenDetalle.builder()
                     .orden(orden)
                     .idProducto(item.getIdProducto())
+                    .nombreProducto(null)
                     .cantidad(item.getCantidad())
                     .precioUnitario(null)
                     .build());
@@ -1125,14 +1176,15 @@ public OrdenResponse crear(OrdenRequest request) {
         detalles.add(OrdenDetalle.builder()
                 .orden(orden)
                 .idProducto(item.getIdProducto())
+                .nombreProducto(producto.getNombre())
                 .cantidad(item.getCantidad())
                 .precioUnitario(producto.getPrecio())
                 .build());
     }
 
     orden.setDetalles(detalles);
-    orden.setTotal(total);
-    orden.setEstado(validacionCompleta ? "CONFIRMADA" : "PENDIENTE_VALIDACION");
+    orden.setTotal(validacionCompleta ? total : null);
+    orden.setEstado(validacionCompleta ? EstadoOrden.PENDIENTE_PAGO : EstadoOrden.CARRITO);
 
     Orden guardada = ordenRepository.save(orden);
     return toResponse(guardada);
@@ -1150,7 +1202,9 @@ public ProductoDto fallbackProducto(Long idProducto, Throwable ex) {
 
 No agregues el import de `CircuitBreaker` a mano en el orden equivocado — VS Code lo resuelve automáticamente al guardar (`io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker`).
 
-`fallbackProducto` recibe los mismos parámetros que `consultarProducto` (`idProducto`), más la excepción real (`ex`) — aquí no se usa `ex` porque la decisión de negocio es la misma sin importar *por qué* falló (`pagatu-catalogo-ms` caído, timeout, error 500): la orden se guarda igual, pero queda marcada como `PENDIENTE_VALIDACION`, con esa línea sin precio confirmado, en vez de romper toda la operación.
+`fallbackProducto` recibe los mismos parámetros que `consultarProducto` (`idProducto`), más la excepción real (`ex`) — aquí no se usa `ex` porque la decisión de negocio es la misma sin importar *por qué* falló (`pagatu-catalogo-ms` caído, timeout, error 500): la orden se guarda igual, esa línea queda sin precio ni nombre confirmados, y la orden completa se queda en `CARRITO` en vez de romper toda la operación — el mismo estado con el que se creó, no uno especial de "esperando validación": una orden cuyos precios no se pudieron confirmar todavía no dejó de ser, en esencia, un carrito.
+
+**`orden.setTotal(validacionCompleta ? total : null)` no es una comprobación cosmética.** Antes de esta condición, `total` terminaba guardando la suma de *solo* las líneas que sí se validaron — un número real, con dos decimales, indistinguible de un total completo para cualquiera que lo mirara, aunque a la orden le faltara confirmar el precio de otra línea más. Una orden que se queda en `CARRITO` con `total: null` es honesta sobre lo que sabe: "todavía no se puede calcular un importe final" — mostrar la suma parcial como si fuera el total, y dejar que alguien la cobre o la muestre como definitiva, es exactamente el error que esta condición evita. El total real, completo, recién se calcula cuando el cliente vuelve a intentar (fuera del alcance de esta sesión: esta sesión no reintenta nada automáticamente) y `pagatu-catalogo-ms` puede validar todas las líneas, momento en el que la orden pasa a `PENDIENTE_PAGO`.
 
 **Error frecuente**: anotar `@CircuitBreaker` directamente sobre `crear()` en vez de sobre un método más chico que solo hace la llamada a `pagatu-catalogo-ms`. Si todo el método queda protegido, un fallback tendría que reconstruir toda la respuesta de la orden — mucho más difícil de mantener que un fallback que solo decide qué hacer cuando un producto puntual no se pudo consultar.
 
@@ -1215,13 +1269,13 @@ curl -X POST http://localhost:18080/api/v1/ordenes \
   -d '{"idCliente": 1, "metodoPago": "YAPE_PLIN", "detalles": [{"idProducto": 1, "cantidad": 2}]}'
 ```
 
-Resultado esperado: `estado: "CONFIRMADA"`, con `precioUnitario` y `total` calculados con el precio real que `pagatu-orden-ms` recibió de `pagatu-catalogo-ms` por Feign.
+Resultado esperado: `estado: "PENDIENTE_PAGO"`, con `nombreProducto`, `precioUnitario` y `total` calculados con el nombre y el precio reales que `pagatu-orden-ms` recibió de `pagatu-catalogo-ms` por Feign.
 
 #### 3.21 Probar el Circuit Breaker: `pagatu-catalogo-ms` caído
 
 Detén `pagatu-catalogo-ms` (`Ctrl+C` en su terminal) y repite la misma petición de 3.20.
 
-Resultado esperado: la petición **no** falla con `500` — responde `201` con `estado: "PENDIENTE_VALIDACION"` y `precioUnitario: null` en el detalle que no pudo validarse. Este es el mismo escenario de 3.14, ahora controlado.
+Resultado esperado: la petición **no** falla con `500` — responde `201` con `estado: "CARRITO"`, `total: null` (2.3, 3.17) y `precioUnitario`/`nombreProducto` en `null` en el detalle que no pudo validarse. Este es el mismo escenario de 3.14, ahora controlado.
 
 #### 3.22 Provocar la apertura del circuito
 
@@ -1282,7 +1336,7 @@ Incluye capturas o extractos con una breve explicación debajo de cada uno, orga
 2. *Comunicación Feign*
     - Petición exitosa creando una orden, con precio real obtenido de `pagatu-catalogo-ms`.
 3. *Circuit Breaker*
-    - `pagatu-catalogo-ms` detenido, orden creada igual con `estado: PENDIENTE_VALIDACION`, y captura del estado `OPEN`.
+    - `pagatu-catalogo-ms` detenido, orden creada igual con `estado: CARRITO`, y captura del estado `OPEN`.
 4. *`pagatu-cliente-ms` construido*
     - Microservicio replicado, registrado en Eureka y con configuración externa (trabajo autónomo).
 
@@ -1368,7 +1422,7 @@ Tiempo: 5 min.
 
 **Dinámica participativa:** en una ronda rápida, cada estudiante comparte en una frase qué vio cambiar en el log de `pagatu-orden-ms` cuando el circuito pasó de `CLOSED` a `OPEN`.
 
-**Metacognición:** ¿qué parte de la sesión te costó más entender — que Feign resuelve el nombre lógico contra Eureka en vez de una dirección fija, o que el fallback no es un error sino una respuesta de negocio válida (`PENDIENTE_VALIDACION`)?
+**Metacognición:** ¿qué parte de la sesión te costó más entender — que Feign resuelve el nombre lógico contra Eureka en vez de una dirección fija, o que el fallback no es un error sino una respuesta de negocio válida (la orden se queda en `CARRITO`)?
 
 **Proyección:** S7 protege las rutas de `pagatu-gateway` con seguridad distribuida (JWT); S8 agrega mensajería asíncrona entre servicios desacoplados, con Kafka. Es muy probable que `pagatu-orden-ms` —el mismo que se construyó hoy— sea el productor del primer evento del proyecto (`orden.creada`), consumido por un microservicio de pagos que todavía no existe. Ninguna comunicación de hoy queda obsoleta: Kafka resuelve un problema distinto (desacoplar en el tiempo, para que ninguno de los dos servicios necesite que el otro esté arriba en el mismo instante) — no reemplaza a Feign+Circuit Breaker donde sí hace falta una respuesta inmediata, como el precio real de un producto al crear la orden.
 

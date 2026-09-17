@@ -1,5 +1,0 @@
-spring:
-  application:
-    name: pagatu-cliente-ms
-  profiles:
-    active: dev

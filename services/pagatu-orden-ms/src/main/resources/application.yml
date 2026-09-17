@@ -1,5 +1,0 @@
-spring:
-  application:
-    name: pagatu-orden-ms
-  profiles:
-    active: dev
