@@ -2927,6 +2927,18 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <span class="nt">&lt;/configuration&gt;</span>
 </code></pre></div>
 <p>Este <code>traceId</code> identifica una petición <strong>dentro de</strong> <code>pagatu-orden-ms</code> (3.23: la llamada a <code>consultarProducto</code>, la excepción capturada, el fallback ejecutado, todo bajo el mismo valor en <code>logs/orden.log</code>) — no viaja todavía dentro de la llamada Feign hacia <code>pagatu-catalogo-ms</code>, que genera su propio <code>traceId</code> independiente para esa petición entrante. Propagar un mismo <code>traceId</code> de extremo a extremo entre microservicios (un <code>RequestInterceptor</code> de Feign que copie el valor del MDC al header saliente) queda fuera del alcance de esta sesión.</p>
+<p><strong>(Opcional) Conectar <code>logs/orden.log</code> a Loki.</strong> Si ya construiste <code>obs/</code> en S3 (3.13-3.14), <code>pagatu-orden-ms</code> puede sumarse al mismo Promtail sin levantar nada nuevo — mismo criterio que Prometheus (Tabla 3): agrega un <code>job_name</code> más en <code>obs/promtail/promtail-config-dev.yml</code> y <code>obs/promtail/promtail-config.yml</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-orden-ms</span>
+<span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">localhost</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">application</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-orden-ms</span>
+<span class="w">          </span><span class="nt">__path__</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/log/pagatu-orden-ms/*.log</span>
+</code></pre></div>
+<p>Y un bind-mount más al servicio <code>pagatu-promtail</code>, en <code>obs/compose-dev.yml</code> y <code>obs/compose.yml</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">../services/pagatu-orden-ms/logs:/var/log/pagatu-orden-ms:ro</span>
+</code></pre></div>
+<p>Reinicia el stack (<code>cd obs &amp;&amp; docker compose -f compose-dev.yml up -d</code>) para que tome el cambio. En PROD local, este mount queda listo pero vacío hasta que exista un <code>compose.yml</code> propio de <code>pagatu-orden-ms</code> (fuera del alcance de esta sesión) que bind-monte <code>./logs:/app/logs</code>, igual que ya hace <code>pagatu-catalogo-ms</code> — sin eso, no hay ningún archivo de log que Promtail pueda leer del lado de producción.</p>
 <h4 id="33-crear-la-migracion-flyway-de-pagatu-orden-ms">3.3 Crear la migración Flyway de <code>pagatu-orden-ms</code><a class="headerlink" href="#33-crear-la-migracion-flyway-de-pagatu-orden-ms" title="Permanent link">&para;</a></h4>
 <p><strong>Producto del paso:</strong> tablas <code>ordenes</code> y <code>orden_detalles</code> creadas.</p>
 <p>Crea:</p>
