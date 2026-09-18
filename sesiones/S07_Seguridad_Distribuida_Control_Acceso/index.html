@@ -2620,8 +2620,8 @@
 <li><strong>3.22</strong> Probar el llamado directo a <code>pagatu-orden-ms</code>, sin pasar por el Gateway.</li>
 <li><strong>3.23</strong> Documentar la matriz de roles y accesos.</li>
 </ul>
-<p><strong>Punto de partida común:</strong> todo el equipo debe comenzar exactamente desde donde quedó S6 (Feign y Circuit Breaker), no desde su propio avance individual. Clona la rama <code>s06-feign-circuit-breaker</code>:</p>
-<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>--branch<span class="w"> </span>s06-feign-circuit-breaker<span class="w"> </span>https://github.com/262dist/pagatu.git
+<p><strong>Punto de partida común:</strong> todo el equipo debe comenzar exactamente desde donde quedó S6 (Feign y Circuit Breaker), no desde su propio avance individual. Clona la rama <code>s06-orden-ms-circuit-breaker</code>:</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>--branch<span class="w"> </span>s06-orden-ms-circuit-breaker<span class="w"> </span>https://github.com/262dist/pagatu.git
 </code></pre></div>
 <p>Levanta en DEV los servicios base ya construidos hasta S6 (<code>pagatu-config</code>, <code>pagatu-eureka</code>, <code>pagatu-gateway</code>, <code>pagatu-catalogo-ms</code>, <code>pagatu-orden-ms</code>) antes de tocar código nuevo — si alguno falla en arrancar, el problema es de una sesión anterior, no de esta.</p>
 <h3 id="parte-a-construir-pagatu-auth-ms">Parte A — Construir <code>pagatu-auth-ms</code><a class="headerlink" href="#parte-a-construir-pagatu-auth-ms" title="Permanent link">&para;</a></h3>
