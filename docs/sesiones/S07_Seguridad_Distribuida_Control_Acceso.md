@@ -223,10 +223,10 @@ Tiempo: 4h.
 - **3.22** Probar el llamado directo a `pagatu-orden-ms`, sin pasar por el Gateway.
 - **3.23** Documentar la matriz de roles y accesos.
 
-**Punto de partida común:** todo el equipo debe comenzar exactamente desde donde quedó S6 (Feign y Circuit Breaker), no desde su propio avance individual. Clona la rama `s06-feign-circuit-breaker`:
+**Punto de partida común:** todo el equipo debe comenzar exactamente desde donde quedó S6 (Feign y Circuit Breaker), no desde su propio avance individual. Clona la rama `s06-orden-ms-circuit-breaker`:
 
 ```bash
-git clone --branch s06-feign-circuit-breaker https://github.com/262dist/pagatu.git
+git clone --branch s06-orden-ms-circuit-breaker https://github.com/262dist/pagatu.git
 ```
 
 Levanta en DEV los servicios base ya construidos hasta S6 (`pagatu-config`, `pagatu-eureka`, `pagatu-gateway`, `pagatu-catalogo-ms`, `pagatu-orden-ms`) antes de tocar código nuevo — si alguno falla en arrancar, el problema es de una sesión anterior, no de esta.
