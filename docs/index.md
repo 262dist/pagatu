@@ -189,4 +189,8 @@ Convención del diagrama: las flechas continuas representan interacciones de neg
 - [S1 - Construcción de un servicio base](sesiones/S01_Construccion_Servicio_Base.md)
 - [S2 - Gestión centralizada de configuración y ambientes](sesiones/S02_Configuracion_Centralizada_Ambientes.md)
 - [S3 - Registro, descubrimiento y ejecución concurrente de servicios](sesiones/S03_Registro_Descubrimiento_Ejecucion_Concurrente.md)
+- [S4 - Punto único de acceso y distribución de tráfico](sesiones/S04_Punto_Unico_Acceso_Distribucion_Trafico.md)
+- [S5 - Evaluación de la Unidad I](sesiones/S05_Evaluacion_Unidad_1.md)
+- [S6 - Comunicación síncrona resiliente entre servicios](sesiones/S06_Comunicacion_Sincrona_Resiliente.md)
+- [S7 - Seguridad distribuida y control de acceso](sesiones/S07_Seguridad_Distribuida_Control_Acceso.md)
 - [Guía de Proyecto Sello](proyecto-sello/index.md)

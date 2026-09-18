@@ -1321,9 +1321,9 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
 @EnableFeignClients
-public class OrdenApplication {
+public class PagatuOrdenMsApplication {
     public static void main(String[] args) {
-        SpringApplication.run(OrdenApplication.class, args);
+        SpringApplication.run(PagatuOrdenMsApplication.class, args);
     }
 }
 ```

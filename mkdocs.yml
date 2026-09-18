@@ -27,6 +27,7 @@ nav:
       - S5 - Evaluación de la Unidad I: sesiones/S05_Evaluacion_Unidad_1.md
   - II. Sistema distribuido robusto:
       - S6 - Comunicación síncrona resiliente entre servicios: sesiones/S06_Comunicacion_Sincrona_Resiliente.md
+      - S7 - Seguridad distribuida y control de acceso: sesiones/S07_Seguridad_Distribuida_Control_Acceso.md
       - S12 - Evaluación de la Unidad II: sesiones/S12_Evaluacion_Unidad_2.md
   - III. Validación y consolidación del producto del curso:
       - S15 - Evaluación de la Unidad III: sesiones/S15_Evaluacion_Unidad_3.md

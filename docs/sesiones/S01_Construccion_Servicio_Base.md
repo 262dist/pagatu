@@ -1641,7 +1641,7 @@ src/main/java/pe/edu/upeu/catalogo
   service/
     CategoriaService.java
     ProductoService.java
-  CatalogoApplication.java
+  PagatuCatalogoMsApplication.java
 src/main/resources/db/migration
   V1__create_catalogo_tables.sql
 src/main/resources
