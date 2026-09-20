@@ -2636,7 +2636,7 @@
     Orden["pagatu-orden-ms&lt;br/&gt;S6 · Feign + Circuit Breaker&lt;br/&gt;(S9: coordina Saga)&lt;br/&gt;produce: orden-eventos&lt;br/&gt;consume: pago-eventos"]
     Pago["pago-ms&lt;br/&gt;S8&lt;br/&gt;(S9: coordina Saga)&lt;br/&gt;consume: orden-eventos&lt;br/&gt;produce: pago-eventos"]
     Eureka["pagatu-eureka&lt;br/&gt;S3 · puerto 18761 (DEV)&lt;br/&gt;registra instancias"]
-    Kafka[("Kafka&lt;br/&gt;S8 · puerto 41092 (DEV)&lt;br/&gt;topics: orden-eventos, pago-eventos")]
+    Kafka[("Kafka&lt;br/&gt;S8 · puerto 19092 (DEV)&lt;br/&gt;topics: orden-eventos, pago-eventos")]
     Pasarela["Pasarela de pagos&lt;br/&gt;(externa)"]
 
     ClientePrueba --&gt; Gateway
