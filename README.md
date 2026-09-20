@@ -50,4 +50,4 @@ El detalle completo (puertos, variables de entorno, producción local con Docker
 - MapStruct (mapeo DTO ↔ entidad)
 - Docker / Docker Compose
 - Spring Cloud Config (S2), Eureka (S3), Gateway (S4)
-- Angular 21 (S11)
+- Angular 22 (S11)

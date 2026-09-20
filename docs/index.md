@@ -43,11 +43,11 @@ Resultado esperado U2: el estudiante implementa comunicación síncrona resilien
 | Sesión | Tema (sílabo) | MS que se toca | Trabajo principal |
 |---|---|---|---|
 | S6 | Comunicación síncrona resiliente entre servicios. | `orden-ms` → `catalogo-ms` | Feign + Circuit Breaker: `orden-ms` valida catálogo antes de crear la orden. |
-| S7 | Seguridad distribuida y control de acceso. | `auth-ms` (nuevo), `cliente-ms` | JWT propio con Spring Security en clase (Keycloak queda como reemplazo posterior de `auth-ms`), roles, Gateway como Resource Server. `orden-ms` deja de aceptar `id_cliente` en el request y lo toma del JWT ya validado; `pagatu-cliente-ms` (construido en S2) queda protegido con los mismos roles. |
-| S8 | Mensajería asíncrona entre servicios. | `orden-ms` → `pago-ms` (nuevo) | `orden-ms` publica `orden.creada`; `pago-ms` consume y publica `pago.validado`. |
-| S9 | Consistencia distribuida en procesos de negocio. | `orden-ms`, `pago-ms` | Idempotencia, compensación, manejo de eventos duplicados. |
+| S7 | Seguridad distribuida y control de acceso. | `auth-ms` (nuevo), `cliente-ms` | JWT propio con Spring Security en clase, firmado con clave asimétrica y con claves públicas publicadas (JWKS), y con roles en tablas propias — diseñado con los mismos claims y el mismo modelo de OAuth2 que Keycloak, que lo reemplazará después sin cambiar el Gateway ni los microservicios (solo una propiedad); Gateway y `orden-ms` como Resource Server. `orden-ms` deja de aceptar `id_cliente` en el request y lo toma del JWT ya validado; `pagatu-cliente-ms` (construido en S2) queda protegido con los mismos roles. |
+| S8 | Mensajería asíncrona entre servicios. | `orden-ms` → `pago-ms` (nuevo) | `orden-ms` publica `orden.creada` (topic `orden-eventos`); `pago-ms` lo consume y publica `pago.validado` (topic `pago-eventos`); `orden-ms` consume `pago-eventos` y pasa la orden a `PAGADA`. |
+| S9 | Consistencia distribuida en procesos de negocio. | `orden-ms`, `pago-ms` | Idempotencia, compensación, manejo de eventos duplicados. Si el pago falla, `pago-ms` publica `pago.fallido` en `pago-eventos` y `orden-ms` lo consume para compensar la orden ya confirmada. |
 | S10 | Observabilidad y diagnóstico de sistemas distribuidos. | todos | Extiende Prometheus/Loki/Grafana (ya en pie desde S3-S4) a `auth-ms`, `cliente-ms`, `orden-ms` y `pago-ms`; agrega paneles de diagnóstico y alertas sobre todo el sistema, no solo `catalogo-ms`. |
-| S11 | Integración con cliente frontend. | Angular 21 | Cliente consumiendo por Gateway: catálogo, crear orden, ver pago. |
+| S11 | Integración con cliente frontend. | Angular 22 | Cliente consumiendo por Gateway: catálogo, crear orden, ver pago. |
 | S12 | Integración del sistema distribuido robusto: comunicación resiliente, seguridad, mensajería, consistencia eventual, observabilidad e integración frontend. | — | Sustentación del sistema robusto. |
 
 ### U3: Validación y consolidación del producto del curso
@@ -148,13 +148,14 @@ flowchart LR
     Orden -->|"orden-eventos"| Broker
     Broker -->|"orden-eventos"| Pago
     Pago -->|"pago-eventos"| Broker
+    Broker -->|"pago-eventos"| Orden
     Pago -->|"autoriza / confirma pago"| PaymentGateway
 
     classDef external fill:#fff3cd,stroke:#b7791f,stroke-width:2px,color:#5f370e;
     class PaymentGateway,ReniecSunat external;
 
     subgraph Client["clients"]
-        Angular["pagatu-ng (Angular 21) - D 4200"]
+        Angular["pagatu-ng (Angular 22) - D 4200"]
     end
 
     subgraph Obs["observabilidad"]
@@ -180,7 +181,7 @@ Convención del diagrama: las flechas continuas representan interacciones de neg
 5. Los flujos asincronos usan mensajería para coordinar ordenes y pagos.
 6. `/actuator/health` existe desde S1. El stack de observabilidad (Prometheus, Loki, Grafana) se levanta sobre `catalogo-ms`/`orden-ms` a más tardar en S4 (Prometheus/Loki son opcionales ya en S3, según recursos de cómputo), para tener evidencia visual de operación desde la sustentación de S5; en S10 se extiende a `auth-ms`, `cliente-ms`, `orden-ms` y `pago-ms` con paneles de diagnóstico y alertas sobre todo el sistema.
 7. `pagatu-cliente-ms` (autónomo, desde S2) guarda el perfil del cliente (DNI/RUC, nombre/razón social) y lo autocompleta consultando RENIEC (personas naturales) o SUNAT (personas jurídicas) por el número de documento — el sistema no vive aislado, se integra con servicios externos del Estado peruano igual que con la pasarela de pagos. Desde S7, `orden-ms` deja de confiar en el `id_cliente` que el request declara y lo toma del JWT ya validado.
-8. El frontend `clients/pagatu-ng` (Angular 21) consume el sistema mediante Gateway.
+8. El frontend `clients/pagatu-ng` (Angular 22) consume el sistema mediante Gateway.
 9. El producto final se valida end-to-end, se estabiliza y se defiende técnicamente.
 
 ## Enlaces

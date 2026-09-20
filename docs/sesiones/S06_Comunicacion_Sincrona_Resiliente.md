@@ -70,55 +70,57 @@ En esta sesión se construye `pagatu-orden-ms` y se resuelven, en orden, las dos
 ```mermaid
 flowchart TB
     ClientePrueba["Cliente de prueba<br/>PowerShell / bash / Swagger"]
-    ClienteAngular["Cliente real<br/>Angular 21+ (S11)"]
-    Gateway["pagatu-gateway<br/>construido en S4<br/>puerto 18080 (DEV)"]
-    Orden["pagatu-orden-ms<br/>HOY<br/>Feign + Circuit Breaker<br/>hacia catalogo-ms<br/>(S9: coordina Saga)"]
-    Catalogo["pagatu-catalogo-ms<br/>construido en S1<br/>REST + BD + health"]
-    Eureka["pagatu-eureka<br/>construido en S3<br/>puerto 18761 (DEV)"]
-    Config["pagatu-config<br/>construido en S2"]
-    Kafka[("Kafka<br/>candidato, futuro (S8)")]
-    Pago["pago-ms<br/>candidato, futuro (S8)<br/>(S9: coordina Saga)"]
-    Obs[("Observabilidad<br/>logs, métricas, paneles<br/>(futuro, S10)")]
+    ClienteAngular["Cliente real<br/>Angular 22 (S11)<br/>puerto 4200 (DEV)"]
+    Config["pagatu-config<br/>S2 · puerto 18888 (DEV)<br/>carga de configuración"]
+    Obs[("Observabilidad<br/>S10 · logs, métricas, paneles<br/>Prometheus 19090, Loki 13100<br/>Grafana 13000 (DEV)")]
+    Gateway["pagatu-gateway<br/>S4 · puerto 18080 (DEV)"]
+    Auth["pagatu-auth-ms<br/>S7 · JWT<br/>(temporal, luego Keycloak)"]
+    Catalogo["pagatu-catalogo-ms<br/>S1 · REST + BD + health"]
+    Orden["pagatu-orden-ms<br/>S6 · Feign + Circuit Breaker<br/>(S9: coordina Saga)<br/>produce: orden-eventos<br/>consume: pago-eventos"]
+    Pago["pago-ms<br/>S8<br/>(S9: coordina Saga)<br/>consume: orden-eventos<br/>produce: pago-eventos"]
+    Eureka["pagatu-eureka<br/>S3 · puerto 18761 (DEV)<br/>registra instancias"]
+    Kafka[("Kafka<br/>S8 · puerto 41092 (DEV)<br/>topics: orden-eventos, pago-eventos")]
+    Pasarela["Pasarela de pagos<br/>(externa)"]
 
     ClientePrueba --> Gateway
     ClienteAngular --> Gateway
-    Gateway -->|"lb://pagatu-orden-ms"| Orden
+    Gateway -->|"lb://pagatu-auth-ms"| Auth
     Gateway -->|"lb://pagatu-catalogo-ms"| Catalogo
-    Orden -->|"Feign: consulta<br/>producto"| Catalogo
+    Gateway -->|"lb://pagatu-orden-ms"| Orden
+    Gateway -->|"lb://pagatu-pago-ms"| Pago
     Gateway -. "descubre<br/>servicios" .-> Eureka
-    Orden -. "registra<br/>instancia" .-> Eureka
-    Catalogo -. "registra<br/>instancia" .-> Eureka
-    Orden -. "carga<br/>configuración" .-> Config
-    Catalogo -. "carga<br/>configuración" .-> Config
-    Orden -.->|"orden.creada"| Kafka
-    Kafka -.->|"consume"| Pago
-    Gateway -. "logs y métricas" .-> Obs
-    Orden -. "logs y métricas" .-> Obs
-    Catalogo -. "logs y métricas" .-> Obs
-    Eureka -. "logs y métricas" .-> Obs
-    Config -. "logs y métricas" .-> Obs
+    Eureka -. "carga<br/>configuración" .-> Config
+    Orden -->|"Feign: consulta<br/>producto"| Catalogo
+    Orden -.->|"1) orden.creada"| Kafka
+    Kafka -.->|"2) consume"| Pago
+    Pago -.->|"3) pago.validado<br/>(S9: pago.fallido)"| Kafka
+    Kafka -.->|"4) consume<br/>(S9: compensa)"| Orden
+    Pago -->|"autoriza / confirma<br/>pago"| Pasarela
 
     classDef done fill:#e8f5e9,stroke:#2e7d32,color:#111;
     classDef today fill:#ffe08a,stroke:#9a6b00,stroke-width:2px,color:#111;
     classDef futuro fill:#f5f5f5,stroke:#9e9e9e,color:#555,stroke-dasharray: 5 5;
-    class Gateway,Catalogo,Eureka,Config done;
+    classDef externo fill:#e3f2fd,stroke:#1565c0,color:#0d3c73;
+    class Catalogo,Config,Eureka,Gateway done;
     class Orden today;
-    class Kafka,Pago,Obs futuro;
+    class Auth,ClienteAngular,Kafka,Pago,Obs futuro;
+    class Pasarela externo;
 ```
 
-`config-repo` (el repositorio de archivos que lee `pagatu-config`) no se dibuja: es un detalle de implementación de `pagatu-config`, no una pieza que la Unidad 2 trate por separado.
+*Leyenda.* Este diagrama es el mismo en todas las sesiones de la unidad; solo cambia el color: verde = construido en sesiones anteriores, amarillo = se trabaja hoy, gris punteado = todavía no existe, azul = sistema externo.
 
-Hoy se construye `pagatu-orden-ms`, el segundo microservicio del proyecto, con comunicación resiliente hacia `pagatu-catalogo-ms` (ya registrado en Eureka desde S3, ya expuesto por el Gateway desde S4). `pagatu-cliente-ms` queda como trabajo autónomo (sección 4) — el mismo patrón de construcción, aplicado sobre un tercer microservicio.
+`pagatu-cliente-ms` (autónomo desde S2) y su consulta a RENIEC / SUNAT no se dibujan para mantener legible el diagrama: siguen el mismo patrón de rutas, registro y configuración que los demás microservicios.
 
-El resto de piezas del diagrama todavía no existe, y se muestra igual porque ya está agendado en el sílabo de esta misma unidad, no porque se esté adelantando:
+**Hoy:** se construye `pagatu-orden-ms`, con Feign y Circuit Breaker hacia `pagatu-catalogo-ms`. `pagatu-cliente-ms` queda como trabajo autónomo (sección 4), con el mismo patrón.
 
-- **Cliente Angular real** — se integra recién en S11, "Integración con cliente frontend"; hasta entonces, el único cliente es el de prueba.
-- **JWT sobre `pagatu-gateway`** — S7, "Seguridad distribuida y control de acceso"; no se dibuja como componente nuevo porque es una capa sobre el Gateway que ya existe, no un servicio aparte.
-- **Kafka y `pago-ms`** — S8, "Mensajería asíncrona entre servicios"; `pagatu-orden-ms`, construido hoy, es candidato natural a publicar el primer evento del proyecto (`orden.creada`).
-- **Saga entre `orden-ms` y `pago-ms`** — S9, "Consistencia distribuida en procesos de negocio"; no se dibuja como componente aparte porque no es un microservicio propio — es lógica de coordinación y compensación que vive dentro de `pagatu-orden-ms` y `pago-ms` (por eso ambos nodos ya anotan "S9: coordina Saga"), activada cuando un pago falla después de confirmada la orden.
-- **Observabilidad** — S10, "Observabilidad y diagnóstico de sistemas distribuidos"; logs, health, métricas y paneles de diagnóstico sobre cada servicio, no solo sobre el tráfico que cruza el Gateway. Monitorear únicamente el Gateway dejaría ciego justo lo que esta sesión construye: la llamada Feign de `pagatu-orden-ms` a `pagatu-catalogo-ms` nunca pasa por el Gateway, y el estado del Circuit Breaker vive dentro de `pagatu-orden-ms`. `pagatu-eureka` se monitorea por la misma razón que Gateway: es una dependencia de tráfico en vivo — cada resolución `lb://` lo consulta en ese instante, y si está degradado, el enrutamiento puede caer sobre instancias muertas. `pagatu-config`, en cambio, se monitorea por un motivo distinto: los microservicios leen su configuración solo al arrancar (*pull on startup*, S2, 3.10), así que si `pagatu-config` cae después de que todo ya arrancó, el tráfico en vivo no lo nota — el problema aparece recién en el próximo reinicio o escalado. Protege la capacidad de operar, no el tráfico de ahora mismo.
+**Relaciones con la infraestructura** (no se dibujan, para mantener legible el diagrama):
 
-  **Que Eureka ya "monitoree" las instancias no reemplaza a Observabilidad — responden preguntas distintas.** Eureka solo confirma que una instancia sigue viva (recibió su heartbeat) y dónde está; no agrega logs, no mide latencia ni uso de recursos, y no sabe nada del estado interno de un servicio. Ejemplo con lo de hoy: si el Circuit Breaker de `pagatu-orden-ms` está en `OPEN` y todas las órdenes se quedan en `CARRITO` sin poder avanzar, Eureka lo seguiría mostrando como `UP` — la instancia está viva, el problema es de lógica de negocio degradada, invisible para un registro de servicios. Eso solo lo revela Observabilidad (Actuator + métricas de Resilience4j, S10).
+- **`pagatu-config`**: `pagatu-gateway`, `pagatu-eureka` y cada microservicio cargan su configuración desde él al arrancar (S2).
+- **`pagatu-eureka`**: cada microservicio se registra en él como instancia (S3), y `pagatu-gateway` lo consulta para descubrir servicios y resolver las rutas `lb://`.
+
+**Aún no existen** (ya están agendados en el sílabo de esta unidad): `pagatu-auth-ms` (S7), Kafka y `pago-ms` (S8), la Saga entre `pagatu-orden-ms` y `pago-ms` (S9, es lógica dentro de ambos, no un servicio aparte), Observabilidad (S10) y el cliente Angular (S11).
+
+Eureka solo confirma que una instancia está viva y dónde está; no reemplaza a Observabilidad, que mide logs, latencia y estado interno. Ejemplo: con el Circuit Breaker de `pagatu-orden-ms` en `OPEN`, Eureka sigue mostrando `UP`.
 
 ## 2. Explica
 
@@ -1872,7 +1874,7 @@ Tiempo: 5 min.
 
 **Metacognición:** ¿qué parte de la sesión te costó más entender — que Feign resuelve el nombre lógico contra Eureka en vez de una dirección fija, o que el fallback no es un error sino una respuesta de negocio válida (la orden se queda en `CARRITO`)?
 
-**Proyección:** S7 protege las rutas de `pagatu-gateway` con seguridad distribuida (JWT); S8 agrega mensajería asíncrona entre servicios desacoplados, con Kafka. Es muy probable que `pagatu-orden-ms` —el mismo que se construyó hoy— sea el productor del primer evento del proyecto (`orden.creada`), consumido por un microservicio de pagos que todavía no existe. Ninguna comunicación de hoy queda obsoleta: Kafka resuelve un problema distinto (desacoplar en el tiempo, para que ninguno de los dos servicios necesite que el otro esté arriba en el mismo instante) — no reemplaza a Feign+Circuit Breaker donde sí hace falta una respuesta inmediata, como el precio real de un producto al crear la orden.
+**Proyección:** S7 protege las rutas de `pagatu-gateway` con seguridad distribuida (JWT); S8 agrega mensajería asíncrona entre servicios desacoplados, con Kafka. Es muy probable que `pagatu-orden-ms` —el mismo que se construyó hoy— sea el productor del primer evento del proyecto (`orden.creada`), consumido por un microservicio de pagos que todavía no existe; `pagatu-orden-ms` consumirá después el resultado del pago (`pago.validado`, y en S9 `pago.fallido` para compensar). Ninguna comunicación de hoy queda obsoleta: Kafka resuelve un problema distinto (desacoplar en el tiempo, para que ninguno de los dos servicios necesite que el otro esté arriba en el mismo instante) — no reemplaza a Feign+Circuit Breaker donde sí hace falta una respuesta inmediata, como el precio real de un producto al crear la orden.
 
 ## Bibliografía
 
