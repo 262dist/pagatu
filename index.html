@@ -1487,19 +1487,19 @@ técnicamente.
 <td>S7</td>
 <td>Seguridad distribuida y control de acceso.</td>
 <td><code>auth-ms</code> (nuevo), <code>cliente-ms</code></td>
-<td>JWT propio con Spring Security en clase (Keycloak queda como reemplazo posterior de <code>auth-ms</code>), roles, Gateway como Resource Server. <code>orden-ms</code> deja de aceptar <code>id_cliente</code> en el request y lo toma del JWT ya validado; <code>pagatu-cliente-ms</code> (construido en S2) queda protegido con los mismos roles.</td>
+<td>JWT propio con Spring Security en clase, firmado con clave asimétrica y con claves públicas publicadas (JWKS), y con roles en tablas propias — diseñado con los mismos claims y el mismo modelo de OAuth2 que Keycloak, que lo reemplazará después sin cambiar el Gateway ni los microservicios (solo una propiedad); Gateway y <code>orden-ms</code> como Resource Server. <code>orden-ms</code> deja de aceptar <code>id_cliente</code> en el request y lo toma del JWT ya validado; <code>pagatu-cliente-ms</code> (construido en S2) queda protegido con los mismos roles.</td>
 </tr>
 <tr>
 <td>S8</td>
 <td>Mensajería asíncrona entre servicios.</td>
 <td><code>orden-ms</code> → <code>pago-ms</code> (nuevo)</td>
-<td><code>orden-ms</code> publica <code>orden.creada</code>; <code>pago-ms</code> consume y publica <code>pago.validado</code>.</td>
+<td><code>orden-ms</code> publica <code>orden.creada</code> (topic <code>orden-eventos</code>); <code>pago-ms</code> lo consume y publica <code>pago.validado</code> (topic <code>pago-eventos</code>); <code>orden-ms</code> consume <code>pago-eventos</code> y pasa la orden a <code>PAGADA</code>.</td>
 </tr>
 <tr>
 <td>S9</td>
 <td>Consistencia distribuida en procesos de negocio.</td>
 <td><code>orden-ms</code>, <code>pago-ms</code></td>
-<td>Idempotencia, compensación, manejo de eventos duplicados.</td>
+<td>Idempotencia, compensación, manejo de eventos duplicados. Si el pago falla, <code>pago-ms</code> publica <code>pago.fallido</code> en <code>pago-eventos</code> y <code>orden-ms</code> lo consume para compensar la orden ya confirmada.</td>
 </tr>
 <tr>
 <td>S10</td>
@@ -1510,7 +1510,7 @@ técnicamente.
 <tr>
 <td>S11</td>
 <td>Integración con cliente frontend.</td>
-<td>Angular 21</td>
+<td>Angular 22</td>
 <td>Cliente consumiendo por Gateway: catálogo, crear orden, ver pago.</td>
 </tr>
 <tr>
@@ -1637,13 +1637,14 @@ flowchart LR
     Orden --&gt;|"orden-eventos"| Broker
     Broker --&gt;|"orden-eventos"| Pago
     Pago --&gt;|"pago-eventos"| Broker
+    Broker --&gt;|"pago-eventos"| Orden
     Pago --&gt;|"autoriza / confirma pago"| PaymentGateway
 
     classDef external fill:#fff3cd,stroke:#b7791f,stroke-width:2px,color:#5f370e;
     class PaymentGateway,ReniecSunat external;
 
     subgraph Client["clients"]
-        Angular["pagatu-ng (Angular 21) - D 4200"]
+        Angular["pagatu-ng (Angular 22) - D 4200"]
     end
 
     subgraph Obs["observabilidad"]
@@ -1666,7 +1667,7 @@ flowchart LR
 <li>Los flujos asincronos usan mensajería para coordinar ordenes y pagos.</li>
 <li><code>/actuator/health</code> existe desde S1. El stack de observabilidad (Prometheus, Loki, Grafana) se levanta sobre <code>catalogo-ms</code>/<code>orden-ms</code> a más tardar en S4 (Prometheus/Loki son opcionales ya en S3, según recursos de cómputo), para tener evidencia visual de operación desde la sustentación de S5; en S10 se extiende a <code>auth-ms</code>, <code>cliente-ms</code>, <code>orden-ms</code> y <code>pago-ms</code> con paneles de diagnóstico y alertas sobre todo el sistema.</li>
 <li><code>pagatu-cliente-ms</code> (autónomo, desde S2) guarda el perfil del cliente (DNI/RUC, nombre/razón social) y lo autocompleta consultando RENIEC (personas naturales) o SUNAT (personas jurídicas) por el número de documento — el sistema no vive aislado, se integra con servicios externos del Estado peruano igual que con la pasarela de pagos. Desde S7, <code>orden-ms</code> deja de confiar en el <code>id_cliente</code> que el request declara y lo toma del JWT ya validado.</li>
-<li>El frontend <code>clients/pagatu-ng</code> (Angular 21) consume el sistema mediante Gateway.</li>
+<li>El frontend <code>clients/pagatu-ng</code> (Angular 22) consume el sistema mediante Gateway.</li>
 <li>El producto final se valida end-to-end, se estabiliza y se defiende técnicamente.</li>
 </ol>
 <h2 id="enlaces">Enlaces<a class="headerlink" href="#enlaces" title="Permanent link">&para;</a></h2>
