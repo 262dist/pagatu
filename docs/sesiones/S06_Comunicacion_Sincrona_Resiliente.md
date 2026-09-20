@@ -79,7 +79,7 @@ flowchart TB
     Orden["pagatu-orden-ms<br/>S6 · Feign + Circuit Breaker<br/>(S9: coordina Saga)<br/>produce: orden-eventos<br/>consume: pago-eventos"]
     Pago["pago-ms<br/>S8<br/>(S9: coordina Saga)<br/>consume: orden-eventos<br/>produce: pago-eventos"]
     Eureka["pagatu-eureka<br/>S3 · puerto 18761 (DEV)<br/>registra instancias"]
-    Kafka[("Kafka<br/>S8 · puerto 41092 (DEV)<br/>topics: orden-eventos, pago-eventos")]
+    Kafka[("Kafka<br/>S8 · puerto 19092 (DEV)<br/>topics: orden-eventos, pago-eventos")]
     Pasarela["Pasarela de pagos<br/>(externa)"]
 
     ClientePrueba --> Gateway
