@@ -493,7 +493,35 @@ Levanta en DEV los servicios base ya construidos hasta S6 (`pagatu-config`, `pag
 | Dependencias | Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway, **Prometheus** (categoría *Observability*, `io.micrometer:micrometer-registry-prometheus`, scope `runtime`) y **Spring Security** — las mismas de `pagatu-orden-ms` (S6, Tabla 3) más Spring Security, nueva hoy. **Además**, agrega MapStruct a mano en el `pom.xml` (S1, 3.5.20), igual que en `pagatu-orden-ms`: Spring Initializr no lo ofrece como opción. |
 | Ubicación sugerida | `services/pagatu-auth-ms` |
 
-Prometheus deja a `pagatu-auth-ms` visible en `obs/` desde que arranca, con el mismo criterio que `pagatu-orden-ms` (S6). MapStruct queda listo aunque hoy `pagatu-auth-ms` no tenga ningún *mapper*: así el `pom.xml` no vuelve a tocarse cuando aparezcan DTO de usuario más adelante.
+Prometheus deja a `pagatu-auth-ms` visible en `obs/` desde que arranca, con el mismo criterio que `pagatu-orden-ms` (S6).
+
+**MapStruct se agrega a mano en el `pom.xml`, en dos lugares**, igual que en `pagatu-orden-ms` (S1, 3.5.20). Queda listo aunque hoy `pagatu-auth-ms` no tenga ningún *mapper*: así el `pom.xml` no vuelve a tocarse cuando aparezcan DTO de usuario más adelante.
+
+**Lugar 1 — la dependencia**, dentro de `<dependencies>`:
+
+```xml
+<dependency>
+    <groupId>org.mapstruct</groupId>
+    <artifactId>mapstruct</artifactId>
+    <version>1.6.3</version>
+</dependency>
+```
+
+**Lugar 2 — el procesador de anotaciones**, dentro de `maven-compiler-plugin`. El proyecto generado ya trae un `annotationProcessorPaths` con Lombok: agrega `mapstruct-processor` **después** de Lombok, porque MapStruct necesita ver los getters y setters que Lombok genera. Ese bloque aparece **dos veces** (en la ejecución `default-compile` y en `default-testCompile`); agrégalo en las dos:
+
+```xml
+<annotationProcessorPaths>
+    <path>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+    </path>
+    <path>
+        <groupId>org.mapstruct</groupId>
+        <artifactId>mapstruct-processor</artifactId>
+        <version>1.6.3</version>
+    </path>
+</annotationProcessorPaths>
+```
 
 Agrega también a mano, en el `pom.xml`, la librería con la que Spring Security **firma** un JWT — Spring Initializr no la ofrece como opción por separado (mismo criterio que MapStruct en S1, 3.5.20):
 
