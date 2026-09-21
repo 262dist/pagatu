@@ -3005,7 +3005,7 @@
 <tbody>
 <tr>
 <td>Servidor de autorización</td>
-<td><code>pagatu-auth-ms</code> (puerto <code>8084</code>)</td>
+<td><code>pagatu-auth-ms</code> (puerto <code>8085</code>)</td>
 <td>Keycloak, en un <em>realm</em> del proyecto</td>
 <td>No</td>
 </tr>
@@ -3047,7 +3047,7 @@
 </tr>
 <tr>
 <td>Dónde descargan la clave pública los <em>resource servers</em></td>
-<td><code>jwk-set-uri: http://localhost:8084/.well-known/jwks.json</code></td>
+<td><code>jwk-set-uri: http://localhost:8085/.well-known/jwks.json</code></td>
 <td><code>issuer-uri: http://localhost:{puerto}/realms/{realm}</code></td>
 <td><strong>Sí</strong> — una propiedad YAML</td>
 </tr>
@@ -3186,7 +3186,7 @@
 <span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div>
 <p>Sin <code>&lt;version&gt;</code>: la gestiona el padre <code>spring-boot-starter-parent</code>. Trae <code>NimbusJwtEncoder</code> (para emitir tokens) y la librería Nimbus JOSE que sabe generar y publicar claves. <strong>No se agrega ninguna librería JWT aparte:</strong> la misma familia de Spring Security que valida el token en el Gateway y en <code>pagatu-orden-ms</code> es la que lo emite aquí — una sola manera de leer y escribir JWT en todo el sistema. Tampoco se agrega el <em>starter</em> de Resource Server: <code>pagatu-auth-ms</code> <strong>emite</strong> tokens, no valida los de otros, y ese <em>starter</em> activaría configuración automática que aquí no hace falta.</p>
-<p>El puerto de base de datos (<code>15431</code> DEV / <code>25431</code> PROD local) y el nombre <code>pagatu_auth_db</code> ya estaban reservados desde la arquitectura del proyecto (<code>docs/index.md</code>) — no se inventan en esta sesión. El puerto de aplicación en DEV es <code>8084</code> — el siguiente libre después de <code>8080</code>/<code>8081</code> (<code>pagatu-catalogo-ms</code>, S1/S3) y <code>8082</code>/<code>8083</code> (<code>pagatu-orden-ms</code>, S6).</p>
+<p>El puerto de base de datos (<code>15431</code> DEV / <code>25431</code> PROD local) y el nombre <code>pagatu_auth_db</code> ya estaban reservados desde la arquitectura del proyecto (<code>docs/index.md</code>) — no se inventan en esta sesión. El puerto de aplicación en DEV es <code>8085</code> — el siguiente libre después de <code>8080</code>/<code>8081</code> (<code>pagatu-catalogo-ms</code>, S1/S3), <code>8082</code>/<code>8083</code> (<code>pagatu-orden-ms</code>, S6) y <code>8084</code> (<code>pagatu-cliente-ms</code>).</p>
 <p>Si Spring Initializr todavía no ofrece <strong>Spring Boot 4</strong> como opción, agrega Spring Security a mano en el <code>pom.xml</code> después de generar el proyecto: <code>&lt;artifactId&gt;spring-boot-starter-security&lt;/artifactId&gt;</code>, sin <code>&lt;version&gt;</code>. Revisa también, igual que en S6, que ningún starter conserve un nombre de Boot 3 (por ejemplo <code>spring-boot-starter-web</code> en vez de <code>spring-boot-starter-webmvc</code>).</p>
 <h4 id="32-levantar-la-base-de-datos-de-pagatu-auth-ms">3.2 Levantar la base de datos de <code>pagatu-auth-ms</code><a class="headerlink" href="#32-levantar-la-base-de-datos-de-pagatu-auth-ms" title="Permanent link">&para;</a></h4>
 <p><strong>Producto del paso:</strong> PostgreSQL de <code>pagatu-auth-ms</code> corriendo en DEV.</p>
@@ -3734,7 +3734,7 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <p><strong>Producto del paso:</strong> el archivo de configuración DEV de <code>pagatu-auth-ms</code>, con los dos únicos datos propios del emisor de tokens: quién es (<code>issuer</code>) y cuánto duran sus tokens.</p>
 <p><strong><code>infra/pagatu-config/config-repo/pagatu-auth-ms-dev.yml</code>:</strong></p>
 <div class="highlight"><pre><span></span><code><span class="nt">server</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8084</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8085</span>
 
 <span class="nt">spring</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">datasource</span><span class="p">:</span>
@@ -3784,7 +3784,7 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <span class="w">      </span><span class="nt">defaultZone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://localhost:18761/eureka</span>
 
 <span class="nt">jwt</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">issuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://localhost:8084</span>
+<span class="w">  </span><span class="nt">issuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://localhost:8085</span>
 <span class="w">  </span><span class="nt">expiracion-segundos</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3600</span>
 </code></pre></div>
 <p>Mismo patrón exacto de <code>pagatu-orden-ms-dev.yml</code> (S6) — <code>ddl-auto: validate</code> porque el esquema real lo define Flyway (3.3), no Hibernate. <code>jwt.expiracion-segundos: 3600</code> es una hora, deliberadamente larga solo para no complicar las pruebas manuales de hoy (2.2, Error frecuente). <strong>No hay ningún secreto compartido en <code>config-repo</code>:</strong> ni el Gateway ni <code>pagatu-orden-ms</code> necesitan conocer nada que permita fabricar un token — solo saber de dónde descargar la clave pública (3.14, 3.19). Esa es la ventaja concreta de la firma asimétrica (2.5).</p>
@@ -3803,12 +3803,12 @@ mvn<span class="w"> </span>spring-boot:run
 </code></pre></div>
 <p>Prueba con el usuario <code>ADMIN</code> semilla (3.3):</p>
 <p>PowerShell:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Post</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:8084/api/v1/auth/login"</span> <span class="p">`</span>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Post</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:8085/api/v1/auth/login"</span> <span class="p">`</span>
   <span class="n">-ContentType</span> <span class="s2">"application/json"</span> <span class="p">`</span>
   <span class="n">-Body</span> <span class="s1">'{"email": "admin@pagatu.com", "password": "admin123"}'</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8084/api/v1/auth/login<span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8085/api/v1/auth/login<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"email": "admin@pagatu.com", "password": "admin123"}'</span>
 </code></pre></div>
@@ -3822,15 +3822,15 @@ mvn<span class="w"> </span>spring-boot:run
 <p>Prueba también con una contraseña incorrecta y confirma <code>401 Unauthorized</code> con <code>{"error": "Credenciales invalidas"}</code> — el manejador de 3.8 en acción. Guarda el <code>access_token</code> del <code>ADMIN</code> y repite el login con <code>cliente@pagatu.com</code> / <code>cliente123</code> — vas a necesitar <strong>ambos</strong> tokens en 3.17 y 3.21.</p>
 <p>Ahora comprueba que la clave pública está publicada:</p>
 <p>PowerShell:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:8084/.well-known/jwks.json"</span>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:8085/.well-known/jwks.json"</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
-<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8084/.well-known/jwks.json
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:8085/.well-known/jwks.json
 </code></pre></div>
 <p>Resultado esperado: un documento con una lista <code>keys</code>, y en ella una sola clave <code>RSA</code> con sus campos <code>kty</code>, <code>e</code>, <code>n</code> y <code>kid</code> — <strong>sin</strong> ningún campo privado (<code>d</code>, <code>p</code>, <code>q</code>).</p>
 <p><strong>(Opcional) ¿Solo quieres inspeccionar un JWT sin escribir código?</strong> Pega el token en <a href="https://jwt.io">jwt.io</a> — el encabezado debe mostrar <code>"alg": "RS256"</code> y un <code>kid</code>, y el <em>payload</em> decodificado debe verse así para <code>admin@pagatu.com</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">  </span><span class="nt">"iss"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:8084"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"iss"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:8085"</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">"sub"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">"iat"</span><span class="p">:</span><span class="w"> </span><span class="mi">1789699000</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">"exp"</span><span class="p">:</span><span class="w"> </span><span class="mi">1789702600</span><span class="p">,</span>
@@ -3858,7 +3858,7 @@ mvn<span class="w"> </span>spring-boot:run
 <span class="w">    </span><span class="nt">oauth2</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">resourceserver</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">jwt</span><span class="p">:</span>
-<span class="w">          </span><span class="nt">jwk-set-uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://localhost:8084/.well-known/jwks.json</span>
+<span class="w">          </span><span class="nt">jwk-set-uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://localhost:8085/.well-known/jwks.json</span>
 </code></pre></div>
 <p>Con solo esa propiedad, Spring Boot arma el decodificador de JWT por su cuenta: descarga el JWKS la primera vez que llega un token, lo guarda en memoria, verifica la firma y la expiración de cada token que recibe. <strong>No hay ningún bean <code>JwtDecoder</code> que escribir, ni ningún secreto que configurar.</strong> Esta es, además, <strong>la única línea que cambia el día que llegue Keycloak</strong> (Tabla 6): <code>jwk-set-uri</code> se reemplaza por <code>issuer-uri</code>.</p>
 <p>Ahora el conversor. <strong><code>infra/pagatu-gateway/src/main/java/pe/edu/upeu/gateway/config/SecurityConfig.java</code></strong> (primera mitad — el conversor de roles):</p>
@@ -4028,7 +4028,7 @@ curl<span class="w"> </span>-i<span class="w"> </span>-X<span class="w"> </span>
 <span class="w">    </span><span class="nt">oauth2</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">resourceserver</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">jwt</span><span class="p">:</span>
-<span class="w">          </span><span class="nt">jwk-set-uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://localhost:8084/.well-known/jwks.json</span>
+<span class="w">          </span><span class="nt">jwk-set-uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://localhost:8085/.well-known/jwks.json</span>
 </code></pre></div>
 <p><strong><code>services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/config/SecurityConfig.java</code>:</strong></p>
 <div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.orden.config</span><span class="p">;</span>
