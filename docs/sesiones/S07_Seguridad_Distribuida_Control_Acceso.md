@@ -507,20 +507,55 @@ Prometheus deja a `pagatu-auth-ms` visible en `obs/` desde que arranca, con el m
 </dependency>
 ```
 
-**Lugar 2 — el procesador de anotaciones**, dentro de `maven-compiler-plugin`. El proyecto generado ya trae un `annotationProcessorPaths` con Lombok: agrega `mapstruct-processor` **después** de Lombok, porque MapStruct necesita ver los getters y setters que Lombok genera. Ese bloque aparece **dos veces** (en la ejecución `default-compile` y en `default-testCompile`); agrégalo en las dos:
+**Lugar 2 — el procesador de anotaciones**, dentro de `maven-compiler-plugin`. El proyecto generado ya trae ese plugin con dos ejecuciones (`default-compile` para `src/main` y `default-testCompile` para `src/test`), cada una con un `annotationProcessorPaths` que solo tiene Lombok. Agrega `mapstruct-processor` **después** de Lombok en **las dos** ejecuciones — MapStruct necesita ver los getters y setters que Lombok genera. El plugin completo queda así:
 
 ```xml
-<annotationProcessorPaths>
-    <path>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok</artifactId>
-    </path>
-    <path>
-        <groupId>org.mapstruct</groupId>
-        <artifactId>mapstruct-processor</artifactId>
-        <version>1.6.3</version>
-    </path>
-</annotationProcessorPaths>
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <executions>
+        <execution>
+            <id>default-compile</id>
+            <phase>compile</phase>
+            <goals>
+                <goal>compile</goal>
+            </goals>
+            <configuration>
+                <annotationProcessorPaths>
+                    <path>
+                        <groupId>org.projectlombok</groupId>
+                        <artifactId>lombok</artifactId>
+                    </path>
+                    <path>
+                        <groupId>org.mapstruct</groupId>
+                        <artifactId>mapstruct-processor</artifactId>
+                        <version>1.6.3</version>
+                    </path>
+                </annotationProcessorPaths>
+            </configuration>
+        </execution>
+        <execution>
+            <id>default-testCompile</id>
+            <phase>test-compile</phase>
+            <goals>
+                <goal>testCompile</goal>
+            </goals>
+            <configuration>
+                <annotationProcessorPaths>
+                    <path>
+                        <groupId>org.projectlombok</groupId>
+                        <artifactId>lombok</artifactId>
+                    </path>
+                    <path>
+                        <groupId>org.mapstruct</groupId>
+                        <artifactId>mapstruct-processor</artifactId>
+                        <version>1.6.3</version>
+                    </path>
+                </annotationProcessorPaths>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
 ```
 
 Agrega también a mano, en el `pom.xml`, la librería con la que Spring Security **firma** un JWT — Spring Initializr no la ofrece como opción por separado (mismo criterio que MapStruct en S1, 3.5.20):
