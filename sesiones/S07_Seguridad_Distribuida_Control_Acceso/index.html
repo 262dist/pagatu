@@ -3188,18 +3188,53 @@
 <span class="w">    </span><span class="nt">&lt;version&gt;</span>1.6.3<span class="nt">&lt;/version&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div>
-<p><strong>Lugar 2 — el procesador de anotaciones</strong>, dentro de <code>maven-compiler-plugin</code>. El proyecto generado ya trae un <code>annotationProcessorPaths</code> con Lombok: agrega <code>mapstruct-processor</code> <strong>después</strong> de Lombok, porque MapStruct necesita ver los getters y setters que Lombok genera. Ese bloque aparece <strong>dos veces</strong> (en la ejecución <code>default-compile</code> y en <code>default-testCompile</code>); agrégalo en las dos:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">&lt;annotationProcessorPaths&gt;</span>
-<span class="w">    </span><span class="nt">&lt;path&gt;</span>
-<span class="w">        </span><span class="nt">&lt;groupId&gt;</span>org.projectlombok<span class="nt">&lt;/groupId&gt;</span>
-<span class="w">        </span><span class="nt">&lt;artifactId&gt;</span>lombok<span class="nt">&lt;/artifactId&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/path&gt;</span>
-<span class="w">    </span><span class="nt">&lt;path&gt;</span>
-<span class="w">        </span><span class="nt">&lt;groupId&gt;</span>org.mapstruct<span class="nt">&lt;/groupId&gt;</span>
-<span class="w">        </span><span class="nt">&lt;artifactId&gt;</span>mapstruct-processor<span class="nt">&lt;/artifactId&gt;</span>
-<span class="w">        </span><span class="nt">&lt;version&gt;</span>1.6.3<span class="nt">&lt;/version&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/path&gt;</span>
-<span class="nt">&lt;/annotationProcessorPaths&gt;</span>
+<p><strong>Lugar 2 — el procesador de anotaciones</strong>, dentro de <code>maven-compiler-plugin</code>. El proyecto generado ya trae ese plugin con dos ejecuciones (<code>default-compile</code> para <code>src/main</code> y <code>default-testCompile</code> para <code>src/test</code>), cada una con un <code>annotationProcessorPaths</code> que solo tiene Lombok. Agrega <code>mapstruct-processor</code> <strong>después</strong> de Lombok en <strong>las dos</strong> ejecuciones — MapStruct necesita ver los getters y setters que Lombok genera. El plugin completo queda así:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;plugin&gt;</span>
+<span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;executions&gt;</span>
+<span class="w">        </span><span class="nt">&lt;execution&gt;</span>
+<span class="w">            </span><span class="nt">&lt;id&gt;</span>default-compile<span class="nt">&lt;/id&gt;</span>
+<span class="w">            </span><span class="nt">&lt;phase&gt;</span>compile<span class="nt">&lt;/phase&gt;</span>
+<span class="w">            </span><span class="nt">&lt;goals&gt;</span>
+<span class="w">                </span><span class="nt">&lt;goal&gt;</span>compile<span class="nt">&lt;/goal&gt;</span>
+<span class="w">            </span><span class="nt">&lt;/goals&gt;</span>
+<span class="w">            </span><span class="nt">&lt;configuration&gt;</span>
+<span class="w">                </span><span class="nt">&lt;annotationProcessorPaths&gt;</span>
+<span class="w">                    </span><span class="nt">&lt;path&gt;</span>
+<span class="w">                        </span><span class="nt">&lt;groupId&gt;</span>org.projectlombok<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">                        </span><span class="nt">&lt;artifactId&gt;</span>lombok<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">                    </span><span class="nt">&lt;/path&gt;</span>
+<span class="w">                    </span><span class="nt">&lt;path&gt;</span>
+<span class="w">                        </span><span class="nt">&lt;groupId&gt;</span>org.mapstruct<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">                        </span><span class="nt">&lt;artifactId&gt;</span>mapstruct-processor<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">                        </span><span class="nt">&lt;version&gt;</span>1.6.3<span class="nt">&lt;/version&gt;</span>
+<span class="w">                    </span><span class="nt">&lt;/path&gt;</span>
+<span class="w">                </span><span class="nt">&lt;/annotationProcessorPaths&gt;</span>
+<span class="w">            </span><span class="nt">&lt;/configuration&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/execution&gt;</span>
+<span class="w">        </span><span class="nt">&lt;execution&gt;</span>
+<span class="w">            </span><span class="nt">&lt;id&gt;</span>default-testCompile<span class="nt">&lt;/id&gt;</span>
+<span class="w">            </span><span class="nt">&lt;phase&gt;</span>test-compile<span class="nt">&lt;/phase&gt;</span>
+<span class="w">            </span><span class="nt">&lt;goals&gt;</span>
+<span class="w">                </span><span class="nt">&lt;goal&gt;</span>testCompile<span class="nt">&lt;/goal&gt;</span>
+<span class="w">            </span><span class="nt">&lt;/goals&gt;</span>
+<span class="w">            </span><span class="nt">&lt;configuration&gt;</span>
+<span class="w">                </span><span class="nt">&lt;annotationProcessorPaths&gt;</span>
+<span class="w">                    </span><span class="nt">&lt;path&gt;</span>
+<span class="w">                        </span><span class="nt">&lt;groupId&gt;</span>org.projectlombok<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">                        </span><span class="nt">&lt;artifactId&gt;</span>lombok<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">                    </span><span class="nt">&lt;/path&gt;</span>
+<span class="w">                    </span><span class="nt">&lt;path&gt;</span>
+<span class="w">                        </span><span class="nt">&lt;groupId&gt;</span>org.mapstruct<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">                        </span><span class="nt">&lt;artifactId&gt;</span>mapstruct-processor<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">                        </span><span class="nt">&lt;version&gt;</span>1.6.3<span class="nt">&lt;/version&gt;</span>
+<span class="w">                    </span><span class="nt">&lt;/path&gt;</span>
+<span class="w">                </span><span class="nt">&lt;/annotationProcessorPaths&gt;</span>
+<span class="w">            </span><span class="nt">&lt;/configuration&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/execution&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/executions&gt;</span>
+<span class="nt">&lt;/plugin&gt;</span>
 </code></pre></div>
 <p>Agrega también a mano, en el <code>pom.xml</code>, la librería con la que Spring Security <strong>firma</strong> un JWT — Spring Initializr no la ofrece como opción por separado (mismo criterio que MapStruct en S1, 3.5.20):</p>
 <div class="highlight"><pre><span></span><code><span class="nt">&lt;dependency&gt;</span>
