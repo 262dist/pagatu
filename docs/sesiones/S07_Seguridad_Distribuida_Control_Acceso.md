@@ -490,8 +490,10 @@ Levanta en DEV los servicios base ya construidos hasta S6 (`pagatu-config`, `pag
 | Package name | `pe.edu.upeu.auth` |
 | Packaging | Jar |
 | Java | 21 |
-| Dependencias | Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway, **Spring Security** — las mismas de `pagatu-orden-ms` (S6, Tabla 3) más Spring Security, nueva hoy. |
+| Dependencias | Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway, **Prometheus** (categoría *Observability*, `io.micrometer:micrometer-registry-prometheus`, scope `runtime`) y **Spring Security** — las mismas de `pagatu-orden-ms` (S6, Tabla 3) más Spring Security, nueva hoy. **Además**, agrega MapStruct a mano en el `pom.xml` (S1, 3.5.20), igual que en `pagatu-orden-ms`: Spring Initializr no lo ofrece como opción. |
 | Ubicación sugerida | `services/pagatu-auth-ms` |
+
+Prometheus deja a `pagatu-auth-ms` visible en `obs/` desde que arranca, con el mismo criterio que `pagatu-orden-ms` (S6). MapStruct queda listo aunque hoy `pagatu-auth-ms` no tenga ningún *mapper*: así el `pom.xml` no vuelve a tocarse cuando aparezcan DTO de usuario más adelante.
 
 Agrega también a mano, en el `pom.xml`, la librería con la que Spring Security **firma** un JWT — Spring Initializr no la ofrece como opción por separado (mismo criterio que MapStruct en S1, 3.5.20):
 
