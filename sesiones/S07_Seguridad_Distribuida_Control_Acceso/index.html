@@ -3179,7 +3179,28 @@
 </tr>
 </tbody>
 </table>
-<p>Prometheus deja a <code>pagatu-auth-ms</code> visible en <code>obs/</code> desde que arranca, con el mismo criterio que <code>pagatu-orden-ms</code> (S6). MapStruct queda listo aunque hoy <code>pagatu-auth-ms</code> no tenga ningún <em>mapper</em>: así el <code>pom.xml</code> no vuelve a tocarse cuando aparezcan DTO de usuario más adelante.</p>
+<p>Prometheus deja a <code>pagatu-auth-ms</code> visible en <code>obs/</code> desde que arranca, con el mismo criterio que <code>pagatu-orden-ms</code> (S6).</p>
+<p><strong>MapStruct se agrega a mano en el <code>pom.xml</code>, en dos lugares</strong>, igual que en <code>pagatu-orden-ms</code> (S1, 3.5.20). Queda listo aunque hoy <code>pagatu-auth-ms</code> no tenga ningún <em>mapper</em>: así el <code>pom.xml</code> no vuelve a tocarse cuando aparezcan DTO de usuario más adelante.</p>
+<p><strong>Lugar 1 — la dependencia</strong>, dentro de <code>&lt;dependencies&gt;</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;dependency&gt;</span>
+<span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.mapstruct<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>mapstruct<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;version&gt;</span>1.6.3<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div>
+<p><strong>Lugar 2 — el procesador de anotaciones</strong>, dentro de <code>maven-compiler-plugin</code>. El proyecto generado ya trae un <code>annotationProcessorPaths</code> con Lombok: agrega <code>mapstruct-processor</code> <strong>después</strong> de Lombok, porque MapStruct necesita ver los getters y setters que Lombok genera. Ese bloque aparece <strong>dos veces</strong> (en la ejecución <code>default-compile</code> y en <code>default-testCompile</code>); agrégalo en las dos:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;annotationProcessorPaths&gt;</span>
+<span class="w">    </span><span class="nt">&lt;path&gt;</span>
+<span class="w">        </span><span class="nt">&lt;groupId&gt;</span>org.projectlombok<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">        </span><span class="nt">&lt;artifactId&gt;</span>lombok<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/path&gt;</span>
+<span class="w">    </span><span class="nt">&lt;path&gt;</span>
+<span class="w">        </span><span class="nt">&lt;groupId&gt;</span>org.mapstruct<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">        </span><span class="nt">&lt;artifactId&gt;</span>mapstruct-processor<span class="nt">&lt;/artifactId&gt;</span>
+<span class="w">        </span><span class="nt">&lt;version&gt;</span>1.6.3<span class="nt">&lt;/version&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/path&gt;</span>
+<span class="nt">&lt;/annotationProcessorPaths&gt;</span>
+</code></pre></div>
 <p>Agrega también a mano, en el <code>pom.xml</code>, la librería con la que Spring Security <strong>firma</strong> un JWT — Spring Initializr no la ofrece como opción por separado (mismo criterio que MapStruct en S1, 3.5.20):</p>
 <div class="highlight"><pre><span></span><code><span class="nt">&lt;dependency&gt;</span>
 <span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework.security<span class="nt">&lt;/groupId&gt;</span>
