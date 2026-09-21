@@ -3171,7 +3171,7 @@
 </tr>
 <tr>
 <td>Dependencias</td>
-<td>Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway, <strong>Spring Security</strong> — las mismas de <code>pagatu-orden-ms</code> (S6, Tabla 3) más Spring Security, nueva hoy.</td>
+<td>Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway, <strong>Prometheus</strong> (categoría <em>Observability</em>, <code>io.micrometer:micrometer-registry-prometheus</code>, scope <code>runtime</code>) y <strong>Spring Security</strong> — las mismas de <code>pagatu-orden-ms</code> (S6, Tabla 3) más Spring Security, nueva hoy. <strong>Además</strong>, agrega MapStruct a mano en el <code>pom.xml</code> (S1, 3.5.20), igual que en <code>pagatu-orden-ms</code>: Spring Initializr no lo ofrece como opción.</td>
 </tr>
 <tr>
 <td>Ubicación sugerida</td>
@@ -3179,6 +3179,7 @@
 </tr>
 </tbody>
 </table>
+<p>Prometheus deja a <code>pagatu-auth-ms</code> visible en <code>obs/</code> desde que arranca, con el mismo criterio que <code>pagatu-orden-ms</code> (S6). MapStruct queda listo aunque hoy <code>pagatu-auth-ms</code> no tenga ningún <em>mapper</em>: así el <code>pom.xml</code> no vuelve a tocarse cuando aparezcan DTO de usuario más adelante.</p>
 <p>Agrega también a mano, en el <code>pom.xml</code>, la librería con la que Spring Security <strong>firma</strong> un JWT — Spring Initializr no la ofrece como opción por separado (mismo criterio que MapStruct en S1, 3.5.20):</p>
 <div class="highlight"><pre><span></span><code><span class="nt">&lt;dependency&gt;</span>
 <span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework.security<span class="nt">&lt;/groupId&gt;</span>
