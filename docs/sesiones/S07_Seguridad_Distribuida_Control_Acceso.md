@@ -378,14 +378,14 @@ Por último, la tabla que resume qué de todo esto reemplaza Keycloak:
 
 | Pieza | Hoy: `pagatu-auth-ms` | Con Keycloak | ¿Cambia el código del Gateway / `pagatu-orden-ms`? |
 |---|---|---|---|
-| Servidor de autorización | `pagatu-auth-ms` (puerto `8084`) | Keycloak, en un *realm* del proyecto | No |
+| Servidor de autorización | `pagatu-auth-ms` (puerto `8085`) | Keycloak, en un *realm* del proyecto | No |
 | Cómo se pide el token | `POST /api/v1/auth/login` | `POST /realms/{realm}/protocol/openid-connect/token` | No — lo llama el *client*, no los servicios |
 | Usuarios, contraseñas y roles | Tablas `usuarios`, `roles`, `usuario_roles` (Flyway, 3.3) | Usuarios y *realm roles* del *realm* | No |
 | Claim de roles | `realm_access.roles` | `realm_access.roles` (el mismo formato) | No — el conversor de 3.14 sirve tal cual |
 | Identificador del usuario (`sub`) | `id` numérico de `usuarios` | UUID del usuario | No |
 | `idCliente` | Columna `id_cliente` de `usuarios` | *User attribute* + *protocol mapper* que lo agrega al token | No — el claim se llama igual |
 | Claves de firma | Par RSA generado al arrancar; **se pierde al reiniciar** | Administradas, persistidas y rotadas por Keycloak | No |
-| Dónde descargan la clave pública los *resource servers* | `jwk-set-uri: http://localhost:8084/.well-known/jwks.json` | `issuer-uri: http://localhost:{puerto}/realms/{realm}` | **Sí** — una propiedad YAML |
+| Dónde descargan la clave pública los *resource servers* | `jwk-set-uri: http://localhost:8085/.well-known/jwks.json` | `issuer-uri: http://localhost:{puerto}/realms/{realm}` | **Sí** — una propiedad YAML |
 | Refresh token, ID Token, cierre de sesión, SSO, MFA | No existen | Incluidos | — |
 
 El único cambio de configuración de la penúltima fila tiene una consecuencia extra: con `issuer-uri`, Spring descubre solo la ubicación de las claves (Keycloak publica un documento de descubrimiento OIDC) y además valida que el claim `iss` del token coincida con ese emisor. Hoy configuramos `jwk-set-uri` a mano porque `pagatu-auth-ms` no implementa el documento de descubrimiento.
@@ -504,7 +504,7 @@ Agrega también a mano, en el `pom.xml`, la librería con la que Spring Security
 
 Sin `<version>`: la gestiona el padre `spring-boot-starter-parent`. Trae `NimbusJwtEncoder` (para emitir tokens) y la librería Nimbus JOSE que sabe generar y publicar claves. **No se agrega ninguna librería JWT aparte:** la misma familia de Spring Security que valida el token en el Gateway y en `pagatu-orden-ms` es la que lo emite aquí — una sola manera de leer y escribir JWT en todo el sistema. Tampoco se agrega el *starter* de Resource Server: `pagatu-auth-ms` **emite** tokens, no valida los de otros, y ese *starter* activaría configuración automática que aquí no hace falta.
 
-El puerto de base de datos (`15431` DEV / `25431` PROD local) y el nombre `pagatu_auth_db` ya estaban reservados desde la arquitectura del proyecto (`docs/index.md`) — no se inventan en esta sesión. El puerto de aplicación en DEV es `8084` — el siguiente libre después de `8080`/`8081` (`pagatu-catalogo-ms`, S1/S3) y `8082`/`8083` (`pagatu-orden-ms`, S6).
+El puerto de base de datos (`15431` DEV / `25431` PROD local) y el nombre `pagatu_auth_db` ya estaban reservados desde la arquitectura del proyecto (`docs/index.md`) — no se inventan en esta sesión. El puerto de aplicación en DEV es `8085` — el siguiente libre después de `8080`/`8081` (`pagatu-catalogo-ms`, S1/S3), `8082`/`8083` (`pagatu-orden-ms`, S6) y `8084` (`pagatu-cliente-ms`).
 
 Si Spring Initializr todavía no ofrece **Spring Boot 4** como opción, agrega Spring Security a mano en el `pom.xml` después de generar el proyecto: `<artifactId>spring-boot-starter-security</artifactId>`, sin `<version>`. Revisa también, igual que en S6, que ningún starter conserve un nombre de Boot 3 (por ejemplo `spring-boot-starter-web` en vez de `spring-boot-starter-webmvc`).
 
@@ -1159,7 +1159,7 @@ y el `<dependencyManagement>` correspondiente (copia exacta del de `pagatu-orden
 
 ```yaml
 server:
-  port: 8084
+  port: 8085
 
 spring:
   datasource:
@@ -1209,7 +1209,7 @@ eureka:
       defaultZone: http://localhost:18761/eureka
 
 jwt:
-  issuer: http://localhost:8084
+  issuer: http://localhost:8085
   expiracion-segundos: 3600
 ```
 
@@ -1245,7 +1245,7 @@ Prueba con el usuario `ADMIN` semilla (3.3):
 PowerShell:
 
 ```powershell
-Invoke-RestMethod -Method Post -Uri "http://localhost:8084/api/v1/auth/login" `
+Invoke-RestMethod -Method Post -Uri "http://localhost:8085/api/v1/auth/login" `
   -ContentType "application/json" `
   -Body '{"email": "admin@pagatu.com", "password": "admin123"}'
 ```
@@ -1253,7 +1253,7 @@ Invoke-RestMethod -Method Post -Uri "http://localhost:8084/api/v1/auth/login" `
 bash macOS/Linux:
 
 ```bash
-curl -X POST http://localhost:8084/api/v1/auth/login \
+curl -X POST http://localhost:8085/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email": "admin@pagatu.com", "password": "admin123"}'
 ```
@@ -1275,13 +1275,13 @@ Ahora comprueba que la clave pública está publicada:
 PowerShell:
 
 ```powershell
-Invoke-RestMethod -Method Get -Uri "http://localhost:8084/.well-known/jwks.json"
+Invoke-RestMethod -Method Get -Uri "http://localhost:8085/.well-known/jwks.json"
 ```
 
 bash macOS/Linux:
 
 ```bash
-curl http://localhost:8084/.well-known/jwks.json
+curl http://localhost:8085/.well-known/jwks.json
 ```
 
 Resultado esperado: un documento con una lista `keys`, y en ella una sola clave `RSA` con sus campos `kty`, `e`, `n` y `kid` — **sin** ningún campo privado (`d`, `p`, `q`).
@@ -1290,7 +1290,7 @@ Resultado esperado: un documento con una lista `keys`, y en ella una sola clave 
 
 ```json
 {
-  "iss": "http://localhost:8084",
+  "iss": "http://localhost:8085",
   "sub": "1",
   "iat": 1789699000,
   "exp": 1789702600,
@@ -1331,7 +1331,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://localhost:8084/.well-known/jwks.json
+          jwk-set-uri: http://localhost:8085/.well-known/jwks.json
 ```
 
 Con solo esa propiedad, Spring Boot arma el decodificador de JWT por su cuenta: descarga el JWKS la primera vez que llega un token, lo guarda en memoria, verifica la firma y la expiración de cada token que recibe. **No hay ningún bean `JwtDecoder` que escribir, ni ningún secreto que configurar.** Esta es, además, **la única línea que cambia el día que llegue Keycloak** (Tabla 6): `jwk-set-uri` se reemplaza por `issuer-uri`.
@@ -1569,7 +1569,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://localhost:8084/.well-known/jwks.json
+          jwk-set-uri: http://localhost:8085/.well-known/jwks.json
 ```
 
 **`services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/config/SecurityConfig.java`:**
