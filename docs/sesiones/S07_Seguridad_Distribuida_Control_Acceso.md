@@ -182,7 +182,7 @@ Un **JWT** (*JSON Web Token*) resuelve esto sin guardar nada en el servidor: es 
 | Qué pasa si el balanceador manda la petición a otra instancia | Falla, salvo que las instancias compartan el almacén de sesiones | Funciona igual: cualquier instancia valida el mismo token |
 | Cómo se revoca antes de que expire | Borrando la sesión del almacén | No es trivial (2.2, Error frecuente) |
 
-**Error frecuente**: asumir que un JWT se puede "cerrar sesión" como una sesión tradicional. Como el token no depende de ningún estado en el servidor, invalidarlo antes de su expiración natural exige un mecanismo aparte (una lista negra de tokens revocados, por ejemplo) — fuera del alcance de esta sesión. Por eso `jwt.expiracion-segundos` (3.11) debe ser un valor corto en un sistema real; en esta sesión se deja largo (una hora) solo para no complicar las pruebas manuales.
+**Error frecuente**: asumir que un JWT se puede "cerrar sesión" como una sesión tradicional. Como el token no depende de ningún estado en el servidor, invalidarlo antes de su expiración natural exige un mecanismo aparte (una lista negra de tokens revocados, por ejemplo) — fuera del alcance de esta sesión. Por eso `jwt.expiracion-segundos` (3.5) debe ser un valor corto en un sistema real; en esta sesión se deja largo (una hora) solo para no complicar las pruebas manuales.
 
 ### 2.3 Autorización basada en roles
 
@@ -410,7 +410,7 @@ Decodificar un JWT no es validarlo. Un JWT es solo tres partes en Base64 — cua
 Cuando una petición falla con `401` o `403`, el problema puede estar en tres lugares distintos, y diagnosticarlo bien depende de saber cuál:
 
 1. **El JWT no se envió o está mal formado** — revisa el header `Authorization` que realmente salió del cliente (`Bearer ` + token, sin comillas ni espacios de más).
-2. **El JWT no se pudo verificar o expiró** — revisa que `jwk-set-uri` apunte de verdad al JWKS de `pagatu-auth-ms` (ábrelo en el navegador), que `pagatu-auth-ms` esté arriba cuando llega el primer token (sin él, el *resource server* no puede descargar la clave y rechaza todo), y que no lo hayas **reiniciado** desde que pediste el token (3.7: el par de claves se regenera al arrancar, y los tokens anteriores dejan de verificar).
+2. **El JWT no se pudo verificar o expiró** — revisa que `jwk-set-uri` apunte de verdad al JWKS de `pagatu-auth-ms` (ábrelo en el navegador), que `pagatu-auth-ms` esté arriba cuando llega el primer token (sin él, el *resource server* no puede descargar la clave y rechaza todo), y que no lo hayas **reiniciado** desde que pediste el token (3.9: el par de claves se regenera al arrancar, y los tokens anteriores dejan de verificar).
 3. **El JWT es válido pero el rol no alcanza para esa ruta** — revisa la regla de `SecurityConfig` (3.15) contra los roles reales que trae el claim `realm_access.roles`.
 
 Para distinguir estos tres casos sin adivinar, sube el nivel de log de seguridad mientras diagnosticas (`logging.level.org.springframework.security: DEBUG` en `pagatu-gateway`): el log dice el motivo exacto del rechazo. Los logs del Gateway (3.17) y el `traceId` de cada petición (mismo `CorrelationIdFilter` de S1/S6, si ya lo replicaste en `pagatu-auth-ms`) son el punto de partida.
@@ -432,14 +432,14 @@ Tiempo: 4h.
 - **3.1** Crear el proyecto base de `pagatu-auth-ms`.
 - **3.2** Levantar la base de datos de `pagatu-auth-ms`.
 - **3.3** Crear la migración Flyway con usuarios, roles y datos semilla.
-- **3.4** Crear las entidades `Usuario` y `Rol`.
-- **3.5** Crear los DTO de login.
-- **3.6** Crear el repositorio y el servicio que carga usuarios en Spring Security.
-- **3.7** Generar las claves RSA y crear el servicio de JWT.
-- **3.8** Crear el servicio de autenticación, el controlador y el endpoint de claves públicas.
-- **3.9** Configurar Spring Security en `pagatu-auth-ms`.
-- **3.10** Conectar `pagatu-auth-ms` a `pagatu-config` y a `pagatu-eureka`.
-- **3.11** Configurar `pagatu-auth-ms` en `config-repo`.
+- **3.4** Conectar `pagatu-auth-ms` a `pagatu-config` y a `pagatu-eureka`.
+- **3.5** Configurar `pagatu-auth-ms` en `config-repo`.
+- **3.6** Crear las entidades `Usuario` y `Rol`.
+- **3.7** Crear los DTO de login.
+- **3.8** Crear el repositorio y el servicio que carga usuarios en Spring Security.
+- **3.9** Generar las claves RSA y crear el servicio de JWT.
+- **3.10** Crear el servicio de autenticación, el controlador y el endpoint de claves públicas.
+- **3.11** Configurar Spring Security en `pagatu-auth-ms`.
 - **3.12** Levantar y probar `pagatu-auth-ms` de punta a punta.
 
 *Parte B — Proteger `pagatu-gateway` como Resource Server:*
@@ -665,22 +665,185 @@ JOIN roles r ON (u.email = 'admin@pagatu.com' AND r.nombre = 'ADMIN')
              OR (u.email = 'cliente@pagatu.com' AND r.nombre = 'CLIENTE');
 ```
 
-El rol se guarda **sin** el prefijo `ROLE_` (`ADMIN`, no `ROLE_ADMIN`) — igual que Keycloak. Spring Security sí exige ese prefijo internamente para `hasRole(...)`, y se agrega en los dos lugares donde se traduce el rol a autoridad de Spring (3.6 y 3.14), nunca en la base de datos.
+El rol se guarda **sin** el prefijo `ROLE_` (`ADMIN`, no `ROLE_ADMIN`) — igual que Keycloak. Spring Security sí exige ese prefijo internamente para `hasRole(...)`, y se agrega en los dos lugares donde se traduce el rol a autoridad de Spring (3.8 y 3.14), nunca en la base de datos.
 
 Las contraseñas ya están hasheadas con BCrypt (nunca se guarda una contraseña en texto plano, ni siquiera en datos semilla de práctica): el usuario `admin@pagatu.com` tiene contraseña real `admin123`, y `cliente@pagatu.com` tiene `cliente123` — verificados de antemano contra esos dos hashes exactos. `id_cliente: 1` en el usuario `CLIENTE` es el mismo `idCliente` que S6 usaba a mano en el request (3.20 lo reemplaza por este valor, tomado del JWT en vez de escrito por quien llama). Ojo: `id_cliente` es un dato **de negocio** que este servicio guarda por comodidad, no un dato de identidad — con Keycloak pasa a ser un atributo del usuario (Tabla 6).
 
-**Si necesitas generar tu propio hash** (por ejemplo, para el trabajo autónomo de `pagatu-cliente-ms`, 4.1), agrega temporalmente este endpoint en `AuthController` (3.8), pruébalo una vez, y **bórralo antes de entregar** — exponer un generador de hashes en un endpoint público es un riesgo de seguridad, no algo que quede en el proyecto final:
+**¿Necesitas generar un hash? (opcional)** Para esta sesión, no: los dos hashes de la migración ya están calculados, y con ellos funcionan el login y todas las pruebas. Solo lo necesitas si quieres **agregar un usuario más** con una contraseña tuya, por ejemplo un segundo `CLIENTE` para probar.
 
-```java
-@GetMapping("/_hash-temporal")
-public String hashTemporal(@RequestParam String password) {
-    return passwordEncoder.encode(password);
-}
+La razón es esta: el `INSERT` de la migración va directo a la base de datos, y ahí no corre ningún código Java que encripte. Por eso la contraseña debe llegar **ya convertida en hash BCrypt**. La contraseña real (`cliente123`) es lo que escribes al hacer login; el hash es lo único que se guarda.
+
+**1. Genera el hash.** Cambia `cliente123` por tu contraseña. `x` es un nombre de usuario cualquiera que `htpasswd` exige y aquí se descarta.
+
+PowerShell:
+
+```powershell
+(docker run --rm httpd:2.4-alpine htpasswd -nbBC 10 x cliente123).Split(':')[1]
 ```
 
-Para que compile, agrega `private final PasswordEncoder passwordEncoder;` a `AuthController` (`@RequiredArgsConstructor` lo inyecta solo).
+bash macOS/Linux:
 
-#### 3.4 Crear las entidades `Usuario` y `Rol`
+```bash
+docker run --rm httpd:2.4-alpine htpasswd -nbBC 10 x cliente123 | cut -d: -f2
+```
+
+`htpasswd` viene en la imagen `httpd` de Docker y genera BCrypt con costo 10. La primera vez, Docker descarga la imagen y muestra varias líneas de progreso (`Pull complete`, `Digest`, `Status`): son de Docker, no del hash. **El hash es la última línea**, la que empieza con `$2y$10$` y tiene 60 caracteres. Es un prefijo distinto al `$2b$10$` de arriba, pero BCrypt igual, y `BCryptPasswordEncoder` de Spring lo acepta. Cada vez que lo ejecutes sale un hash distinto para la misma contraseña (BCrypt agrega una sal aleatoria): todos son válidos.
+
+**2. Úsalo en un `INSERT`.** Pega el hash completo en la columna `password`, y asígnale un rol:
+
+```sql
+INSERT INTO usuarios (email, password, habilitado, id_cliente)
+VALUES ('otro@pagatu.com', 'PEGA_AQUI_EL_HASH', TRUE, 2);
+
+INSERT INTO usuario_roles (usuario_id, rol_id)
+SELECT u.id, r.id FROM usuarios u, roles r
+WHERE u.email = 'otro@pagatu.com' AND r.nombre = 'CLIENTE';
+```
+
+Ponlo en una **migración nueva** (`V2__usuario_extra.sql`, en la misma carpeta `db/migration`), no dentro de `V1`: Flyway guarda una firma de cada migración ya aplicada, y si editas `V1` después de haber arrancado `pagatu-auth-ms` una vez, se niega a arrancar. Con el `INSERT` en `V2`, el usuario nuevo inicia sesión con `cliente123` (o la contraseña que hayas usado en el paso 1).
+
+#### 3.4 Conectar `pagatu-auth-ms` a `pagatu-config` y a `pagatu-eureka`
+
+**Producto del paso:** `pagatu-auth-ms` externaliza su configuración y se registra como instancia descubrible.
+
+Este paso y el siguiente van **antes** de escribir una sola clase: primero la base de datos (3.2), la migración (3.3) y la conexión a la infraestructura (3.4 y 3.5). Así, al terminar 3.5 puedes arrancar el servicio y ver a Flyway crear las tablas y a `pagatu-auth-ms` aparecer en Eureka, antes de que exista ninguna entidad, DTO o configuración de seguridad.
+
+**`services/pagatu-auth-ms/src/main/resources/application.yml`:**
+
+```yaml
+spring:
+  application:
+    name: pagatu-auth-ms
+  profiles:
+    active: dev
+  config:
+    import: "optional:configserver:${CONFIG_SERVER_URL:http://localhost:18888}"
+```
+
+Mismo patrón exacto que `pagatu-orden-ms` desde S6 — `optional:` evita que `pagatu-auth-ms` falle al arrancar si `pagatu-config` estuviera caído.
+
+Agrega en el `pom.xml` las mismas dos dependencias de Spring Cloud que ya usa `pagatu-orden-ms` (S3, S6) — sin ellas, `pagatu-auth-ms` ni externaliza configuración ni se registra en Eureka:
+
+```xml
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-config</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+</dependency>
+```
+
+No olvides las `<properties>` de Spring Cloud, igual que en `pagatu-orden-ms`:
+
+```xml
+<properties>
+    <java.version>21</java.version>
+    <spring-cloud.version>2025.1.3</spring-cloud.version>
+</properties>
+```
+
+y el `<dependencyManagement>` correspondiente (copia exacta del de `pagatu-orden-ms`, S6, 3.1).
+
+#### 3.5 Configurar `pagatu-auth-ms` en `config-repo`
+
+**Producto del paso:** el archivo de configuración DEV de `pagatu-auth-ms`, con los dos únicos datos propios del emisor de tokens: quién es (`issuer`) y cuánto duran sus tokens. Y el servicio arrancando, sin ninguna clase propia todavía.
+
+**`infra/pagatu-config/config-repo/pagatu-auth-ms-dev.yml`:**
+
+```yaml
+server:
+  port: 8085
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:15431/pagatu_auth_db
+    username: pagatu
+    password: pagatu
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    pe.edu.upeu.auth: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+eureka:
+  instance:
+    hostname: localhost
+    instance-id: ${spring.application.name}:${server.port}
+  client:
+    service-url:
+      defaultZone: http://localhost:18761/eureka
+
+jwt:
+  issuer: http://localhost:8085
+  expiracion-segundos: 3600
+```
+
+Mismo patrón exacto de `pagatu-orden-ms-dev.yml` (S6) — `ddl-auto: validate` porque el esquema real lo define Flyway (3.3), no Hibernate. `jwt.issuer` y `jwt.expiracion-segundos` no los lee nada todavía: los consume el servicio de JWT de 3.9. Se declaran ahora para dejar toda la configuración de `pagatu-auth-ms` en un solo archivo, de una vez. `jwt.expiracion-segundos: 3600` es una hora, deliberadamente larga solo para no complicar las pruebas manuales de hoy (2.2, Error frecuente). **No hay ningún secreto compartido en `config-repo`:** ni el Gateway ni `pagatu-orden-ms` necesitan conocer nada que permita fabricar un token — solo saber de dónde descargar la clave pública (3.14, 3.19). Esa es la ventaja concreta de la firma asimétrica (2.5).
+
+**Verifica** que el Config Server sirve el archivo correctamente antes de continuar:
+
+PowerShell:
+
+```powershell
+Invoke-RestMethod -Method Get -Uri "http://localhost:18888/pagatu-auth-ms/dev"
+```
+
+bash macOS/Linux:
+
+```bash
+curl http://localhost:18888/pagatu-auth-ms/dev
+```
+
+**Si `propertySources` sale sin ningún `jwt.issuer`, no continúes.** Confirma que el archivo se llama exactamente `pagatu-auth-ms-dev.yml`, está directamente en `config-repo/` (no en una subcarpeta), y que `pagatu-config` lo recargó (reinicia `pagatu-config` si hace falta).
+
+**Arranca `pagatu-auth-ms` — todavía sin ninguna clase propia** (las entidades llegan en 3.6). Con `pagatu-config`, `pagatu-eureka` y la base de datos de 3.2 corriendo:
+
+```bash
+cd services/pagatu-auth-ms
+mvn spring-boot:run
+```
+
+El log debe mostrar tres cosas: que la configuración viene del Config Server (`Fetching config from server at : http://localhost:18888`), que Flyway ejecutó `V1__create_usuarios_roles.sql` (`Successfully applied 1 migration`), y que la aplicación quedó arriba en el puerto `8085`. Comprueba las tablas, ahora sí:
+
+```bash
+docker exec -it pagatu-postgres-auth-dev psql -U pagatu -d pagatu_auth_db -c "\dt"
+```
+
+Resultado esperado: `roles`, `usuarios`, `usuario_roles` y `flyway_schema_history` — frente al `No relations found.` de 3.2. Y en `http://localhost:18761` (Eureka), `PAGATU-AUTH-MS` aparece registrada.
+
+Dos líneas del log que **no** son errores: `Using generated security password: ...` (Spring Security todavía sin configurar; se resuelve en 3.11) y la ausencia de cualquier mensaje sobre entidades (Hibernate no tiene ninguna que validar todavía). Detén el servicio con `Ctrl+C` antes de seguir.
+
+#### 3.6 Crear las entidades `Usuario` y `Rol`
 
 **Producto del paso:** mapeo JPA de las tres tablas.
 
@@ -760,7 +923,7 @@ public class Usuario {
 
 `fetch = FetchType.EAGER` porque los roles se necesitan **siempre** que se carga un usuario (para armar el JWT y las autoridades de Spring Security), y son pocos — es uno de los pocos casos donde traerlos de una vez es lo correcto. `idCliente` es `null` para un usuario `ADMIN` (no representa a ningún cliente) y tiene valor para un usuario `CLIENTE` — ese valor es el que viaja dentro del JWT y el que `pagatu-orden-ms` va a leer en la Parte C, en vez de confiar en el que el request declare.
 
-#### 3.5 Crear los DTO de login
+#### 3.7 Crear los DTO de login
 
 **Producto del paso:** contrato de entrada/salida del endpoint de login.
 
@@ -812,11 +975,11 @@ public class LoginResponse {
 }
 ```
 
-Los nombres `access_token`, `token_type` y `expires_in` (este último **en segundos**) no son casualidad: son los del estándar OAuth 2.0 (2.4), los mismos que devuelve el *token endpoint* de Keycloak. Un cliente que hoy lee esta respuesta no necesita cambiar cómo interpreta el token el día que llegue Keycloak. `tokenType` siempre vale `"Bearer"` (3.8) — así el cliente sabe exactamente cómo debe mandar el token de vuelta: `Authorization: Bearer <token>`.
+Los nombres `access_token`, `token_type` y `expires_in` (este último **en segundos**) no son casualidad: son los del estándar OAuth 2.0 (2.4), los mismos que devuelve el *token endpoint* de Keycloak. Un cliente que hoy lee esta respuesta no necesita cambiar cómo interpreta el token el día que llegue Keycloak. `tokenType` siempre vale `"Bearer"` (3.10) — así el cliente sabe exactamente cómo debe mandar el token de vuelta: `Authorization: Bearer <token>`.
 
-#### 3.6 Crear el repositorio y el servicio que carga usuarios en Spring Security
+#### 3.8 Crear el repositorio y el servicio que carga usuarios en Spring Security
 
-**Producto del paso:** Spring Security sabe buscar un usuario por su email y traducir sus roles a autoridades — la pieza que hace posible `AuthenticationManager` en 3.8.
+**Producto del paso:** Spring Security sabe buscar un usuario por su email y traducir sus roles a autoridades — la pieza que hace posible `AuthenticationManager` en 3.10.
 
 **`services/pagatu-auth-ms/src/main/java/pe/edu/upeu/auth/repository/UsuarioRepository.java`:**
 
@@ -871,9 +1034,9 @@ public class UsuarioDetailsService implements UserDetailsService {
 }
 ```
 
-`UserDetailsService` es el contrato de Spring Security para "cómo se busca un usuario por su nombre de acceso" — aquí, el email. Al existir un único bean de este tipo, Spring Security arma solo el resto de la cadena: un proveedor de autenticación que llama a este método, compara la contraseña recibida contra el hash con el `PasswordEncoder` (3.9) y falla si no coinciden. Es la maquinaria estándar de Spring Security, no código propio de comparar contraseñas — y es la que el proyecto reemplaza por completo con Keycloak (Tabla 6). Aquí sí se agrega el prefijo `ROLE_`: es lo que espera `hasRole(...)` (3.15).
+`UserDetailsService` es el contrato de Spring Security para "cómo se busca un usuario por su nombre de acceso" — aquí, el email. Al existir un único bean de este tipo, Spring Security arma solo el resto de la cadena: un proveedor de autenticación que llama a este método, compara la contraseña recibida contra el hash con el `PasswordEncoder` (3.11) y falla si no coinciden. Es la maquinaria estándar de Spring Security, no código propio de comparar contraseñas — y es la que el proyecto reemplaza por completo con Keycloak (Tabla 6). Aquí sí se agrega el prefijo `ROLE_`: es lo que espera `hasRole(...)` (3.15).
 
-#### 3.7 Generar las claves RSA y crear el servicio de JWT
+#### 3.9 Generar las claves RSA y crear el servicio de JWT
 
 **Producto del paso:** un par de claves RSA en memoria, y el servicio que firma un JWT con la clave privada.
 
@@ -987,7 +1150,7 @@ Los nombres de los claims **no son arbitrarios**: `iss` (emisor), `sub` (identif
 
 `RS256` firma con la clave **privada** (`rsaKey`, que vive solo en este servicio); el encabezado del token lleva el `kid` para que quien lo reciba sepa con qué clave pública verificarlo (2.5). Esta clave se **genera al arrancar** el servicio: es suficiente para aprender, pero significa que cada vez que reinicies `pagatu-auth-ms`, los tokens emitidos antes dejan de verificar. Keycloak persiste y rota sus claves.
 
-#### 3.8 Crear el servicio de autenticación, el controlador y el endpoint de claves públicas
+#### 3.10 Crear el servicio de autenticación, el controlador y el endpoint de claves públicas
 
 **Producto del paso:** `POST /api/v1/auth/login` funcional y `GET /.well-known/jwks.json` publicando la clave pública.
 
@@ -1125,7 +1288,7 @@ public class JwksController {
 
 `toPublicJWK()` descarta la parte privada: este endpoint **solo** puede exponer la clave pública. Es el equivalente a `/realms/{realm}/protocol/openid-connect/certs` de Keycloak (Tabla 6) — la URL a la que el Gateway y `pagatu-orden-ms` van a ir a descargar la clave para verificar firmas.
 
-#### 3.9 Configurar Spring Security en `pagatu-auth-ms`
+#### 3.11 Configurar Spring Security en `pagatu-auth-ms`
 
 **Producto del paso:** `/api/v1/auth/login` y `/.well-known/jwks.json` accesibles sin autenticación previa (tiene sentido: nadie tiene un JWT todavía antes de hacer login, y la clave pública es pública por definición), y el `PasswordEncoder` y el `AuthenticationManager` disponibles para inyectar.
 
@@ -1174,128 +1337,6 @@ public class SecurityConfig {
 
 **Error frecuente**: agregar `spring-boot-starter-security` al `pom.xml` y no declarar ningún `SecurityFilterChain` propio. Spring Security se autoconfigura por defecto en cuanto detecta la dependencia — bloquea todo con un formulario de login y una contraseña generada al azar (visible en el log de arranque), en vez de dejar pasar libremente `/api/v1/auth/login`. Este `SecurityFilterChain` explícito reemplaza esa configuración por defecto.
 
-#### 3.10 Conectar `pagatu-auth-ms` a `pagatu-config` y a `pagatu-eureka`
-
-**Producto del paso:** `pagatu-auth-ms` externaliza su configuración y se registra como instancia descubrible.
-
-**`services/pagatu-auth-ms/src/main/resources/application.yml`:**
-
-```yaml
-spring:
-  application:
-    name: pagatu-auth-ms
-  profiles:
-    active: dev
-  config:
-    import: "optional:configserver:${CONFIG_SERVER_URL:http://localhost:18888}"
-```
-
-Mismo patrón exacto que `pagatu-orden-ms` desde S6 — `optional:` evita que `pagatu-auth-ms` falle al arrancar si `pagatu-config` estuviera caído.
-
-Agrega en el `pom.xml` las mismas dos dependencias de Spring Cloud que ya usa `pagatu-orden-ms` (S3, S6) — sin ellas, `pagatu-auth-ms` ni externaliza configuración ni se registra en Eureka:
-
-```xml
-<dependency>
-    <groupId>org.springframework.cloud</groupId>
-    <artifactId>spring-cloud-starter-config</artifactId>
-</dependency>
-<dependency>
-    <groupId>org.springframework.cloud</groupId>
-    <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-</dependency>
-```
-
-No olvides las `<properties>` de Spring Cloud, igual que en `pagatu-orden-ms`:
-
-```xml
-<properties>
-    <java.version>21</java.version>
-    <spring-cloud.version>2025.1.3</spring-cloud.version>
-</properties>
-```
-
-y el `<dependencyManagement>` correspondiente (copia exacta del de `pagatu-orden-ms`, S6, 3.1).
-
-#### 3.11 Configurar `pagatu-auth-ms` en `config-repo`
-
-**Producto del paso:** el archivo de configuración DEV de `pagatu-auth-ms`, con los dos únicos datos propios del emisor de tokens: quién es (`issuer`) y cuánto duran sus tokens.
-
-**`infra/pagatu-config/config-repo/pagatu-auth-ms-dev.yml`:**
-
-```yaml
-server:
-  port: 8085
-
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:15431/pagatu_auth_db
-    username: pagatu
-    password: pagatu
-    driver-class-name: org.postgresql.Driver
-  flyway:
-    enabled: true
-    locations: classpath:db/migration
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-  devtools:
-    restart:
-      enabled: true
-    livereload:
-      enabled: true
-
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
-
-logging:
-  level:
-    pe.edu.upeu.auth: DEBUG
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics,prometheus
-  endpoint:
-    health:
-      show-details: always
-
-eureka:
-  instance:
-    hostname: localhost
-    instance-id: ${spring.application.name}:${server.port}
-  client:
-    service-url:
-      defaultZone: http://localhost:18761/eureka
-
-jwt:
-  issuer: http://localhost:8085
-  expiracion-segundos: 3600
-```
-
-Mismo patrón exacto de `pagatu-orden-ms-dev.yml` (S6) — `ddl-auto: validate` porque el esquema real lo define Flyway (3.3), no Hibernate. `jwt.expiracion-segundos: 3600` es una hora, deliberadamente larga solo para no complicar las pruebas manuales de hoy (2.2, Error frecuente). **No hay ningún secreto compartido en `config-repo`:** ni el Gateway ni `pagatu-orden-ms` necesitan conocer nada que permita fabricar un token — solo saber de dónde descargar la clave pública (3.14, 3.19). Esa es la ventaja concreta de la firma asimétrica (2.5).
-
-**Verifica** que el Config Server sirve el archivo correctamente antes de continuar:
-
-PowerShell:
-
-```powershell
-Invoke-RestMethod -Method Get -Uri "http://localhost:18888/pagatu-auth-ms/dev"
-```
-
-bash macOS/Linux:
-
-```bash
-curl http://localhost:18888/pagatu-auth-ms/dev
-```
-
-**Si `propertySources` sale sin ningún `jwt.issuer`, no continúes.** Confirma que el archivo se llama exactamente `pagatu-auth-ms-dev.yml`, está directamente en `config-repo/` (no en una subcarpeta), y que `pagatu-config` lo recargó (reinicia `pagatu-config` si hace falta).
-
 #### 3.12 Levantar y probar `pagatu-auth-ms` de punta a punta
 
 **Producto del paso:** login real, con un JWT firmado, y la clave pública publicada.
@@ -1333,7 +1374,7 @@ Resultado esperado — `200 OK`:
 }
 ```
 
-Prueba también con una contraseña incorrecta y confirma `401 Unauthorized` con `{"error": "Credenciales invalidas"}` — el manejador de 3.8 en acción. Guarda el `access_token` del `ADMIN` y repite el login con `cliente@pagatu.com` / `cliente123` — vas a necesitar **ambos** tokens en 3.17 y 3.21.
+Prueba también con una contraseña incorrecta y confirma `401 Unauthorized` con `{"error": "Credenciales invalidas"}` — el manejador de 3.10 en acción. Guarda el `access_token` del `ADMIN` y repite el login con `cliente@pagatu.com` / `cliente123` — vas a necesitar **ambos** tokens en 3.17 y 3.21.
 
 Ahora comprueba que la clave pública está publicada:
 
@@ -1576,7 +1617,7 @@ Repite el caso 3 con el token de `admin@pagatu.com`. Resultado esperado: `201 Cr
 
 **Error frecuente**: copiar el token con comillas o espacios de más al pegarlo en la variable — el header queda mal formado y Spring Security lo rechaza como si no hubiera token, un `401` que en realidad es un error de copiado, no de configuración.
 
-**Error frecuente**: `401` en **todas** las rutas protegidas, aun con un token recién emitido. Revisa que `pagatu-auth-ms` esté corriendo (sin él, el Gateway no puede descargar la clave pública), que `jwk-set-uri` (3.14) tenga el puerto y la ruta exactos, y que no hayas reiniciado `pagatu-auth-ms` **después** de pedir el token — el par de claves se regenera al arrancar (3.7), y el token anterior ya no verifica: pide uno nuevo (3.12).
+**Error frecuente**: `401` en **todas** las rutas protegidas, aun con un token recién emitido. Revisa que `pagatu-auth-ms` esté corriendo (sin él, el Gateway no puede descargar la clave pública), que `jwk-set-uri` (3.14) tenga el puerto y la ruta exactos, y que no hayas reiniciado `pagatu-auth-ms` **después** de pedir el token — el par de claves se regenera al arrancar (3.9), y el token anterior ya no verifica: pide uno nuevo (3.12).
 
 ### Parte C — `pagatu-orden-ms` valida el JWT y toma el `idCliente` de él
 
@@ -1836,7 +1877,7 @@ Resultado esperado — dos filas, una por usuario semilla:
 
 Esta consulta es una revisión de accesos mínima: en una sola mirada dice quién puede qué. En un sistema real se repite de forma periódica y se revoca lo que ya no corresponde.
 
-**Revocar un rol.** Simula que `cliente@pagatu.com` deja de ser cliente. Ten a la mano el token de `cliente@pagatu.com` de 3.12 (sin haber reiniciado `pagatu-auth-ms` desde entonces, 3.7) y quítale el rol:
+**Revocar un rol.** Simula que `cliente@pagatu.com` deja de ser cliente. Ten a la mano el token de `cliente@pagatu.com` de 3.12 (sin haber reiniciado `pagatu-auth-ms` desde entonces, 3.9) y quítale el rol:
 
 ```bash
 docker exec -it pagatu-postgres-auth-dev psql -U pagatu -d pagatu_auth_db -c "DELETE FROM usuario_roles WHERE usuario_id = (SELECT id FROM usuarios WHERE email = 'cliente@pagatu.com');"
@@ -1872,7 +1913,7 @@ Repite la consulta de revisión y confirma que vuelven a aparecer las dos filas.
 | Tokens en `localStorage` | El único *client* de hoy es PowerShell | No aplica hoy; es un riesgo real en S11. |
 | *Refresh token* sin rotación | `pagatu-auth-ms` no emite *refresh token* | No aplica hoy; Keycloak sí lo emite. |
 | *Authorization Code* sin PKCE en cliente público | No hay clientes públicos hoy | No aplica hoy; en S11 se usa PKCE. |
-| Usuario y contraseña enviados directo al servidor (*Resource Owner Password*) | El `POST /api/v1/auth/login` (3.8) | **Ocurre, a propósito:** es la pieza temporal que Keycloak reemplaza (2.4). |
+| Usuario y contraseña enviados directo al servidor (*Resource Owner Password*) | El `POST /api/v1/auth/login` (3.10) | **Ocurre, a propósito:** es la pieza temporal que Keycloak reemplaza (2.4). |
 
 #### 3.25 Ver PKCE en acción
 
