@@ -2,6 +2,11 @@ server:
   port: 8080
 
 spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://pagatu-auth-ms:8080/.well-known/jwks.json
   cloud:
     gateway:
       server:
