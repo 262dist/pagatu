@@ -2602,7 +2602,7 @@
 <h2 id="1-introduccion">1. Introducción<a class="headerlink" href="#1-introduccion" title="Permanent link">&para;</a></h2>
 <p>Tiempo: 20 min.</p>
 <h3 id="11-presentacion-de-la-sesion">1.1 Presentación de la sesión<a class="headerlink" href="#11-presentacion-de-la-sesion" title="Permanent link">&para;</a></h3>
-<p>Hasta S6, <code>pagatu-orden-ms</code> confía en el <code>idCliente</code> que el propio request declara — el DTO <code>OrdenRequest</code> lo trae como un campo más, igual que <code>metodoPago</code>. Nada impide que cualquiera, con Swagger o una simple petición, escriba <code>"idCliente": 1</code> y cree una orden a nombre de otra persona: el sistema nunca pregunta <em>quién eres</em>, solo confía en lo que el request dice ser. Esta sesión cierra esa puerta: aparece <code>pagatu-auth-ms</code>, un microservicio nuevo que autentica usuarios y emite un JWT firmado; <code>pagatu-gateway</code> pasa a exigir y validar ese JWT antes de dejar pasar cualquier petición (Resource Server); y <code>pagatu-orden-ms</code> deja de aceptar <code>idCliente</code> en el request — lo toma directo del JWT, que también valida por su cuenta.</p>
+<p>Hasta S6, <code>pagatu-orden-ms</code> confía en el <code>idCliente</code> que el propio request declara — el DTO (<em>Data Transfer Object</em>, objeto de transferencia de datos) <code>OrdenRequest</code> lo trae como un campo más, igual que <code>metodoPago</code>. Nada impide que cualquiera, con Swagger o una simple petición, escriba <code>"idCliente": 1</code> y cree una orden a nombre de otra persona: el sistema nunca pregunta <em>quién eres</em>, solo confía en lo que el request dice ser. Esta sesión cierra esa puerta: aparece <code>pagatu-auth-ms</code>, un microservicio nuevo que autentica usuarios y emite un JWT (<em>JSON Web Token</em>) firmado; <code>pagatu-gateway</code> pasa a exigir y validar ese JWT antes de dejar pasar cualquier petición (Resource Server); y <code>pagatu-orden-ms</code> deja de aceptar <code>idCliente</code> en el request — lo toma directo del JWT, que también valida por su cuenta.</p>
 <h3 id="12-indice">1.2 Índice<a class="headerlink" href="#12-indice" title="Permanent link">&para;</a></h3>
 <ol>
 <li>Autenticación stateless con JWT.</li>
@@ -2631,7 +2631,7 @@
 <tbody>
 <tr>
 <td>Revisión previa individual</td>
-<td>Confirmar que <code>pagatu-config</code>, <code>pagatu-eureka</code>, <code>pagatu-gateway</code>, <code>pagatu-catalogo-ms</code> y <code>pagatu-orden-ms</code> (S1-S6) siguen arrancando en DEV. Revisar el <code>OrdenRequest</code> actual de <code>pagatu-orden-ms</code> (S6, 3.5) y confirmar que <code>idCliente</code> hoy es un campo libre del request. Trabajo individual, antes de clase.</td>
+<td>Confirmar que <code>pagatu-config</code>, <code>pagatu-eureka</code>, <code>pagatu-gateway</code>, <code>pagatu-catalogo-ms</code> y <code>pagatu-orden-ms</code> (S1-S6) siguen arrancando en DEV (entorno de desarrollo). Revisar el <code>OrdenRequest</code> actual de <code>pagatu-orden-ms</code> (S6, 3.5) y confirmar que <code>idCliente</code> hoy es un campo libre del request. Trabajo individual, antes de clase.</td>
 <td>Evidencia individual de S6, <a href="../../proyecto-sello/alcance-microservicios/">Alcance por microservicio y proyecto base</a>.</td>
 </tr>
 <tr>
@@ -2648,12 +2648,12 @@
 </table>
 <h3 id="16-motivacion-de-la-sesion">1.6 Motivación de la sesión<a class="headerlink" href="#16-motivacion-de-la-sesion" title="Permanent link">&para;</a></h3>
 <h4 id="161-caso-la-orden-que-se-creo-a-nombre-de-otra-persona">1.6.1 Caso: la orden que se creó a nombre de otra persona<a class="headerlink" href="#161-caso-la-orden-que-se-creo-a-nombre-de-otra-persona" title="Permanent link">&para;</a></h4>
-<p>Un compañero de equipo revisa <code>pagatu-orden-ms</code> con Swagger, un día antes de la sustentación de S5. Prueba el endpoint <code>POST /api/v1/ordenes</code> con el cuerpo de ejemplo que ya trae la documentación — y sin querer, sin ninguna credencial, crea una orden real con <code>idCliente: 1</code>. El sistema la acepta sin preguntar nada: ni quién hizo la petición, ni si esa persona tiene permiso de actuar en nombre del cliente <code>1</code>. <code>idCliente</code> es solo un número más dentro de un JSON, tan editable como <code>metodoPago</code>.</p>
+<p>Un compañero de equipo revisa <code>pagatu-orden-ms</code> con Swagger, un día antes de la sustentación de S5. Prueba el endpoint <code>POST /api/v1/ordenes</code> con el cuerpo de ejemplo que ya trae la documentación — y sin querer, sin ninguna credencial, crea una orden real con <code>idCliente: 1</code>. El sistema la acepta sin preguntar nada: ni quién hizo la petición, ni si esa persona tiene permiso de actuar en nombre del cliente <code>1</code>. <code>idCliente</code> es solo un número más dentro de un JSON (<em>JavaScript Object Notation</em>), tan editable como <code>metodoPago</code>.</p>
 <p>El problema no es que alguien haya probado el endpoint — es que el sistema nunca definió <em>quién puede decir que es quién</em>. Cualquier dato que el propio cliente declara sobre sí mismo (su identidad, su rol) no es un dato confiable: hay que verificarlo contra algo que el cliente no controla. Un JWT firmado por un servicio de confianza (<code>pagatu-auth-ms</code>) es exactamente eso — el cliente no puede fabricar uno válido sin la clave privada con la que se firma, así que cualquier claim dentro de un JWT válido (incluido <code>idCliente</code>) sí es confiable.</p>
 <p><strong>Preguntas de análisis</strong></p>
 <p><strong>Activación de conocimientos previos</strong></p>
 <ol>
-<li>¿Por qué un campo <code>idCliente</code> dentro del cuerpo de un request HTTP no es, por sí solo, una prueba de identidad?</li>
+<li>¿Por qué un campo <code>idCliente</code> dentro del cuerpo de un request HTTP (<em>HyperText Transfer Protocol</em>) no es, por sí solo, una prueba de identidad?</li>
 <li>Si <code>pagatu-gateway</code> ya rechaza peticiones sin token válido, ¿por qué <code>pagatu-orden-ms</code> necesita además validar el JWT por su cuenta — no le alcanza con que el Gateway ya lo validó?</li>
 </ol>
 <p><strong>Comprensión de seguridad distribuida</strong></p>
@@ -2707,7 +2707,7 @@
     class ClienteAngular,Kafka,Pago,Obs futuro;
     class Pasarela externo;</code></pre>
 <p><em>Leyenda.</em> Este diagrama es el mismo en todas las sesiones de la unidad; solo cambia el color: verde = construido en sesiones anteriores, amarillo = se trabaja hoy, gris punteado = todavía no existe, azul = sistema externo.</p>
-<p><code>pagatu-cliente-ms</code> (autónomo desde S2) y su consulta a RENIEC / SUNAT no se dibujan para mantener legible el diagrama: siguen el mismo patrón de rutas, registro y configuración que los demás microservicios.</p>
+<p><code>pagatu-cliente-ms</code> (autónomo desde S2) y su consulta a RENIEC (Registro Nacional de Identificación y Estado Civil) / SUNAT (Superintendencia Nacional de Aduanas y de Administración Tributaria) no se dibujan para mantener legible el diagrama: siguen el mismo patrón de rutas, registro y configuración que los demás microservicios.</p>
 <p><strong>Hoy:</strong> aparece <code>pagatu-auth-ms</code>; <code>pagatu-gateway</code> y <code>pagatu-orden-ms</code> validan el JWT que emite, y <code>pagatu-orden-ms</code> deja de confiar en el <code>idCliente</code> del request. <code>pagatu-cliente-ms</code> se protege como trabajo autónomo (sección 4). <code>pagatu-auth-ms</code> es temporal: Keycloak lo reemplaza sin tocar el Gateway ni <code>pagatu-orden-ms</code> (2.4).</p>
 <p><strong>Relaciones con la infraestructura</strong> (no se dibujan, para mantener legible el diagrama):</p>
 <ul>
@@ -2720,7 +2720,7 @@
 <h3 id="21-arquitectura-de-la-sesion">2.1 Arquitectura de la sesión<a class="headerlink" href="#21-arquitectura-de-la-sesion" title="Permanent link">&para;</a></h3>
 <p><strong>Figura 2. <code>pagatu-auth-ms</code> emite el JWT y publica su clave pública; <code>pagatu-gateway</code> y <code>pagatu-orden-ms</code> lo validan</strong></p>
 <pre class="mermaid"><code>flowchart TB
-    Cliente["Cliente&lt;br/&gt;PowerShell / bash / Swagger"]
+    Cliente["Cliente&lt;br/&gt;PowerShell / bash / Postman / Swagger"]
 
     subgraph Paso1["1. Autenticación y emisión del token"]
         direction LR
@@ -2826,7 +2826,7 @@
 <li>No registrar en un <em>audit log</em> las verificaciones de autorización, y quedarse sin evidencia cuando hay que investigar un incidente.</li>
 </ul>
 <h3 id="24-oauth2-y-openid-connect-el-estandar-detras-de-un-proveedor-de-identidad">2.4 OAuth2 y OpenID Connect: el estándar detrás de un proveedor de identidad<a class="headerlink" href="#24-oauth2-y-openid-connect-el-estandar-detras-de-un-proveedor-de-identidad" title="Permanent link">&para;</a></h3>
-<p><strong>OAuth 2.0</strong> es un estándar de <strong>autorización delegada</strong> (RFC 6749): define cómo una aplicación obtiene acceso limitado a un recurso protegido sin conocer la contraseña del usuario, presentando un <strong>token</strong> emitido por un servidor de autorización en el que ambos confían. <strong>OpenID Connect (OIDC)</strong> es una capa de identidad encima de OAuth 2.0: agrega un formato estándar para decir <em>quién es el usuario</em> (el <em>ID Token</em>) y un mecanismo de descubrimiento (dónde están las claves, dónde se pide el token). Un proveedor de identidad como <strong>Keycloak</strong> implementa ambos estándares — por eso lo que se aprende hoy con Spring Security no se tira cuando llega Keycloak: cambia quién emite el token, no cómo se valida.</p>
+<p><strong>OAuth 2.0</strong> (<em>Open Authorization</em>) es un estándar de <strong>autorización delegada</strong> (RFC 6749: <em>Request for Comments</em>, un documento del IETF —<em>Internet Engineering Task Force</em>—, el organismo que define los estándares de Internet): define cómo una aplicación obtiene acceso limitado a un recurso protegido sin conocer la contraseña del usuario, presentando un <strong>token</strong> emitido por un servidor de autorización en el que ambos confían. <strong>OpenID Connect (OIDC)</strong> es una capa de identidad encima de OAuth 2.0: agrega un formato estándar para decir <em>quién es el usuario</em> (el <em>ID Token</em>) y un mecanismo de descubrimiento (dónde están las claves, dónde se pide el token). Un proveedor de identidad como <strong>Keycloak</strong> implementa ambos estándares — por eso lo que se aprende hoy con Spring Security no se tira cuando llega Keycloak: cambia quién emite el token, no cómo se valida.</p>
 <p>Estos conceptos se confunden con facilidad, así que conviene fijar hasta dónde llega cada uno. <strong>SSO</strong> (<em>Single Sign-On</em>) no es un estándar aparte sino un <strong>resultado</strong>: iniciar sesión una sola vez y entrar a varias aplicaciones sin volver a escribir la contraseña. Es posible porque la sesión vive en el servidor de identidad (una cookie en ese servidor), y cada aplicación lo consulta mediante OpenID Connect en vez de pedir credenciales por su cuenta. <strong>OAuth 2.0 por sí solo no da SSO</strong>: resuelve la autorización, no la sesión compartida.</p>
 <p><strong>Tabla 3. Alcance de cada pieza: estándar, librería y producto</strong></p>
 <table>
@@ -2842,14 +2842,14 @@
 <tr>
 <td>OAuth 2.0</td>
 <td>Estándar de autorización delegada.</td>
-<td>Que una aplicación acceda a una API con un token, sin conocer la contraseña.</td>
+<td>Que una aplicación acceda a una API (<em>Application Programming Interface</em>) con un token, sin conocer la contraseña.</td>
 <td>Se implementa el lado <em>Resource Server</em>: el Gateway y <code>pagatu-orden-ms</code> validan tokens. <code>pagatu-auth-ms</code> <strong>no</strong> es un servidor OAuth 2.0 completo.</td>
 </tr>
 <tr>
 <td>OpenID Connect</td>
 <td>Capa de identidad sobre OAuth 2.0.</td>
 <td>Saber quién inició sesión (<em>ID Token</em>), y publicar el descubrimiento y las claves.</td>
-<td>Solo conceptual. <code>pagatu-auth-ms</code> publica claves (JWKS) y claims parecidos, sin <em>ID Token</em> ni descubrimiento.</td>
+<td>Solo conceptual. <code>pagatu-auth-ms</code> publica claves (JWKS (<em>JSON Web Key Set</em>)) y claims parecidos, sin <em>ID Token</em> ni descubrimiento.</td>
 </tr>
 <tr>
 <td>SSO</td>
@@ -2866,7 +2866,7 @@
 <tr>
 <td>Keycloak</td>
 <td>Producto: proveedor de identidad (servidor).</td>
-<td>Servidor OAuth 2.0/OIDC completo: usuarios, roles, sesión y SSO, <em>refresh token</em>, MFA, federación y consola de administración.</td>
+<td>Servidor OAuth 2.0/OIDC completo: usuarios, roles, sesión y SSO, <em>refresh token</em>, MFA (<em>Multi-Factor Authentication</em>, autenticación en varios factores), federación y consola de administración.</td>
 <td>No se usa en la sesión; reemplaza a <code>pagatu-auth-ms</code> después (Tabla 6).</td>
 </tr>
 </tbody>
@@ -2949,10 +2949,10 @@
 <td>No se usa hoy.</td>
 </tr>
 <tr>
-<td><em>Authorization Code</em> + <strong>PKCE</strong></td>
+<td><em>Authorization Code</em> + <strong>PKCE</strong> (<em>Proof Key for Code Exchange</em>)</td>
 <td>Sí</td>
 <td>No (<em>public client</em>)</td>
-<td>Aplicaciones que no pueden proteger un secreto (SPA, apps móviles). Hoy es la recomendación estándar, incluso para aplicaciones con backend.</td>
+<td>Aplicaciones que no pueden proteger un secreto (SPA, <em>Single-Page Application</em>; apps móviles). Hoy es la recomendación estándar, incluso para aplicaciones con backend.</td>
 <td>Es el flujo del cliente Angular con Keycloak (S11).</td>
 </tr>
 <tr>
@@ -2978,7 +2978,7 @@
 </tr>
 </tbody>
 </table>
-<p><em>Nota.</em> Adaptado de <em>OAuth2 / OpenID Connect</em>, por SACAViX, s. f.-b, System Design (<a href="https://systemdesign.sacavix.com/patterns">https://systemdesign.sacavix.com/patterns</a>).</p>
+<p><em>Nota.</em> Adaptado de <em>OAuth2 / OpenID Connect</em>, por SACAViX, s. f.-b, System Design (<a href="https://systemdesign.sacavix.com/patterns/oauth2-security">https://systemdesign.sacavix.com/patterns/oauth2-security</a>). La lista oficial de tipos de flujo (<em>grant types</em>) de OAuth.net, en <em>OAuth Grant Types</em> (Parecki, s. f.; <a href="https://oauth.net/2/grant-types/">https://oauth.net/2/grant-types/</a>), coincide con esta tabla: marca <em>Implicit</em> y <em>Password Grant</em> como <em>legacy</em> (heredados) y agrega el <em>Refresh Token</em>, que aquí se explica como tipo de token.</p>
 <p><strong>Authorization Code.</strong> Lo importante es <strong>por dónde viaja cada cosa</strong>: el navegador solo ve el <code>code</code> (que por sí solo no sirve), y el canje por tokens ocurre de servidor a servidor, con el <code>client_secret</code>, sin pasar nunca por el navegador. Por eso es el flujo más seguro cuando hay un backend que pueda guardar ese secreto.</p>
 <p><strong>Figura 5. Flujo <em>Authorization Code</em></strong></p>
 <pre class="mermaid"><code>sequenceDiagram
@@ -2993,8 +2993,8 @@
     AS--&gt;&gt;A: 4. access_token
     A-&gt;&gt;API: 5. Authorization: Bearer access_token
     API--&gt;&gt;A: 6. 200 OK</code></pre>
-<p><em>Nota.</em> Adaptado de <em>OAuth2 / OpenID Connect</em>, por SACAViX, s. f.-b, System Design (<a href="https://systemdesign.sacavix.com/patterns">https://systemdesign.sacavix.com/patterns</a>).</p>
-<p><strong>Authorization Code + PKCE.</strong> Una SPA no puede guardar un <code>client_secret</code>, así que <strong>PKCE</strong> (<em>Proof Key for Code Exchange</em>, RFC 7636) lo reemplaza por un valor aleatorio que el <em>client</em> inventa en <strong>cada</strong> inicio de sesión: el <code>code_verifier</code>. El <em>client</em> envía primero su hash (<code>code_challenge</code>) y, al canjear el <code>code</code>, debe presentar el <code>code_verifier</code> original; el servidor calcula el hash y comprueba que coincide. Aunque alguien intercepte el <code>code</code> en el redirect, no puede canjearlo, porque no conoce el <code>code_verifier</code> y un hash no se puede invertir (3.27 lo muestra con datos reales).</p>
+<p><em>Nota.</em> Adaptado de <em>OAuth2 / OpenID Connect</em>, por SACAViX, s. f.-b, System Design (<a href="https://systemdesign.sacavix.com/patterns/oauth2-security">https://systemdesign.sacavix.com/patterns/oauth2-security</a>).</p>
+<p><strong>Authorization Code + PKCE.</strong> Una SPA no puede guardar un <code>client_secret</code>, así que <strong>PKCE</strong> (<em>Proof Key for Code Exchange</em>, RFC 7636) lo reemplaza por un valor aleatorio que el <em>client</em> inventa en <strong>cada</strong> inicio de sesión: el <code>code_verifier</code>. El <em>client</em> envía primero su hash (<code>code_challenge</code>, calculado con SHA-256: <em>Secure Hash Algorithm</em>, de 256 bits) y, al canjear el <code>code</code>, debe presentar el <code>code_verifier</code> original; el servidor calcula el hash y comprueba que coincide. Aunque alguien intercepte el <code>code</code> en el redirect, no puede canjearlo, porque no conoce el <code>code_verifier</code> y un hash no se puede invertir (3.27 lo muestra con datos reales).</p>
 <p><strong>Figura 6. Flujo <em>Authorization Code</em> con PKCE</strong></p>
 <pre class="mermaid"><code>sequenceDiagram
     actor U as Usuario
@@ -3011,7 +3011,7 @@
     AS--&gt;&gt;SPA: 5. access_token + refresh_token
     SPA-&gt;&gt;API: 6. Authorization: Bearer access_token
     API--&gt;&gt;SPA: 7. 200 OK</code></pre>
-<p><em>Nota.</em> Adaptado de <em>OAuth2 / OpenID Connect</em>, por SACAViX, s. f.-b, System Design (<a href="https://systemdesign.sacavix.com/patterns">https://systemdesign.sacavix.com/patterns</a>).</p>
+<p><em>Nota.</em> Adaptado de <em>OAuth2 / OpenID Connect</em>, por SACAViX, s. f.-b, System Design (<a href="https://systemdesign.sacavix.com/patterns/oauth2-security">https://systemdesign.sacavix.com/patterns/oauth2-security</a>).</p>
 <p><strong>Client Credentials.</strong> No hay persona ni redirects: un servicio le pide un token al servidor de autorización con su propia identidad. Sirve para llamadas entre servicios "por cuenta propia", sin un usuario detrás.</p>
 <p><strong>Figura 7. Flujo <em>Client Credentials</em></strong></p>
 <pre class="mermaid"><code>sequenceDiagram
@@ -3023,15 +3023,22 @@
     AS--&gt;&gt;A: 2. access_token (representa al servicio)
     A-&gt;&gt;B: 3. Authorization: Bearer access_token
     B--&gt;&gt;A: 4. 200 OK</code></pre>
-<p><em>Nota.</em> Adaptado de <em>OAuth2 / OpenID Connect</em>, por SACAViX, s. f.-b, System Design (<a href="https://systemdesign.sacavix.com/patterns">https://systemdesign.sacavix.com/patterns</a>).</p>
-<p>El <code>POST /api/v1/auth/login</code> que construyes hoy, donde el <em>client</em> envía el usuario y la contraseña directo al servidor, equivale al flujo <em>Resource Owner Password Credentials</em>: sirve para aprender, pero la mejor práctica vigente de seguridad de OAuth 2.0 (RFC 9700) dice que <strong>no debe usarse</strong>, y OAuth 2.1 lo elimina. Por eso queda como pieza temporal de laboratorio, no como diseño final: con Keycloak, la persona escribe su contraseña en la pantalla de Keycloak, nunca en la aplicación.</p>
+<p><em>Nota.</em> Adaptado de <em>OAuth2 / OpenID Connect</em>, por SACAViX, s. f.-b, System Design (<a href="https://systemdesign.sacavix.com/patterns/oauth2-security">https://systemdesign.sacavix.com/patterns/oauth2-security</a>).</p>
+<p><strong>¿Qué flujo usamos hoy?</strong> Uno solo, no una combinación: el <code>POST /api/v1/auth/login</code> que construyes hoy, donde el <em>client</em> envía el usuario y la contraseña directo al servidor y recibe un <code>access_token</code>, equivale al flujo <em>Resource Owner Password Credentials</em>. Después, el <em>client</em> solo presenta ese token (<code>Authorization: Bearer</code>) al Gateway y a <code>pagatu-orden-ms</code>, que lo validan con la clave pública: ese segundo tramo no es otro flujo, es el uso normal de un <em>access token</em>. Ningún otro flujo de la Tabla 5 interviene hoy: <em>Authorization Code</em> y <em>Authorization Code</em> + PKCE llegan con Keycloak y el cliente Angular (S11), y <em>Client Credentials</em> no se necesita porque ninguna llamada entre servicios exige token. Y "equivale" es aproximado: <code>pagatu-auth-ms</code> no es un servidor OAuth 2.0 completo, así que su endpoint no recibe <code>grant_type</code> ni <code>client_id</code>; solo imita lo esencial del flujo, y por eso responde con los nombres estándar <code>access_token</code>, <code>token_type</code> y <code>expires_in</code>.</p>
+<p><strong>¿Qué es la RFC 9700?</strong> Como viste en el inicio de 2.4, una <strong>RFC</strong> es un documento del IETF; las de la serie <strong>BCP</strong> (<em>Best Current Practice</em>) no definen un protocolo nuevo, sino que fijan la práctica recomendada vigente. La <strong>RFC 9700</strong>, <em>Best Current Practice for OAuth 2.0 Security</em> (Lodderstedt et al., enero de 2025; BCP 240), es la guía oficial actual de seguridad de OAuth 2.0: actualiza y extiende las RFC 6749 (el propio OAuth 2.0), 6750 y 6819 con lo aprendido desde entonces, y <strong>depreca</strong> los modos de operación que resultaron inseguros. Los verbos en mayúscula son los de las RFC: <em>MUST NOT</em> es una prohibición, y <em>SHOULD NOT</em> es un desaconsejo con excepciones muy acotadas. Tres puntos de esta RFC son los que usa esta sesión:</p>
+<ul>
+<li><strong>Sección 2.4:</strong> el flujo <em>Resource Owner Password Credentials</em> <strong>"MUST NOT be used"</strong>, porque expone las credenciales del usuario al <em>client</em>. Es exactamente el flujo de hoy, y por eso <code>pagatu-auth-ms</code> es una pieza temporal de laboratorio y no un diseño final. OAuth 2.1, todavía en borrador, lo elimina.</li>
+<li><strong>Sección 2.1.2:</strong> el flujo <em>Implicit</em> <strong>"SHOULD NOT"</strong> usarse.</li>
+<li><strong>Sección 2.1.1:</strong> los <em>clients</em> públicos <strong>"MUST"</strong> usar PKCE, y los servidores de autorización deben soportarlo; es la razón por la que el cliente Angular de S11 usará <em>Authorization Code</em> + PKCE.</li>
+</ul>
+<p>Con Keycloak, la persona escribe su contraseña en la pantalla de Keycloak, nunca en la aplicación.</p>
 <p>No confundas <em>rol</em> con <em>scope</em>: un <strong>rol</strong> es un atributo del usuario (<code>ADMIN</code>, <code>CLIENTE</code>) y se usa hoy; un <strong>scope</strong> es un permiso que el <em>client</em> pide en nombre del usuario (por ejemplo, <code>ordenes:leer</code>) y queda fuera del alcance de esta sesión, aunque Keycloak lo soporta.</p>
 <p><strong>Lo que cuesta usar OAuth 2.0.</strong> Es el estándar correcto, pero no es gratis: los flujos son más complejos (redirects, varios tokens); el servidor de autorización (Keycloak, Auth0) pasa a ser un componente <strong>crítico</strong> — si cae, nadie inicia sesión —; hay que gestionar tokens (refresh, rotación, revocación); y depurar un flujo de autorización es difícil porque el problema puede estar en cualquiera de los actores. Con <em>Client Credentials</em> hay un riesgo extra: no involucra a ninguna persona, así que un <code>client_secret</code> comprometido da acceso total a la identidad de ese servicio.</p>
 <p><strong>Errores de diseño más comunes</strong> al usarlo (todos aplican cuando llegue el cliente Angular de S11):</p>
 <ul>
 <li>Usar el flujo <em>Implicit</em>: obsoleto y vulnerable a la filtración de tokens; RFC 9700 desaconseja usarlo.</li>
-<li>No validar el parámetro <code>state</code> en el redirect, que protege contra CSRF.</li>
-<li>Guardar <em>access tokens</em> en <code>localStorage</code>, vulnerable a XSS. La alternativa habitual es guardarlos en memoria y dejar el <em>refresh token</em> en una cookie <code>httpOnly</code>.</li>
+<li>No validar el parámetro <code>state</code> en el redirect, que protege contra CSRF (<em>Cross-Site Request Forgery</em>).</li>
+<li>Guardar <em>access tokens</em> en <code>localStorage</code>, vulnerable a XSS (<em>Cross-Site Scripting</em>). La alternativa habitual es guardarlos en memoria y dejar el <em>refresh token</em> en una cookie <code>httpOnly</code>.</li>
 <li>No rotar los <em>refresh tokens</em>, de modo que uno robado sirve indefinidamente.</li>
 <li>Usar <em>Authorization Code</em> <strong>sin PKCE</strong> en un cliente público (SPA, app móvil) que no puede proteger un <code>client_secret</code>.</li>
 </ul>
@@ -3074,7 +3081,7 @@
 <tr>
 <td>Identificador del usuario (<code>sub</code>)</td>
 <td><code>id</code> numérico de <code>usuarios</code></td>
-<td>UUID del usuario</td>
+<td>UUID (<em>Universally Unique Identifier</em>) del usuario</td>
 <td>No</td>
 </tr>
 <tr>
@@ -3085,7 +3092,7 @@
 </tr>
 <tr>
 <td>Claves de firma</td>
-<td>Par RSA generado al arrancar; <strong>se pierde al reiniciar</strong></td>
+<td>Par RSA (<em>Rivest–Shamir–Adleman</em>, criptografía de clave pública) generado al arrancar; <strong>se pierde al reiniciar</strong></td>
 <td>Administradas, persistidas y rotadas por Keycloak</td>
 <td>No</td>
 </tr>
@@ -3093,7 +3100,7 @@
 <td>Dónde descargan la clave pública los <em>resource servers</em></td>
 <td><code>jwk-set-uri: http://localhost:8085/.well-known/jwks.json</code></td>
 <td><code>issuer-uri: http://localhost:{puerto}/realms/{realm}</code></td>
-<td><strong>Sí</strong> — una propiedad YAML</td>
+<td><strong>Sí</strong> — una propiedad YAML (<em>YAML Ain't Markup Language</em>)</td>
 </tr>
 <tr>
 <td>Refresh token, ID Token, cierre de sesión, SSO, MFA</td>
@@ -3108,10 +3115,10 @@
 <p>Un <strong><em>Resource Server</em></strong> es una aplicación que protege recursos y acepta <em>access tokens</em> como prueba de acceso. <strong>No emite tokens ni guarda contraseñas: solo los valida.</strong> Validar un JWT significa comprobar, como mínimo, tres cosas: que la <strong>firma</strong> es auténtica, que el token <strong>no expiró</strong> (<code>exp</code>) y, si el emisor lo define, que viene del <strong>emisor</strong> esperado (<code>iss</code>).</p>
 <p>Hay dos formas de firmar un JWT, y la diferencia importa para un sistema distribuido:</p>
 <ul>
-<li><strong>Simétrica (HS256):</strong> una única clave secreta firma <em>y</em> verifica. Todo servicio que valida tiene que <strong>conocer el secreto</strong> — y quien conoce el secreto también puede fabricar un token de <code>ADMIN</code>. Con diez microservicios, hay diez lugares desde donde se puede filtrar la clave que rompe todo el sistema.</li>
-<li><strong>Asimétrica (RS256):</strong> un <strong>par de claves</strong>. La privada firma y solo la conoce el emisor; la pública verifica y puede estar en cualquier lugar. Los <em>resource servers</em> no guardan ningún secreto: si alguien compromete el Gateway, no obtiene nada con qué fabricar tokens. Es la forma que usa Keycloak, y la que usa esta sesión.</li>
+<li><strong>Simétrica (HS256, HMAC con SHA-256; HMAC significa <em>Hash-based Message Authentication Code</em>):</strong> una única clave secreta firma <em>y</em> verifica. Todo servicio que valida tiene que <strong>conocer el secreto</strong> — y quien conoce el secreto también puede fabricar un token de <code>ADMIN</code>. Con diez microservicios, hay diez lugares desde donde se puede filtrar la clave que rompe todo el sistema.</li>
+<li><strong>Asimétrica (RS256, RSA con SHA-256):</strong> un <strong>par de claves</strong>. La privada firma y solo la conoce el emisor; la pública verifica y puede estar en cualquier lugar. Los <em>resource servers</em> no guardan ningún secreto: si alguien compromete el Gateway, no obtiene nada con qué fabricar tokens. Es la forma que usa Keycloak, y la que usa esta sesión.</li>
 </ul>
-<p>La clave pública se publica en un documento JSON llamado <strong>JWKS</strong> (<em>JSON Web Key Set</em>), en una URL conocida. Cada clave lleva un identificador (<code>kid</code>), y el encabezado de cada JWT dice con qué <code>kid</code> fue firmado — así el emisor puede <strong>rotar</strong> claves sin romper los tokens vigentes. Spring Security descarga el JWKS, lo guarda en memoria y lo vuelve a pedir solo cuando aparece un <code>kid</code> desconocido.</p>
+<p>La clave pública se publica en un documento JSON llamado <strong>JWKS</strong> (<em>JSON Web Key Set</em>), en una URL (<em>Uniform Resource Locator</em>, dirección web) conocida. Cada clave lleva un identificador (<code>kid</code>), y el encabezado de cada JWT dice con qué <code>kid</code> fue firmado — así el emisor puede <strong>rotar</strong> claves sin romper los tokens vigentes. Spring Security descarga el JWKS, lo guarda en memoria y lo vuelve a pedir solo cuando aparece un <code>kid</code> desconocido.</p>
 <p>En un sistema de microservicios, cada <em>resource server</em> valida el token <strong>por su cuenta</strong>, en vez de confiar en que otro ya lo hizo. El Gateway es la primera línea (rechaza temprano y aplica el rol por ruta); el microservicio es la segunda (no depende de que nadie más haya verificado nada). Esa es la respuesta a "¿y si alguien llama directo al microservicio, sin pasar por el Gateway?" (1.6.1, pregunta de comprensión 1).</p>
 <p>Decodificar un JWT no es validarlo. Un JWT es solo tres partes en Base64 — cualquiera puede leer sus claims, y cualquiera puede escribir un token con los claims que quiera. Lo que lo hace confiable es la <strong>firma verificada</strong>; leer <code>idCliente</code> de un token sin verificarla es exactamente el problema de 1.6.1, con un paso más.</p>
 <h3 id="26-observabilidad-y-diagnostico">2.6 Observabilidad y diagnóstico<a class="headerlink" href="#26-observabilidad-y-diagnostico" title="Permanent link">&para;</a></h3>
@@ -3121,7 +3128,7 @@
 <li><strong>El JWT no se pudo verificar o expiró</strong> — revisa que <code>jwk-set-uri</code> apunte de verdad al JWKS de <code>pagatu-auth-ms</code> (ábrelo en el navegador), que <code>pagatu-auth-ms</code> esté arriba cuando llega el primer token (sin él, el <em>resource server</em> no puede descargar la clave y rechaza todo), y que no lo hayas <strong>reiniciado</strong> desde que pediste el token (3.11: el par de claves se regenera al arrancar, y los tokens anteriores dejan de verificar).</li>
 <li><strong>El JWT es válido pero el rol no alcanza para esa ruta</strong> — revisa la regla de <code>SecurityConfig</code> (3.18) contra los roles reales que trae el claim <code>realm_access.roles</code>.</li>
 </ol>
-<p>Para distinguir estos tres casos sin adivinar, sube el nivel de log de seguridad mientras diagnosticas (<code>logging.level.org.springframework.security: DEBUG</code> en <code>pagatu-gateway</code>): el log dice el motivo exacto del rechazo. Los logs del Gateway (3.19) y el <code>traceId</code> de cada petición (mismo <code>CorrelationIdFilter</code> de S1/S6, si ya lo replicaste en <code>pagatu-auth-ms</code>) son el punto de partida.</p>
+<p>Para distinguir estos tres casos sin adivinar, sube el nivel de log de seguridad mientras diagnosticas (<code>logging.level.org.springframework.security: DEBUG</code> en <code>pagatu-gateway</code>): el log dice el motivo exacto del rechazo. Los logs del Gateway (3.19) y el <code>traceId</code> de cada petición (el mismo <code>CorrelationIdFilter</code> de S1/S6, que <code>pagatu-auth-ms</code> trae desde 3.7) son el punto de partida.</p>
 <h2 id="3-aplica-actividad-practica-guiada">3. Aplica: actividad práctica guiada<a class="headerlink" href="#3-aplica-actividad-practica-guiada" title="Permanent link">&para;</a></h2>
 <p>Tiempo: 4h.</p>
 <p><strong>Actividad:</strong> construcción guiada de <code>pagatu-auth-ms</code> (un servidor de autorización didáctico, con usuarios y roles en tablas propias), protección de <code>pagatu-gateway</code> como Resource Server, y conversión de <code>pagatu-orden-ms</code> en Resource Server que toma <code>idCliente</code> del JWT ya validado (Producto de la sesión en 1.4).</p>
@@ -3217,7 +3224,7 @@
 </tr>
 <tr>
 <td>Dependencias</td>
-<td>Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway, <strong>Prometheus</strong> (categoría <em>Observability</em>, <code>io.micrometer:micrometer-registry-prometheus</code>, scope <code>runtime</code>) <strong>Config Client</strong> y <strong>Eureka Discovery Client</strong> (categorías <em>Spring Cloud Config</em> y <em>Spring Cloud Discovery</em>) y <strong>Spring Security</strong> — las mismas de <code>pagatu-orden-ms</code> (S6, Tabla 3) más Spring Security, nueva hoy. <strong>Además</strong>, agrega MapStruct a mano en el <code>pom.xml</code> (S1, 3.5.20), igual que en <code>pagatu-orden-ms</code>: Spring Initializr no lo ofrece como opción.</td>
+<td>Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway, <strong>Prometheus</strong> (categoría <em>Observability</em>, <code>io.micrometer:micrometer-registry-prometheus</code>, scope <code>runtime</code>), <strong>Config Client</strong> y <strong>Eureka Discovery Client</strong> (categorías <em>Spring Cloud Config</em> y <em>Spring Cloud Discovery</em>) y <strong>Spring Security</strong> — las mismas de <code>pagatu-orden-ms</code> (S6, Tabla 3) más Spring Security, nueva hoy. <strong>Además</strong>, agrega MapStruct a mano en el <code>pom.xml</code> (S1, 3.5.20), igual que en <code>pagatu-orden-ms</code>: Spring Initializr no lo ofrece como opción.</td>
 </tr>
 <tr>
 <td>Ubicación sugerida</td>
@@ -3227,7 +3234,7 @@
 </table>
 <p>Prometheus deja a <code>pagatu-auth-ms</code> visible en <code>obs/</code> desde que arranca, con el mismo criterio que <code>pagatu-orden-ms</code> (S6).</p>
 <p><strong>Config Client</strong> y <strong>Eureka Discovery Client</strong> se marcan aquí, desde el inicio: son las dos dependencias con las que <code>pagatu-auth-ms</code> trae su configuración de <code>pagatu-config</code> y se registra en <code>pagatu-eureka</code> (3.4). <code>pagatu-auth-ms</code> no necesita ninguna dependencia de <em>Gateway</em>: el Gateway es quien enruta hacia él (3.6), no al revés.</p>
-<p><strong>Al marcar esas dos dependencias, Spring Initializr genera por su cuenta las tres piezas del <code>pom.xml</code>:</strong> las dos dependencias, la propiedad <code>&lt;spring-cloud.version&gt;</code> y el bloque <code>&lt;dependencyManagement&gt;</code> que importa el BOM de Spring Cloud (con Spring Boot 4.1.1, la versión es <code>2025.1.3</code>). No hay nada que copiar a mano.</p>
+<p><strong>Al marcar esas dos dependencias, Spring Initializr genera por su cuenta las tres piezas del <code>pom.xml</code>:</strong> las dos dependencias, la propiedad <code>&lt;spring-cloud.version&gt;</code> y el bloque <code>&lt;dependencyManagement&gt;</code> que importa el BOM (<em>Bill of Materials</em>, lista de versiones compatibles) de Spring Cloud (con Spring Boot 4.1.1, la versión es <code>2025.1.3</code>). No hay nada que copiar a mano.</p>
 <p><strong>MapStruct se agrega a mano en el <code>pom.xml</code>, en dos lugares</strong>, igual que en <code>pagatu-orden-ms</code> (S1, 3.5.20). Queda listo aunque hoy <code>pagatu-auth-ms</code> no tenga ningún <em>mapper</em>: así el <code>pom.xml</code> no vuelve a tocarse cuando aparezcan DTO de usuario más adelante.</p>
 <p><strong>Lugar 1 — la dependencia</strong>, dentro de <code>&lt;dependencies&gt;</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">&lt;dependency&gt;</span>
@@ -3291,8 +3298,7 @@
 <span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div>
 <p>Sin <code>&lt;version&gt;</code>: la gestiona el padre <code>spring-boot-starter-parent</code>. Trae <code>NimbusJwtEncoder</code> (para emitir tokens) y la librería Nimbus JOSE que sabe generar y publicar claves. <strong>No se agrega ninguna librería JWT aparte:</strong> la misma familia de Spring Security que valida el token en el Gateway y en <code>pagatu-orden-ms</code> es la que lo emite aquí — una sola manera de leer y escribir JWT en todo el sistema. Tampoco se agrega el <em>starter</em> de Resource Server: <code>pagatu-auth-ms</code> <strong>emite</strong> tokens, no valida los de otros, y ese <em>starter</em> activaría configuración automática que aquí no hace falta.</p>
-<p>El puerto de base de datos (<code>15431</code> DEV / <code>25431</code> PROD local) y el nombre <code>pagatu_auth_db</code> ya estaban reservados desde la arquitectura del proyecto (<code>docs/index.md</code>) — no se inventan en esta sesión. El puerto de aplicación en DEV es <code>8085</code> — el siguiente libre después de <code>8080</code>/<code>8081</code> (<code>pagatu-catalogo-ms</code>, S1/S3), <code>8082</code>/<code>8083</code> (<code>pagatu-orden-ms</code>, S6) y <code>8084</code> (<code>pagatu-cliente-ms</code>).</p>
-<p>Si Spring Initializr todavía no ofrece <strong>Spring Boot 4</strong> como opción, agrega Spring Security a mano en el <code>pom.xml</code> después de generar el proyecto: <code>&lt;artifactId&gt;spring-boot-starter-security&lt;/artifactId&gt;</code>, sin <code>&lt;version&gt;</code>. Revisa también, igual que en S6, que ningún starter conserve un nombre de Boot 3 (por ejemplo <code>spring-boot-starter-web</code> en vez de <code>spring-boot-starter-webmvc</code>).</p>
+<p>El puerto de base de datos (<code>15431</code> en desarrollo, DEV; <code>25431</code> en producción local, PROD) y el nombre <code>pagatu_auth_db</code> ya estaban reservados desde la arquitectura del proyecto (<code>docs/index.md</code>) — no se inventan en esta sesión. El puerto de aplicación en DEV es <code>8085</code> — el siguiente libre después de <code>8080</code>/<code>8081</code> (<code>pagatu-catalogo-ms</code>, S1/S3), <code>8082</code>/<code>8083</code> (<code>pagatu-orden-ms</code>, S6) y <code>8084</code> (<code>pagatu-cliente-ms</code>).</p>
 <h4 id="32-levantar-la-base-de-datos-de-pagatu-auth-ms">3.2 Levantar la base de datos de <code>pagatu-auth-ms</code><a class="headerlink" href="#32-levantar-la-base-de-datos-de-pagatu-auth-ms" title="Permanent link">&para;</a></h4>
 <p><strong>Producto del paso:</strong> PostgreSQL de <code>pagatu-auth-ms</code> corriendo en DEV.</p>
 <p><strong><code>services/pagatu-auth-ms/compose-dev.yml</code>:</strong></p>
@@ -3507,7 +3513,7 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <span class="w">  </span><span class="nt">issuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://pagatu-auth-ms:8080</span>
 <span class="w">  </span><span class="nt">expiracion-segundos</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">900</span>
 </code></pre></div>
-<p>Mismo patrón que <code>pagatu-orden-ms-prod.yml</code> (S3, S6). Lo que cambia frente a DEV: el puerto interno del contenedor (<code>8080</code>), las credenciales de la base de datos por variables de entorno (nunca escritas en el repositorio), Swagger y el SQL en el log apagados, el detalle de <code>health</code> oculto, un <code>instance-id</code> aleatorio por réplica, y la dirección de Eureka por el nombre del contenedor. Y dos valores propios de este servicio: <code>jwt.issuer</code> apunta al nombre del contenedor dentro de la red de Docker, y <code>jwt.expiracion-segundos: 900</code> (15 minutos) es el valor corto que un sistema real necesita (2.2, Error frecuente) — la hora de DEV es solo para las pruebas manuales de hoy. Hoy <code>pagatu-auth-ms</code> no se levanta en PROD; el archivo queda listo, igual que los de los demás servicios.</p>
+<p>Mismo patrón que <code>pagatu-orden-ms-prod.yml</code> (S3, S6). Lo que cambia frente a DEV: el puerto interno del contenedor (<code>8080</code>), las credenciales de la base de datos por variables de entorno (nunca escritas en el repositorio), Swagger y el SQL (<em>Structured Query Language</em>) en el log apagados, el detalle de <code>health</code> oculto, un <code>instance-id</code> aleatorio por réplica, y la dirección de Eureka por el nombre del contenedor. Y dos valores propios de este servicio: <code>jwt.issuer</code> apunta al nombre del contenedor dentro de la red de Docker, y <code>jwt.expiracion-segundos: 900</code> (15 minutos) es el valor corto que un sistema real necesita (2.2, Error frecuente) — la hora de DEV es solo para las pruebas manuales de hoy. Hoy <code>pagatu-auth-ms</code> no se levanta en PROD; el archivo queda listo, igual que los de los demás servicios.</p>
 <p><strong>Verifica</strong> que el Config Server sirve los dos archivos antes de continuar (<code>dev</code> y <code>prod</code>):</p>
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18888/pagatu-auth-ms/dev"</span>
@@ -4130,6 +4136,10 @@ curl<span class="w"> </span>http://localhost:18888/pagatu-auth-ms/prod
 </code></pre></div>
 <p>Prueba también con una contraseña incorrecta y confirma <code>401 Unauthorized</code> con <code>{"error": "Credenciales invalidas"}</code> — el manejador de 3.12 en acción. Guarda el <code>access_token</code> del <code>ADMIN</code> y repite el login con <code>cliente@pagatu.com</code> / <code>cliente123</code> — vas a necesitar <strong>ambos</strong> tokens en 3.19 y 3.23.</p>
 <p><strong>Desde el navegador, con Swagger UI.</strong> El login es un <code>POST</code>, y el navegador solo sabe hacer <code>GET</code> al escribir una URL; para probarlo sin comandos, abre <code>http://localhost:8085/swagger-ui.html</code>, despliega <code>POST /api/v1/auth/login</code>, pulsa <em>Try it out</em>, reemplaza los valores de ejemplo (<code>"string"</code>) por <code>admin@pagatu.com</code> / <code>admin123</code> y pulsa <em>Execute</em>. La respuesta debe ser el mismo <code>200</code> con el <code>access_token</code>.</p>
+<p><strong>Con Postman.</strong> Crea una petición <code>POST</code> a <code>http://localhost:8085/api/v1/auth/login</code>; en <em>Body → raw → JSON</em> pega <code>{"email": "admin@pagatu.com", "password": "admin123"}</code> y pulsa <em>Send</em>. Para no copiar el token a mano después, abre la pestaña <em>Scripts → Post-response</em> (en versiones anteriores de Postman, <em>Tests</em>) y guárdalo en una variable de colección:</p>
+<div class="highlight"><pre><span></span><code><span class="nx">pm</span><span class="p">.</span><span class="nx">collectionVariables</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"tokenAdmin"</span><span class="p">,</span><span class="w"> </span><span class="nx">pm</span><span class="p">.</span><span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">().</span><span class="nx">access_token</span><span class="p">);</span>
+</code></pre></div>
+<p>Duplica la petición, cambia el cuerpo a <code>cliente@pagatu.com</code> / <code>cliente123</code> y el script a <code>pm.collectionVariables.set("tokenCliente", pm.response.json().access_token);</code>. Las peticiones de 3.19 y 3.23 usan <code>{{tokenAdmin}}</code> y <code>{{tokenCliente}}</code> en la pestaña <em>Authorization</em>.</p>
 <p><strong>El mismo login, ahora a través del Gateway</strong> (la ruta de 3.6). Con <code>pagatu-eureka</code> y <code>pagatu-gateway</code> corriendo, repite el <code>POST</code> contra el puerto del Gateway — la respuesta debe ser idéntica, porque el Gateway solo reenvía la petición:</p>
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Post</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18080/api/v1/auth/login"</span> <span class="p">`</span>
@@ -4160,7 +4170,7 @@ curl<span class="w"> </span>http://localhost:18888/pagatu-auth-ms/prod
 <span class="w">  </span><span class="nt">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"admin@pagatu.com"</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>y, para <code>cliente@pagatu.com</code>, el mismo formato con <code>"realm_access": { "roles": ["CLIENTE"] }</code> más <code>"idCliente": 1</code>. Para comprobar también la <strong>firma</strong>, pega en el campo de clave pública de jwt.io la clave del endpoint de claves (el objeto que está dentro de <code>keys</code>, en formato JWK): debe aparecer <em>Signature Verified</em>. Es exactamente lo que harán el Gateway y <code>pagatu-orden-ms</code>. Si jwt.io muestra <em>Unable to retrieve public key from issuer… Expected a valid HTTPS URL</em>, es normal: intenta descargar la clave desde el <code>iss</code>, pero ese <code>iss</code> es <code>http://localhost:8085</code> (no HTTPS), por eso la clave se pega a mano. jwt.io solo <strong>lee</strong> los claims; nunca pegues ahí un token de un sistema real.</p>
+<p>y, para <code>cliente@pagatu.com</code>, el mismo formato con <code>"realm_access": { "roles": ["CLIENTE"] }</code> más <code>"idCliente": 1</code>. Para comprobar también la <strong>firma</strong>, pega en el campo de clave pública de jwt.io la clave del endpoint de claves (el objeto que está dentro de <code>keys</code>, en formato JWK, <em>JSON Web Key</em>): debe aparecer <em>Signature Verified</em>. Es exactamente lo que harán el Gateway y <code>pagatu-orden-ms</code>. Si jwt.io muestra <em>Unable to retrieve public key from issuer… Expected a valid HTTPS URL</em>, es normal: intenta descargar la clave desde el <code>iss</code>, pero ese <code>iss</code> es <code>http://localhost:8085</code> (no HTTPS, la versión segura de HTTP), por eso la clave se pega a mano. jwt.io solo <strong>lee</strong> los claims; nunca pegues ahí un token de un sistema real.</p>
 <h4 id="315-agregar-el-registro-de-usuarios-y-probarlo-con-swagger">3.15 Agregar el registro de usuarios y probarlo con Swagger<a class="headerlink" href="#315-agregar-el-registro-de-usuarios-y-probarlo-con-swagger" title="Permanent link">&para;</a></h4>
 <p><strong>Producto del paso:</strong> <code>POST /api/v1/auth/registro</code> crea un usuario nuevo con rol <code>CLIENTE</code>, y ese usuario ya puede iniciar sesión.</p>
 <p>Hasta ahora <code>pagatu-auth-ms</code> solo tiene los dos usuarios semilla de 3.3, cuyos hashes venían calculados. Este endpoint muestra de dónde sale un hash BCrypt en un sistema real: lo genera el propio servicio con el <code>PasswordEncoder</code> (3.13) al guardar el usuario.</p>
@@ -4459,7 +4469,7 @@ curl<span class="w"> </span>-i<span class="w"> </span>http://localhost:18080/api
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>infra/pagatu-gateway
 ./mvnw<span class="w"> </span>spring-boot:run
 </code></pre></div>
-<p><strong>Cómo probar estos casos.</strong> Usa PowerShell o <code>curl</code> como en los bloques de abajo, o <strong>Postman</strong>. El navegador no sirve aquí: al escribir una URL solo puede hacer un <code>GET</code> <strong>sin</strong> el encabezado <code>Authorization</code>, así que siempre verías el <code>401</code> del caso 1 y nunca podrías mandar un token ni probar un <code>POST</code>. En Postman, elige el método y la URL, abre la pestaña <em>Authorization</em>, tipo <em>Bearer Token</em>, y pega el <code>access_token</code> sin comillas ni espacios; para los <code>POST</code>, agrega el cuerpo en <em>Body → raw → JSON</em>.</p>
+<p><strong>Cómo probar estos casos.</strong> Usa PowerShell o <code>curl</code> como en los bloques de abajo, o <strong>Postman</strong>. El navegador no sirve aquí: al escribir una URL solo puede hacer un <code>GET</code> <strong>sin</strong> el encabezado <code>Authorization</code>, así que siempre verías el <code>401</code> del caso 1 y nunca podrías mandar un token ni probar un <code>POST</code>. Los casos en Postman están al final de esta sección, en una tabla.</p>
 <p><strong>Paso previo — obtén los dos tokens.</strong> Haz login con cada usuario semilla <strong>a través del Gateway</strong> (la ruta de 3.6) y guarda el <code>access_token</code> en una variable. Los casos de abajo y los de 3.23 y 3.24 usan estas variables, así que no copies ni pegues tokens a mano: mantén abierta la misma ventana de terminal (si la cierras, repite este bloque).</p>
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nv">$loginAdmin</span> <span class="p">=</span> <span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Post</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18080/api/v1/auth/login"</span> <span class="p">`</span>
@@ -4553,6 +4563,55 @@ curl<span class="w"> </span>-i<span class="w"> </span>http://localhost:18080/api
 <span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"nombre": "Producto de prueba", "descripcion": "Prueba de seguridad", "precio": 10.0, "activo": true, "stock": 5, "categoriaId": 1}'</span>
 </code></pre></div>
 <p>Resultado esperado: <code>201 Created</code>, con el producto creado en la respuesta. El mismo cuerpo que el <code>CLIENTE</code> no pudo enviar en el caso 3 ahora pasa: lo único que cambió es el token. Queda un producto "Producto de prueba" en el catálogo; puedes borrarlo con <code>DELETE /api/v1/productos/{id}</code> y el token del <code>ADMIN</code>.</p>
+<p><strong>Los mismos cuatro casos en Postman.</strong> Usa las variables <code>tokenAdmin</code> y <code>tokenCliente</code> que guardaste en 3.14 (o repite esos dos logins, esta vez contra <code>http://localhost:18080/api/v1/auth/login</code>). En cada petición, la pestaña <em>Authorization</em> va en tipo <em>Bearer Token</em> y el campo <em>Token</em> recibe la variable, con llaves dobles, sin comillas.</p>
+<p><strong>Tabla 8. Los cuatro casos en Postman</strong></p>
+<table>
+<thead>
+<tr>
+<th>Caso</th>
+<th>Método y URL</th>
+<th>Authorization</th>
+<th>Body (<em>raw → JSON</em>)</th>
+<th>Resultado esperado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>GET http://localhost:18080/api/v1/ordenes</code></td>
+<td><em>No Auth</em></td>
+<td>—</td>
+<td><code>401</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>GET http://localhost:18080/api/v1/ordenes</code></td>
+<td><em>Bearer Token</em>: <code>{{tokenAlterado}}</code></td>
+<td>—</td>
+<td><code>401</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>POST http://localhost:18080/api/v1/productos</code></td>
+<td><em>Bearer Token</em>: <code>{{tokenCliente}}</code></td>
+<td>el cuerpo completo del caso 3</td>
+<td><code>403</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>POST http://localhost:18080/api/v1/productos</code></td>
+<td><em>Bearer Token</em>: <code>{{tokenAdmin}}</code></td>
+<td>el mismo cuerpo</td>
+<td><code>201</code></td>
+</tr>
+</tbody>
+</table>
+<p>Para el caso 2, en la pestaña <em>Scripts → Pre-request</em> de esa petición, arma el token alterado con el mismo criterio de los bloques de PowerShell y bash (cambiar el primer carácter de la firma):</p>
+<div class="highlight"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">partes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">pm</span><span class="p">.</span><span class="nx">collectionVariables</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"tokenAdmin"</span><span class="p">).</span><span class="nx">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">);</span>
+<span class="nx">partes</span><span class="p">[</span><span class="mf">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">partes</span><span class="p">[</span><span class="mf">2</span><span class="p">][</span><span class="mf">0</span><span class="p">]</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">"X"</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s2">"Y"</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s2">"X"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">partes</span><span class="p">[</span><span class="mf">2</span><span class="p">].</span><span class="nx">slice</span><span class="p">(</span><span class="mf">1</span><span class="p">);</span>
+<span class="nx">pm</span><span class="p">.</span><span class="nx">collectionVariables</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">"tokenAlterado"</span><span class="p">,</span><span class="w"> </span><span class="nx">partes</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">"."</span><span class="p">));</span>
+</code></pre></div>
+<p>Postman muestra el código HTTP arriba a la derecha de la respuesta (<em>Status</em>), sin necesidad de <code>try/catch</code>.</p>
 <p><strong>Error frecuente</strong>: la variable del token quedó <strong>vacía</strong> porque el login falló (por ejemplo, <code>pagatu-auth-ms</code> apagado). El header queda como <code>Bearer</code> a secas, y Spring Security lo rechaza como si no hubiera token: un <code>401</code> que en realidad es un login que no funcionó. Imprime los primeros caracteres de la variable (paso previo) antes de culpar al Gateway.</p>
 <p><strong>Error frecuente</strong>: <code>401</code> en <strong>todas</strong> las rutas protegidas, aun con un token recién emitido. Revisa que <code>pagatu-auth-ms</code> esté corriendo (sin él, el Gateway no puede descargar la clave pública), que <code>jwk-set-uri</code> (3.17) tenga el puerto y la ruta exactos, y que no hayas reiniciado <code>pagatu-auth-ms</code> <strong>después</strong> de pedir el token — el par de claves se regenera al arrancar (3.11), y el token anterior ya no verifica: pide uno nuevo (3.14).</p>
 <h3 id="parte-c-pagatu-orden-ms-valida-el-jwt-y-toma-el-idcliente-de-el">Parte C — <code>pagatu-orden-ms</code> valida el JWT y toma el <code>idCliente</code> de él<a class="headerlink" href="#parte-c-pagatu-orden-ms-valida-el-jwt-y-toma-el-idcliente-de-el" title="Permanent link">&para;</a></h3>
@@ -4710,6 +4769,36 @@ curl<span class="w"> </span>-i<span class="w"> </span>http://localhost:18080/api
 </code></pre></div>
 <p><strong>Ese <code>idCliente: 1</code> en la respuesta es la prueba de que hoy funcionó</strong> — vino del claim <code>idCliente</code> del JWT (3.3, el usuario semilla <code>cliente@pagatu.com</code> tiene <code>id_cliente: 1</code>), no de nada que el request haya escrito.</p>
 <p>Repite el mismo request sin el header <code>Authorization</code> y confirma <code>401</code> (ya no llega ni a <code>pagatu-orden-ms</code>, el Gateway lo rechaza primero, 3.19). Repite con el token de <code>admin@pagatu.com</code>: también pasa el Gateway (la regla de 3.18 permite <code>CLIENTE</code> <strong>o</strong> <code>ADMIN</code>) y el token es válido en <code>pagatu-orden-ms</code>, pero no trae <code>idCliente</code> — el usuario <code>ADMIN</code> semilla no tiene <code>id_cliente</code> asignado (3.3), así que tu <code>IllegalArgumentException</code> (3.22) debería dispararse aquí y devolver <code>400</code>. Si eso pasa, es el comportamiento esperado, no un bug — confirma que un <code>ADMIN</code> sin <code>idCliente</code> no puede crear una orden a nombre de nadie.</p>
+<p><strong>Con Postman.</strong> <code>POST http://localhost:18080/api/v1/ordenes</code>, pestaña <em>Authorization</em> en <em>Bearer Token</em> con <code>{{tokenCliente}}</code>, y en <em>Body → raw → JSON</em> el mismo cuerpo de arriba (<code>{"metodoPago": "YAPE_PLIN", "detalles": [{"idProducto": 1, "cantidad": 2}]}</code>). Resultado esperado: <code>201</code>. Cambia <em>Authorization</em> a <code>{{tokenAdmin}}</code> para el <code>400</code> del <code>ADMIN</code>, y a <em>No Auth</em> para el <code>401</code>.</p>
+<p><strong>Con Swagger UI de <code>pagatu-orden-ms</code>.</strong> Desde 3.21, <code>GET</code> y <code>POST</code> de <code>http://localhost:8082/swagger-ui.html</code> responden <code>401</code> porque Swagger no manda ningún token. Para inyectarlo, declara el esquema de seguridad <code>Bearer</code> en OpenAPI: <strong><code>services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/config/OpenApiConfig.java</code></strong>:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.orden.config</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">io.swagger.v3.oas.models.Components</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">io.swagger.v3.oas.models.OpenAPI</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">io.swagger.v3.oas.models.security.SecurityRequirement</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">io.swagger.v3.oas.models.security.SecurityScheme</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.context.annotation.Bean</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.context.annotation.Configuration</span><span class="p">;</span>
+
+<span class="nd">@Configuration</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">OpenApiConfig</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">ESQUEMA_JWT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"bearerAuth"</span><span class="p">;</span>
+
+<span class="w">    </span><span class="nd">@Bean</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">OpenAPI</span><span class="w"> </span><span class="nf">openAPI</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">OpenAPI</span><span class="p">()</span>
+<span class="w">                </span><span class="p">.</span><span class="na">components</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Components</span><span class="p">().</span><span class="na">addSecuritySchemes</span><span class="p">(</span><span class="n">ESQUEMA_JWT</span><span class="p">,</span>
+<span class="w">                        </span><span class="k">new</span><span class="w"> </span><span class="n">SecurityScheme</span><span class="p">()</span>
+<span class="w">                                </span><span class="p">.</span><span class="na">type</span><span class="p">(</span><span class="n">SecurityScheme</span><span class="p">.</span><span class="na">Type</span><span class="p">.</span><span class="na">HTTP</span><span class="p">)</span>
+<span class="w">                                </span><span class="p">.</span><span class="na">scheme</span><span class="p">(</span><span class="s">"bearer"</span><span class="p">)</span>
+<span class="w">                                </span><span class="p">.</span><span class="na">bearerFormat</span><span class="p">(</span><span class="s">"JWT"</span><span class="p">)))</span>
+<span class="w">                </span><span class="p">.</span><span class="na">addSecurityItem</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">SecurityRequirement</span><span class="p">().</span><span class="na">addList</span><span class="p">(</span><span class="n">ESQUEMA_JWT</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Reinicia <code>pagatu-orden-ms</code>. Swagger UI muestra ahora un botón <strong>Authorize</strong> arriba a la derecha (y un candado en cada endpoint): púlsalo, pega <strong>solo</strong> el <code>access_token</code> — sin la palabra <code>Bearer</code>, Swagger la agrega — y pulsa <em>Authorize</em>. Desde ahí, <em>Try it out</em> y <em>Execute</em> mandan el encabezado <code>Authorization</code> en cada petición: con el token del <code>CLIENTE</code>, <code>POST /api/v1/ordenes</code> devuelve <code>201</code>; sin autorizar, <code>401</code>. El token dura una hora (<code>expiracion-segundos</code> de 3.5): cuando expire, vuelve a hacer login y a pulsar <em>Authorize</em>.</p>
+<p>Esto solo cambia la <strong>documentación</strong>: <code>SecurityConfig</code> (3.21) sigue siendo quien exige el token. Y solo sirve para <code>pagatu-orden-ms</code> en su puerto directo (<code>8082</code>): el Gateway no publica Swagger UI.</p>
 <h4 id="324-probar-el-llamado-directo-a-pagatu-orden-ms-sin-pasar-por-el-gateway">3.24 Probar el llamado directo a <code>pagatu-orden-ms</code>, sin pasar por el Gateway<a class="headerlink" href="#324-probar-el-llamado-directo-a-pagatu-orden-ms-sin-pasar-por-el-gateway" title="Permanent link">&para;</a></h4>
 <p><strong>Producto del paso:</strong> evidencia concreta de por qué <code>pagatu-orden-ms</code> valida el token por su cuenta, en vez de confiar en que "ya pasó por el Gateway".</p>
 <p>Llama directo al puerto de <code>pagatu-orden-ms</code> (<code>8082</code>), <strong>sin</strong> el Gateway de por medio, con un token manipulado a mano:</p>
@@ -4727,9 +4816,42 @@ curl<span class="w"> </span>-i<span class="w"> </span>http://localhost:18080/api
 </code></pre></div>
 <p>Resultado esperado: <code>401 Unauthorized</code>, con un encabezado <code>WWW-Authenticate: Bearer error="invalid_token"</code> — <code>pagatu-orden-ms</code> verificó la firma por sí mismo, falló, y rechazó la petición <strong>sin llegar al controlador</strong>. Repite sin ningún header <code>Authorization</code>: también <code>401</code>. Y repite con el token <strong>válido</strong> de <code>cliente@pagatu.com</code>: <code>201 Created</code> — lo que autoriza la petición es el <strong>token</strong>, no el camino por el que llegó.</p>
 <p><strong>En DEV este escenario es alcanzable</strong> (<code>8082</code> sigue expuesto al host, S6); en producción local (S4) esta ruta directa ni siquiera existe — <code>pagatu-orden-ms</code> no publica ningún puerto. Pero una defensa que solo funciona si nadie se salta la primera línea no es una defensa: por eso la segunda línea existe aunque hoy "no haga falta".</p>
+<p><strong>Contraste: <code>pagatu-catalogo-ms</code> llamado directo.</strong> El Gateway protege <code>POST /api/v1/productos</code> (caso 3 de 3.19: <code>403</code> para un <code>CLIENTE</code>), pero <code>pagatu-catalogo-ms</code> <strong>no</strong> es todavía un <em>resource server</em> (2.1): si lo llamas directo por su puerto (<code>8080</code>), sin token y sin pasar por el Gateway, la petición entra.</p>
+<p>PowerShell:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Post</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:8080/api/v1/productos"</span> <span class="p">`</span>
+  <span class="n">-ContentType</span> <span class="s2">"application/json"</span> <span class="p">`</span>
+  <span class="n">-Body</span> <span class="s1">'{"nombre": "Producto directo", "descripcion": "Sin pasar por el Gateway", "precio": 10.0, "activo": true, "stock": 5, "categoriaId": 1}'</span>
+</code></pre></div>
+<p>bash macOS/Linux:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-i<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/v1/productos<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"nombre": "Producto directo", "descripcion": "Sin pasar por el Gateway", "precio": 10.0, "activo": true, "stock": 5, "categoriaId": 1}'</span>
+</code></pre></div>
+<p>Resultado esperado: <code>201 Created</code>, sin ningún token — la misma petición que el Gateway rechazó con <code>403</code>, y que <code>pagatu-orden-ms</code> rechaza con <code>401</code> en el llamado directo de arriba. Es la diferencia concreta entre un servicio protegido por su cuenta y uno que depende solo de la primera línea. En producción local (S4) esta ruta no existe porque <code>pagatu-catalogo-ms</code> no publica ningún puerto; proteger el catálogo por su cuenta es el mismo cambio de 3.21, y queda fuera de esta sesión. Borra el producto creado con <code>DELETE /api/v1/productos/{id}</code>, pasando por el Gateway con el token del <code>ADMIN</code>.</p>
+<p><strong>Truco de desarrollo: quitar la seguridad de una ruta de forma temporal.</strong> Mientras desarrollas, es cómodo mirar un <code>GET</code> en el navegador o en Swagger sin sacar un token cada vez. En vez de desactivar toda la seguridad, abre <strong>solo</strong> lo que necesitas, con una regla que va <strong>antes</strong> de la que protege esa ruta: Spring Security aplica la <strong>primera</strong> regla que coincide (3.18). En qué archivo va depende de por dónde entres, porque el Gateway y <code>pagatu-orden-ms</code> validan cada uno por su cuenta (2.5) y abrir uno no abre el otro:</p>
+<ul>
+<li><strong>Llamas directo a <code>pagatu-orden-ms</code> (<code>8082</code>):</strong> la regla va en <code>SecurityConfig</code> de <code>pagatu-orden-ms</code>.</li>
+<li><strong>Llamas a través del Gateway (<code>18080</code>):</strong> la regla va en <code>SecurityConfig</code> de <code>pagatu-gateway</code>.</li>
+<li><strong>Quieres ambos caminos abiertos:</strong> la regla va en los dos archivos.</li>
+</ul>
+<p><strong><code>services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/config/SecurityConfig.java</code></strong> — agrega el <code>import</code> y la línea marcada, <strong>antes</strong> de <code>anyRequest()</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.http.HttpMethod</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="w">                </span><span class="p">.</span><span class="na">authorizeHttpRequests</span><span class="p">(</span><span class="n">auth</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">auth</span>
+<span class="w">                        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="s">"/actuator/**"</span><span class="p">,</span><span class="w"> </span><span class="s">"/swagger-ui.html"</span><span class="p">,</span><span class="w"> </span><span class="s">"/swagger-ui/**"</span><span class="p">,</span><span class="w"> </span><span class="s">"/v3/api-docs/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
+<span class="w">                        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/ordenes/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span><span class="w">   </span><span class="c1">// TEMPORAL: quitar antes de commitear</span>
+<span class="w">                        </span><span class="p">.</span><span class="na">anyRequest</span><span class="p">().</span><span class="na">authenticated</span><span class="p">()</span>
+<span class="w">                </span><span class="p">)</span>
+</code></pre></div>
+<p><strong><code>infra/pagatu-gateway/src/main/java/pe/edu/upeu/gateway/config/SecurityConfig.java</code></strong> — la misma línea, <strong>antes</strong> de la regla <code>hasAnyRole</code> de las órdenes:</p>
+<div class="highlight"><pre><span></span><code><span class="w">                        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/ordenes/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span><span class="w">   </span><span class="c1">// TEMPORAL: quitar antes de commitear</span>
+<span class="w">                        </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="s">"/api/v1/ordenes/**"</span><span class="p">).</span><span class="na">hasAnyRole</span><span class="p">(</span><span class="s">"CLIENTE"</span><span class="p">,</span><span class="w"> </span><span class="s">"ADMIN"</span><span class="p">)</span>
+</code></pre></div>
+<p>Reinicia el servicio que cambiaste y abre <code>http://localhost:8082/api/v1/ordenes</code> (o <code>http://localhost:18080/api/v1/ordenes</code>) directo en el navegador: responde <code>200</code> sin token. Un <code>POST</code> a la misma ruta sigue devolviendo <code>401</code>, porque la regla abre solo el método <code>GET</code>.</p>
+<p>Es una herramienta de trabajo, no parte del sistema: mientras esa línea esté, los resultados esperados de 3.19, 3.23 y 3.24 para los <code>GET</code> de órdenes dejan de cumplirse, y en un sistema real <strong>nunca</strong> debe llegar a producción ni a un commit. Bórrala apenas termines de mirar lo que necesitabas. Si solo quieres probar desde Swagger, no hace falta tocar código: el botón <em>Authorize</em> de 3.23 lo resuelve.</p>
 <h4 id="325-documentar-la-matriz-de-roles-y-accesos">3.25 Documentar la matriz de roles y accesos<a class="headerlink" href="#325-documentar-la-matriz-de-roles-y-accesos" title="Permanent link">&para;</a></h4>
 <p><strong>Producto del paso:</strong> contrato de seguridad documentado — igual que S6 documentó el contrato de un evento, esta sesión documenta el contrato de acceso.</p>
-<p><strong>Tabla 8. Matriz de roles y accesos verificada en 3.19 y 3.23</strong></p>
+<p><strong>Tabla 9. Matriz de roles y accesos verificada en 3.19 y 3.23</strong></p>
 <table>
 <thead>
 <tr>
@@ -4806,13 +4928,13 @@ curl<span class="w"> </span>-i<span class="w"> </span>http://localhost:18080/api
 (2 rows)
 </code></pre></div>
 <p>Esta consulta es una revisión de accesos mínima: en una sola mirada dice quién puede qué. En un sistema real se repite de forma periódica y se revoca lo que ya no corresponde.</p>
-<p><strong>Revocar un rol.</strong> Simula que <code>cliente@pagatu.com</code> deja de ser cliente. Ten a la mano el token de <code>cliente@pagatu.com</code> de 3.14 (sin haber reiniciado <code>pagatu-auth-ms</code> desde entonces, 3.11) y quítale el rol:</p>
+<p><strong>Revocar un rol.</strong> Simula que <code>cliente@pagatu.com</code> deja de ser cliente. Ten a la mano el token de <code>cliente@pagatu.com</code> que guardaste en 3.19 (<code>$tokenCliente</code> en PowerShell, <code>TOKEN_CLIENTE</code> en bash), sin haber reiniciado <code>pagatu-auth-ms</code> desde entonces (3.11), y quítale el rol:</p>
 <div class="highlight"><pre><span></span><code>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-auth-dev<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_auth_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">"DELETE FROM usuario_roles WHERE usuario_id = (SELECT id FROM usuarios WHERE email = 'cliente@pagatu.com');"</span>
 </code></pre></div>
 <p>Ahora comprueba dos cosas, ambas a través del Gateway (<code>POST /api/v1/ordenes</code>, como en 3.23):</p>
 <ol>
 <li>Con el <strong>token viejo</strong> (el de antes de revocar): sigue devolviendo <code>201 Created</code>. El JWT es <em>stateless</em> (2.2): el token ya emitido lleva el rol <strong>adentro</strong> y sigue siendo válido hasta que expire — quitar el rol de la base de datos no lo invalida.</li>
-<li>Pide un <strong>token nuevo</strong> (login de <code>cliente@pagatu.com</code>, 3.14) y pégalo en <a href="https://jwt.io">jwt.io</a>: el claim ahora es <code>"realm_access": { "roles": [] }</code>. Con ese token, <code>POST /api/v1/ordenes</code> devuelve <code>403 Forbidden</code> — autenticado, pero sin ningún rol que alcance.</li>
+<li>Pide un <strong>token nuevo</strong> (repite el login de <code>cliente@pagatu.com</code> del paso previo de 3.19) y pégalo en <a href="https://jwt.io">jwt.io</a>: el claim ahora es <code>"realm_access": { "roles": [] }</code>. Con ese token, <code>POST /api/v1/ordenes</code> devuelve <code>403 Forbidden</code> — autenticado, pero sin ningún rol que alcance.</li>
 </ol>
 <p>Es exactamente la limitación de 2.2 (Error frecuente), vista con datos reales: revocar un rol es inmediato para logins <strong>nuevos</strong>, pero los tokens vigentes viven hasta su expiración. Por eso <code>jwt.expiracion-segundos</code> debe ser corto en un sistema real.</p>
 <p><strong>Deja el sistema como estaba</strong> antes de continuar:</p>
@@ -4820,7 +4942,7 @@ curl<span class="w"> </span>-i<span class="w"> </span>http://localhost:18080/api
 </code></pre></div>
 <p>Repite la consulta de revisión y confirma que vuelven a aparecer las dos filas.</p>
 <p><strong>Lista de verificación.</strong> Compara el sistema de hoy contra los errores comunes de 2.3 y 2.4:</p>
-<p><strong>Tabla 9. Lista de verificación de accesos: errores comunes frente al sistema de hoy</strong></p>
+<p><strong>Tabla 10. Lista de verificación de accesos: errores comunes frente al sistema de hoy</strong></p>
 <table>
 <thead>
 <tr>
@@ -4837,7 +4959,7 @@ curl<span class="w"> </span>-i<span class="w"> </span>http://localhost:18080/api
 </tr>
 <tr>
 <td>Roles demasiado amplios</td>
-<td>Revisa la Tabla 8: <code>ADMIN</code> puede llamar a <code>/api/v1/ordenes</code> (3.18), aunque sin <code>idCliente</code> termina en <code>400</code> (3.23)</td>
+<td>Revisa la Tabla 9: <code>ADMIN</code> puede llamar a <code>/api/v1/ordenes</code> (3.18), aunque sin <code>idCliente</code> termina en <code>400</code> (3.23)</td>
 <td>Ocurre en parte: decide si esa ruta debería aceptar solo <code>CLIENTE</code>.</td>
 </tr>
 <tr>
@@ -4914,10 +5036,11 @@ curl<span class="w"> </span>-i<span class="w"> </span>http://localhost:18080/api
 <ul>
 <li><code>pagatu-auth-ms</code> operativo en DEV, con usuarios y roles en sus propias tablas, registrado en <code>pagatu-eureka</code> y con configuración externa desde <code>pagatu-config</code>.</li>
 <li>Login exitoso devolviendo un <code>access_token</code> firmado (RS256), y login fallido devolviendo <code>401</code>.</li>
+<li>Registro de un usuario nuevo con <code>POST /api/v1/auth/registro</code> (<code>201</code>), y su contraseña guardada como hash BCrypt.</li>
 <li><code>GET /.well-known/jwks.json</code> publicando solo la clave pública.</li>
 <li><code>pagatu-gateway</code> como Resource Server, con los cuatro casos de 3.19: sin token (<code>401</code>), token alterado (<code>401</code>), rol incorrecto (<code>403</code>) y rol correcto (<code>201</code>/<code>200</code>).</li>
 <li><code>pagatu-orden-ms</code> como Resource Server: orden creada con <code>idCliente</code> tomado del JWT, y llamado directo con token alterado rechazado con <code>401</code>.</li>
-<li>Matriz de roles y accesos (Tabla 8) y lista de verificación (Tabla 9) completadas.</li>
+<li>Matriz de roles y accesos (Tabla 9) y lista de verificación (Tabla 10) completadas.</li>
 </ul>
 <h2 id="4-crea-actividad-autonoma">4. Crea: actividad autónoma<a class="headerlink" href="#4-crea-actividad-autonoma" title="Permanent link">&para;</a></h2>
 <p>Tiempo: 4h fuera del aula.</p>
@@ -4929,7 +5052,7 @@ curl<span class="w"> </span>-i<span class="w"> </span>http://localhost:18080/api
 <li>Agregar la ruta de <code>pagatu-cliente-ms</code> al Gateway (mismo patrón de 3.6).</li>
 <li>Convertir <code>pagatu-cliente-ms</code> en Resource Server, para que valide el JWT por su cuenta (mismo patrón de 3.21).</li>
 <li>Probar el caso permitido y el caso denegado a través del Gateway, y un llamado directo al puerto de <code>pagatu-cliente-ms</code> con un token alterado, con capturas de los códigos de respuesta (mismo patrón de 3.19 y 3.24).</li>
-<li>Documentar la matriz de roles y accesos de <code>pagatu-cliente-ms</code>, mismo formato de la Tabla 8 (3.25).</li>
+<li>Documentar la matriz de roles y accesos de <code>pagatu-cliente-ms</code>, mismo formato de la Tabla 9 (3.25).</li>
 <li>Registrar aporte individual.</li>
 </ol>
 <h3 id="42-proposito">4.2 Propósito<a class="headerlink" href="#42-proposito" title="Permanent link">&para;</a></h3>
@@ -4953,7 +5076,7 @@ curl<span class="w"> </span>-i<span class="w"> </span>http://localhost:18080/api
 <p>Incluye capturas o extractos con una breve explicación debajo de cada uno, organizados en los mismos 4 bloques de la rúbrica (4.6):</p>
 <ol>
 <li><em><code>pagatu-auth-ms</code> construido</em><ul>
-<li>Captura del login exitoso devolviendo un JWT, del login fallido devolviendo <code>401</code>, y de las tablas <code>usuarios</code>, <code>roles</code> y <code>usuario_roles</code> con sus datos (trabajo de clase).</li>
+<li>Captura del login exitoso devolviendo un JWT, del login fallido devolviendo <code>401</code>, del registro de un usuario nuevo (<code>201</code>) y de las tablas <code>usuarios</code>, <code>roles</code> y <code>usuario_roles</code> con sus datos, incluido el hash BCrypt del usuario registrado (trabajo de clase).</li>
 </ul>
 </li>
 <li><em><code>pagatu-gateway</code> como Resource Server</em><ul>
@@ -5123,8 +5246,9 @@ Indica 2 fortalezas y 2 recomendaciones.
 <li>JWT.io / Auth0. (2024). <em>Introduction to JSON Web Tokens</em>. <a href="https://jwt.io/introduction">https://jwt.io/introduction</a></li>
 <li>Keycloak. (2025). <em>Keycloak Documentation</em>. <a href="https://www.keycloak.org/documentation">https://www.keycloak.org/documentation</a></li>
 <li>Lodderstedt, T., Bradley, J., Labunets, A., &amp; Fett, D. (2025). <em>Best Current Practice for OAuth 2.0 Security</em> (RFC 9700). IETF. <a href="https://datatracker.ietf.org/doc/html/rfc9700">https://datatracker.ietf.org/doc/html/rfc9700</a></li>
+<li>Parecki, A. (s. f.). <em>OAuth Grant Types</em>. OAuth.net. <a href="https://oauth.net/2/grant-types/">https://oauth.net/2/grant-types/</a></li>
 <li>SACAViX. (s. f.-a). <em>RBAC / Control de Acceso</em> [Patrón de diseño]. System Design. <a href="https://systemdesign.sacavix.com/patterns">https://systemdesign.sacavix.com/patterns</a></li>
-<li>SACAViX. (s. f.-b). <em>OAuth2 / OpenID Connect</em> [Patrón de diseño]. System Design. <a href="https://systemdesign.sacavix.com/patterns">https://systemdesign.sacavix.com/patterns</a></li>
+<li>SACAViX. (s. f.-b). <em>OAuth2 / OpenID Connect</em> [Patrón de diseño]. System Design. <a href="https://systemdesign.sacavix.com/patterns/oauth2-security">https://systemdesign.sacavix.com/patterns/oauth2-security</a></li>
 <li>Sakimura, N., Bradley, J., &amp; Agarwal, N. (2015). <em>Proof Key for Code Exchange by OAuth Public Clients</em> (RFC 7636). IETF. <a href="https://datatracker.ietf.org/doc/html/rfc7636">https://datatracker.ietf.org/doc/html/rfc7636</a></li>
 <li>Sakimura, N., Bradley, J., Jones, M., de Medeiros, B., &amp; Mortimore, C. (2014). <em>OpenID Connect Core 1.0</em>. OpenID Foundation. <a href="https://openid.net/specs/openid-connect-core-1_0.html">https://openid.net/specs/openid-connect-core-1_0.html</a></li>
 <li>Spring Team. (2024). <em>Spring Security Reference: OAuth2 Resource Server</em>. <a href="https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html">https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html</a></li>
