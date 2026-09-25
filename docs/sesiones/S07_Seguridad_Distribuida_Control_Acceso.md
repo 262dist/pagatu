@@ -928,7 +928,7 @@ bash macOS/Linux:
 curl -i http://localhost:18080/api/v1/auth/login
 ```
 
-**Resultado esperado: `401`.** Esa respuesta la da `pagatu-auth-ms` (Spring Security todavía sin configurar, 3.12), y justamente prueba que la ruta funciona: la petición atravesó el Gateway y llegó hasta él. Un `404` significa que el Gateway no encontró la ruta (revisa que la agregaste a la lista `routes` y reiniciaste el Gateway), y un `503`, que no encontró ninguna instancia de `pagatu-auth-ms` en Eureka. Detén `pagatu-auth-ms` con `Ctrl+C` antes de seguir; el Gateway puede quedar corriendo.
+**Resultado esperado: una respuesta de Spring Security de `pagatu-auth-ms`, no del Gateway.** Si abres la URL en el navegador, te redirige a `http://localhost:8085/login` (el formulario por defecto, 302); con `curl` verás un `302` hacia `/login` o un `401`, según el `Accept` de la petición. Las tres respuestas prueban que la ruta funciona: la petición atravesó el Gateway y llegó hasta `pagatu-auth-ms`, cuya seguridad todavía está sin configurar (se resuelve en 3.12). Un `404` significa que el Gateway no encontró la ruta (revisa que la agregaste a la lista `routes` y reiniciaste el Gateway), y un `503`, que no encontró ninguna instancia de `pagatu-auth-ms` en Eureka. Detén `pagatu-auth-ms` con `Ctrl+C` antes de seguir; el Gateway puede quedar corriendo.
 
 #### 3.7 Crear las entidades `Usuario` y `Rol`
 
