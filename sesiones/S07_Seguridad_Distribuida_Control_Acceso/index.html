@@ -3171,7 +3171,7 @@
 </tr>
 <tr>
 <td>Dependencias</td>
-<td>Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway, <strong>Prometheus</strong> (categoría <em>Observability</em>, <code>io.micrometer:micrometer-registry-prometheus</code>, scope <code>runtime</code>) y <strong>Spring Security</strong> — las mismas de <code>pagatu-orden-ms</code> (S6, Tabla 3) más Spring Security, nueva hoy. <strong>Además</strong>, agrega MapStruct a mano en el <code>pom.xml</code> (S1, 3.5.20), igual que en <code>pagatu-orden-ms</code>: Spring Initializr no lo ofrece como opción.</td>
+<td>Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway, <strong>Prometheus</strong> (categoría <em>Observability</em>, <code>io.micrometer:micrometer-registry-prometheus</code>, scope <code>runtime</code>) <strong>Config Client</strong> y <strong>Eureka Discovery Client</strong> (categorías <em>Spring Cloud Config</em> y <em>Spring Cloud Discovery</em>) y <strong>Spring Security</strong> — las mismas de <code>pagatu-orden-ms</code> (S6, Tabla 3) más Spring Security, nueva hoy. <strong>Además</strong>, agrega MapStruct a mano en el <code>pom.xml</code> (S1, 3.5.20), igual que en <code>pagatu-orden-ms</code>: Spring Initializr no lo ofrece como opción.</td>
 </tr>
 <tr>
 <td>Ubicación sugerida</td>
@@ -3180,6 +3180,8 @@
 </tbody>
 </table>
 <p>Prometheus deja a <code>pagatu-auth-ms</code> visible en <code>obs/</code> desde que arranca, con el mismo criterio que <code>pagatu-orden-ms</code> (S6).</p>
+<p><strong>Config Client</strong> y <strong>Eureka Discovery Client</strong> se marcan aquí, desde el inicio: son las dos dependencias con las que <code>pagatu-auth-ms</code> trae su configuración de <code>pagatu-config</code> y se registra en <code>pagatu-eureka</code> (3.4). <code>pagatu-auth-ms</code> no necesita ninguna dependencia de <em>Gateway</em>: el Gateway es quien enruta hacia él (3.16), no al revés.</p>
+<p><strong>Al marcar esas dos dependencias, Spring Initializr genera por su cuenta las tres piezas del <code>pom.xml</code>:</strong> las dos dependencias, la propiedad <code>&lt;spring-cloud.version&gt;</code> y el bloque <code>&lt;dependencyManagement&gt;</code> que importa el BOM de Spring Cloud (con Spring Boot 4.1.1, la versión es <code>2025.1.3</code>). No hay nada que copiar a mano.</p>
 <p><strong>MapStruct se agrega a mano en el <code>pom.xml</code>, en dos lugares</strong>, igual que en <code>pagatu-orden-ms</code> (S1, 3.5.20). Queda listo aunque hoy <code>pagatu-auth-ms</code> no tenga ningún <em>mapper</em>: así el <code>pom.xml</code> no vuelve a tocarse cuando aparezcan DTO de usuario más adelante.</p>
 <p><strong>Lugar 1 — la dependencia</strong>, dentro de <code>&lt;dependencies&gt;</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">&lt;dependency&gt;</span>
@@ -3353,23 +3355,7 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <span class="w">    </span><span class="nt">import</span><span class="p">:</span><span class="w"> </span><span class="s">"optional:configserver:${CONFIG_SERVER_URL:http://localhost:18888}"</span>
 </code></pre></div>
 <p>Mismo patrón exacto que <code>pagatu-orden-ms</code> desde S6 — <code>optional:</code> evita que <code>pagatu-auth-ms</code> falle al arrancar si <code>pagatu-config</code> estuviera caído.</p>
-<p>Agrega en el <code>pom.xml</code> las mismas dos dependencias de Spring Cloud que ya usa <code>pagatu-orden-ms</code> (S3, S6) — sin ellas, <code>pagatu-auth-ms</code> ni externaliza configuración ni se registra en Eureka:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">&lt;dependency&gt;</span>
-<span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
-<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-config<span class="nt">&lt;/artifactId&gt;</span>
-<span class="nt">&lt;/dependency&gt;</span>
-<span class="nt">&lt;dependency&gt;</span>
-<span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
-<span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-cloud-starter-netflix-eureka-client<span class="nt">&lt;/artifactId&gt;</span>
-<span class="nt">&lt;/dependency&gt;</span>
-</code></pre></div>
-<p>No olvides las <code>&lt;properties&gt;</code> de Spring Cloud, igual que en <code>pagatu-orden-ms</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">&lt;properties&gt;</span>
-<span class="w">    </span><span class="nt">&lt;java.version&gt;</span>21<span class="nt">&lt;/java.version&gt;</span>
-<span class="w">    </span><span class="nt">&lt;spring-cloud.version&gt;</span>2025.1.3<span class="nt">&lt;/spring-cloud.version&gt;</span>
-<span class="nt">&lt;/properties&gt;</span>
-</code></pre></div>
-<p>y el <code>&lt;dependencyManagement&gt;</code> correspondiente (copia exacta del de <code>pagatu-orden-ms</code>, S6, 3.1).</p>
+<p>Las dos dependencias que hacen que esto funcione —<code>spring-cloud-starter-config</code> y <code>spring-cloud-starter-netflix-eureka-client</code>— ya quedaron en el <code>pom.xml</code> en 3.1, junto con la propiedad <code>&lt;spring-cloud.version&gt;</code> y el <code>&lt;dependencyManagement&gt;</code>: en este paso solo falta el <code>application.yml</code>. Sin ese <code>import</code> del Config Server, la dependencia de Config Client no tiene de dónde traer nada, y sin la sección <code>eureka</code> de 3.5 el servicio no se registra.</p>
 <h4 id="35-configurar-pagatu-auth-ms-en-config-repo">3.5 Configurar <code>pagatu-auth-ms</code> en <code>config-repo</code><a class="headerlink" href="#35-configurar-pagatu-auth-ms-en-config-repo" title="Permanent link">&para;</a></h4>
 <p><strong>Producto del paso:</strong> el archivo de configuración DEV de <code>pagatu-auth-ms</code>, con los dos únicos datos propios del emisor de tokens: quién es (<code>issuer</code>) y cuánto duran sus tokens. Y el servicio arrancando, sin ninguna clase propia todavía.</p>
 <p><strong><code>infra/pagatu-config/config-repo/pagatu-auth-ms-dev.yml</code>:</strong></p>
