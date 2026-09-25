@@ -3357,7 +3357,7 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <p>Mismo patrón exacto que <code>pagatu-orden-ms</code> desde S6 — <code>optional:</code> evita que <code>pagatu-auth-ms</code> falle al arrancar si <code>pagatu-config</code> estuviera caído.</p>
 <p>Las dos dependencias que hacen que esto funcione —<code>spring-cloud-starter-config</code> y <code>spring-cloud-starter-netflix-eureka-client</code>— ya quedaron en el <code>pom.xml</code> en 3.1, junto con la propiedad <code>&lt;spring-cloud.version&gt;</code> y el <code>&lt;dependencyManagement&gt;</code>: en este paso solo falta el <code>application.yml</code>. Sin ese <code>import</code> del Config Server, la dependencia de Config Client no tiene de dónde traer nada, y sin la sección <code>eureka</code> de 3.5 el servicio no se registra.</p>
 <h4 id="35-configurar-pagatu-auth-ms-en-config-repo">3.5 Configurar <code>pagatu-auth-ms</code> en <code>config-repo</code><a class="headerlink" href="#35-configurar-pagatu-auth-ms-en-config-repo" title="Permanent link">&para;</a></h4>
-<p><strong>Producto del paso:</strong> el archivo de configuración DEV de <code>pagatu-auth-ms</code>, con los dos únicos datos propios del emisor de tokens: quién es (<code>issuer</code>) y cuánto duran sus tokens. Y el servicio arrancando, sin ninguna clase propia todavía.</p>
+<p><strong>Producto del paso:</strong> los archivos de configuración DEV y PROD de <code>pagatu-auth-ms</code>, con los dos únicos datos propios del emisor de tokens: quién es (<code>issuer</code>) y cuánto duran sus tokens. Y el servicio arrancando en DEV, sin ninguna clase propia todavía.</p>
 <p><strong><code>infra/pagatu-config/config-repo/pagatu-auth-ms-dev.yml</code>:</strong></p>
 <div class="highlight"><pre><span></span><code><span class="nt">server</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8085</span>
@@ -3414,14 +3414,64 @@ docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </spa
 <span class="w">  </span><span class="nt">expiracion-segundos</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3600</span>
 </code></pre></div>
 <p>Mismo patrón exacto de <code>pagatu-orden-ms-dev.yml</code> (S6) — <code>ddl-auto: validate</code> porque el esquema real lo define Flyway (3.3), no Hibernate. <code>jwt.issuer</code> y <code>jwt.expiracion-segundos</code> no los lee nada todavía: los consume el servicio de JWT de 3.9. Se declaran ahora para dejar toda la configuración de <code>pagatu-auth-ms</code> en un solo archivo, de una vez. <code>jwt.expiracion-segundos: 3600</code> es una hora, deliberadamente larga solo para no complicar las pruebas manuales de hoy (2.2, Error frecuente). <strong>No hay ningún secreto compartido en <code>config-repo</code>:</strong> ni el Gateway ni <code>pagatu-orden-ms</code> necesitan conocer nada que permita fabricar un token — solo saber de dónde descargar la clave pública (3.14, 3.19). Esa es la ventaja concreta de la firma asimétrica (2.5).</p>
-<p><strong>Verifica</strong> que el Config Server sirve el archivo correctamente antes de continuar:</p>
+<p><strong><code>infra/pagatu-config/config-repo/pagatu-auth-ms-prod.yml</code>:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nt">server</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span>
+
+<span class="nt">spring</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">datasource</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}</span>
+<span class="w">    </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${DB_USER}</span>
+<span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${DB_PASS}</span>
+<span class="w">    </span><span class="nt">driver-class-name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">org.postgresql.Driver</span>
+<span class="w">  </span><span class="nt">flyway</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">locations</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">classpath:db/migration</span>
+<span class="w">  </span><span class="nt">jpa</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">hibernate</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">ddl-auto</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">validate</span>
+<span class="w">    </span><span class="nt">show-sql</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">    </span><span class="nt">properties</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">hibernate</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">format_sql</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+
+<span class="nt">springdoc</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">swagger-ui</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">  </span><span class="nt">api-docs</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+
+<span class="nt">management</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">endpoints</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">web</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">exposure</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health,info,metrics,prometheus</span>
+<span class="w">  </span><span class="nt">endpoint</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">health</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">show-details</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">never</span>
+
+<span class="nt">eureka</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">instance</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">instance-id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${spring.application.name}:${random.value}</span>
+<span class="w">  </span><span class="nt">client</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">service-url</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">defaultZone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://pagatu-eureka:8761/eureka</span>
+
+<span class="nt">jwt</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">issuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://pagatu-auth-ms:8080</span>
+<span class="w">  </span><span class="nt">expiracion-segundos</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">900</span>
+</code></pre></div>
+<p>Mismo patrón que <code>pagatu-orden-ms-prod.yml</code> (S3, S6). Lo que cambia frente a DEV: el puerto interno del contenedor (<code>8080</code>), las credenciales de la base de datos por variables de entorno (nunca escritas en el repositorio), Swagger y el SQL en el log apagados, el detalle de <code>health</code> oculto, un <code>instance-id</code> aleatorio por réplica, y la dirección de Eureka por el nombre del contenedor. Y dos valores propios de este servicio: <code>jwt.issuer</code> apunta al nombre del contenedor dentro de la red de Docker, y <code>jwt.expiracion-segundos: 900</code> (15 minutos) es el valor corto que un sistema real necesita (2.2, Error frecuente) — la hora de DEV es solo para las pruebas manuales de hoy. Hoy <code>pagatu-auth-ms</code> no se levanta en PROD; el archivo queda listo, igual que los de los demás servicios.</p>
+<p><strong>Verifica</strong> que el Config Server sirve los dos archivos antes de continuar (<code>dev</code> y <code>prod</code>):</p>
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18888/pagatu-auth-ms/dev"</span>
+<span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18888/pagatu-auth-ms/prod"</span>
 </code></pre></div>
 <p>bash macOS/Linux:</p>
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>http://localhost:18888/pagatu-auth-ms/dev
+curl<span class="w"> </span>http://localhost:18888/pagatu-auth-ms/prod
 </code></pre></div>
-<p><strong>Si <code>propertySources</code> sale sin ningún <code>jwt.issuer</code>, no continúes.</strong> Confirma que el archivo se llama exactamente <code>pagatu-auth-ms-dev.yml</code>, está directamente en <code>config-repo/</code> (no en una subcarpeta), y que <code>pagatu-config</code> lo recargó (reinicia <code>pagatu-config</code> si hace falta).</p>
+<p><strong>Si <code>propertySources</code> sale sin ningún <code>jwt.issuer</code>, no continúes.</strong> Confirma que el archivo se llama exactamente <code>pagatu-auth-ms-dev.yml</code> (o <code>-prod.yml</code>), está directamente en <code>config-repo/</code> (no en una subcarpeta), y que <code>pagatu-config</code> lo recargó (reinicia <code>pagatu-config</code> si hace falta).</p>
 <p><strong>Arranca <code>pagatu-auth-ms</code> — todavía sin ninguna clase propia</strong> (las entidades llegan en 3.6). Con <code>pagatu-config</code>, <code>pagatu-eureka</code> y la base de datos de 3.2 corriendo:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>services/pagatu-auth-ms
 mvn<span class="w"> </span>spring-boot:run
