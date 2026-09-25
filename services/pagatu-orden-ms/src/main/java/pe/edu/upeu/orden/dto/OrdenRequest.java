@@ -13,8 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 public class OrdenRequest {
 
-    private Long idCliente;
-
     @NotBlank
     private String metodoPago;
 

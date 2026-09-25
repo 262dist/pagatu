@@ -22,9 +22,9 @@ public class OrdenServiceImpl implements OrdenService {
 
     @Override
     @Transactional
-    public OrdenResponse crear(OrdenRequest request) {
+    public OrdenResponse crear(OrdenRequest request, Long idCliente) {
         Orden orden = Orden.builder()
-                .idCliente(request.getIdCliente())
+                .idCliente(idCliente)
                 .metodoPago(request.getMetodoPago())
                 .build();
 

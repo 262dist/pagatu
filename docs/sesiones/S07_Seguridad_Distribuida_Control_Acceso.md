@@ -2246,6 +2246,17 @@ spring:
           jwk-set-uri: http://localhost:8085/.well-known/jwks.json
 ```
 
+**`infra/pagatu-config/config-repo/pagatu-orden-ms-prod.yml`** — la misma propiedad, con la dirección de `pagatu-auth-ms` dentro de la red de Docker:
+
+```yaml
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://pagatu-auth-ms:8080/.well-known/jwks.json
+```
+
 **`services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/config/SecurityConfig.java`:**
 
 ```java
@@ -2330,7 +2341,21 @@ OrdenResponse crear(OrdenRequest request, Long idCliente);
 
 Solo cambian la firma del método y esa primera línea del `builder()` — el resto de `crear()` (validación de productos vía Feign, cálculo del total, `toResponse()`) no tiene ninguna relación con `idCliente` y queda intacto.
 
-`IllegalArgumentException` ya cae en el `GlobalExceptionHandler` que `pagatu-orden-ms` trae desde S1/S6 — confirma que responde con un código de error claro (no `500`) antes de continuar; si tu manejador actual no cubre `IllegalArgumentException`, agrégale un `@ExceptionHandler` que devuelva `400 Bad Request`.
+El `GlobalExceptionHandler` que `pagatu-orden-ms` trae desde S6 solo cubre `ResourceNotFoundException` y los errores de validación: sin más cambios, la `IllegalArgumentException` del controlador terminaría en un `500`. Agrega este método dentro de la clase en **`services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/exception/GlobalExceptionHandler.java`**, con el mismo formato de los otros dos:
+
+```java
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", Instant.now().toString());
+        body.put("status", HttpStatus.BAD_REQUEST.value());
+        body.put("error", "Bad Request");
+        body.put("message", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+```
+
+Así un token sin `idCliente` (el del `ADMIN` semilla) recibe un `400` con el mensaje, no un `500`.
 
 #### 3.23 Probar de punta a punta, autenticado como `CLIENTE`
 

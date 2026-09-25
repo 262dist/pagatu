@@ -2,6 +2,11 @@ server:
   port: 8082
 
 spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8085/.well-known/jwks.json
   datasource:
     url: jdbc:postgresql://localhost:15434/pagatu_orden_db
     username: pagatu
