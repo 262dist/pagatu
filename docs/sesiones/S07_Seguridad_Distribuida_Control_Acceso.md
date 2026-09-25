@@ -730,7 +730,7 @@ Las dos dependencias que hacen que esto funcione —`spring-cloud-starter-config
 
 #### 3.5 Configurar `pagatu-auth-ms` en `config-repo`
 
-**Producto del paso:** el archivo de configuración DEV de `pagatu-auth-ms`, con los dos únicos datos propios del emisor de tokens: quién es (`issuer`) y cuánto duran sus tokens. Y el servicio arrancando, sin ninguna clase propia todavía.
+**Producto del paso:** los archivos de configuración DEV y PROD de `pagatu-auth-ms`, con los dos únicos datos propios del emisor de tokens: quién es (`issuer`) y cuánto duran sus tokens. Y el servicio arrancando en DEV, sin ninguna clase propia todavía.
 
 **`infra/pagatu-config/config-repo/pagatu-auth-ms-dev.yml`:**
 
@@ -792,21 +792,75 @@ jwt:
 
 Mismo patrón exacto de `pagatu-orden-ms-dev.yml` (S6) — `ddl-auto: validate` porque el esquema real lo define Flyway (3.3), no Hibernate. `jwt.issuer` y `jwt.expiracion-segundos` no los lee nada todavía: los consume el servicio de JWT de 3.9. Se declaran ahora para dejar toda la configuración de `pagatu-auth-ms` en un solo archivo, de una vez. `jwt.expiracion-segundos: 3600` es una hora, deliberadamente larga solo para no complicar las pruebas manuales de hoy (2.2, Error frecuente). **No hay ningún secreto compartido en `config-repo`:** ni el Gateway ni `pagatu-orden-ms` necesitan conocer nada que permita fabricar un token — solo saber de dónde descargar la clave pública (3.14, 3.19). Esa es la ventaja concreta de la firma asimétrica (2.5).
 
-**Verifica** que el Config Server sirve el archivo correctamente antes de continuar:
+**`infra/pagatu-config/config-repo/pagatu-auth-ms-prod.yml`:**
+
+```yaml
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASS}
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: never
+
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${random.value}
+  client:
+    service-url:
+      defaultZone: http://pagatu-eureka:8761/eureka
+
+jwt:
+  issuer: http://pagatu-auth-ms:8080
+  expiracion-segundos: 900
+```
+
+Mismo patrón que `pagatu-orden-ms-prod.yml` (S3, S6). Lo que cambia frente a DEV: el puerto interno del contenedor (`8080`), las credenciales de la base de datos por variables de entorno (nunca escritas en el repositorio), Swagger y el SQL en el log apagados, el detalle de `health` oculto, un `instance-id` aleatorio por réplica, y la dirección de Eureka por el nombre del contenedor. Y dos valores propios de este servicio: `jwt.issuer` apunta al nombre del contenedor dentro de la red de Docker, y `jwt.expiracion-segundos: 900` (15 minutos) es el valor corto que un sistema real necesita (2.2, Error frecuente) — la hora de DEV es solo para las pruebas manuales de hoy. Hoy `pagatu-auth-ms` no se levanta en PROD; el archivo queda listo, igual que los de los demás servicios.
+
+**Verifica** que el Config Server sirve los dos archivos antes de continuar (`dev` y `prod`):
 
 PowerShell:
 
 ```powershell
 Invoke-RestMethod -Method Get -Uri "http://localhost:18888/pagatu-auth-ms/dev"
+Invoke-RestMethod -Method Get -Uri "http://localhost:18888/pagatu-auth-ms/prod"
 ```
 
 bash macOS/Linux:
 
 ```bash
 curl http://localhost:18888/pagatu-auth-ms/dev
+curl http://localhost:18888/pagatu-auth-ms/prod
 ```
 
-**Si `propertySources` sale sin ningún `jwt.issuer`, no continúes.** Confirma que el archivo se llama exactamente `pagatu-auth-ms-dev.yml`, está directamente en `config-repo/` (no en una subcarpeta), y que `pagatu-config` lo recargó (reinicia `pagatu-config` si hace falta).
+**Si `propertySources` sale sin ningún `jwt.issuer`, no continúes.** Confirma que el archivo se llama exactamente `pagatu-auth-ms-dev.yml` (o `-prod.yml`), está directamente en `config-repo/` (no en una subcarpeta), y que `pagatu-config` lo recargó (reinicia `pagatu-config` si hace falta).
 
 **Arranca `pagatu-auth-ms` — todavía sin ninguna clase propia** (las entidades llegan en 3.6). Con `pagatu-config`, `pagatu-eureka` y la base de datos de 3.2 corriendo:
 
