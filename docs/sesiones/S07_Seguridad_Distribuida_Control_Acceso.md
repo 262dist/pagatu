@@ -490,10 +490,14 @@ Levanta en DEV los servicios base ya construidos hasta S6 (`pagatu-config`, `pag
 | Package name | `pe.edu.upeu.auth` |
 | Packaging | Jar |
 | Java | 21 |
-| Dependencias | Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway, **Prometheus** (categoría *Observability*, `io.micrometer:micrometer-registry-prometheus`, scope `runtime`) y **Spring Security** — las mismas de `pagatu-orden-ms` (S6, Tabla 3) más Spring Security, nueva hoy. **Además**, agrega MapStruct a mano en el `pom.xml` (S1, 3.5.20), igual que en `pagatu-orden-ms`: Spring Initializr no lo ofrece como opción. |
+| Dependencias | Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway, **Prometheus** (categoría *Observability*, `io.micrometer:micrometer-registry-prometheus`, scope `runtime`) **Config Client** y **Eureka Discovery Client** (categorías *Spring Cloud Config* y *Spring Cloud Discovery*) y **Spring Security** — las mismas de `pagatu-orden-ms` (S6, Tabla 3) más Spring Security, nueva hoy. **Además**, agrega MapStruct a mano en el `pom.xml` (S1, 3.5.20), igual que en `pagatu-orden-ms`: Spring Initializr no lo ofrece como opción. |
 | Ubicación sugerida | `services/pagatu-auth-ms` |
 
 Prometheus deja a `pagatu-auth-ms` visible en `obs/` desde que arranca, con el mismo criterio que `pagatu-orden-ms` (S6).
+
+**Config Client** y **Eureka Discovery Client** se marcan aquí, desde el inicio: son las dos dependencias con las que `pagatu-auth-ms` trae su configuración de `pagatu-config` y se registra en `pagatu-eureka` (3.4). `pagatu-auth-ms` no necesita ninguna dependencia de *Gateway*: el Gateway es quien enruta hacia él (3.16), no al revés.
+
+**Al marcar esas dos dependencias, Spring Initializr genera por su cuenta las tres piezas del `pom.xml`:** las dos dependencias, la propiedad `<spring-cloud.version>` y el bloque `<dependencyManagement>` que importa el BOM de Spring Cloud (con Spring Boot 4.1.1, la versión es `2025.1.3`). No hay nada que copiar a mano.
 
 **MapStruct se agrega a mano en el `pom.xml`, en dos lugares**, igual que en `pagatu-orden-ms` (S1, 3.5.20). Queda listo aunque hoy `pagatu-auth-ms` no tenga ningún *mapper*: así el `pom.xml` no vuelve a tocarse cuando aparezcan DTO de usuario más adelante.
 
@@ -722,29 +726,7 @@ spring:
 
 Mismo patrón exacto que `pagatu-orden-ms` desde S6 — `optional:` evita que `pagatu-auth-ms` falle al arrancar si `pagatu-config` estuviera caído.
 
-Agrega en el `pom.xml` las mismas dos dependencias de Spring Cloud que ya usa `pagatu-orden-ms` (S3, S6) — sin ellas, `pagatu-auth-ms` ni externaliza configuración ni se registra en Eureka:
-
-```xml
-<dependency>
-    <groupId>org.springframework.cloud</groupId>
-    <artifactId>spring-cloud-starter-config</artifactId>
-</dependency>
-<dependency>
-    <groupId>org.springframework.cloud</groupId>
-    <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-</dependency>
-```
-
-No olvides las `<properties>` de Spring Cloud, igual que en `pagatu-orden-ms`:
-
-```xml
-<properties>
-    <java.version>21</java.version>
-    <spring-cloud.version>2025.1.3</spring-cloud.version>
-</properties>
-```
-
-y el `<dependencyManagement>` correspondiente (copia exacta del de `pagatu-orden-ms`, S6, 3.1).
+Las dos dependencias que hacen que esto funcione —`spring-cloud-starter-config` y `spring-cloud-starter-netflix-eureka-client`— ya quedaron en el `pom.xml` en 3.1, junto con la propiedad `<spring-cloud.version>` y el `<dependencyManagement>`: en este paso solo falta el `application.yml`. Sin ese `import` del Config Server, la dependencia de Config Client no tiene de dónde traer nada, y sin la sección `eureka` de 3.5 el servicio no se registra.
 
 #### 3.5 Configurar `pagatu-auth-ms` en `config-repo`
 
