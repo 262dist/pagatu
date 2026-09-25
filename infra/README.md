@@ -12,7 +12,7 @@ A diferencia de `services/`, ningún proyecto de `infra/` implementa lógica de 
 |---|---|---|
 | `pagatu-config/` | Config Server (Spring Cloud Config) — entrega la configuración por ambiente (`dev`/`prod`) de cada componente por HTTP, leyendo `config-repo/`. | S2 |
 | `pagatu-eureka/` | Eureka Server — registro y descubrimiento de servicios. | S3 |
-| `pagatu-gateway/` | Spring Cloud Gateway (WebMVC) — punto único de acceso y balanceo de carga (`lb://`). | S4 |
+| `pagatu-gateway/` | Spring Cloud Gateway (WebMVC) — punto único de acceso y balanceo de carga (`lb://`). Desde S7 valida el JWT de `pagatu-auth-ms`. | S4 |
 
 ## Tecnologías
 

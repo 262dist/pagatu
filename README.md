@@ -23,7 +23,8 @@ pagatu/
 │   ├── pagatu-catalogo-ms/     # Categorías y productos (S1)
 │   ├── pagatu-orden-ms/        # Órdenes de compra (S2 base autónoma, S6 Feign + Circuit Breaker)
 │   ├── pagatu-cliente-ms/      # Perfil de cliente + RENIEC/SUNAT (S2, trabajo autónomo)
-│   └── (pagatu-auth-ms, S7 · pago-ms, S8)
+│   ├── pagatu-auth-ms/         # Autenticación y emisión de JWT (S7, temporal: luego Keycloak)
+│   └── (pago-ms, S8)
 ├── obs/                       # Prometheus + Loki + Promtail + Grafana (S3-S4) — observa infra/ y services/ desde afuera, no es una dependencia de arranque
 ├── kafka/                     # (S8, pendiente) Kafka y Kafka UI
 └── clients/                   # (S11, pendiente) Frontend Angular
@@ -71,7 +72,7 @@ docker compose -f compose-dev.yml up -d
 .\mvnw.cmd spring-boot:run
 ```
 
-El resto de servicios (`pagatu-cliente-ms`, `pagatu-auth-ms`, `pago-ms`) siguen el mismo patrón en cuanto existen.
+El resto de servicios (`pagatu-cliente-ms`, `pagatu-auth-ms`, `pago-ms`) siguen el mismo patrón, cada uno en su carpeta de `services/`.
 
 **3. Verificar**
 

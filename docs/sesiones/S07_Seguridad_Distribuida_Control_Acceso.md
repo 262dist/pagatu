@@ -8,7 +8,7 @@ Tiempo: 20 min.
 
 ### 1.1 Presentación de la sesión
 
-Hasta S6, `pagatu-orden-ms` confía en el `idCliente` que el propio request declara — el DTO `OrdenRequest` lo trae como un campo más, igual que `metodoPago`. Nada impide que cualquiera, con Swagger o una simple petición, escriba `"idCliente": 1` y cree una orden a nombre de otra persona: el sistema nunca pregunta *quién eres*, solo confía en lo que el request dice ser. Esta sesión cierra esa puerta: aparece `pagatu-auth-ms`, un microservicio nuevo que autentica usuarios y emite un JWT firmado; `pagatu-gateway` pasa a exigir y validar ese JWT antes de dejar pasar cualquier petición (Resource Server); y `pagatu-orden-ms` deja de aceptar `idCliente` en el request — lo toma directo del JWT, que también valida por su cuenta.
+Hasta S6, `pagatu-orden-ms` confía en el `idCliente` que el propio request declara — el DTO (*Data Transfer Object*, objeto de transferencia de datos) `OrdenRequest` lo trae como un campo más, igual que `metodoPago`. Nada impide que cualquiera, con Swagger o una simple petición, escriba `"idCliente": 1` y cree una orden a nombre de otra persona: el sistema nunca pregunta *quién eres*, solo confía en lo que el request dice ser. Esta sesión cierra esa puerta: aparece `pagatu-auth-ms`, un microservicio nuevo que autentica usuarios y emite un JWT (*JSON Web Token*) firmado; `pagatu-gateway` pasa a exigir y validar ese JWT antes de dejar pasar cualquier petición (Resource Server); y `pagatu-orden-ms` deja de aceptar `idCliente` en el request — lo toma directo del JWT, que también valida por su cuenta.
 
 ### 1.2 Índice
 
@@ -34,7 +34,7 @@ Al concluir la clase, estarás en condiciones de:
 
 | Actividades a Realizar en el Periodo | Orientaciones generales (Orientaciones Metodológicas) | Material de estudio recomendado |
 |---|---|---|
-| Revisión previa individual | Confirmar que `pagatu-config`, `pagatu-eureka`, `pagatu-gateway`, `pagatu-catalogo-ms` y `pagatu-orden-ms` (S1-S6) siguen arrancando en DEV. Revisar el `OrdenRequest` actual de `pagatu-orden-ms` (S6, 3.5) y confirmar que `idCliente` hoy es un campo libre del request. Trabajo individual, antes de clase. | Evidencia individual de S6, [Alcance por microservicio y proyecto base](../proyecto-sello/alcance-microservicios.md). |
+| Revisión previa individual | Confirmar que `pagatu-config`, `pagatu-eureka`, `pagatu-gateway`, `pagatu-catalogo-ms` y `pagatu-orden-ms` (S1-S6) siguen arrancando en DEV (entorno de desarrollo). Revisar el `OrdenRequest` actual de `pagatu-orden-ms` (S6, 3.5) y confirmar que `idCliente` hoy es un campo libre del request. Trabajo individual, antes de clase. | Evidencia individual de S6, [Alcance por microservicio y proyecto base](../proyecto-sello/alcance-microservicios.md). |
 | Clase presencial | Construcción guiada de `pagatu-auth-ms` de punta a punta, protección de `pagatu-gateway` como Resource Server, y conversión de `pagatu-orden-ms` en Resource Server que toma `idCliente` del JWT. Trabajo individual, siguiendo al docente paso a paso; consulta inmediata ante un `401`/`403` inesperado. | Pasos 3.1 a 3.27 de esta guía. |
 | Evaluación formativa | Revisión en clase de la matriz de accesos (3.25): login exitoso, acceso denegado sin token, acceso denegado por rol incorrecto, y `pagatu-orden-ms` creando una orden con el `idCliente` tomado del JWT. La evidencia se completa y sustenta de forma individual, fuera del aula, según los criterios mínimos de la sección 4.4. | Indicaciones de entrega (4.3), rúbrica de evaluación (4.6). |
 
@@ -42,7 +42,7 @@ Al concluir la clase, estarás en condiciones de:
 
 #### 1.6.1 Caso: la orden que se creó a nombre de otra persona
 
-Un compañero de equipo revisa `pagatu-orden-ms` con Swagger, un día antes de la sustentación de S5. Prueba el endpoint `POST /api/v1/ordenes` con el cuerpo de ejemplo que ya trae la documentación — y sin querer, sin ninguna credencial, crea una orden real con `idCliente: 1`. El sistema la acepta sin preguntar nada: ni quién hizo la petición, ni si esa persona tiene permiso de actuar en nombre del cliente `1`. `idCliente` es solo un número más dentro de un JSON, tan editable como `metodoPago`.
+Un compañero de equipo revisa `pagatu-orden-ms` con Swagger, un día antes de la sustentación de S5. Prueba el endpoint `POST /api/v1/ordenes` con el cuerpo de ejemplo que ya trae la documentación — y sin querer, sin ninguna credencial, crea una orden real con `idCliente: 1`. El sistema la acepta sin preguntar nada: ni quién hizo la petición, ni si esa persona tiene permiso de actuar en nombre del cliente `1`. `idCliente` es solo un número más dentro de un JSON (*JavaScript Object Notation*), tan editable como `metodoPago`.
 
 El problema no es que alguien haya probado el endpoint — es que el sistema nunca definió *quién puede decir que es quién*. Cualquier dato que el propio cliente declara sobre sí mismo (su identidad, su rol) no es un dato confiable: hay que verificarlo contra algo que el cliente no controla. Un JWT firmado por un servicio de confianza (`pagatu-auth-ms`) es exactamente eso — el cliente no puede fabricar uno válido sin la clave privada con la que se firma, así que cualquier claim dentro de un JWT válido (incluido `idCliente`) sí es confiable.
 
@@ -50,7 +50,7 @@ El problema no es que alguien haya probado el endpoint — es que el sistema nun
 
 **Activación de conocimientos previos**
 
-1. ¿Por qué un campo `idCliente` dentro del cuerpo de un request HTTP no es, por sí solo, una prueba de identidad?
+1. ¿Por qué un campo `idCliente` dentro del cuerpo de un request HTTP (*HyperText Transfer Protocol*) no es, por sí solo, una prueba de identidad?
 2. Si `pagatu-gateway` ya rechaza peticiones sin token válido, ¿por qué `pagatu-orden-ms` necesita además validar el JWT por su cuenta — no le alcanza con que el Gateway ya lo validó?
 
 **Comprensión de seguridad distribuida**
@@ -109,7 +109,7 @@ flowchart TB
 
 *Leyenda.* Este diagrama es el mismo en todas las sesiones de la unidad; solo cambia el color: verde = construido en sesiones anteriores, amarillo = se trabaja hoy, gris punteado = todavía no existe, azul = sistema externo.
 
-`pagatu-cliente-ms` (autónomo desde S2) y su consulta a RENIEC / SUNAT no se dibujan para mantener legible el diagrama: siguen el mismo patrón de rutas, registro y configuración que los demás microservicios.
+`pagatu-cliente-ms` (autónomo desde S2) y su consulta a RENIEC (Registro Nacional de Identificación y Estado Civil) / SUNAT (Superintendencia Nacional de Aduanas y de Administración Tributaria) no se dibujan para mantener legible el diagrama: siguen el mismo patrón de rutas, registro y configuración que los demás microservicios.
 
 **Hoy:** aparece `pagatu-auth-ms`; `pagatu-gateway` y `pagatu-orden-ms` validan el JWT que emite, y `pagatu-orden-ms` deja de confiar en el `idCliente` del request. `pagatu-cliente-ms` se protege como trabajo autónomo (sección 4). `pagatu-auth-ms` es temporal: Keycloak lo reemplaza sin tocar el Gateway ni `pagatu-orden-ms` (2.4).
 
@@ -130,7 +130,7 @@ Tiempo: 30 min.
 
 ```mermaid
 flowchart TB
-    Cliente["Cliente<br/>PowerShell / bash / Swagger"]
+    Cliente["Cliente<br/>PowerShell / bash / Postman / Swagger"]
 
     subgraph Paso1["1. Autenticación y emisión del token"]
         direction LR
@@ -232,7 +232,7 @@ Y los errores de diseño más comunes al aplicarlo:
 
 ### 2.4 OAuth2 y OpenID Connect: el estándar detrás de un proveedor de identidad
 
-**OAuth 2.0** es un estándar de **autorización delegada** (RFC 6749): define cómo una aplicación obtiene acceso limitado a un recurso protegido sin conocer la contraseña del usuario, presentando un **token** emitido por un servidor de autorización en el que ambos confían. **OpenID Connect (OIDC)** es una capa de identidad encima de OAuth 2.0: agrega un formato estándar para decir *quién es el usuario* (el *ID Token*) y un mecanismo de descubrimiento (dónde están las claves, dónde se pide el token). Un proveedor de identidad como **Keycloak** implementa ambos estándares — por eso lo que se aprende hoy con Spring Security no se tira cuando llega Keycloak: cambia quién emite el token, no cómo se valida.
+**OAuth 2.0** (*Open Authorization*) es un estándar de **autorización delegada** (RFC 6749: *Request for Comments*, un documento del IETF —*Internet Engineering Task Force*—, el organismo que define los estándares de Internet): define cómo una aplicación obtiene acceso limitado a un recurso protegido sin conocer la contraseña del usuario, presentando un **token** emitido por un servidor de autorización en el que ambos confían. **OpenID Connect (OIDC)** es una capa de identidad encima de OAuth 2.0: agrega un formato estándar para decir *quién es el usuario* (el *ID Token*) y un mecanismo de descubrimiento (dónde están las claves, dónde se pide el token). Un proveedor de identidad como **Keycloak** implementa ambos estándares — por eso lo que se aprende hoy con Spring Security no se tira cuando llega Keycloak: cambia quién emite el token, no cómo se valida.
 
 Estos conceptos se confunden con facilidad, así que conviene fijar hasta dónde llega cada uno. **SSO** (*Single Sign-On*) no es un estándar aparte sino un **resultado**: iniciar sesión una sola vez y entrar a varias aplicaciones sin volver a escribir la contraseña. Es posible porque la sesión vive en el servidor de identidad (una cookie en ese servidor), y cada aplicación lo consulta mediante OpenID Connect en vez de pedir credenciales por su cuenta. **OAuth 2.0 por sí solo no da SSO**: resuelve la autorización, no la sesión compartida.
 
@@ -240,11 +240,11 @@ Estos conceptos se confunden con facilidad, así que conviene fijar hasta dónde
 
 | Pieza | Qué es | Qué resuelve | En esta sesión |
 |---|---|---|---|
-| OAuth 2.0 | Estándar de autorización delegada. | Que una aplicación acceda a una API con un token, sin conocer la contraseña. | Se implementa el lado *Resource Server*: el Gateway y `pagatu-orden-ms` validan tokens. `pagatu-auth-ms` **no** es un servidor OAuth 2.0 completo. |
-| OpenID Connect | Capa de identidad sobre OAuth 2.0. | Saber quién inició sesión (*ID Token*), y publicar el descubrimiento y las claves. | Solo conceptual. `pagatu-auth-ms` publica claves (JWKS) y claims parecidos, sin *ID Token* ni descubrimiento. |
+| OAuth 2.0 | Estándar de autorización delegada. | Que una aplicación acceda a una API (*Application Programming Interface*) con un token, sin conocer la contraseña. | Se implementa el lado *Resource Server*: el Gateway y `pagatu-orden-ms` validan tokens. `pagatu-auth-ms` **no** es un servidor OAuth 2.0 completo. |
+| OpenID Connect | Capa de identidad sobre OAuth 2.0. | Saber quién inició sesión (*ID Token*), y publicar el descubrimiento y las claves. | Solo conceptual. `pagatu-auth-ms` publica claves (JWKS (*JSON Web Key Set*)) y claims parecidos, sin *ID Token* ni descubrimiento. |
 | SSO | Resultado: una sola sesión para varias aplicaciones. | No volver a iniciar sesión en cada aplicación. | **No existe hoy**: `pagatu-auth-ms` no tiene sesión central. Llega con Keycloak (cliente Angular, S11). |
 | Spring Security 7 | Librería de seguridad de Spring. | Autenticación, autorización por rol, *resource server* y cliente OAuth 2.0/OIDC. Desde la versión 7 incluye además un servidor de autorización. | Se usa para autenticar con usuario y contraseña, validar tokens en el Gateway y en `pagatu-orden-ms`, y emitir el JWT simple de `pagatu-auth-ms`. **No** se usa su servidor de autorización. |
-| Keycloak | Producto: proveedor de identidad (servidor). | Servidor OAuth 2.0/OIDC completo: usuarios, roles, sesión y SSO, *refresh token*, MFA, federación y consola de administración. | No se usa en la sesión; reemplaza a `pagatu-auth-ms` después (Tabla 6). |
+| Keycloak | Producto: proveedor de identidad (servidor). | Servidor OAuth 2.0/OIDC completo: usuarios, roles, sesión y SSO, *refresh token*, MFA (*Multi-Factor Authentication*, autenticación en varios factores), federación y consola de administración. | No se usa en la sesión; reemplaza a `pagatu-auth-ms` después (Tabla 6). |
 
 La regla práctica: **Spring Security 7 se usa para proteger tus APIs (validar tokens); Keycloak se usa para emitir tokens y dar SSO.** Spring Security 7 también podría ser el servidor de identidad, pero construir con él la sesión central, el cierre de sesión global, MFA, federación y la consola de administración equivale a reescribir Keycloak — por eso no se hace en este curso.
 
@@ -288,12 +288,12 @@ Un **flujo** (*grant type*) define cómo un *client* obtiene el token, y elegirl
 | Flujo | ¿Hay persona? | ¿El *client* guarda un secreto? | Cuándo se usa | En pagatu |
 |---|---|---|---|---|
 | *Authorization Code* | Sí | Sí (*confidential client*) | Aplicación web con backend propio: el navegador va al servidor de autorización, la aplicación recibe un `code` de un solo uso y su backend lo canjea por tokens con su `client_secret`. | No se usa hoy. |
-| *Authorization Code* + **PKCE** | Sí | No (*public client*) | Aplicaciones que no pueden proteger un secreto (SPA, apps móviles). Hoy es la recomendación estándar, incluso para aplicaciones con backend. | Es el flujo del cliente Angular con Keycloak (S11). |
+| *Authorization Code* + **PKCE** (*Proof Key for Code Exchange*) | Sí | No (*public client*) | Aplicaciones que no pueden proteger un secreto (SPA, *Single-Page Application*; apps móviles). Hoy es la recomendación estándar, incluso para aplicaciones con backend. | Es el flujo del cliente Angular con Keycloak (S11). |
 | *Client Credentials* | No | Sí | Comunicación servicio a servicio: el servicio se autentica con su propio `client_id` y `client_secret`, y el token lo representa a **él**, no a una persona. | Ninguna llamada de hoy lo necesita (la llamada Feign de S6 consulta un endpoint público). |
 | *Device Code* (RFC 8628) | Sí, desde **otro** dispositivo | No | Dispositivos sin teclado o navegador cómodo (televisores, consolas, terminales): el dispositivo muestra un código y la persona lo ingresa desde su celular. | No aplica al proyecto. |
 | *Resource Owner Password* | Sí | — | El *client* recibe el usuario y la contraseña y los envía al servidor. **No usar** (RFC 9700). | El `POST /api/v1/auth/login` de hoy se parece a este flujo. |
 
-*Nota.* Adaptado de *OAuth2 / OpenID Connect*, por SACAViX, s. f.-b, System Design (https://systemdesign.sacavix.com/patterns).
+*Nota.* Adaptado de *OAuth2 / OpenID Connect*, por SACAViX, s. f.-b, System Design (https://systemdesign.sacavix.com/patterns/oauth2-security). La lista oficial de tipos de flujo (*grant types*) de OAuth.net, en *OAuth Grant Types* (Parecki, s. f.; https://oauth.net/2/grant-types/), coincide con esta tabla: marca *Implicit* y *Password Grant* como *legacy* (heredados) y agrega el *Refresh Token*, que aquí se explica como tipo de token.
 
 **Authorization Code.** Lo importante es **por dónde viaja cada cosa**: el navegador solo ve el `code` (que por sí solo no sirve), y el canje por tokens ocurre de servidor a servidor, con el `client_secret`, sin pasar nunca por el navegador. Por eso es el flujo más seguro cuando hay un backend que pueda guardar ese secreto.
 
@@ -314,9 +314,9 @@ sequenceDiagram
     API-->>A: 6. 200 OK
 ```
 
-*Nota.* Adaptado de *OAuth2 / OpenID Connect*, por SACAViX, s. f.-b, System Design (https://systemdesign.sacavix.com/patterns).
+*Nota.* Adaptado de *OAuth2 / OpenID Connect*, por SACAViX, s. f.-b, System Design (https://systemdesign.sacavix.com/patterns/oauth2-security).
 
-**Authorization Code + PKCE.** Una SPA no puede guardar un `client_secret`, así que **PKCE** (*Proof Key for Code Exchange*, RFC 7636) lo reemplaza por un valor aleatorio que el *client* inventa en **cada** inicio de sesión: el `code_verifier`. El *client* envía primero su hash (`code_challenge`) y, al canjear el `code`, debe presentar el `code_verifier` original; el servidor calcula el hash y comprueba que coincide. Aunque alguien intercepte el `code` en el redirect, no puede canjearlo, porque no conoce el `code_verifier` y un hash no se puede invertir (3.27 lo muestra con datos reales).
+**Authorization Code + PKCE.** Una SPA no puede guardar un `client_secret`, así que **PKCE** (*Proof Key for Code Exchange*, RFC 7636) lo reemplaza por un valor aleatorio que el *client* inventa en **cada** inicio de sesión: el `code_verifier`. El *client* envía primero su hash (`code_challenge`, calculado con SHA-256: *Secure Hash Algorithm*, de 256 bits) y, al canjear el `code`, debe presentar el `code_verifier` original; el servidor calcula el hash y comprueba que coincide. Aunque alguien intercepte el `code` en el redirect, no puede canjearlo, porque no conoce el `code_verifier` y un hash no se puede invertir (3.27 lo muestra con datos reales).
 
 **Figura 6. Flujo *Authorization Code* con PKCE**
 
@@ -338,7 +338,7 @@ sequenceDiagram
     API-->>SPA: 7. 200 OK
 ```
 
-*Nota.* Adaptado de *OAuth2 / OpenID Connect*, por SACAViX, s. f.-b, System Design (https://systemdesign.sacavix.com/patterns).
+*Nota.* Adaptado de *OAuth2 / OpenID Connect*, por SACAViX, s. f.-b, System Design (https://systemdesign.sacavix.com/patterns/oauth2-security).
 
 **Client Credentials.** No hay persona ni redirects: un servicio le pide un token al servidor de autorización con su propia identidad. Sirve para llamadas entre servicios "por cuenta propia", sin un usuario detrás.
 
@@ -356,9 +356,17 @@ sequenceDiagram
     B-->>A: 4. 200 OK
 ```
 
-*Nota.* Adaptado de *OAuth2 / OpenID Connect*, por SACAViX, s. f.-b, System Design (https://systemdesign.sacavix.com/patterns).
+*Nota.* Adaptado de *OAuth2 / OpenID Connect*, por SACAViX, s. f.-b, System Design (https://systemdesign.sacavix.com/patterns/oauth2-security).
 
-El `POST /api/v1/auth/login` que construyes hoy, donde el *client* envía el usuario y la contraseña directo al servidor, equivale al flujo *Resource Owner Password Credentials*: sirve para aprender, pero la mejor práctica vigente de seguridad de OAuth 2.0 (RFC 9700) dice que **no debe usarse**, y OAuth 2.1 lo elimina. Por eso queda como pieza temporal de laboratorio, no como diseño final: con Keycloak, la persona escribe su contraseña en la pantalla de Keycloak, nunca en la aplicación.
+**¿Qué flujo usamos hoy?** Uno solo, no una combinación: el `POST /api/v1/auth/login` que construyes hoy, donde el *client* envía el usuario y la contraseña directo al servidor y recibe un `access_token`, equivale al flujo *Resource Owner Password Credentials*. Después, el *client* solo presenta ese token (`Authorization: Bearer`) al Gateway y a `pagatu-orden-ms`, que lo validan con la clave pública: ese segundo tramo no es otro flujo, es el uso normal de un *access token*. Ningún otro flujo de la Tabla 5 interviene hoy: *Authorization Code* y *Authorization Code* + PKCE llegan con Keycloak y el cliente Angular (S11), y *Client Credentials* no se necesita porque ninguna llamada entre servicios exige token. Y "equivale" es aproximado: `pagatu-auth-ms` no es un servidor OAuth 2.0 completo, así que su endpoint no recibe `grant_type` ni `client_id`; solo imita lo esencial del flujo, y por eso responde con los nombres estándar `access_token`, `token_type` y `expires_in`.
+
+**¿Qué es la RFC 9700?** Como viste en el inicio de 2.4, una **RFC** es un documento del IETF; las de la serie **BCP** (*Best Current Practice*) no definen un protocolo nuevo, sino que fijan la práctica recomendada vigente. La **RFC 9700**, *Best Current Practice for OAuth 2.0 Security* (Lodderstedt et al., enero de 2025; BCP 240), es la guía oficial actual de seguridad de OAuth 2.0: actualiza y extiende las RFC 6749 (el propio OAuth 2.0), 6750 y 6819 con lo aprendido desde entonces, y **depreca** los modos de operación que resultaron inseguros. Los verbos en mayúscula son los de las RFC: *MUST NOT* es una prohibición, y *SHOULD NOT* es un desaconsejo con excepciones muy acotadas. Tres puntos de esta RFC son los que usa esta sesión:
+
+- **Sección 2.4:** el flujo *Resource Owner Password Credentials* **"MUST NOT be used"**, porque expone las credenciales del usuario al *client*. Es exactamente el flujo de hoy, y por eso `pagatu-auth-ms` es una pieza temporal de laboratorio y no un diseño final. OAuth 2.1, todavía en borrador, lo elimina.
+- **Sección 2.1.2:** el flujo *Implicit* **"SHOULD NOT"** usarse.
+- **Sección 2.1.1:** los *clients* públicos **"MUST"** usar PKCE, y los servidores de autorización deben soportarlo; es la razón por la que el cliente Angular de S11 usará *Authorization Code* + PKCE.
+
+Con Keycloak, la persona escribe su contraseña en la pantalla de Keycloak, nunca en la aplicación.
 
 No confundas *rol* con *scope*: un **rol** es un atributo del usuario (`ADMIN`, `CLIENTE`) y se usa hoy; un **scope** es un permiso que el *client* pide en nombre del usuario (por ejemplo, `ordenes:leer`) y queda fuera del alcance de esta sesión, aunque Keycloak lo soporta.
 
@@ -367,8 +375,8 @@ No confundas *rol* con *scope*: un **rol** es un atributo del usuario (`ADMIN`, 
 **Errores de diseño más comunes** al usarlo (todos aplican cuando llegue el cliente Angular de S11):
 
 - Usar el flujo *Implicit*: obsoleto y vulnerable a la filtración de tokens; RFC 9700 desaconseja usarlo.
-- No validar el parámetro `state` en el redirect, que protege contra CSRF.
-- Guardar *access tokens* en `localStorage`, vulnerable a XSS. La alternativa habitual es guardarlos en memoria y dejar el *refresh token* en una cookie `httpOnly`.
+- No validar el parámetro `state` en el redirect, que protege contra CSRF (*Cross-Site Request Forgery*).
+- Guardar *access tokens* en `localStorage`, vulnerable a XSS (*Cross-Site Scripting*). La alternativa habitual es guardarlos en memoria y dejar el *refresh token* en una cookie `httpOnly`.
 - No rotar los *refresh tokens*, de modo que uno robado sirve indefinidamente.
 - Usar *Authorization Code* **sin PKCE** en un cliente público (SPA, app móvil) que no puede proteger un `client_secret`.
 
@@ -382,10 +390,10 @@ Por último, la tabla que resume qué de todo esto reemplaza Keycloak:
 | Cómo se pide el token | `POST /api/v1/auth/login` | `POST /realms/{realm}/protocol/openid-connect/token` | No — lo llama el *client*, no los servicios |
 | Usuarios, contraseñas y roles | Tablas `usuarios`, `roles`, `usuario_roles` (Flyway, 3.3) | Usuarios y *realm roles* del *realm* | No |
 | Claim de roles | `realm_access.roles` | `realm_access.roles` (el mismo formato) | No — el conversor de 3.17 sirve tal cual |
-| Identificador del usuario (`sub`) | `id` numérico de `usuarios` | UUID del usuario | No |
+| Identificador del usuario (`sub`) | `id` numérico de `usuarios` | UUID (*Universally Unique Identifier*) del usuario | No |
 | `idCliente` | Columna `id_cliente` de `usuarios` | *User attribute* + *protocol mapper* que lo agrega al token | No — el claim se llama igual |
-| Claves de firma | Par RSA generado al arrancar; **se pierde al reiniciar** | Administradas, persistidas y rotadas por Keycloak | No |
-| Dónde descargan la clave pública los *resource servers* | `jwk-set-uri: http://localhost:8085/.well-known/jwks.json` | `issuer-uri: http://localhost:{puerto}/realms/{realm}` | **Sí** — una propiedad YAML |
+| Claves de firma | Par RSA (*Rivest–Shamir–Adleman*, criptografía de clave pública) generado al arrancar; **se pierde al reiniciar** | Administradas, persistidas y rotadas por Keycloak | No |
+| Dónde descargan la clave pública los *resource servers* | `jwk-set-uri: http://localhost:8085/.well-known/jwks.json` | `issuer-uri: http://localhost:{puerto}/realms/{realm}` | **Sí** — una propiedad YAML (*YAML Ain't Markup Language*) |
 | Refresh token, ID Token, cierre de sesión, SSO, MFA | No existen | Incluidos | — |
 
 El único cambio de configuración de la penúltima fila tiene una consecuencia extra: con `issuer-uri`, Spring descubre solo la ubicación de las claves (Keycloak publica un documento de descubrimiento OIDC) y además valida que el claim `iss` del token coincida con ese emisor. Hoy configuramos `jwk-set-uri` a mano porque `pagatu-auth-ms` no implementa el documento de descubrimiento.
@@ -396,10 +404,10 @@ Un ***Resource Server*** es una aplicación que protege recursos y acepta *acces
 
 Hay dos formas de firmar un JWT, y la diferencia importa para un sistema distribuido:
 
-- **Simétrica (HS256):** una única clave secreta firma *y* verifica. Todo servicio que valida tiene que **conocer el secreto** — y quien conoce el secreto también puede fabricar un token de `ADMIN`. Con diez microservicios, hay diez lugares desde donde se puede filtrar la clave que rompe todo el sistema.
-- **Asimétrica (RS256):** un **par de claves**. La privada firma y solo la conoce el emisor; la pública verifica y puede estar en cualquier lugar. Los *resource servers* no guardan ningún secreto: si alguien compromete el Gateway, no obtiene nada con qué fabricar tokens. Es la forma que usa Keycloak, y la que usa esta sesión.
+- **Simétrica (HS256, HMAC con SHA-256; HMAC significa *Hash-based Message Authentication Code*):** una única clave secreta firma *y* verifica. Todo servicio que valida tiene que **conocer el secreto** — y quien conoce el secreto también puede fabricar un token de `ADMIN`. Con diez microservicios, hay diez lugares desde donde se puede filtrar la clave que rompe todo el sistema.
+- **Asimétrica (RS256, RSA con SHA-256):** un **par de claves**. La privada firma y solo la conoce el emisor; la pública verifica y puede estar en cualquier lugar. Los *resource servers* no guardan ningún secreto: si alguien compromete el Gateway, no obtiene nada con qué fabricar tokens. Es la forma que usa Keycloak, y la que usa esta sesión.
 
-La clave pública se publica en un documento JSON llamado **JWKS** (*JSON Web Key Set*), en una URL conocida. Cada clave lleva un identificador (`kid`), y el encabezado de cada JWT dice con qué `kid` fue firmado — así el emisor puede **rotar** claves sin romper los tokens vigentes. Spring Security descarga el JWKS, lo guarda en memoria y lo vuelve a pedir solo cuando aparece un `kid` desconocido.
+La clave pública se publica en un documento JSON llamado **JWKS** (*JSON Web Key Set*), en una URL (*Uniform Resource Locator*, dirección web) conocida. Cada clave lleva un identificador (`kid`), y el encabezado de cada JWT dice con qué `kid` fue firmado — así el emisor puede **rotar** claves sin romper los tokens vigentes. Spring Security descarga el JWKS, lo guarda en memoria y lo vuelve a pedir solo cuando aparece un `kid` desconocido.
 
 En un sistema de microservicios, cada *resource server* valida el token **por su cuenta**, en vez de confiar en que otro ya lo hizo. El Gateway es la primera línea (rechaza temprano y aplica el rol por ruta); el microservicio es la segunda (no depende de que nadie más haya verificado nada). Esa es la respuesta a "¿y si alguien llama directo al microservicio, sin pasar por el Gateway?" (1.6.1, pregunta de comprensión 1).
 
@@ -413,7 +421,7 @@ Cuando una petición falla con `401` o `403`, el problema puede estar en tres lu
 2. **El JWT no se pudo verificar o expiró** — revisa que `jwk-set-uri` apunte de verdad al JWKS de `pagatu-auth-ms` (ábrelo en el navegador), que `pagatu-auth-ms` esté arriba cuando llega el primer token (sin él, el *resource server* no puede descargar la clave y rechaza todo), y que no lo hayas **reiniciado** desde que pediste el token (3.11: el par de claves se regenera al arrancar, y los tokens anteriores dejan de verificar).
 3. **El JWT es válido pero el rol no alcanza para esa ruta** — revisa la regla de `SecurityConfig` (3.18) contra los roles reales que trae el claim `realm_access.roles`.
 
-Para distinguir estos tres casos sin adivinar, sube el nivel de log de seguridad mientras diagnosticas (`logging.level.org.springframework.security: DEBUG` en `pagatu-gateway`): el log dice el motivo exacto del rechazo. Los logs del Gateway (3.19) y el `traceId` de cada petición (mismo `CorrelationIdFilter` de S1/S6, si ya lo replicaste en `pagatu-auth-ms`) son el punto de partida.
+Para distinguir estos tres casos sin adivinar, sube el nivel de log de seguridad mientras diagnosticas (`logging.level.org.springframework.security: DEBUG` en `pagatu-gateway`): el log dice el motivo exacto del rechazo. Los logs del Gateway (3.19) y el `traceId` de cada petición (el mismo `CorrelationIdFilter` de S1/S6, que `pagatu-auth-ms` trae desde 3.7) son el punto de partida.
 
 ## 3. Aplica: actividad práctica guiada
 
@@ -492,14 +500,14 @@ Levanta en DEV los servicios base ya construidos hasta S6 (`pagatu-config`, `pag
 | Package name | `pe.edu.upeu.auth` |
 | Packaging | Jar |
 | Java | 21 |
-| Dependencias | Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway, **Prometheus** (categoría *Observability*, `io.micrometer:micrometer-registry-prometheus`, scope `runtime`) **Config Client** y **Eureka Discovery Client** (categorías *Spring Cloud Config* y *Spring Cloud Discovery*) y **Spring Security** — las mismas de `pagatu-orden-ms` (S6, Tabla 3) más Spring Security, nueva hoy. **Además**, agrega MapStruct a mano en el `pom.xml` (S1, 3.5.20), igual que en `pagatu-orden-ms`: Spring Initializr no lo ofrece como opción. |
+| Dependencias | Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway, **Prometheus** (categoría *Observability*, `io.micrometer:micrometer-registry-prometheus`, scope `runtime`), **Config Client** y **Eureka Discovery Client** (categorías *Spring Cloud Config* y *Spring Cloud Discovery*) y **Spring Security** — las mismas de `pagatu-orden-ms` (S6, Tabla 3) más Spring Security, nueva hoy. **Además**, agrega MapStruct a mano en el `pom.xml` (S1, 3.5.20), igual que en `pagatu-orden-ms`: Spring Initializr no lo ofrece como opción. |
 | Ubicación sugerida | `services/pagatu-auth-ms` |
 
 Prometheus deja a `pagatu-auth-ms` visible en `obs/` desde que arranca, con el mismo criterio que `pagatu-orden-ms` (S6).
 
 **Config Client** y **Eureka Discovery Client** se marcan aquí, desde el inicio: son las dos dependencias con las que `pagatu-auth-ms` trae su configuración de `pagatu-config` y se registra en `pagatu-eureka` (3.4). `pagatu-auth-ms` no necesita ninguna dependencia de *Gateway*: el Gateway es quien enruta hacia él (3.6), no al revés.
 
-**Al marcar esas dos dependencias, Spring Initializr genera por su cuenta las tres piezas del `pom.xml`:** las dos dependencias, la propiedad `<spring-cloud.version>` y el bloque `<dependencyManagement>` que importa el BOM de Spring Cloud (con Spring Boot 4.1.1, la versión es `2025.1.3`). No hay nada que copiar a mano.
+**Al marcar esas dos dependencias, Spring Initializr genera por su cuenta las tres piezas del `pom.xml`:** las dos dependencias, la propiedad `<spring-cloud.version>` y el bloque `<dependencyManagement>` que importa el BOM (*Bill of Materials*, lista de versiones compatibles) de Spring Cloud (con Spring Boot 4.1.1, la versión es `2025.1.3`). No hay nada que copiar a mano.
 
 **MapStruct se agrega a mano en el `pom.xml`, en dos lugares**, igual que en `pagatu-orden-ms` (S1, 3.5.20). Queda listo aunque hoy `pagatu-auth-ms` no tenga ningún *mapper*: así el `pom.xml` no vuelve a tocarse cuando aparezcan DTO de usuario más adelante.
 
@@ -575,9 +583,7 @@ Agrega también a mano, en el `pom.xml`, la librería con la que Spring Security
 
 Sin `<version>`: la gestiona el padre `spring-boot-starter-parent`. Trae `NimbusJwtEncoder` (para emitir tokens) y la librería Nimbus JOSE que sabe generar y publicar claves. **No se agrega ninguna librería JWT aparte:** la misma familia de Spring Security que valida el token en el Gateway y en `pagatu-orden-ms` es la que lo emite aquí — una sola manera de leer y escribir JWT en todo el sistema. Tampoco se agrega el *starter* de Resource Server: `pagatu-auth-ms` **emite** tokens, no valida los de otros, y ese *starter* activaría configuración automática que aquí no hace falta.
 
-El puerto de base de datos (`15431` DEV / `25431` PROD local) y el nombre `pagatu_auth_db` ya estaban reservados desde la arquitectura del proyecto (`docs/index.md`) — no se inventan en esta sesión. El puerto de aplicación en DEV es `8085` — el siguiente libre después de `8080`/`8081` (`pagatu-catalogo-ms`, S1/S3), `8082`/`8083` (`pagatu-orden-ms`, S6) y `8084` (`pagatu-cliente-ms`).
-
-Si Spring Initializr todavía no ofrece **Spring Boot 4** como opción, agrega Spring Security a mano en el `pom.xml` después de generar el proyecto: `<artifactId>spring-boot-starter-security</artifactId>`, sin `<version>`. Revisa también, igual que en S6, que ningún starter conserve un nombre de Boot 3 (por ejemplo `spring-boot-starter-web` en vez de `spring-boot-starter-webmvc`).
+El puerto de base de datos (`15431` en desarrollo, DEV; `25431` en producción local, PROD) y el nombre `pagatu_auth_db` ya estaban reservados desde la arquitectura del proyecto (`docs/index.md`) — no se inventan en esta sesión. El puerto de aplicación en DEV es `8085` — el siguiente libre después de `8080`/`8081` (`pagatu-catalogo-ms`, S1/S3), `8082`/`8083` (`pagatu-orden-ms`, S6) y `8084` (`pagatu-cliente-ms`).
 
 #### 3.2 Levantar la base de datos de `pagatu-auth-ms`
 
@@ -844,7 +850,7 @@ jwt:
   expiracion-segundos: 900
 ```
 
-Mismo patrón que `pagatu-orden-ms-prod.yml` (S3, S6). Lo que cambia frente a DEV: el puerto interno del contenedor (`8080`), las credenciales de la base de datos por variables de entorno (nunca escritas en el repositorio), Swagger y el SQL en el log apagados, el detalle de `health` oculto, un `instance-id` aleatorio por réplica, y la dirección de Eureka por el nombre del contenedor. Y dos valores propios de este servicio: `jwt.issuer` apunta al nombre del contenedor dentro de la red de Docker, y `jwt.expiracion-segundos: 900` (15 minutos) es el valor corto que un sistema real necesita (2.2, Error frecuente) — la hora de DEV es solo para las pruebas manuales de hoy. Hoy `pagatu-auth-ms` no se levanta en PROD; el archivo queda listo, igual que los de los demás servicios.
+Mismo patrón que `pagatu-orden-ms-prod.yml` (S3, S6). Lo que cambia frente a DEV: el puerto interno del contenedor (`8080`), las credenciales de la base de datos por variables de entorno (nunca escritas en el repositorio), Swagger y el SQL (*Structured Query Language*) en el log apagados, el detalle de `health` oculto, un `instance-id` aleatorio por réplica, y la dirección de Eureka por el nombre del contenedor. Y dos valores propios de este servicio: `jwt.issuer` apunta al nombre del contenedor dentro de la red de Docker, y `jwt.expiracion-segundos: 900` (15 minutos) es el valor corto que un sistema real necesita (2.2, Error frecuente) — la hora de DEV es solo para las pruebas manuales de hoy. Hoy `pagatu-auth-ms` no se levanta en PROD; el archivo queda listo, igual que los de los demás servicios.
 
 **Verifica** que el Config Server sirve los dos archivos antes de continuar (`dev` y `prod`):
 
@@ -1615,6 +1621,14 @@ Prueba también con una contraseña incorrecta y confirma `401 Unauthorized` con
 
 **Desde el navegador, con Swagger UI.** El login es un `POST`, y el navegador solo sabe hacer `GET` al escribir una URL; para probarlo sin comandos, abre `http://localhost:8085/swagger-ui.html`, despliega `POST /api/v1/auth/login`, pulsa *Try it out*, reemplaza los valores de ejemplo (`"string"`) por `admin@pagatu.com` / `admin123` y pulsa *Execute*. La respuesta debe ser el mismo `200` con el `access_token`.
 
+**Con Postman.** Crea una petición `POST` a `http://localhost:8085/api/v1/auth/login`; en *Body → raw → JSON* pega `{"email": "admin@pagatu.com", "password": "admin123"}` y pulsa *Send*. Para no copiar el token a mano después, abre la pestaña *Scripts → Post-response* (en versiones anteriores de Postman, *Tests*) y guárdalo en una variable de colección:
+
+```javascript
+pm.collectionVariables.set("tokenAdmin", pm.response.json().access_token);
+```
+
+Duplica la petición, cambia el cuerpo a `cliente@pagatu.com` / `cliente123` y el script a `pm.collectionVariables.set("tokenCliente", pm.response.json().access_token);`. Las peticiones de 3.19 y 3.23 usan `{{tokenAdmin}}` y `{{tokenCliente}}` en la pestaña *Authorization*.
+
 **El mismo login, ahora a través del Gateway** (la ruta de 3.6). Con `pagatu-eureka` y `pagatu-gateway` corriendo, repite el `POST` contra el puerto del Gateway — la respuesta debe ser idéntica, porque el Gateway solo reenvía la petición:
 
 PowerShell:
@@ -1663,7 +1677,7 @@ Resultado esperado: un documento con una lista `keys`, y en ella una sola clave 
 }
 ```
 
-y, para `cliente@pagatu.com`, el mismo formato con `"realm_access": { "roles": ["CLIENTE"] }` más `"idCliente": 1`. Para comprobar también la **firma**, pega en el campo de clave pública de jwt.io la clave del endpoint de claves (el objeto que está dentro de `keys`, en formato JWK): debe aparecer *Signature Verified*. Es exactamente lo que harán el Gateway y `pagatu-orden-ms`. Si jwt.io muestra *Unable to retrieve public key from issuer… Expected a valid HTTPS URL*, es normal: intenta descargar la clave desde el `iss`, pero ese `iss` es `http://localhost:8085` (no HTTPS), por eso la clave se pega a mano. jwt.io solo **lee** los claims; nunca pegues ahí un token de un sistema real.
+y, para `cliente@pagatu.com`, el mismo formato con `"realm_access": { "roles": ["CLIENTE"] }` más `"idCliente": 1`. Para comprobar también la **firma**, pega en el campo de clave pública de jwt.io la clave del endpoint de claves (el objeto que está dentro de `keys`, en formato JWK, *JSON Web Key*): debe aparecer *Signature Verified*. Es exactamente lo que harán el Gateway y `pagatu-orden-ms`. Si jwt.io muestra *Unable to retrieve public key from issuer… Expected a valid HTTPS URL*, es normal: intenta descargar la clave desde el `iss`, pero ese `iss` es `http://localhost:8085` (no HTTPS, la versión segura de HTTP), por eso la clave se pega a mano. jwt.io solo **lee** los claims; nunca pegues ahí un token de un sistema real.
 
 #### 3.15 Agregar el registro de usuarios y probarlo con Swagger
 
@@ -2047,7 +2061,7 @@ cd infra/pagatu-gateway
 ./mvnw spring-boot:run
 ```
 
-**Cómo probar estos casos.** Usa PowerShell o `curl` como en los bloques de abajo, o **Postman**. El navegador no sirve aquí: al escribir una URL solo puede hacer un `GET` **sin** el encabezado `Authorization`, así que siempre verías el `401` del caso 1 y nunca podrías mandar un token ni probar un `POST`. En Postman, elige el método y la URL, abre la pestaña *Authorization*, tipo *Bearer Token*, y pega el `access_token` sin comillas ni espacios; para los `POST`, agrega el cuerpo en *Body → raw → JSON*.
+**Cómo probar estos casos.** Usa PowerShell o `curl` como en los bloques de abajo, o **Postman**. El navegador no sirve aquí: al escribir una URL solo puede hacer un `GET` **sin** el encabezado `Authorization`, así que siempre verías el `401` del caso 1 y nunca podrías mandar un token ni probar un `POST`. Los casos en Postman están al final de esta sección, en una tabla.
 
 **Paso previo — obtén los dos tokens.** Haz login con cada usuario semilla **a través del Gateway** (la ruta de 3.6) y guarda el `access_token` en una variable. Los casos de abajo y los de 3.23 y 3.24 usan estas variables, así que no copies ni pegues tokens a mano: mantén abierta la misma ventana de terminal (si la cierras, repite este bloque).
 
@@ -2182,6 +2196,27 @@ curl -i -X POST http://localhost:18080/api/v1/productos \
 ```
 
 Resultado esperado: `201 Created`, con el producto creado en la respuesta. El mismo cuerpo que el `CLIENTE` no pudo enviar en el caso 3 ahora pasa: lo único que cambió es el token. Queda un producto "Producto de prueba" en el catálogo; puedes borrarlo con `DELETE /api/v1/productos/{id}` y el token del `ADMIN`.
+
+**Los mismos cuatro casos en Postman.** Usa las variables `tokenAdmin` y `tokenCliente` que guardaste en 3.14 (o repite esos dos logins, esta vez contra `http://localhost:18080/api/v1/auth/login`). En cada petición, la pestaña *Authorization* va en tipo *Bearer Token* y el campo *Token* recibe la variable, con llaves dobles, sin comillas.
+
+**Tabla 8. Los cuatro casos en Postman**
+
+| Caso | Método y URL | Authorization | Body (*raw → JSON*) | Resultado esperado |
+|---|---|---|---|---|
+| 1 | `GET http://localhost:18080/api/v1/ordenes` | *No Auth* | — | `401` |
+| 2 | `GET http://localhost:18080/api/v1/ordenes` | *Bearer Token*: `{{tokenAlterado}}` | — | `401` |
+| 3 | `POST http://localhost:18080/api/v1/productos` | *Bearer Token*: `{{tokenCliente}}` | el cuerpo completo del caso 3 | `403` |
+| 4 | `POST http://localhost:18080/api/v1/productos` | *Bearer Token*: `{{tokenAdmin}}` | el mismo cuerpo | `201` |
+
+Para el caso 2, en la pestaña *Scripts → Pre-request* de esa petición, arma el token alterado con el mismo criterio de los bloques de PowerShell y bash (cambiar el primer carácter de la firma):
+
+```javascript
+const partes = pm.collectionVariables.get("tokenAdmin").split(".");
+partes[2] = (partes[2][0] === "X" ? "Y" : "X") + partes[2].slice(1);
+pm.collectionVariables.set("tokenAlterado", partes.join("."));
+```
+
+Postman muestra el código HTTP arriba a la derecha de la respuesta (*Status*), sin necesidad de `try/catch`.
 
 **Error frecuente**: la variable del token quedó **vacía** porque el login falló (por ejemplo, `pagatu-auth-ms` apagado). El header queda como `Bearer ` a secas, y Spring Security lo rechaza como si no hubiera token: un `401` que en realidad es un login que no funcionó. Imprime los primeros caracteres de la variable (paso previo) antes de culpar al Gateway.
 
@@ -2400,6 +2435,42 @@ Resultado esperado — `201 Created`, con `"idCliente": 1` **aunque el request n
 
 Repite el mismo request sin el header `Authorization` y confirma `401` (ya no llega ni a `pagatu-orden-ms`, el Gateway lo rechaza primero, 3.19). Repite con el token de `admin@pagatu.com`: también pasa el Gateway (la regla de 3.18 permite `CLIENTE` **o** `ADMIN`) y el token es válido en `pagatu-orden-ms`, pero no trae `idCliente` — el usuario `ADMIN` semilla no tiene `id_cliente` asignado (3.3), así que tu `IllegalArgumentException` (3.22) debería dispararse aquí y devolver `400`. Si eso pasa, es el comportamiento esperado, no un bug — confirma que un `ADMIN` sin `idCliente` no puede crear una orden a nombre de nadie.
 
+**Con Postman.** `POST http://localhost:18080/api/v1/ordenes`, pestaña *Authorization* en *Bearer Token* con `{{tokenCliente}}`, y en *Body → raw → JSON* el mismo cuerpo de arriba (`{"metodoPago": "YAPE_PLIN", "detalles": [{"idProducto": 1, "cantidad": 2}]}`). Resultado esperado: `201`. Cambia *Authorization* a `{{tokenAdmin}}` para el `400` del `ADMIN`, y a *No Auth* para el `401`.
+
+**Con Swagger UI de `pagatu-orden-ms`.** Desde 3.21, `GET` y `POST` de `http://localhost:8082/swagger-ui.html` responden `401` porque Swagger no manda ningún token. Para inyectarlo, declara el esquema de seguridad `Bearer` en OpenAPI: **`services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/config/OpenApiConfig.java`**:
+
+```java
+package pe.edu.upeu.orden.config;
+
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class OpenApiConfig {
+
+    private static final String ESQUEMA_JWT = "bearerAuth";
+
+    @Bean
+    public OpenAPI openAPI() {
+        return new OpenAPI()
+                .components(new Components().addSecuritySchemes(ESQUEMA_JWT,
+                        new SecurityScheme()
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("bearer")
+                                .bearerFormat("JWT")))
+                .addSecurityItem(new SecurityRequirement().addList(ESQUEMA_JWT));
+    }
+}
+```
+
+Reinicia `pagatu-orden-ms`. Swagger UI muestra ahora un botón **Authorize** arriba a la derecha (y un candado en cada endpoint): púlsalo, pega **solo** el `access_token` — sin la palabra `Bearer`, Swagger la agrega — y pulsa *Authorize*. Desde ahí, *Try it out* y *Execute* mandan el encabezado `Authorization` en cada petición: con el token del `CLIENTE`, `POST /api/v1/ordenes` devuelve `201`; sin autorizar, `401`. El token dura una hora (`expiracion-segundos` de 3.5): cuando expire, vuelve a hacer login y a pulsar *Authorize*.
+
+Esto solo cambia la **documentación**: `SecurityConfig` (3.21) sigue siendo quien exige el token. Y solo sirve para `pagatu-orden-ms` en su puerto directo (`8082`): el Gateway no publica Swagger UI.
+
 #### 3.24 Probar el llamado directo a `pagatu-orden-ms`, sin pasar por el Gateway
 
 **Producto del paso:** evidencia concreta de por qué `pagatu-orden-ms` valida el token por su cuenta, en vez de confiar en que "ya pasó por el Gateway".
@@ -2428,11 +2499,62 @@ Resultado esperado: `401 Unauthorized`, con un encabezado `WWW-Authenticate: Bea
 
 **En DEV este escenario es alcanzable** (`8082` sigue expuesto al host, S6); en producción local (S4) esta ruta directa ni siquiera existe — `pagatu-orden-ms` no publica ningún puerto. Pero una defensa que solo funciona si nadie se salta la primera línea no es una defensa: por eso la segunda línea existe aunque hoy "no haga falta".
 
+**Contraste: `pagatu-catalogo-ms` llamado directo.** El Gateway protege `POST /api/v1/productos` (caso 3 de 3.19: `403` para un `CLIENTE`), pero `pagatu-catalogo-ms` **no** es todavía un *resource server* (2.1): si lo llamas directo por su puerto (`8080`), sin token y sin pasar por el Gateway, la petición entra.
+
+PowerShell:
+
+```powershell
+Invoke-RestMethod -Method Post -Uri "http://localhost:8080/api/v1/productos" `
+  -ContentType "application/json" `
+  -Body '{"nombre": "Producto directo", "descripcion": "Sin pasar por el Gateway", "precio": 10.0, "activo": true, "stock": 5, "categoriaId": 1}'
+```
+
+bash macOS/Linux:
+
+```bash
+curl -i -X POST http://localhost:8080/api/v1/productos \
+  -H "Content-Type: application/json" \
+  -d '{"nombre": "Producto directo", "descripcion": "Sin pasar por el Gateway", "precio": 10.0, "activo": true, "stock": 5, "categoriaId": 1}'
+```
+
+Resultado esperado: `201 Created`, sin ningún token — la misma petición que el Gateway rechazó con `403`, y que `pagatu-orden-ms` rechaza con `401` en el llamado directo de arriba. Es la diferencia concreta entre un servicio protegido por su cuenta y uno que depende solo de la primera línea. En producción local (S4) esta ruta no existe porque `pagatu-catalogo-ms` no publica ningún puerto; proteger el catálogo por su cuenta es el mismo cambio de 3.21, y queda fuera de esta sesión. Borra el producto creado con `DELETE /api/v1/productos/{id}`, pasando por el Gateway con el token del `ADMIN`.
+
+**Truco de desarrollo: quitar la seguridad de una ruta de forma temporal.** Mientras desarrollas, es cómodo mirar un `GET` en el navegador o en Swagger sin sacar un token cada vez. En vez de desactivar toda la seguridad, abre **solo** lo que necesitas, con una regla que va **antes** de la que protege esa ruta: Spring Security aplica la **primera** regla que coincide (3.18). En qué archivo va depende de por dónde entres, porque el Gateway y `pagatu-orden-ms` validan cada uno por su cuenta (2.5) y abrir uno no abre el otro:
+
+- **Llamas directo a `pagatu-orden-ms` (`8082`):** la regla va en `SecurityConfig` de `pagatu-orden-ms`.
+- **Llamas a través del Gateway (`18080`):** la regla va en `SecurityConfig` de `pagatu-gateway`.
+- **Quieres ambos caminos abiertos:** la regla va en los dos archivos.
+
+**`services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/config/SecurityConfig.java`** — agrega el `import` y la línea marcada, **antes** de `anyRequest()`:
+
+```java
+import org.springframework.http.HttpMethod;
+```
+
+```java
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/actuator/**", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/ordenes/**").permitAll()   // TEMPORAL: quitar antes de commitear
+                        .anyRequest().authenticated()
+                )
+```
+
+**`infra/pagatu-gateway/src/main/java/pe/edu/upeu/gateway/config/SecurityConfig.java`** — la misma línea, **antes** de la regla `hasAnyRole` de las órdenes:
+
+```java
+                        .requestMatchers(HttpMethod.GET, "/api/v1/ordenes/**").permitAll()   // TEMPORAL: quitar antes de commitear
+                        .requestMatchers("/api/v1/ordenes/**").hasAnyRole("CLIENTE", "ADMIN")
+```
+
+Reinicia el servicio que cambiaste y abre `http://localhost:8082/api/v1/ordenes` (o `http://localhost:18080/api/v1/ordenes`) directo en el navegador: responde `200` sin token. Un `POST` a la misma ruta sigue devolviendo `401`, porque la regla abre solo el método `GET`.
+
+Es una herramienta de trabajo, no parte del sistema: mientras esa línea esté, los resultados esperados de 3.19, 3.23 y 3.24 para los `GET` de órdenes dejan de cumplirse, y en un sistema real **nunca** debe llegar a producción ni a un commit. Bórrala apenas termines de mirar lo que necesitabas. Si solo quieres probar desde Swagger, no hace falta tocar código: el botón *Authorize* de 3.23 lo resuelve.
+
 #### 3.25 Documentar la matriz de roles y accesos
 
 **Producto del paso:** contrato de seguridad documentado — igual que S6 documentó el contrato de un evento, esta sesión documenta el contrato de acceso.
 
-**Tabla 8. Matriz de roles y accesos verificada en 3.19 y 3.23**
+**Tabla 9. Matriz de roles y accesos verificada en 3.19 y 3.23**
 
 | Ruta | Método | Rol requerido | Sin token | Token `ADMIN` | Token `CLIENTE` |
 |---|---|---|---|---|---|
@@ -2467,7 +2589,7 @@ Resultado esperado — dos filas, una por usuario semilla:
 
 Esta consulta es una revisión de accesos mínima: en una sola mirada dice quién puede qué. En un sistema real se repite de forma periódica y se revoca lo que ya no corresponde.
 
-**Revocar un rol.** Simula que `cliente@pagatu.com` deja de ser cliente. Ten a la mano el token de `cliente@pagatu.com` de 3.14 (sin haber reiniciado `pagatu-auth-ms` desde entonces, 3.11) y quítale el rol:
+**Revocar un rol.** Simula que `cliente@pagatu.com` deja de ser cliente. Ten a la mano el token de `cliente@pagatu.com` que guardaste en 3.19 (`$tokenCliente` en PowerShell, `TOKEN_CLIENTE` en bash), sin haber reiniciado `pagatu-auth-ms` desde entonces (3.11), y quítale el rol:
 
 ```bash
 docker exec -it pagatu-postgres-auth-dev psql -U pagatu -d pagatu_auth_db -c "DELETE FROM usuario_roles WHERE usuario_id = (SELECT id FROM usuarios WHERE email = 'cliente@pagatu.com');"
@@ -2476,7 +2598,7 @@ docker exec -it pagatu-postgres-auth-dev psql -U pagatu -d pagatu_auth_db -c "DE
 Ahora comprueba dos cosas, ambas a través del Gateway (`POST /api/v1/ordenes`, como en 3.23):
 
 1. Con el **token viejo** (el de antes de revocar): sigue devolviendo `201 Created`. El JWT es *stateless* (2.2): el token ya emitido lleva el rol **adentro** y sigue siendo válido hasta que expire — quitar el rol de la base de datos no lo invalida.
-2. Pide un **token nuevo** (login de `cliente@pagatu.com`, 3.14) y pégalo en [jwt.io](https://jwt.io): el claim ahora es `"realm_access": { "roles": [] }`. Con ese token, `POST /api/v1/ordenes` devuelve `403 Forbidden` — autenticado, pero sin ningún rol que alcance.
+2. Pide un **token nuevo** (repite el login de `cliente@pagatu.com` del paso previo de 3.19) y pégalo en [jwt.io](https://jwt.io): el claim ahora es `"realm_access": { "roles": [] }`. Con ese token, `POST /api/v1/ordenes` devuelve `403 Forbidden` — autenticado, pero sin ningún rol que alcance.
 
 Es exactamente la limitación de 2.2 (Error frecuente), vista con datos reales: revocar un rol es inmediato para logins **nuevos**, pero los tokens vigentes viven hasta su expiración. Por eso `jwt.expiracion-segundos` debe ser corto en un sistema real.
 
@@ -2490,12 +2612,12 @@ Repite la consulta de revisión y confirma que vuelven a aparecer las dos filas.
 
 **Lista de verificación.** Compara el sistema de hoy contra los errores comunes de 2.3 y 2.4:
 
-**Tabla 9. Lista de verificación de accesos: errores comunes frente al sistema de hoy**
+**Tabla 10. Lista de verificación de accesos: errores comunes frente al sistema de hoy**
 
 | Error común | Cómo se comprueba en `pagatu` | Resultado esperado hoy |
 |---|---|---|
 | Permisos asignados directo a usuarios, en vez de a roles | Revisa `usuario_roles` (3.3) y las reglas de 3.18: nada se autoriza por usuario | No ocurre: todo pasa por rol. |
-| Roles demasiado amplios | Revisa la Tabla 8: `ADMIN` puede llamar a `/api/v1/ordenes` (3.18), aunque sin `idCliente` termina en `400` (3.23) | Ocurre en parte: decide si esa ruta debería aceptar solo `CLIENTE`. |
+| Roles demasiado amplios | Revisa la Tabla 9: `ADMIN` puede llamar a `/api/v1/ordenes` (3.18), aunque sin `idCliente` termina en `400` (3.23) | Ocurre en parte: decide si esa ruta debería aceptar solo `CLIENTE`. |
 | Sin revisión periódica de accesos | La consulta de esta sección | Se hace a mano, una vez; en un sistema real sería periódica. |
 | Sin registro de auditoría de los rechazos | Log de `pagatu-gateway` con nivel de seguridad en `DEBUG` (2.6) | Solo queda en consola; un *audit log* real iría a un almacén aparte. |
 | Flujo *Implicit* | Ningún flujo de hoy usa redirects | No ocurre. |
@@ -2548,10 +2670,11 @@ Ahora conecta lo que ves con la Figura 6: en el paso 1, el cliente envía **solo
 
 - `pagatu-auth-ms` operativo en DEV, con usuarios y roles en sus propias tablas, registrado en `pagatu-eureka` y con configuración externa desde `pagatu-config`.
 - Login exitoso devolviendo un `access_token` firmado (RS256), y login fallido devolviendo `401`.
+- Registro de un usuario nuevo con `POST /api/v1/auth/registro` (`201`), y su contraseña guardada como hash BCrypt.
 - `GET /.well-known/jwks.json` publicando solo la clave pública.
 - `pagatu-gateway` como Resource Server, con los cuatro casos de 3.19: sin token (`401`), token alterado (`401`), rol incorrecto (`403`) y rol correcto (`201`/`200`).
 - `pagatu-orden-ms` como Resource Server: orden creada con `idCliente` tomado del JWT, y llamado directo con token alterado rechazado con `401`.
-- Matriz de roles y accesos (Tabla 8) y lista de verificación (Tabla 9) completadas.
+- Matriz de roles y accesos (Tabla 9) y lista de verificación (Tabla 10) completadas.
 
 ## 4. Crea: actividad autónoma
 
@@ -2567,7 +2690,7 @@ Completa y evidencia estas tareas:
 2. Agregar la ruta de `pagatu-cliente-ms` al Gateway (mismo patrón de 3.6).
 3. Convertir `pagatu-cliente-ms` en Resource Server, para que valide el JWT por su cuenta (mismo patrón de 3.21).
 4. Probar el caso permitido y el caso denegado a través del Gateway, y un llamado directo al puerto de `pagatu-cliente-ms` con un token alterado, con capturas de los códigos de respuesta (mismo patrón de 3.19 y 3.24).
-5. Documentar la matriz de roles y accesos de `pagatu-cliente-ms`, mismo formato de la Tabla 8 (3.25).
+5. Documentar la matriz de roles y accesos de `pagatu-cliente-ms`, mismo formato de la Tabla 9 (3.25).
 6. Registrar aporte individual.
 
 ### 4.2 Propósito
@@ -2601,7 +2724,7 @@ Cada captura de pantalla del informe debe mostrar, sin recortar, el reloj del si
 Incluye capturas o extractos con una breve explicación debajo de cada uno, organizados en los mismos 4 bloques de la rúbrica (4.6):
 
 1. *`pagatu-auth-ms` construido*
-    - Captura del login exitoso devolviendo un JWT, del login fallido devolviendo `401`, y de las tablas `usuarios`, `roles` y `usuario_roles` con sus datos (trabajo de clase).
+    - Captura del login exitoso devolviendo un JWT, del login fallido devolviendo `401`, del registro de un usuario nuevo (`201`) y de las tablas `usuarios`, `roles` y `usuario_roles` con sus datos, incluido el hash BCrypt del usuario registrado (trabajo de clase).
 2. *`pagatu-gateway` como Resource Server*
     - Captura de los cuatro casos de 3.19: sin token (`401`), token alterado (`401`), rol incorrecto (`403`), rol correcto (`201`/`200`).
 3. *`pagatu-orden-ms` valida el JWT y toma `idCliente` de él*
@@ -2710,8 +2833,9 @@ Tiempo: 5 min.
 - JWT.io / Auth0. (2024). *Introduction to JSON Web Tokens*. https://jwt.io/introduction
 - Keycloak. (2025). *Keycloak Documentation*. https://www.keycloak.org/documentation
 - Lodderstedt, T., Bradley, J., Labunets, A., & Fett, D. (2025). *Best Current Practice for OAuth 2.0 Security* (RFC 9700). IETF. https://datatracker.ietf.org/doc/html/rfc9700
+- Parecki, A. (s. f.). *OAuth Grant Types*. OAuth.net. https://oauth.net/2/grant-types/
 - SACAViX. (s. f.-a). *RBAC / Control de Acceso* [Patrón de diseño]. System Design. https://systemdesign.sacavix.com/patterns
-- SACAViX. (s. f.-b). *OAuth2 / OpenID Connect* [Patrón de diseño]. System Design. https://systemdesign.sacavix.com/patterns
+- SACAViX. (s. f.-b). *OAuth2 / OpenID Connect* [Patrón de diseño]. System Design. https://systemdesign.sacavix.com/patterns/oauth2-security
 - Sakimura, N., Bradley, J., & Agarwal, N. (2015). *Proof Key for Code Exchange by OAuth Public Clients* (RFC 7636). IETF. https://datatracker.ietf.org/doc/html/rfc7636
 - Sakimura, N., Bradley, J., Jones, M., de Medeiros, B., & Mortimore, C. (2014). *OpenID Connect Core 1.0*. OpenID Foundation. https://openid.net/specs/openid-connect-core-1_0.html
 - Spring Team. (2024). *Spring Security Reference: OAuth2 Resource Server*. https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html

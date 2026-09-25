@@ -17,7 +17,7 @@ Microservicios de negocio de `pagatu`. Cada carpeta es un proyecto Spring Boot i
 | `pagatu-auth-ms/` | Autenticación y emisión de JWT (temporal, luego Keycloak). | S7 | `8085` | `pagatu_auth_db` en `15431` |
 | `pago-ms/` | Pagos; consume `orden-eventos` y publica `pago-eventos`. | S8 | por definir en S8 | `pago_db` en `15435` |
 
-Las carpetas de `pagatu-cliente-ms`, `pagatu-auth-ms` y `pago-ms` aparecen cuando esas sesiones las construyen. Los comandos de abajo aplican a cada una en cuanto exista.
+Las carpetas de `pagatu-cliente-ms` y `pago-ms` aparecen cuando esas sesiones las construyen. Los comandos de abajo aplican a cada una en cuanto exista.
 
 ## Ejecutar en DEV
 
@@ -68,7 +68,7 @@ docker compose -f compose-dev.yml up -d
 .\mvnw.cmd spring-boot:run
 ```
 
-Login: `POST http://localhost:8085/api/v1/auth/login`. Claves públicas: `http://localhost:8085/.well-known/jwks.json`. Health: `http://localhost:8085/actuator/health`.
+Login: `POST http://localhost:8085/api/v1/auth/login`. Registro de un usuario nuevo (rol `CLIENTE`): `POST http://localhost:8085/api/v1/auth/registro`. Swagger: `http://localhost:8085/swagger-ui.html`. Claves públicas: `http://localhost:8085/.well-known/jwks.json`. Health: `http://localhost:8085/actuator/health`.
 
 ### `pago-ms`
 
