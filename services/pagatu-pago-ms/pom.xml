@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>pe.edu.upeu</groupId>
-	<artifactId>pagatu-orden-ms</artifactId>
+	<artifactId>pagatu-pago-ms</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>pagatu-orden-ms</name>
+	<name>pagatu-pago-ms</name>
 	<description/>
 	<url/>
 	<licenses>
@@ -128,19 +128,6 @@
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security-oauth2-resource-server</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-openfeign</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.github.resilience4j</groupId>
-			<artifactId>resilience4j-spring-boot4</artifactId>
-			<version>2.4.0</version>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>

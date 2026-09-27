@@ -24,9 +24,9 @@ pagatu/
 │   ├── pagatu-orden-ms/        # Órdenes de compra (S2 base autónoma, S6 Feign + Circuit Breaker)
 │   ├── pagatu-cliente-ms/      # Perfil de cliente + RENIEC/SUNAT (S2, trabajo autónomo)
 │   ├── pagatu-auth-ms/         # Autenticación y emisión de JWT (S7, temporal: luego Keycloak)
-│   └── (pago-ms, S8)
+│   └── pagatu-pago-ms/         # Pagos; consume orden.creada y publica pago.validado (S8)
 ├── obs/                       # Prometheus + Loki + Promtail + Grafana (S3-S4) — observa infra/ y services/ desde afuera, no es una dependencia de arranque
-├── kafka/                     # (S8, pendiente) Kafka y Kafka UI
+├── kafka/                     # Kafka y Kafka UI (S8)
 └── clients/                   # (S11, pendiente) Frontend Angular
 ```
 
@@ -72,7 +72,12 @@ docker compose -f compose-dev.yml up -d
 .\mvnw.cmd spring-boot:run
 ```
 
-El resto de servicios (`pagatu-cliente-ms`, `pagatu-auth-ms`, `pago-ms`) siguen el mismo patrón, cada uno en su carpeta de `services/`.
+El resto de servicios (`pagatu-cliente-ms`, `pagatu-auth-ms`, `pagatu-pago-ms`) siguen el mismo patrón, cada uno en su carpeta de `services/`. `pagatu-orden-ms` y `pagatu-pago-ms` (S8) necesitan además Kafka corriendo:
+
+```powershell
+cd kafka
+docker compose -f compose-dev.yml up -d
+```
 
 **3. Verificar**
 
@@ -101,9 +106,10 @@ docker compose -f compose-dev.yml up -d
 | `pagatu-orden-ms` | `8082` (2.ª instancia: `8083`) |
 | `pagatu-cliente-ms` | `8084` |
 | `pagatu-auth-ms` | `8085` |
+| `pagatu-pago-ms` | `8086` |
 | PostgreSQL: auth / catálogo / cliente / orden / pago | `15431` / `15432` / `15433` / `15434` / `15435` |
 | Prometheus / Loki / Grafana | `19090` / `13100` / `13000` |
-| Kafka broker / Kafka UI (S8) | `19092` / `18085` |
+| Kafka broker / Kafka UI (S8) | `19092` / `18085` (PROD local: `29092` / `28085`) |
 | Angular (S11) | `4200` |
 
 En producción local, los puertos de la infraestructura y de las bases de datos usan el rango `2xxxx` (por ejemplo, `pagatu-config` en `28888`).

@@ -15,9 +15,9 @@ Microservicios de negocio de `pagatu`. Cada carpeta es un proyecto Spring Boot i
 | `pagatu-orden-ms/` | Órdenes; llama a catálogo con Feign y Circuit Breaker. | S2 (base autónoma), S6 | `8082` (2.ª instancia: `8083`) | `pagatu_orden_db` en `15434` |
 | `pagatu-cliente-ms/` | Perfil del cliente (DNI/RUC). | S2 (trabajo autónomo) | `8084` | `pagatu_cliente_db` en `15433` |
 | `pagatu-auth-ms/` | Autenticación y emisión de JWT (temporal, luego Keycloak). | S7 | `8085` | `pagatu_auth_db` en `15431` |
-| `pago-ms/` | Pagos; consume `orden-eventos` y publica `pago-eventos`. | S8 | por definir en S8 | `pago_db` en `15435` |
+| `pagatu-pago-ms/` | Pagos; consume `orden-eventos` y publica `pago-eventos`. | S8 | `8086` | `pagatu_pago_db` en `15435` |
 
-Las carpetas de `pagatu-cliente-ms` y `pago-ms` aparecen cuando esas sesiones las construyen. Los comandos de abajo aplican a cada una en cuanto exista.
+La carpeta de `pagatu-cliente-ms` aparece cuando esa sesión la construye. Los comandos de abajo aplican a cada una en cuanto exista.
 
 ## Ejecutar en DEV
 
@@ -70,15 +70,17 @@ docker compose -f compose-dev.yml up -d
 
 Login: `POST http://localhost:8085/api/v1/auth/login`. Registro de un usuario nuevo (rol `CLIENTE`): `POST http://localhost:8085/api/v1/auth/registro`. Swagger: `http://localhost:8085/swagger-ui.html`. Claves públicas: `http://localhost:8085/.well-known/jwks.json`. Health: `http://localhost:8085/actuator/health`.
 
-### `pago-ms`
+### `pagatu-pago-ms`
+
+Necesita Kafka corriendo (`kafka/compose-dev.yml`, ver el README de la raíz).
 
 ```powershell
-cd services/pago-ms
+cd services/pagatu-pago-ms
 docker compose -f compose-dev.yml up -d
 .\mvnw.cmd spring-boot:run
 ```
 
-El puerto de la aplicación y las dependencias de Kafka se definen en S8.
+Consume `orden-eventos` y publica `pago-eventos`. No expone endpoints de negocio: su evidencia es el log, Kafka UI (`http://localhost:18085`) y la tabla `pagos`. Health: `http://localhost:8086/actuator/health`.
 
 En macOS/Linux, el equivalente de cada comando es `./mvnw spring-boot:run`.
 

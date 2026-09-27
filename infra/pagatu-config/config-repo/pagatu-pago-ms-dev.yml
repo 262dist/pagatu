@@ -1,14 +1,9 @@
 server:
-  port: 8082
+  port: 8086
 
 spring:
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          jwk-set-uri: http://localhost:8085/.well-known/jwks.json
   datasource:
-    url: jdbc:postgresql://localhost:15434/pagatu_orden_db
+    url: jdbc:postgresql://localhost:15435/pagatu_pago_db
     username: pagatu
     password: pagatu
     driver-class-name: org.postgresql.Driver
@@ -22,6 +17,11 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
   kafka:
     bootstrap-servers: localhost:19092
     producer:
@@ -30,20 +30,15 @@ spring:
       properties:
         spring.json.add.type.headers: false
     consumer:
-      group-id: pagatu-orden-ms
+      group-id: pagatu-pago-ms
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       properties:
         spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
-        spring.json.value.default.type: pe.edu.upeu.orden.event.PagoValidadoEvento
-        spring.json.trusted.packages: pe.edu.upeu.orden.event
+        spring.json.value.default.type: pe.edu.upeu.pago.event.OrdenCreadaEvento
+        spring.json.trusted.packages: pe.edu.upeu.pago.event
         spring.json.use.type.headers: false
-  devtools:
-    restart:
-      enabled: true
-    livereload:
-      enabled: true
 
 app:
   kafka:
@@ -51,13 +46,9 @@ app:
       ordenes: orden-eventos
       pagos: pago-eventos
 
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
-
 logging:
   level:
-    pe.edu.upeu.orden: DEBUG
+    pe.edu.upeu.pago: DEBUG
 
 management:
   endpoints:
@@ -75,12 +66,3 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:18761/eureka
-
-resilience4j:
-  circuitbreaker:
-    instances:
-      catalogo:
-        sliding-window-size: 5
-        failure-rate-threshold: 50
-        wait-duration-in-open-state: 10s
-        permitted-number-of-calls-in-half-open-state: 3
