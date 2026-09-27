@@ -14,7 +14,7 @@
         <link rel="prev" href="../S06_Comunicacion_Sincrona_Resiliente/">
       
       
-        <link rel="next" href="../S12_Evaluacion_Unidad_2/">
+        <link rel="next" href="../S08_Mensajeria_Asincrona_Entre_Servicios/">
       
       
         
@@ -1726,6 +1726,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../S08_Mensajeria_Asincrona_Entre_Servicios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S8 - Mensajería asíncrona entre servicios
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../S12_Evaluacion_Unidad_2/" class="md-nav__link">
         
   
@@ -2678,7 +2706,7 @@
     Auth["pagatu-auth-ms&lt;br/&gt;S7 · JWT&lt;br/&gt;(temporal, luego Keycloak)"]
     Catalogo["pagatu-catalogo-ms&lt;br/&gt;S1 · REST + BD + health"]
     Orden["pagatu-orden-ms&lt;br/&gt;S6 · Feign + Circuit Breaker&lt;br/&gt;(S9: coordina Saga)&lt;br/&gt;produce: orden-eventos&lt;br/&gt;consume: pago-eventos"]
-    Pago["pago-ms&lt;br/&gt;S8&lt;br/&gt;(S9: coordina Saga)&lt;br/&gt;consume: orden-eventos&lt;br/&gt;produce: pago-eventos"]
+    Pago["pagatu-pago-ms&lt;br/&gt;S8&lt;br/&gt;(S9: coordina Saga)&lt;br/&gt;consume: orden-eventos&lt;br/&gt;produce: pago-eventos"]
     Eureka["pagatu-eureka&lt;br/&gt;S3 · puerto 18761 (DEV)&lt;br/&gt;registra instancias"]
     Kafka[("Kafka&lt;br/&gt;S8 · puerto 19092 (DEV)&lt;br/&gt;topics: orden-eventos, pago-eventos")]
     Pasarela["Pasarela de pagos&lt;br/&gt;(externa)"]
