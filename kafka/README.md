@@ -85,10 +85,16 @@ pagatu-kafka-dev-net
 `services/pagatu-orden-ms`, `services/pagatu-pago-ms` (por `bootstrap-servers:
 localhost:19092`, la dirección `EXTERNAL`) y `uso-rapido/pagatu-eventos-py`
 (como red *externa*, `networks: - pagatu-kafka-dev-net` con `external: true`)
-dependen de este `compose-dev.yml`. Por eso Kafka **siempre tiene que estar
-arriba primero**: si intentas levantar `uso-rapido/pagatu-eventos-py` sin
-haber corrido este archivo antes, Docker Compose falla con un error de red
-no encontrada.
+dependen de este `compose-dev.yml`. La dependencia es dura para
+`uso-rapido/pagatu-eventos-py`: como corre en un contenedor que se une a esta
+red, Docker Compose falla con un error de red no encontrada si Kafka no está
+levantado antes. Para `pagatu-orden-ms`/`pagatu-pago-ms` en DEV es más
+blanda — corren en el host y se conectan por `localhost:19092`, así que
+técnicamente tolerarían arrancar primero (el cliente de Kafka reintenta) —
+pero en PROD local corren como contenedores y se conectan por la dirección
+`INTERNAL` (`pagatu-kafka:9092`), donde la dependencia vuelve a ser dura.
+Por eso Kafka **siempre va primero**, en los dos ambientes: para que el
+orden sea el mismo en DEV y en PROD.
 
 ## Producción local
 

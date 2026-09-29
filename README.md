@@ -58,7 +58,7 @@ cd infra/pagatu-gateway
 .\mvnw.cmd spring-boot:run
 ```
 
-**2. Kafka** (detalle en [`kafka/README.md`](kafka/README.md)) — lo necesitan `pagatu-orden-ms` y `pagatu-pago-ms` (S8), así que va antes que los servicios:
+**2. Kafka** (detalle en [`kafka/README.md`](kafka/README.md)) — en DEV, `pagatu-orden-ms` y `pagatu-pago-ms` corren en el host y se conectan por el puerto externo (`localhost:19092`), así que técnicamente tolerarían arrancar antes que Kafka. En PROD local no: ahí corren como contenedores en la misma red Docker y se conectan por el puerto interno (`pagatu-kafka:9092`) — si Kafka no está arriba, el contenedor del servicio ni siquiera arranca. Se levanta primero en los dos ambientes, para que el orden sea siempre el mismo:
 
 ```powershell
 cd kafka
