@@ -58,7 +58,16 @@ cd infra/pagatu-gateway
 .\mvnw.cmd spring-boot:run
 ```
 
-**2. Servicios** (detalle en [`services/README.md`](services/README.md)) — la base de datos primero, después la aplicación:
+**2. Kafka** (detalle en [`kafka/README.md`](kafka/README.md)) — lo necesitan `pagatu-orden-ms` y `pagatu-pago-ms` (S8), así que va antes que los servicios:
+
+```powershell
+cd kafka
+docker compose -f compose-dev.yml up -d
+```
+
+Verifica en `http://localhost:18085` (Kafka UI) que el clúster `pagatu-dev` aparece conectado.
+
+**3. Servicios** (detalle en [`services/README.md`](services/README.md)) — la base de datos primero, después la aplicación:
 
 ```powershell
 cd services/pagatu-catalogo-ms
@@ -72,14 +81,9 @@ docker compose -f compose-dev.yml up -d
 .\mvnw.cmd spring-boot:run
 ```
 
-El resto de servicios (`pagatu-cliente-ms`, `pagatu-auth-ms`, `pagatu-pago-ms`) siguen el mismo patrón, cada uno en su carpeta de `services/`. `pagatu-orden-ms` y `pagatu-pago-ms` (S8) necesitan además Kafka corriendo:
+El resto de servicios (`pagatu-cliente-ms`, `pagatu-auth-ms`, `pagatu-pago-ms`) siguen el mismo patrón, cada uno en su carpeta de `services/`.
 
-```powershell
-cd kafka
-docker compose -f compose-dev.yml up -d
-```
-
-**3. Verificar**
+**4. Verificar**
 
 - Dashboard de Eureka: `http://localhost:18761`. Deben aparecer los servicios registrados.
 - Una llamada a través del Gateway:
@@ -88,7 +92,7 @@ docker compose -f compose-dev.yml up -d
 Invoke-RestMethod -Method Get -Uri "http://localhost:18080/api/v1/categorias"
 ```
 
-**4. Observabilidad (opcional)**
+**5. Observabilidad (opcional)** (detalle en [`obs/README.md`](obs/README.md))
 
 ```powershell
 cd obs
