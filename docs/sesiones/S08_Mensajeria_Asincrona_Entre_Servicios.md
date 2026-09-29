@@ -26,7 +26,7 @@ Al concluir la clase, estarás en condiciones de:
 
 ### 1.4 Producto de sesión
 
-Kafka y Kafka UI corriendo en DEV (desarrollo, puertos `19092` y `18085`) y con su definición para PROD (producción) local (`29092` y `28085`); `pagatu-pago-ms` como cuarto microservicio del proyecto, que consume `orden.creada` del topic `orden-eventos` y publica `pago.validado` en `pago-eventos`; `pagatu-orden-ms` publicando `orden.creada` al registrar una orden y consumiendo `pago.validado` para pasarla a `PAGADA`; el contrato de los dos eventos documentado; y la evidencia de que los servicios están desacoplados (con `pagatu-pago-ms` apagado, la orden se registra igual y se paga cuando el servicio vuelve).
+Kafka y Kafka UI corriendo en DEV (desarrollo, puertos `19092` y `18085`) y con su definición para PROD (producción) local (`29092` y `28085`); el topic `orden-eventos` probado manualmente por consola, por Kafka UI y por un productor/consumidor en Python; `pagatu-pago-ms` como cuarto microservicio del proyecto, que consume `orden.creada` del topic `orden-eventos` y publica `pago.validado` en `pago-eventos`; `pagatu-orden-ms` publicando `orden.creada` al registrar una orden y consumiendo `pago.validado` para pasarla a `PAGADA`; el contrato de los dos eventos documentado; y la evidencia de que los servicios están desacoplados (con `pagatu-pago-ms` apagado, la orden se registra igual y se paga cuando el servicio vuelve).
 
 ### 1.5 Metodología
 
