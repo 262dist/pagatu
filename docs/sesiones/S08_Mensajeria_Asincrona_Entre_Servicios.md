@@ -1142,7 +1142,7 @@ public class KafkaTopicsConfig {
 
 Cada `NewTopic` le pide a Kafka que cree un topic, con 3 particiones, si todavía no existe. Cada servicio declara los **dos** topics que usa, el que publica y el que consume: así existen con las 3 particiones sin importar cuál de los dos servicios arranque primero.
 
-**`services/pagatu-pago-ms/src/main/java/pe/edu/upeu/pago/messaging/PagoEventosPublisher.java`:**
+**`services/pagatu-pago-ms/src/main/java/pe/edu/upeu/pago/messaging/PagoEventosProducer.java`:**
 
 ```java
 package pe.edu.upeu.pago.messaging;
@@ -1159,7 +1159,7 @@ import pe.edu.upeu.pago.event.PagoValidadoEvento;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class PagoEventosPublisher {
+public class PagoEventosProducer {
 
     private final KafkaTemplate<String, PagoValidadoEvento> kafkaTemplate;
 
@@ -1199,7 +1199,7 @@ public class PagoEventosPublisher {
 
 `publicarTrasCommit` implementa la decisión de 2.5: registra el envío para cuando la transacción se confirme (`afterCommit`), y solo si no hay transacción en curso lo envía de inmediato. El log del resultado (`status=published`, con `partition` y `offset`) es la evidencia de publicación que se pide en 4.
 
-**`services/pagatu-pago-ms/src/main/java/pe/edu/upeu/pago/messaging/OrdenEventosListener.java`:**
+**`services/pagatu-pago-ms/src/main/java/pe/edu/upeu/pago/messaging/OrdenEventosConsumer.java`:**
 
 ```java
 package pe.edu.upeu.pago.messaging;
@@ -1214,7 +1214,7 @@ import pe.edu.upeu.pago.service.PagoService;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class OrdenEventosListener {
+public class OrdenEventosConsumer {
 
     private static final String ORDEN_CREADA = "orden.creada";
 
@@ -1261,7 +1261,7 @@ import pe.edu.upeu.pago.entity.EstadoPago;
 import pe.edu.upeu.pago.entity.Pago;
 import pe.edu.upeu.pago.event.OrdenCreadaEvento;
 import pe.edu.upeu.pago.event.PagoValidadoEvento;
-import pe.edu.upeu.pago.messaging.PagoEventosPublisher;
+import pe.edu.upeu.pago.messaging.PagoEventosProducer;
 import pe.edu.upeu.pago.repository.PagoRepository;
 
 import java.time.Instant;
@@ -1275,7 +1275,7 @@ public class PagoServiceImpl implements PagoService {
     private static final String PAGO_VALIDADO = "pago.validado";
 
     private final PagoRepository pagoRepository;
-    private final PagoEventosPublisher publisher;
+    private final PagoEventosProducer producer;
 
     @Value("${spring.application.name}")
     private String nombreServicio;
@@ -1291,7 +1291,7 @@ public class PagoServiceImpl implements PagoService {
                 .fechaPago(LocalDateTime.now())
                 .build());
 
-        publisher.publicarTrasCommit(PagoValidadoEvento.builder()
+        producer.publicarTrasCommit(PagoValidadoEvento.builder()
                 .tipoEvento(PAGO_VALIDADO)
                 .ordenId(pago.getOrdenId())
                 .monto(pago.getMonto())
@@ -1466,7 +1466,7 @@ public class KafkaTopicsConfig {
 }
 ```
 
-**`services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/messaging/OrdenEventosPublisher.java`:**
+**`services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/messaging/OrdenEventosProducer.java`:**
 
 ```java
 package pe.edu.upeu.orden.messaging;
@@ -1483,7 +1483,7 @@ import pe.edu.upeu.orden.event.OrdenCreadaEvento;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class OrdenEventosPublisher {
+public class OrdenEventosProducer {
 
     private final KafkaTemplate<String, OrdenCreadaEvento> kafkaTemplate;
 
@@ -1521,11 +1521,11 @@ public class OrdenEventosPublisher {
 }
 ```
 
-Es el mismo publicador de `pagatu-pago-ms` (3.14), con `OrdenCreadaEvento` y el topic `orden-eventos`. Ahora publícalo desde el servicio. En **`services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/service/OrdenServiceImpl.java`**, agrega los `import` y la dependencia:
+Es el mismo productor de `pagatu-pago-ms` (3.14), con `OrdenCreadaEvento` y el topic `orden-eventos`. Ahora publícalo desde el servicio. En **`services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/service/OrdenServiceImpl.java`**, agrega los `import` y la dependencia:
 
 ```java
 import pe.edu.upeu.orden.event.OrdenCreadaEvento;
-import pe.edu.upeu.orden.messaging.OrdenEventosPublisher;
+import pe.edu.upeu.orden.messaging.OrdenEventosProducer;
 import lombok.extern.slf4j.Slf4j;
 import java.time.Instant;
 ```
@@ -1538,7 +1538,7 @@ public class OrdenServiceImpl implements OrdenService {
 
     private final OrdenRepository ordenRepository;
     private final ProductoConsultaService productoConsultaService;
-    private final OrdenEventosPublisher publisher;
+    private final OrdenEventosProducer producer;
 ```
 
 Y al final del método `crear`, reemplaza el `return` por:
@@ -1547,7 +1547,7 @@ Y al final del método `crear`, reemplaza el `return` por:
         Orden guardada = ordenRepository.save(orden);
 
         if (guardada.getEstado() == EstadoOrden.PENDIENTE_PAGO) {
-            publisher.publicarTrasCommit(OrdenCreadaEvento.builder()
+            producer.publicarTrasCommit(OrdenCreadaEvento.builder()
                     .tipoEvento("orden.creada")
                     .ordenId(guardada.getId())
                     .idCliente(guardada.getIdCliente())
@@ -1567,7 +1567,7 @@ El evento se publica **solo** si la orden quedó `PENDIENTE_PAGO`, es decir, con
 
 **Producto del paso:** `pagatu-orden-ms` pasando la orden a `PAGADA` cuando llega la confirmación del pago.
 
-**`services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/messaging/PagoEventosListener.java`:**
+**`services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/messaging/PagoEventosConsumer.java`:**
 
 ```java
 package pe.edu.upeu.orden.messaging;
@@ -1582,7 +1582,7 @@ import pe.edu.upeu.orden.service.OrdenService;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class PagoEventosListener {
+public class PagoEventosConsumer {
 
     private static final String PAGO_VALIDADO = "pago.validado";
 
