@@ -3364,7 +3364,7 @@ curl<span class="w"> </span>http://localhost:18888/pagatu-pago-ms/prod
 <span class="p">}</span>
 </code></pre></div>
 <p>Cada <code>NewTopic</code> le pide a Kafka que cree un topic, con 3 particiones, si todavía no existe. Cada servicio declara los <strong>dos</strong> topics que usa, el que publica y el que consume: así existen con las 3 particiones sin importar cuál de los dos servicios arranque primero.</p>
-<p><strong><code>services/pagatu-pago-ms/src/main/java/pe/edu/upeu/pago/messaging/PagoEventosPublisher.java</code>:</strong></p>
+<p><strong><code>services/pagatu-pago-ms/src/main/java/pe/edu/upeu/pago/messaging/PagoEventosProducer.java</code>:</strong></p>
 <div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.pago.messaging</span><span class="p">;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">lombok.RequiredArgsConstructor</span><span class="p">;</span>
@@ -3379,7 +3379,7 @@ curl<span class="w"> </span>http://localhost:18888/pagatu-pago-ms/prod
 <span class="nd">@Slf4j</span>
 <span class="nd">@Component</span>
 <span class="nd">@RequiredArgsConstructor</span>
-<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">PagoEventosPublisher</span><span class="w"> </span><span class="p">{</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">PagoEventosProducer</span><span class="w"> </span><span class="p">{</span>
 
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">KafkaTemplate</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">PagoValidadoEvento</span><span class="o">&gt;</span><span class="w"> </span><span class="n">kafkaTemplate</span><span class="p">;</span>
 
@@ -3417,7 +3417,7 @@ curl<span class="w"> </span>http://localhost:18888/pagatu-pago-ms/prod
 <span class="p">}</span>
 </code></pre></div>
 <p><code>publicarTrasCommit</code> implementa la decisión de 2.5: registra el envío para cuando la transacción se confirme (<code>afterCommit</code>), y solo si no hay transacción en curso lo envía de inmediato. El log del resultado (<code>status=published</code>, con <code>partition</code> y <code>offset</code>) es la evidencia de publicación que se pide en 4.</p>
-<p><strong><code>services/pagatu-pago-ms/src/main/java/pe/edu/upeu/pago/messaging/OrdenEventosListener.java</code>:</strong></p>
+<p><strong><code>services/pagatu-pago-ms/src/main/java/pe/edu/upeu/pago/messaging/OrdenEventosConsumer.java</code>:</strong></p>
 <div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.pago.messaging</span><span class="p">;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">lombok.RequiredArgsConstructor</span><span class="p">;</span>
@@ -3430,7 +3430,7 @@ curl<span class="w"> </span>http://localhost:18888/pagatu-pago-ms/prod
 <span class="nd">@Slf4j</span>
 <span class="nd">@Component</span>
 <span class="nd">@RequiredArgsConstructor</span>
-<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">OrdenEventosListener</span><span class="w"> </span><span class="p">{</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">OrdenEventosConsumer</span><span class="w"> </span><span class="p">{</span>
 
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">ORDEN_CREADA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"orden.creada"</span><span class="p">;</span>
 
@@ -3470,7 +3470,7 @@ curl<span class="w"> </span>http://localhost:18888/pagatu-pago-ms/prod
 <span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.pago.entity.Pago</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.pago.event.OrdenCreadaEvento</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.pago.event.PagoValidadoEvento</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.pago.messaging.PagoEventosPublisher</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.pago.messaging.PagoEventosProducer</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.pago.repository.PagoRepository</span><span class="p">;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">java.time.Instant</span><span class="p">;</span>
@@ -3484,7 +3484,7 @@ curl<span class="w"> </span>http://localhost:18888/pagatu-pago-ms/prod
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">PAGO_VALIDADO</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"pago.validado"</span><span class="p">;</span>
 
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">PagoRepository</span><span class="w"> </span><span class="n">pagoRepository</span><span class="p">;</span>
-<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">PagoEventosPublisher</span><span class="w"> </span><span class="n">publisher</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">PagoEventosProducer</span><span class="w"> </span><span class="n">producer</span><span class="p">;</span>
 
 <span class="w">    </span><span class="nd">@Value</span><span class="p">(</span><span class="s">"${spring.application.name}"</span><span class="p">)</span>
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">nombreServicio</span><span class="p">;</span>
@@ -3500,7 +3500,7 @@ curl<span class="w"> </span>http://localhost:18888/pagatu-pago-ms/prod
 <span class="w">                </span><span class="p">.</span><span class="na">fechaPago</span><span class="p">(</span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">now</span><span class="p">())</span>
 <span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">());</span>
 
-<span class="w">        </span><span class="n">publisher</span><span class="p">.</span><span class="na">publicarTrasCommit</span><span class="p">(</span><span class="n">PagoValidadoEvento</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="n">producer</span><span class="p">.</span><span class="na">publicarTrasCommit</span><span class="p">(</span><span class="n">PagoValidadoEvento</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
 <span class="w">                </span><span class="p">.</span><span class="na">tipoEvento</span><span class="p">(</span><span class="n">PAGO_VALIDADO</span><span class="p">)</span>
 <span class="w">                </span><span class="p">.</span><span class="na">ordenId</span><span class="p">(</span><span class="n">pago</span><span class="p">.</span><span class="na">getOrdenId</span><span class="p">())</span>
 <span class="w">                </span><span class="p">.</span><span class="na">monto</span><span class="p">(</span><span class="n">pago</span><span class="p">.</span><span class="na">getMonto</span><span class="p">())</span>
@@ -3639,7 +3639,7 @@ curl<span class="w"> </span>http://localhost:18888/pagatu-pago-ms/prod
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
-<p><strong><code>services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/messaging/OrdenEventosPublisher.java</code>:</strong></p>
+<p><strong><code>services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/messaging/OrdenEventosProducer.java</code>:</strong></p>
 <div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.orden.messaging</span><span class="p">;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">lombok.RequiredArgsConstructor</span><span class="p">;</span>
@@ -3654,7 +3654,7 @@ curl<span class="w"> </span>http://localhost:18888/pagatu-pago-ms/prod
 <span class="nd">@Slf4j</span>
 <span class="nd">@Component</span>
 <span class="nd">@RequiredArgsConstructor</span>
-<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">OrdenEventosPublisher</span><span class="w"> </span><span class="p">{</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">OrdenEventosProducer</span><span class="w"> </span><span class="p">{</span>
 
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">KafkaTemplate</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">OrdenCreadaEvento</span><span class="o">&gt;</span><span class="w"> </span><span class="n">kafkaTemplate</span><span class="p">;</span>
 
@@ -3691,9 +3691,9 @@ curl<span class="w"> </span>http://localhost:18888/pagatu-pago-ms/prod
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>Es el mismo publicador de <code>pagatu-pago-ms</code> (3.14), con <code>OrdenCreadaEvento</code> y el topic <code>orden-eventos</code>. Ahora publícalo desde el servicio. En <strong><code>services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/service/OrdenServiceImpl.java</code></strong>, agrega los <code>import</code> y la dependencia:</p>
+<p>Es el mismo productor de <code>pagatu-pago-ms</code> (3.14), con <code>OrdenCreadaEvento</code> y el topic <code>orden-eventos</code>. Ahora publícalo desde el servicio. En <strong><code>services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/service/OrdenServiceImpl.java</code></strong>, agrega los <code>import</code> y la dependencia:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.orden.event.OrdenCreadaEvento</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.orden.messaging.OrdenEventosPublisher</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.orden.messaging.OrdenEventosProducer</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">lombok.extern.slf4j.Slf4j</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">java.time.Instant</span><span class="p">;</span>
 </code></pre></div>
@@ -3704,13 +3704,13 @@ curl<span class="w"> </span>http://localhost:18888/pagatu-pago-ms/prod
 
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">OrdenRepository</span><span class="w"> </span><span class="n">ordenRepository</span><span class="p">;</span>
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ProductoConsultaService</span><span class="w"> </span><span class="n">productoConsultaService</span><span class="p">;</span>
-<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">OrdenEventosPublisher</span><span class="w"> </span><span class="n">publisher</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">OrdenEventosProducer</span><span class="w"> </span><span class="n">producer</span><span class="p">;</span>
 </code></pre></div>
 <p>Y al final del método <code>crear</code>, reemplaza el <code>return</code> por:</p>
 <div class="highlight"><pre><span></span><code><span class="w">        </span><span class="n">Orden</span><span class="w"> </span><span class="n">guardada</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ordenRepository</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">orden</span><span class="p">);</span>
 
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">guardada</span><span class="p">.</span><span class="na">getEstado</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">EstadoOrden</span><span class="p">.</span><span class="na">PENDIENTE_PAGO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="n">publisher</span><span class="p">.</span><span class="na">publicarTrasCommit</span><span class="p">(</span><span class="n">OrdenCreadaEvento</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">            </span><span class="n">producer</span><span class="p">.</span><span class="na">publicarTrasCommit</span><span class="p">(</span><span class="n">OrdenCreadaEvento</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
 <span class="w">                    </span><span class="p">.</span><span class="na">tipoEvento</span><span class="p">(</span><span class="s">"orden.creada"</span><span class="p">)</span>
 <span class="w">                    </span><span class="p">.</span><span class="na">ordenId</span><span class="p">(</span><span class="n">guardada</span><span class="p">.</span><span class="na">getId</span><span class="p">())</span>
 <span class="w">                    </span><span class="p">.</span><span class="na">idCliente</span><span class="p">(</span><span class="n">guardada</span><span class="p">.</span><span class="na">getIdCliente</span><span class="p">())</span>
@@ -3726,7 +3726,7 @@ curl<span class="w"> </span>http://localhost:18888/pagatu-pago-ms/prod
 <p>El evento se publica <strong>solo</strong> si la orden quedó <code>PENDIENTE_PAGO</code>, es decir, con todos sus productos validados (S6): una orden que quedó en <code>CARRITO</code> porque un producto no se pudo consultar todavía no se puede cobrar.</p>
 <h3 id="317-consumir-pagovalidado-en-pagatu-orden-ms">3.17 Consumir <code>pago.validado</code> en <code>pagatu-orden-ms</code><a class="headerlink" href="#317-consumir-pagovalidado-en-pagatu-orden-ms" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> <code>pagatu-orden-ms</code> pasando la orden a <code>PAGADA</code> cuando llega la confirmación del pago.</p>
-<p><strong><code>services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/messaging/PagoEventosListener.java</code>:</strong></p>
+<p><strong><code>services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/messaging/PagoEventosConsumer.java</code>:</strong></p>
 <div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.orden.messaging</span><span class="p">;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">lombok.RequiredArgsConstructor</span><span class="p">;</span>
@@ -3739,7 +3739,7 @@ curl<span class="w"> </span>http://localhost:18888/pagatu-pago-ms/prod
 <span class="nd">@Slf4j</span>
 <span class="nd">@Component</span>
 <span class="nd">@RequiredArgsConstructor</span>
-<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">PagoEventosListener</span><span class="w"> </span><span class="p">{</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">PagoEventosConsumer</span><span class="w"> </span><span class="p">{</span>
 
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">PAGO_VALIDADO</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"pago.validado"</span><span class="p">;</span>
 
