@@ -2828,10 +2828,8 @@ docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> 
 <p>Contenedor esperado:</p>
 <div class="highlight"><pre><span></span><code>pagatu-eventos-py
 </code></pre></div>
-<p>Entra al contenedor y corre el consumidor primero (queda escuchando; se detiene con <code>Ctrl+C</code>):</p>
-<div class="highlight"><pre><span></span><code><span class="n">docker</span> <span class="n">compose</span> <span class="n">exec</span> <span class="n">pagatu-eventos-py</span> <span class="n">sh</span>
-</code></pre></div>
-<div class="highlight"><pre><span></span><code>python<span class="w"> </span>/app/consumer_ordenes.py
+<p>Corre el consumidor primero (queda escuchando; se detiene con <code>Ctrl+C</code>):</p>
+<div class="highlight"><pre><span></span><code><span class="n">docker</span> <span class="n">compose</span> <span class="n">exec</span> <span class="n">pagatu-eventos-py</span> <span class="n">python</span> <span class="p">/</span><span class="n">app</span><span class="p">/</span><span class="n">consumer_ordenes</span><span class="p">.</span><span class="n">py</span>
 </code></pre></div>
 <p>En <strong>otra terminal</strong>, corre el productor (publica un evento cada 2 segundos, en bucle infinito; también se detiene con <code>Ctrl+C</code>):</p>
 <div class="highlight"><pre><span></span><code><span class="n">docker</span> <span class="n">compose</span> <span class="n">exec</span> <span class="n">pagatu-eventos-py</span> <span class="n">python</span> <span class="p">/</span><span class="n">app</span><span class="p">/</span><span class="n">producer_ordenes</span><span class="p">.</span><span class="n">py</span>
