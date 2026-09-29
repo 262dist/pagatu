@@ -28,17 +28,11 @@ docker compose ps
 pagatu-eventos-py
 ```
 
-Entrar al contenedor:
-
-```powershell
-docker compose exec pagatu-eventos-py sh
-```
-
 Ejecutar el consumer primero (queda escuchando, no termina solo — usa
 `Ctrl+C` para salir):
 
-```bash
-python /app/consumer_ordenes.py
+```powershell
+docker compose exec pagatu-eventos-py python /app/consumer_ordenes.py
 ```
 
 En **otra terminal**, ejecutar el producer (publica un evento cada 2

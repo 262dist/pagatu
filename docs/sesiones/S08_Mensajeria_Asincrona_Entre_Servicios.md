@@ -549,14 +549,10 @@ Contenedor esperado:
 pagatu-eventos-py
 ```
 
-Entra al contenedor y corre el consumidor primero (queda escuchando; se detiene con `Ctrl+C`):
+Corre el consumidor primero (queda escuchando; se detiene con `Ctrl+C`):
 
 ```powershell
-docker compose exec pagatu-eventos-py sh
-```
-
-```bash
-python /app/consumer_ordenes.py
+docker compose exec pagatu-eventos-py python /app/consumer_ordenes.py
 ```
 
 En **otra terminal**, corre el productor (publica un evento cada 2 segundos, en bucle infinito; también se detiene con `Ctrl+C`):
