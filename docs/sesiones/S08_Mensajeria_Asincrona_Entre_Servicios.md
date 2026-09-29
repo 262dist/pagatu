@@ -35,7 +35,7 @@ Kafka y Kafka UI corriendo en DEV (desarrollo, puertos `19092` y `18085`) y con 
 | Actividades a Realizar en el Periodo | Orientaciones generales (Orientaciones Metodológicas) | Material de estudio recomendado |
 |---|---|---|
 | Revisión previa individual | Confirmar que `pagatu-config`, `pagatu-eureka`, `pagatu-gateway`, `pagatu-auth-ms`, `pagatu-catalogo-ms` y `pagatu-orden-ms` (S1-S7) siguen arrancando en DEV, y que puedes crear una orden autenticado como `CLIENTE` (S7, 3.23). Trabajo individual, antes de clase. | Evidencia individual de S7, [Alcance por microservicio y proyecto base](../proyecto-sello/alcance-microservicios.md). |
-| Clase presencial | Construcción guiada de `pagatu-pago-ms`, del intermediario Kafka y de los eventos entre `pagatu-orden-ms` y `pagatu-pago-ms`. Trabajo individual, siguiendo al docente paso a paso; consulta inmediata ante un evento que no llega o un servicio que no consume. | Pasos 3.1 a 3.16 de esta guía. |
+| Clase presencial | Construcción guiada de `pagatu-pago-ms`, del intermediario Kafka y de los eventos entre `pagatu-orden-ms` y `pagatu-pago-ms`. Trabajo individual, siguiendo al docente paso a paso; consulta inmediata ante un evento que no llega o un servicio que no consume. | Pasos 3.1 a 3.20 de esta guía. |
 | Evaluación formativa | Revisión en clase de la orden pasando de `PENDIENTE_PAGO` a `PAGADA` por eventos, y de la prueba de desacople con `pagatu-pago-ms` apagado. La evidencia se completa y sustenta de forma individual, fuera del aula, según los criterios mínimos de la sección 4.4. | Indicaciones de entrega (4.3), rúbrica de evaluación (4.6). |
 
 ### 1.6 Motivación de la sesión
@@ -207,11 +207,11 @@ Los eventos de `pagatu` hacen lo segundo: `orden.creada` lleva el monto y el mé
 | Origen | Quién lo publicó. | `origen` |
 | Momento | Cuándo ocurrió, en milisegundos *epoch*. | `timestamp` |
 
-El **contrato** del evento es el acuerdo entre quien lo publica y quien lo consume sobre esas partes: nombres, tipos y significado, escritos en JSON (*JavaScript Object Notation*). En `pagatu` cada servicio tiene **su propia copia** de las clases del evento, en su paquete `event`: no hay una librería compartida, porque compartirla ataría los dos servicios a la misma versión y volvería a acoplarlos. Lo que los mantiene de acuerdo es el contrato documentado (3.16).
+El **contrato** del evento es el acuerdo entre quien lo publica y quien lo consume sobre esas partes: nombres, tipos y significado, escritos en JSON (*JavaScript Object Notation*). En `pagatu` cada servicio tiene **su propia copia** de las clases del evento, en su paquete `event`: no hay una librería compartida, porque compartirla ataría los dos servicios a la misma versión y volvería a acoplarlos. Lo que los mantiene de acuerdo es el contrato documentado (3.20).
 
 ### 2.5 Desacople entre servicios y su evidencia
 
-Dos servicios están **desacoplados** cuando pueden cambiar, fallar o apagarse por separado sin arrastrar al otro. Con eventos, `pagatu-orden-ms` no sabe si `pagatu-pago-ms` existe: solo publica un hecho. Y como Kafka conserva los mensajes, si `pagatu-pago-ms` está apagado, `orden-eventos` acumula los avisos; al volver, el servicio retoma desde su último *offset*. Esa es la evidencia que se pide hoy (3.15): apagar un servicio y comprobar que el otro no se entera.
+Dos servicios están **desacoplados** cuando pueden cambiar, fallar o apagarse por separado sin arrastrar al otro. Con eventos, `pagatu-orden-ms` no sabe si `pagatu-pago-ms` existe: solo publica un hecho. Y como Kafka conserva los mensajes, si `pagatu-pago-ms` está apagado, `orden-eventos` acumula los avisos; al volver, el servicio retoma desde su último *offset*. Esa es la evidencia que se pide hoy (3.19): apagar un servicio y comprobar que el otro no se entera.
 
 **Figura 3. Recorrido de una orden pagada, de punta a punta**
 
@@ -258,26 +258,30 @@ Tiempo: 4h.
 
 **Propósito de la actividad:** que cada estudiante implemente, de punta a punta y con evidencia real, una comunicación por eventos entre dos servicios desacoplados: publicar, consumir, y comprobar qué pasa cuando uno de los dos no está.
 
-**Orientaciones metodológicas:** en el laboratorio, el docente construye la sesión en orden frente a la clase — primero Kafka y `pagatu-pago-ms` (3.2 a 3.11), después los cambios en `pagatu-orden-ms` (3.12 y 3.13), al final las pruebas (3.14 y 3.15) —; los estudiantes replican cada paso en su propio equipo y provocan ellos mismos la prueba de desacople para ver en su propia consola y en Kafka UI qué pasa con los mensajes pendientes.
+**Orientaciones metodológicas:** en el laboratorio, el docente construye la sesión en orden frente a la clase — primero Kafka, sus tres pruebas rápidas y `pagatu-pago-ms` (3.2 a 3.15), después los cambios en `pagatu-orden-ms` (3.16 y 3.17), al final las pruebas (3.18 y 3.19) —; los estudiantes replican cada paso en su propio equipo y provocan ellos mismos la prueba de desacople para ver en su propia consola y en Kafka UI qué pasa con los mensajes pendientes.
 
 **Actividades para realizar:**
 
 - **3.1** Verificar el punto de partida.
 - **3.2** Levantar Kafka y Kafka UI.
-- **3.3** Levantar la base de datos de `pagatu-pago-ms`.
-- **3.4** Crear el proyecto base de `pagatu-pago-ms`.
-- **3.5** Crear el manejador de errores y el filtro de trazabilidad.
-- **3.6** Conectar `pagatu-pago-ms` a `pagatu-config` y a `pagatu-eureka`, y crear su migración.
-- **3.7** Configurar `pagatu-pago-ms` en `config-repo`.
-- **3.8** Crear la entidad `Pago` y su repositorio.
-- **3.9** Crear el contrato de los eventos en `pagatu-pago-ms`.
-- **3.10** Consumir `orden.creada` y publicar `pago.validado`.
-- **3.11** Levantar `pagatu-pago-ms` y comprobar que escucha.
-- **3.12** Publicar `orden.creada` desde `pagatu-orden-ms`.
-- **3.13** Consumir `pago.validado` en `pagatu-orden-ms`.
-- **3.14** Probar de punta a punta.
-- **3.15** Probar el desacople.
-- **3.16** Documentar el contrato de los eventos.
+- **3.3** Probar Kafka por consola.
+- **3.4** Verificar con Kafka UI.
+- **3.5** Probar el contrato del evento desde Kafka UI.
+- **3.6** Probar con Python (uso rápido).
+- **3.7** Levantar la base de datos de `pagatu-pago-ms`.
+- **3.8** Crear el proyecto base de `pagatu-pago-ms`.
+- **3.9** Crear el manejador de errores y el filtro de trazabilidad.
+- **3.10** Conectar `pagatu-pago-ms` a `pagatu-config` y a `pagatu-eureka`, y crear su migración.
+- **3.11** Configurar `pagatu-pago-ms` en `config-repo`.
+- **3.12** Crear la entidad `Pago` y su repositorio.
+- **3.13** Crear el contrato de los eventos en `pagatu-pago-ms`.
+- **3.14** Consumir `orden.creada` y publicar `pago.validado`.
+- **3.15** Levantar `pagatu-pago-ms` y comprobar que escucha.
+- **3.16** Publicar `orden.creada` desde `pagatu-orden-ms`.
+- **3.17** Consumir `pago.validado` en `pagatu-orden-ms`.
+- **3.18** Probar de punta a punta.
+- **3.19** Probar el desacople.
+- **3.20** Documentar el contrato de los eventos.
 
 **Punto de partida común:** todo el equipo debe comenzar exactamente desde donde quedó S7 (seguridad distribuida), no desde su propio avance individual. Clona la rama `s07-seguridad-jwt`:
 
@@ -291,7 +295,7 @@ git clone --branch s07-seguridad-jwt https://github.com/262dist/pagatu.git
 
 Levanta en DEV, cada uno en su terminal, `pagatu-config`, `pagatu-eureka`, `pagatu-gateway`, `pagatu-auth-ms`, `pagatu-catalogo-ms` y `pagatu-orden-ms`, con sus bases de datos (`compose-dev.yml` de cada servicio). Si alguno falla en arrancar, el problema es de una sesión anterior, no de esta.
 
-Obtén el token de `cliente@pagatu.com` a través del Gateway y guárdalo en una variable (la usas en 3.14 y 3.15):
+Obtén el token de `cliente@pagatu.com` a través del Gateway y guárdalo en una variable (la usas en 3.18 y 3.19):
 
 PowerShell:
 
@@ -339,6 +343,7 @@ services:
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
     networks:
       pagatu-kafka-dev-net:
         aliases:
@@ -363,7 +368,9 @@ networks:
     name: pagatu-kafka-dev-net
 ```
 
-El broker tiene **dos** direcciones de escucha, y es lo que más confunde: `INTERNAL` (`kafka:9092`) es la que usan otros contenedores, como Kafka UI; `EXTERNAL` (`localhost:19092`) es la que usan los servicios Spring Boot que corren en tu máquina con `mvnw` (`bootstrap-servers` de 3.7). Cada cliente se conecta a la dirección que el broker le **anuncia**, por eso `KAFKA_ADVERTISED_LISTENERS` declara las dos.
+El broker tiene **dos** direcciones de escucha, y es lo que más confunde: `INTERNAL` (`kafka:9092`) es la que usan otros contenedores, como Kafka UI; `EXTERNAL` (`localhost:19092`) es la que usan los servicios Spring Boot que corren en tu máquina con `mvnw` (`bootstrap-servers` de 3.11). Cada cliente se conecta a la dirección que el broker le **anuncia**, por eso `KAFKA_ADVERTISED_LISTENERS` declara las dos.
+
+`KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"` es intencional: cada topic se crea de forma explícita (3.3, 3.14), con las particiones que decides — no aparece solo la primera vez que alguien publica en un nombre nuevo, un error común que oculta un typo en el nombre del topic detrás de un topic "fantasma" con una sola partición por defecto, en vez de las 3 que espera el código (3.14).
 
 **`kafka/compose.yml`:**
 
@@ -388,6 +395,7 @@ services:
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@pagatu-kafka:9093
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
     networks:
       - pagatu-prod-net
 
@@ -422,7 +430,146 @@ docker compose -f compose-dev.yml up -d
 
 Abre `http://localhost:18085`: Kafka UI debe mostrar el clúster `pagatu-dev` en línea, sin ningún topic todavía.
 
-### 3.3 Levantar la base de datos de `pagatu-pago-ms`
+### 3.3 Probar Kafka por consola
+
+**Producto del paso:** el topic `orden-eventos` creado a mano, con las mismas 3 particiones que declarará el código en 3.14, y probado con un producer y un consumer manuales.
+
+Entra al contenedor:
+
+```powershell
+docker compose -f kafka/compose-dev.yml exec kafka bash
+```
+
+Crea el topic, ya con las 3 particiones que `pagatu-pago-ms` declarará en su código (3.14) — si lo creas con menos, Spring no las corrige después, solo usa el topic tal como está:
+
+```bash
+/opt/kafka/bin/kafka-topics.sh --create \
+  --topic orden-eventos \
+  --bootstrap-server kafka:9092 \
+  --partitions 3 \
+  --replication-factor 1
+```
+
+Lista los topics:
+
+```bash
+/opt/kafka/bin/kafka-topics.sh --list --bootstrap-server kafka:9092
+```
+
+Resultado esperado:
+
+```text
+orden-eventos
+```
+
+**Terminal 1** (consumer):
+
+```powershell
+docker compose -f kafka/compose-dev.yml exec kafka bash
+```
+
+```bash
+/opt/kafka/bin/kafka-console-consumer.sh \
+  --topic orden-eventos \
+  --bootstrap-server kafka:9092 \
+  --from-beginning
+```
+
+**Terminal 2** (producer):
+
+```powershell
+docker compose -f kafka/compose-dev.yml exec kafka bash
+```
+
+```bash
+/opt/kafka/bin/kafka-console-producer.sh \
+  --topic orden-eventos \
+  --bootstrap-server kafka:9092
+```
+
+Escribe:
+
+```text
+hola kafka
+```
+
+El consumer de la Terminal 1 debe mostrar ese mismo texto de inmediato.
+
+Nota el `--bootstrap-server kafka:9092`, no `localhost:19092`: dentro del contenedor usas la dirección `INTERNAL` (3.2), la misma que usa Kafka UI; `localhost:19092` (`EXTERNAL`) es solo para clientes que corren fuera de Docker, como `pagatu-pago-ms` (3.11) más adelante.
+
+**Error frecuente**: crear el topic sin `--partitions 3` (o dejar que se autocree al publicar, si `KAFKA_AUTO_CREATE_TOPICS_ENABLE` estuviera en `true`). Con una sola partición, `pagatu-pago-ms` arranca igual en 3.15, pero el topic se queda con 1 partición para siempre: Spring solo pide crear el topic si no existe, nunca cambia las particiones de uno que ya existe. Bórralo (`--delete`) y créalo de nuevo con `--partitions 3` si esto pasa.
+
+### 3.4 Verificar con Kafka UI
+
+**Producto del paso:** confirmación visual del topic, sus mensajes y sus offsets.
+
+Abre `http://localhost:18085` y verifica:
+
+- El clúster `pagatu-dev` aparece conectado.
+- El topic `orden-eventos` existe, con 3 particiones.
+- El mensaje manual de 3.3 aparece en la pestaña de mensajes, con columnas `partition` y `offset`.
+
+### 3.5 Probar el contrato del evento desde Kafka UI
+
+**Producto del paso:** confirmación de que un mensaje con la forma real de `orden.creada` (2.4) se puede publicar y leer, antes de escribir ninguna clase Java para eso.
+
+El productor y el consumidor de consola de 3.3 mueven **texto**, no el evento real: sirven para probar que Kafka funciona, no para probar el contrato. Kafka UI, además de mostrar mensajes, puede publicarlos: en el topic `orden-eventos`, busca la opción para producir un mensaje (normalmente un botón "Produce Message" en la vista del topic) y publica este valor, con la *key* `321`:
+
+```json
+{
+  "tipoEvento": "orden.creada",
+  "ordenId": 321,
+  "idCliente": 7,
+  "total": 180.00,
+  "metodoPago": "TARJETA",
+  "origen": "kafka-ui",
+  "timestamp": 1713350000000
+}
+```
+
+Es exactamente la forma de `OrdenCreadaEvento` (3.13, 3.16): los mismos siete campos, en el mismo orden en que `pagatu-pago-ms` los va a esperar. Confirma que el mensaje aparece en la pestaña de mensajes de Kafka UI, y en la Terminal 1 de 3.3 (si el consumer de consola sigue abierto) — ahí se ve como texto JSON plano, porque un consumer de consola no lo deserializa a ninguna clase.
+
+**Error frecuente**: pegar el JSON con una coma de más o una comilla sin cerrar. Kafka UI no valida que el valor sea JSON — lo publica igual, como texto — así que el error no aparece ahora, sino después, cuando `pagatu-pago-ms` (3.15) lo reciba y el `ErrorHandlingDeserializer` (3.11) lo marque como inválido en el log.
+
+### 3.6 Probar con Python (uso rápido)
+
+**Producto del paso:** el mismo evento `orden.creada` publicado y consumido, ahora con un cliente distinto al de consola y al de Kafka UI — un productor y un consumidor reales en Python, en bucle, para confirmar que el flujo aguanta tráfico continuo antes de escribir la primera línea de `pagatu-pago-ms`.
+
+Los pasos 3.3 a 3.5 prueban Kafka de a un mensaje a la vez, escrito a mano. `uso-rapido/pagatu-eventos-py/` es un contenedor Python independiente, sin ningún puerto expuesto (no es un servicio con el que hable nada más que Kafka), con un productor que publica un evento cada 2 segundos en bucle y un consumidor que los procesa y registra en el mismo formato de log (`component`, `eventType`, `ordenId`, `status`) que usarán después `pagatu-pago-ms` (3.14) y `pagatu-orden-ms` (3.16).
+
+```powershell
+cd uso-rapido/pagatu-eventos-py
+docker compose up -d --build
+docker compose ps
+```
+
+Contenedor esperado:
+
+```text
+pagatu-eventos-py
+```
+
+Entra al contenedor y corre el consumidor primero (queda escuchando; se detiene con `Ctrl+C`):
+
+```powershell
+docker compose exec pagatu-eventos-py sh
+```
+
+```bash
+python /app/consumer_ordenes.py
+```
+
+En **otra terminal**, corre el productor (publica un evento cada 2 segundos, en bucle infinito; también se detiene con `Ctrl+C`):
+
+```powershell
+docker compose exec pagatu-eventos-py python /app/producer_ordenes.py
+```
+
+El consumidor debe imprimir una línea JSON por evento, con `topic`/`partition`/`offset` reales del mismo topic `orden-eventos` de 3.3, `idCliente` y `metodoPago` (no `estado`: ese campo no existe en el contrato de `pagatu`, a diferencia de otros cursos) y `status: "consumed"`. Publica también, desde otra terminal, texto plano en el topic (el mismo `kafka-console-producer.sh` de 3.3, o el JSON de 3.5 con una coma de más): el consumidor no debe caerse, debe marcarlo `status: "invalid"` y exponer `rawPayload`/`decodeError` — un consumidor real convive con mensajes que no controla, y ya se está preparando el mismo criterio que usará `ErrorHandlingDeserializer` en `pagatu-pago-ms` (3.11).
+
+**Error frecuente**: el contenedor no arranca, con un error de red al unirse a `pagatu-kafka-dev-net`. Kafka (3.2) tiene que estar levantado primero — esta red la crea `kafka/compose-dev.yml`, no este `compose.yml`, que solo se conecta a ella como red externa.
+
+### 3.7 Levantar la base de datos de `pagatu-pago-ms`
 
 **Producto del paso:** PostgreSQL de `pagatu-pago-ms` corriendo en DEV.
 
@@ -464,7 +611,7 @@ docker exec -it pagatu-postgres-pago-dev psql -U pagatu -d pagatu_pago_db -c "SE
 
 Resultado esperado: `pagatu_pago_db`.
 
-### 3.4 Crear el proyecto base de `pagatu-pago-ms`
+### 3.8 Crear el proyecto base de `pagatu-pago-ms`
 
 **Producto del paso:** proyecto `pagatu-pago-ms` creado, con las mismas dependencias base que `pagatu-orden-ms` más Kafka.
 
@@ -494,7 +641,7 @@ Resultado esperado: `pagatu_pago_db`.
 
 Config Client y Eureka Discovery Client se marcan aquí, desde el inicio, con la propiedad `<spring-cloud.version>` y el `<dependencyManagement>` que Spring Initializr genera por su cuenta. Ubica el proyecto en `services/pagatu-pago-ms`.
 
-### 3.5 Crear el manejador de errores y el filtro de trazabilidad
+### 3.9 Crear el manejador de errores y el filtro de trazabilidad
 
 **Producto del paso:** `pagatu-pago-ms` con el mismo manejo de errores y la misma trazabilidad por petición que `pagatu-catalogo-ms` (S1) y `pagatu-orden-ms` (S6).
 
@@ -637,7 +784,7 @@ public class CorrelationIdFilter extends OncePerRequestFilter {
 </configuration>
 ```
 
-### 3.6 Conectar `pagatu-pago-ms` a `pagatu-config` y a `pagatu-eureka`, y crear su migración
+### 3.10 Conectar `pagatu-pago-ms` a `pagatu-config` y a `pagatu-eureka`, y crear su migración
 
 **Producto del paso:** `pagatu-pago-ms` que trae su configuración de `pagatu-config`, se registra en `pagatu-eureka` y tiene su tabla de pagos.
 
@@ -672,7 +819,7 @@ CREATE TABLE IF NOT EXISTS pagos (
 
 `orden_id` es `UNIQUE`: una orden se paga una sola vez. No es una llave foránea, porque la orden vive en **otra** base de datos (la de `pagatu-orden-ms`); `pagatu-pago-ms` solo guarda su número.
 
-### 3.7 Configurar `pagatu-pago-ms` en `config-repo`
+### 3.11 Configurar `pagatu-pago-ms` en `config-repo`
 
 **Producto del paso:** los archivos de configuración DEV y PROD de `pagatu-pago-ms`, con la conexión a Kafka.
 
@@ -836,7 +983,7 @@ curl http://localhost:18888/pagatu-pago-ms/dev
 curl http://localhost:18888/pagatu-pago-ms/prod
 ```
 
-### 3.8 Crear la entidad `Pago` y su repositorio
+### 3.12 Crear la entidad `Pago` y su repositorio
 
 **Producto del paso:** mapeo JPA (*Jakarta Persistence API*) de la tabla `pagos`.
 
@@ -906,7 +1053,7 @@ public interface PagoRepository extends JpaRepository<Pago, Long> {
 
 `EstadoPago` tiene hoy un solo valor, `VALIDADO`, porque la pasarela de pagos se simula y siempre valida. El estado de un pago que falla llega en S9.
 
-### 3.9 Crear el contrato de los eventos en `pagatu-pago-ms`
+### 3.13 Crear el contrato de los eventos en `pagatu-pago-ms`
 
 **Producto del paso:** las clases que representan los dos eventos, tal como las ve este servicio.
 
@@ -965,9 +1112,9 @@ public class PagoValidadoEvento {
 }
 ```
 
-`OrdenCreadaEvento` es lo que `pagatu-pago-ms` **consume**; `PagoValidadoEvento`, lo que **publica**. Son clases sin lógica: solo describen el mensaje. `pagatu-orden-ms` tendrá su propia copia (3.12), como se explicó en 2.4.
+`OrdenCreadaEvento` es lo que `pagatu-pago-ms` **consume**; `PagoValidadoEvento`, lo que **publica**. Son clases sin lógica: solo describen el mensaje. `pagatu-orden-ms` tendrá su propia copia (3.16), como se explicó en 2.4.
 
-### 3.10 Consumir `orden.creada` y publicar `pago.validado`
+### 3.14 Consumir `orden.creada` y publicar `pago.validado`
 
 **Producto del paso:** el flujo completo de `pagatu-pago-ms`: escucha `orden-eventos`, guarda el pago y publica `pago.validado`.
 
@@ -1166,7 +1313,7 @@ public class PagoServiceImpl implements PagoService {
 
 **Error frecuente**: `pagatu-pago-ms` arranca sin errores pero nunca procesa nada. Revisa que `app.kafka.topic.ordenes` valga exactamente `orden-eventos`, el mismo nombre que usa `pagatu-orden-ms` al publicar: un topic con otro nombre es otro topic, y Kafka no avisa.
 
-### 3.11 Levantar `pagatu-pago-ms` y comprobar que escucha
+### 3.15 Levantar `pagatu-pago-ms` y comprobar que escucha
 
 **Producto del paso:** `pagatu-pago-ms` corriendo, con su tabla creada y suscrito a `orden-eventos`.
 
@@ -1196,11 +1343,11 @@ Resultado esperado: `pagos` y `flyway_schema_history`.
 
 **Error frecuente**: en el log se repite `Connection to node -1 (localhost/127.0.0.1:19092) could not be established`. Kafka no está corriendo, o el `bootstrap-servers` no apunta a la dirección `EXTERNAL`. Revisa `docker ps` y 3.2.
 
-### 3.12 Publicar `orden.creada` desde `pagatu-orden-ms`
+### 3.16 Publicar `orden.creada` desde `pagatu-orden-ms`
 
 **Producto del paso:** `pagatu-orden-ms` publicando `orden.creada` cada vez que registra una orden lista para pagar.
 
-Primero agrega Kafka al `pom.xml` de `pagatu-orden-ms`, con la misma dependencia de 3.4:
+Primero agrega Kafka al `pom.xml` de `pagatu-orden-ms`, con la misma dependencia de 3.8:
 
 ```xml
 <dependency>
@@ -1238,7 +1385,7 @@ app:
       pagos: pago-eventos
 ```
 
-En PROD el bloque es idéntico, salvo `bootstrap-servers: pagatu-kafka:9092`. Es la misma configuración de 3.7, con dos cambios: el `group-id` y el tipo que se espera recibir (`PagoValidadoEvento`, porque `pagatu-orden-ms` consume `pago-eventos`).
+En PROD el bloque es idéntico, salvo `bootstrap-servers: pagatu-kafka:9092`. Es la misma configuración de 3.11, con dos cambios: el `group-id` y el tipo que se espera recibir (`PagoValidadoEvento`, porque `pagatu-orden-ms` consume `pago-eventos`).
 
 Las clases del evento, la de los topics (que declara los dos topics, igual que en `pagatu-pago-ms`) y la que publica:
 
@@ -1378,7 +1525,7 @@ public class OrdenEventosPublisher {
 }
 ```
 
-Es el mismo publicador de `pagatu-pago-ms` (3.10), con `OrdenCreadaEvento` y el topic `orden-eventos`. Ahora publícalo desde el servicio. En **`services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/service/OrdenServiceImpl.java`**, agrega los `import` y la dependencia:
+Es el mismo publicador de `pagatu-pago-ms` (3.14), con `OrdenCreadaEvento` y el topic `orden-eventos`. Ahora publícalo desde el servicio. En **`services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/service/OrdenServiceImpl.java`**, agrega los `import` y la dependencia:
 
 ```java
 import pe.edu.upeu.orden.event.OrdenCreadaEvento;
@@ -1420,7 +1567,7 @@ Y al final del método `crear`, reemplaza el `return` por:
 
 El evento se publica **solo** si la orden quedó `PENDIENTE_PAGO`, es decir, con todos sus productos validados (S6): una orden que quedó en `CARRITO` porque un producto no se pudo consultar todavía no se puede cobrar.
 
-### 3.13 Consumir `pago.validado` en `pagatu-orden-ms`
+### 3.17 Consumir `pago.validado` en `pagatu-orden-ms`
 
 **Producto del paso:** `pagatu-orden-ms` pasando la orden a `PAGADA` cuando llega la confirmación del pago.
 
@@ -1484,7 +1631,7 @@ Solo una orden `PENDIENTE_PAGO` pasa a `PAGADA`; cualquier otra se ignora y se r
 
 Reinicia `pagatu-orden-ms` para que lea la configuración nueva y arranque el consumidor. En su log debes ver `partitions assigned` seguido de las particiones de `pago-eventos`.
 
-### 3.14 Probar de punta a punta
+### 3.18 Probar de punta a punta
 
 **Producto del paso:** una orden que pasa de `PENDIENTE_PAGO` a `PAGADA` por eventos, con la evidencia en cada punto.
 
@@ -1543,20 +1690,20 @@ Resultado esperado: `PAGADA`. Nadie la marcó a mano: pasó por los eventos.
 
 **Error frecuente**: la orden se queda en `PENDIENTE_PAGO` para siempre. Sigue la cadena de 2.6: ¿el log de `pagatu-orden-ms` muestra `status=published`? ¿El mensaje está en el topic, en Kafka UI? ¿`pagatu-pago-ms` lo consumió? El primer eslabón que falla es el problema.
 
-### 3.15 Probar el desacople
+### 3.19 Probar el desacople
 
 **Producto del paso:** la evidencia de que `pagatu-orden-ms` no depende de que `pagatu-pago-ms` esté encendido, y de que ningún aviso se pierde mientras tanto.
 
 1. **Apaga `pagatu-pago-ms`** (`Ctrl+C` en su terminal). En Eureka, `PAGATU-PAGO-MS` desaparece tras unos segundos.
-2. **Crea una orden** con el mismo comando de 3.14. Resultado esperado: `201 Created`, igual que antes. `pagatu-orden-ms` no notó la ausencia.
+2. **Crea una orden** con el mismo comando de 3.18. Resultado esperado: `201 Created`, igual que antes. `pagatu-orden-ms` no notó la ausencia.
 3. **Consulta la orden:** sigue en `PENDIENTE_PAGO`, porque nadie ha cobrado.
 4. **Mira Kafka UI:** en el topic `orden-eventos`, el mensaje está ahí; en *Consumers*, el grupo `pagatu-pago-ms` muestra *lag* `1`: un aviso esperando.
-5. **Levanta `pagatu-pago-ms`** de nuevo (3.11). En su log aparece, de inmediato, el `status=consumed` del evento pendiente.
+5. **Levanta `pagatu-pago-ms`** de nuevo (3.15). En su log aparece, de inmediato, el `status=consumed` del evento pendiente.
 6. **Consulta la orden otra vez:** ahora `PAGADA`, y el *lag* del grupo volvió a `0`.
 
 Es la evidencia central de la sesión: mientras un servicio estuvo caído, el otro siguió funcionando, y el aviso esperó en Kafka hasta que hubo quien lo atendiera. Con una llamada síncrona (S6), el paso 2 habría fallado.
 
-### 3.16 Documentar el contrato de los eventos
+### 3.20 Documentar el contrato de los eventos
 
 **Producto del paso:** el contrato de `orden.creada` y `pago.validado` documentado, mismo formato de los eventos de un sistema real.
 
@@ -1568,7 +1715,7 @@ Topic:
 orden-eventos
 ```
 
-Productor: `pagatu-orden-ms` (3.12). Consumidor: `pagatu-pago-ms` (3.10). *Key*: `ordenId`. Se publica al registrar una orden en estado `PENDIENTE_PAGO`.
+Productor: `pagatu-orden-ms` (3.16). Consumidor: `pagatu-pago-ms` (3.14). *Key*: `ordenId`. Se publica al registrar una orden en estado `PENDIENTE_PAGO`.
 
 Payload:
 
@@ -1602,7 +1749,7 @@ Topic:
 pago-eventos
 ```
 
-Productor: `pagatu-pago-ms` (3.10). Consumidor: `pagatu-orden-ms` (3.13). *Key*: `ordenId`. Se publica cuando el pago quedó guardado como `VALIDADO`.
+Productor: `pagatu-pago-ms` (3.14). Consumidor: `pagatu-orden-ms` (3.17). *Key*: `ordenId`. Se publica cuando el pago quedó guardado como `VALIDADO`.
 
 Payload:
 
@@ -1626,7 +1773,7 @@ Payload:
 | `origen` | string | Servicio que publicó el evento. |
 | `timestamp` | number | Momento de publicación, en milisegundos *epoch*. |
 
-Los dos payloads son los que produce el código de hoy: los `JSON` de arriba salen de serializar los eventos de 3.9 y 3.12 con la configuración de 3.7. Si cambias un campo en un servicio, el contrato cambia para los dos: actualiza la clase de ambos y esta tabla.
+Los dos payloads son los que produce el código de hoy: los `JSON` de arriba salen de serializar los eventos de 3.13 y 3.16 con la configuración de 3.11. Si cambias un campo en un servicio, el contrato cambia para los dos: actualiza la clase de ambos y esta tabla.
 
 **Evidencia de aprendizaje:**
 
@@ -1648,8 +1795,8 @@ Integración de un **evento de negocio adicional** en el sistema propio del equi
 Completa y evidencia estas tareas:
 
 1. Elige un evento de negocio de tu propio dominio que **no** sea `orden.creada` ni `pago.validado`, y que otro servicio necesite conocer (por ejemplo, en `pagatu`: `pago.validado` consumido por `pagatu-cliente-ms` para registrar el envío del comprobante al WhatsApp del cliente).
-2. Define su contrato: nombre del evento, topic, *key*, y cada campo con su tipo y su significado, con el mismo formato de 3.16.
-3. Publícalo desde el servicio dueño del hecho, **después** de que la transacción se confirme, con un log de publicación como el de 3.10.
+2. Define su contrato: nombre del evento, topic, *key*, y cada campo con su tipo y su significado, con el mismo formato de 3.20.
+3. Publícalo desde el servicio dueño del hecho, **después** de que la transacción se confirme, con un log de publicación como el de 3.14.
 4. Consúmelo en un servicio distinto (nuevo o existente) con su propio `group-id`, sin que los dos servicios se llamen directamente.
 5. Prueba el flujo completo y evidencia la publicación, el mensaje en Kafka UI y el consumo.
 6. Prueba el desacople: apaga el servicio consumidor, publica el evento, comprueba el *lag* en Kafka UI, y vuelve a encenderlo.

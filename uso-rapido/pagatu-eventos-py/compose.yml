@@ -1,0 +1,17 @@
+name: pagatu-eventos-py
+
+services:
+  pagatu-eventos-py:
+    build: .
+    container_name: pagatu-eventos-py
+    volumes:
+      - ./app:/app
+    working_dir: /app
+    command: sleep infinity
+    networks:
+      - pagatu-kafka-dev-net
+
+networks:
+  pagatu-kafka-dev-net:
+    external: true
+    name: pagatu-kafka-dev-net
