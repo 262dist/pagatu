@@ -12,7 +12,7 @@ import pe.edu.upeu.pago.event.PagoValidadoEvento;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class PagoEventosPublisher {
+public class PagoEventosProducer {
 
     private final KafkaTemplate<String, PagoValidadoEvento> kafkaTemplate;
 

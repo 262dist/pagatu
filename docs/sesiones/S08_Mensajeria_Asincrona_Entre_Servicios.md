@@ -26,7 +26,7 @@ Al concluir la clase, estarás en condiciones de:
 
 ### 1.4 Producto de sesión
 
-Kafka y Kafka UI corriendo en DEV (desarrollo, puertos `19092` y `18085`) y con su definición para PROD (producción) local (`29092` y `28085`); el topic `orden-eventos` probado manualmente por consola, por Kafka UI y por un productor/consumidor en Python; `pagatu-pago-ms` como cuarto microservicio del proyecto, que consume `orden.creada` del topic `orden-eventos` y publica `pago.validado` en `pago-eventos`; `pagatu-orden-ms` publicando `orden.creada` al registrar una orden y consumiendo `pago.validado` para pasarla a `PAGADA`; el contrato de los dos eventos documentado; y la evidencia de que los servicios están desacoplados (con `pagatu-pago-ms` apagado, la orden se registra igual y se paga cuando el servicio vuelve).
+Kafka y Kafka UI corriendo en DEV (desarrollo, puertos `19092` y `18085`) y con su definición para PROD (producción) local (`29092` y `28085`); el topic `orden-eventos` probado manualmente por consola, por Kafka UI y por un productor/consumidor en Python; `pagatu-pago-ms` como cuarto microservicio del proyecto, que consume `orden.creada` del topic `orden-eventos`, publica `pago.validado` en `pago-eventos` y expone `GET /api/v1/pagos`/`GET /api/v1/pagos/{id}` (con Spring Security ya conectado al JWT de `pagatu-auth-ms`, sin exigirlo todavía); `pagatu-orden-ms` publicando `orden.creada` al registrar una orden y consumiendo `pago.validado` para pasarla a `PAGADA`; el contrato de los dos eventos documentado; y la evidencia de que los servicios están desacoplados (con `pagatu-pago-ms` apagado, la orden se registra igual y se paga cuando el servicio vuelve).
 
 ### 1.5 Metodología
 
@@ -35,7 +35,7 @@ Kafka y Kafka UI corriendo en DEV (desarrollo, puertos `19092` y `18085`) y con 
 | Actividades a Realizar en el Periodo | Orientaciones generales (Orientaciones Metodológicas) | Material de estudio recomendado |
 |---|---|---|
 | Revisión previa individual | Confirmar que `pagatu-config`, `pagatu-eureka`, `pagatu-gateway`, `pagatu-auth-ms`, `pagatu-catalogo-ms` y `pagatu-orden-ms` (S1-S7) siguen arrancando en DEV, y que puedes crear una orden autenticado como `CLIENTE` (S7, 3.23). Trabajo individual, antes de clase. | Evidencia individual de S7, [Alcance por microservicio y proyecto base](../proyecto-sello/alcance-microservicios.md). |
-| Clase presencial | Construcción guiada de `pagatu-pago-ms`, del intermediario Kafka y de los eventos entre `pagatu-orden-ms` y `pagatu-pago-ms`. Trabajo individual, siguiendo al docente paso a paso; consulta inmediata ante un evento que no llega o un servicio que no consume. | Pasos 3.1 a 3.20 de esta guía. |
+| Clase presencial | Construcción guiada de `pagatu-pago-ms`, del intermediario Kafka y de los eventos entre `pagatu-orden-ms` y `pagatu-pago-ms`. Trabajo individual, siguiendo al docente paso a paso; consulta inmediata ante un evento que no llega o un servicio que no consume. | Pasos 3.1 a 3.21 de esta guía. |
 | Evaluación formativa | Revisión en clase de la orden pasando de `PENDIENTE_PAGO` a `PAGADA` por eventos, y de la prueba de desacople con `pagatu-pago-ms` apagado. La evidencia se completa y sustenta de forma individual, fuera del aula, según los criterios mínimos de la sección 4.4. | Indicaciones de entrega (4.3), rúbrica de evaluación (4.6). |
 
 ### 1.6 Motivación de la sesión
@@ -207,11 +207,11 @@ Los eventos de `pagatu` hacen lo segundo: `orden.creada` lleva el monto y el mé
 | Origen | Quién lo publicó. | `origen` |
 | Momento | Cuándo ocurrió, en milisegundos *epoch*. | `timestamp` |
 
-El **contrato** del evento es el acuerdo entre quien lo publica y quien lo consume sobre esas partes: nombres, tipos y significado, escritos en JSON (*JavaScript Object Notation*). En `pagatu` cada servicio tiene **su propia copia** de las clases del evento, en su paquete `event`: no hay una librería compartida, porque compartirla ataría los dos servicios a la misma versión y volvería a acoplarlos. Lo que los mantiene de acuerdo es el contrato documentado (3.20).
+El **contrato** del evento es el acuerdo entre quien lo publica y quien lo consume sobre esas partes: nombres, tipos y significado, escritos en JSON (*JavaScript Object Notation*). En `pagatu` cada servicio tiene **su propia copia** de las clases del evento, en su paquete `event`: no hay una librería compartida, porque compartirla ataría los dos servicios a la misma versión y volvería a acoplarlos. Lo que los mantiene de acuerdo es el contrato documentado (3.21).
 
 ### 2.5 Desacople entre servicios y su evidencia
 
-Dos servicios están **desacoplados** cuando pueden cambiar, fallar o apagarse por separado sin arrastrar al otro. Con eventos, `pagatu-orden-ms` no sabe si `pagatu-pago-ms` existe: solo publica un hecho. Y como Kafka conserva los mensajes, si `pagatu-pago-ms` está apagado, `orden-eventos` acumula los avisos; al volver, el servicio retoma desde su último *offset*. Esa es la evidencia que se pide hoy (3.19): apagar un servicio y comprobar que el otro no se entera.
+Dos servicios están **desacoplados** cuando pueden cambiar, fallar o apagarse por separado sin arrastrar al otro. Con eventos, `pagatu-orden-ms` no sabe si `pagatu-pago-ms` existe: solo publica un hecho. Y como Kafka conserva los mensajes, si `pagatu-pago-ms` está apagado, `orden-eventos` acumula los avisos; al volver, el servicio retoma desde su último *offset*. Esa es la evidencia que se pide hoy (3.20): apagar un servicio y comprobar que el otro no se entera.
 
 **Figura 3. Recorrido de una orden pagada, de punta a punta**
 
@@ -258,7 +258,7 @@ Tiempo: 4h.
 
 **Propósito de la actividad:** que cada estudiante implemente, de punta a punta y con evidencia real, una comunicación por eventos entre dos servicios desacoplados: publicar, consumir, y comprobar qué pasa cuando uno de los dos no está.
 
-**Orientaciones metodológicas:** en el laboratorio, el docente construye la sesión en orden frente a la clase — primero Kafka, sus tres pruebas rápidas y `pagatu-pago-ms` (3.2 a 3.15), después los cambios en `pagatu-orden-ms` (3.16 y 3.17), al final las pruebas (3.18 y 3.19) —; los estudiantes replican cada paso en su propio equipo y provocan ellos mismos la prueba de desacople para ver en su propia consola y en Kafka UI qué pasa con los mensajes pendientes.
+**Orientaciones metodológicas:** en el laboratorio, el docente construye la sesión en orden frente a la clase — primero Kafka, sus tres pruebas rápidas y `pagatu-pago-ms` (3.2 a 3.16), después los cambios en `pagatu-orden-ms` (3.17 y 3.18), al final las pruebas (3.19 y 3.20) —; los estudiantes replican cada paso en su propio equipo y provocan ellos mismos la prueba de desacople para ver en su propia consola y en Kafka UI qué pasa con los mensajes pendientes.
 
 **Actividades para realizar:**
 
@@ -276,12 +276,13 @@ Tiempo: 4h.
 - **3.12** Crear la entidad `Pago` y su repositorio.
 - **3.13** Crear el contrato de los eventos en `pagatu-pago-ms`.
 - **3.14** Consumir `orden.creada` y publicar `pago.validado`.
-- **3.15** Levantar `pagatu-pago-ms` y comprobar que escucha.
-- **3.16** Publicar `orden.creada` desde `pagatu-orden-ms`.
-- **3.17** Consumir `pago.validado` en `pagatu-orden-ms`.
-- **3.18** Probar de punta a punta.
-- **3.19** Probar el desacople.
-- **3.20** Documentar el contrato de los eventos.
+- **3.15** Exponer el listado de pagos.
+- **3.16** Levantar `pagatu-pago-ms` y comprobar que escucha.
+- **3.17** Publicar `orden.creada` desde `pagatu-orden-ms`.
+- **3.18** Consumir `pago.validado` en `pagatu-orden-ms`.
+- **3.19** Probar de punta a punta.
+- **3.20** Probar el desacople.
+- **3.21** Documentar el contrato de los eventos.
 
 **Punto de partida común:** todo el equipo debe comenzar exactamente desde donde quedó S7 (seguridad distribuida), no desde su propio avance individual. Clona la rama `s07-seguridad-jwt`:
 
@@ -295,7 +296,7 @@ git clone --branch s07-seguridad-jwt https://github.com/262dist/pagatu.git
 
 Levanta en DEV, cada uno en su terminal, `pagatu-config`, `pagatu-eureka`, `pagatu-gateway`, `pagatu-auth-ms`, `pagatu-catalogo-ms` y `pagatu-orden-ms`, con sus bases de datos (`compose-dev.yml` de cada servicio). Si alguno falla en arrancar, el problema es de una sesión anterior, no de esta.
 
-Obtén el token de `cliente@pagatu.com` a través del Gateway y guárdalo en una variable (la usas en 3.18 y 3.19):
+Obtén el token de `cliente@pagatu.com` a través del Gateway y guárdalo en una variable (la usas en 3.19 y 3.20):
 
 PowerShell:
 
@@ -497,7 +498,7 @@ El consumer de la Terminal 1 debe mostrar ese mismo texto de inmediato.
 
 Nota el `--bootstrap-server kafka:9092`, no `localhost:19092`: dentro del contenedor usas la dirección `INTERNAL` (3.2), la misma que usa Kafka UI; `localhost:19092` (`EXTERNAL`) es solo para clientes que corren fuera de Docker, como `pagatu-pago-ms` (3.11) más adelante.
 
-**Error frecuente**: crear el topic sin `--partitions 3` (o dejar que se autocree al publicar, si `KAFKA_AUTO_CREATE_TOPICS_ENABLE` estuviera en `true`). Con una sola partición, `pagatu-pago-ms` arranca igual en 3.15, pero el topic se queda con 1 partición para siempre: Spring solo pide crear el topic si no existe, nunca cambia las particiones de uno que ya existe. Bórralo (`--delete`) y créalo de nuevo con `--partitions 3` si esto pasa.
+**Error frecuente**: crear el topic sin `--partitions 3` (o dejar que se autocree al publicar, si `KAFKA_AUTO_CREATE_TOPICS_ENABLE` estuviera en `true`). Con una sola partición, `pagatu-pago-ms` arranca igual en 3.16, pero el topic se queda con 1 partición para siempre: Spring solo pide crear el topic si no existe, nunca cambia las particiones de uno que ya existe. Bórralo (`--delete`) y créalo de nuevo con `--partitions 3` si esto pasa.
 
 ### 3.4 Verificar con Kafka UI
 
@@ -527,15 +528,15 @@ El productor y el consumidor de consola de 3.3 mueven **texto**, no el evento re
 }
 ```
 
-Es exactamente la forma de `OrdenCreadaEvento` (3.13, 3.16): los mismos siete campos, en el mismo orden en que `pagatu-pago-ms` los va a esperar. Confirma que el mensaje aparece en la pestaña de mensajes de Kafka UI, y en la Terminal 1 de 3.3 (si el consumer de consola sigue abierto) — ahí se ve como texto JSON plano, porque un consumer de consola no lo deserializa a ninguna clase.
+Es exactamente la forma de `OrdenCreadaEvento` (3.13, 3.17): los mismos siete campos, en el mismo orden en que `pagatu-pago-ms` los va a esperar. Confirma que el mensaje aparece en la pestaña de mensajes de Kafka UI, y en la Terminal 1 de 3.3 (si el consumer de consola sigue abierto) — ahí se ve como texto JSON plano, porque un consumer de consola no lo deserializa a ninguna clase.
 
-**Error frecuente**: pegar el JSON con una coma de más o una comilla sin cerrar. Kafka UI no valida que el valor sea JSON — lo publica igual, como texto — así que el error no aparece ahora, sino después, cuando `pagatu-pago-ms` (3.15) lo reciba y el `ErrorHandlingDeserializer` (3.11) lo marque como inválido en el log.
+**Error frecuente**: pegar el JSON con una coma de más o una comilla sin cerrar. Kafka UI no valida que el valor sea JSON — lo publica igual, como texto — así que el error no aparece ahora, sino después, cuando `pagatu-pago-ms` (3.16) lo reciba y el `ErrorHandlingDeserializer` (3.11) lo marque como inválido en el log.
 
 ### 3.6 Probar con Python (uso rápido)
 
 **Producto del paso:** el mismo evento `orden.creada` publicado y consumido, ahora con un cliente distinto al de consola y al de Kafka UI — un productor y un consumidor reales en Python, en bucle, para confirmar que el flujo aguanta tráfico continuo antes de escribir la primera línea de `pagatu-pago-ms`.
 
-Los pasos 3.3 a 3.5 prueban Kafka de a un mensaje a la vez, escrito a mano. `uso-rapido/pagatu-eventos-py/` es un contenedor Python independiente, sin ningún puerto expuesto (no es un servicio con el que hable nada más que Kafka), con un productor que publica un evento cada 2 segundos en bucle y un consumidor que los procesa y registra en el mismo formato de log (`component`, `eventType`, `ordenId`, `status`) que usarán después `pagatu-pago-ms` (3.14) y `pagatu-orden-ms` (3.16).
+Los pasos 3.3 a 3.5 prueban Kafka de a un mensaje a la vez, escrito a mano. `uso-rapido/pagatu-eventos-py/` es un contenedor Python independiente, sin ningún puerto expuesto (no es un servicio con el que hable nada más que Kafka), con un productor que publica un evento cada 2 segundos en bucle y un consumidor que los procesa y registra en el mismo formato de log (`component`, `eventType`, `ordenId`, `status`) que usarán después `pagatu-pago-ms` (3.14) y `pagatu-orden-ms` (3.17).
 
 ```powershell
 cd uso-rapido/pagatu-eventos-py
@@ -623,15 +624,24 @@ Resultado esperado: `pagatu_pago_db`.
 | Package name | `pe.edu.upeu.pago` |
 | Packaging | Jar |
 | Java | 21 |
-| Dependencias | Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway, **Prometheus** (categoría *Observability*), **Config Client** y **Eureka Discovery Client** (categorías *Spring Cloud Config* y *Spring Cloud Discovery*) y **Spring for Apache Kafka** (categoría *Messaging*) — las mismas de `pagatu-orden-ms` (S6) más Kafka, nueva hoy. **Además**, agrega MapStruct a mano en el `pom.xml`, igual que en S7 (3.1): Spring Initializr no lo ofrece como opción. |
+| Dependencias | Spring Web, Validation, Lombok, Spring Boot DevTools, SpringDoc OpenAPI WebMvc UI, Spring Boot Actuator, Spring Data JPA, PostgreSQL Driver, Flyway, **Prometheus** (categoría *Observability*), **Config Client** y **Eureka Discovery Client** (categorías *Spring Cloud Config* y *Spring Cloud Discovery*), **Spring for Apache Kafka** (categoría *Messaging*) y **OAuth2 Resource Server** (categoría *Security*) — las mismas de `pagatu-orden-ms` (S6, S7) más Kafka, nueva hoy. **Además**, agrega MapStruct a mano en el `pom.xml`, igual que en S7 (3.1): Spring Initializr no lo ofrece como opción. |
 | Ubicación sugerida | `services/pagatu-pago-ms` |
 
-`pagatu-pago-ms` no lleva Spring Security, Feign ni Resilience4j: hoy no expone ningún endpoint de negocio (solo `actuator`), así que no hay nada que proteger ni ninguna llamada síncrona que resguardar. Al marcar **Spring for Apache Kafka**, Spring Initializr agrega esta dependencia al `pom.xml`, y su versión la gestiona el padre `spring-boot-starter-parent`:
+`pagatu-pago-ms` no lleva Feign ni Resilience4j: no hace ninguna llamada síncrona a otro servicio que resguardar. Sí lleva **OAuth2 Resource Server** (el mismo JWT de `pagatu-auth-ms`, S7), porque hoy agrega su primer endpoint de negocio (3.13, listar pagos) — mismo criterio que `pagatu-orden-ms`: solo lleva Spring Security el servicio que expone algo que proteger. Al marcar **Spring for Apache Kafka**, Spring Initializr agrega esta dependencia al `pom.xml`, y su versión la gestiona el padre `spring-boot-starter-parent`:
 
 ```xml
 <dependency>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-kafka</artifactId>
+</dependency>
+```
+
+**OAuth2 Resource Server** agrega esta otra, la misma que usa `pagatu-orden-ms` desde S7:
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security-oauth2-resource-server</artifactId>
 </dependency>
 ```
 
@@ -826,6 +836,11 @@ server:
   port: 8086
 
 spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8085/.well-known/jwks.json
   datasource:
     url: jdbc:postgresql://localhost:15435/pagatu_pago_db
     username: pagatu
@@ -899,6 +914,11 @@ server:
   port: 8080
 
 spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://pagatu-auth-ms:8080/.well-known/jwks.json
   datasource:
     url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
     username: ${DB_USER}
@@ -954,6 +974,8 @@ eureka:
     service-url:
       defaultZone: http://pagatu-eureka:8761/eureka
 ```
+
+`spring.security.oauth2.resourceserver.jwt.jwk-set-uri` es el mismo bloque de `pagatu-orden-ms` (S7): apunta a las claves públicas de `pagatu-auth-ms` para validar la firma del JWT — en DEV, su dirección en el host (`localhost:8085`); en PROD local, el nombre del contenedor (`pagatu-auth-ms:8080`). El endpoint de 3.15 todavía no lo exige (`permitAll`), pero la configuración ya queda lista para cuando se active.
 
 El bloque `spring.kafka` es el que convierte al servicio en productor y consumidor, sin escribir ninguna clase de configuración:
 
@@ -1108,7 +1130,7 @@ public class PagoValidadoEvento {
 }
 ```
 
-`OrdenCreadaEvento` es lo que `pagatu-pago-ms` **consume**; `PagoValidadoEvento`, lo que **publica**. Son clases sin lógica: solo describen el mensaje. `pagatu-orden-ms` tendrá su propia copia (3.16), como se explicó en 2.4.
+`OrdenCreadaEvento` es lo que `pagatu-pago-ms` **consume**; `PagoValidadoEvento`, lo que **publica**. Son clases sin lógica: solo describen el mensaje. `pagatu-orden-ms` tendrá su propia copia (3.17), como se explicó en 2.4.
 
 ### 3.14 Consumir `orden.creada` y publicar `pago.validado`
 
@@ -1309,7 +1331,151 @@ public class PagoServiceImpl implements PagoService {
 
 **Error frecuente**: `pagatu-pago-ms` arranca sin errores pero nunca procesa nada. Revisa que `app.kafka.topic.ordenes` valga exactamente `orden-eventos`, el mismo nombre que usa `pagatu-orden-ms` al publicar: un topic con otro nombre es otro topic, y Kafka no avisa.
 
-### 3.15 Levantar `pagatu-pago-ms` y comprobar que escucha
+### 3.15 Exponer el listado de pagos
+
+**Producto del paso:** `pagatu-pago-ms` con su primer endpoint de negocio — `GET /api/v1/pagos` y `GET /api/v1/pagos/{id}` — y Spring Security ya conectado al JWT de `pagatu-auth-ms` (3.8, 3.11), aunque todavía sin exigirlo: el endpoint queda abierto a propósito, para no inventar un rol que ninguna sesión anterior definió para "ver pagos".
+
+**`services/pagatu-pago-ms/src/main/java/pe/edu/upeu/pago/config/SecurityConfig.java`:**
+
+```java
+package pe.edu.upeu.pago.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+public class SecurityConfig {
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
+        return http.build();
+    }
+}
+```
+
+A diferencia de `pagatu-orden-ms` (S7), que exige JWT en todo menos `/actuator`/Swagger, aquí `authorizeHttpRequests` deja pasar cualquier petición (`anyRequest().permitAll()`) — a quién exigirle el JWT en `/api/v1/pagos` es una decisión que queda para cuando el sílabo la defina. `oauth2ResourceServer(jwt)` sigue configurado igual: llegado ese momento, el cambio es una línea (`.anyRequest().permitAll()` → `.anyRequest().authenticated()`, con las excepciones que haga falta), sin agregar ninguna dependencia ni configuración nueva.
+
+**`services/pagatu-pago-ms/src/main/java/pe/edu/upeu/pago/dto/PagoResponse.java`:**
+
+```java
+package pe.edu.upeu.pago.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class PagoResponse {
+    private Long id;
+    private Long ordenId;
+    private BigDecimal monto;
+    private String metodoPago;
+    private String estado;
+    private LocalDateTime fechaPago;
+}
+```
+
+**`services/pagatu-pago-ms/src/main/java/pe/edu/upeu/pago/mapper/PagoMapper.java`:**
+
+```java
+package pe.edu.upeu.pago.mapper;
+
+import org.mapstruct.Mapper;
+import pe.edu.upeu.pago.dto.PagoResponse;
+import pe.edu.upeu.pago.entity.Pago;
+
+@Mapper(componentModel = "spring")
+public interface PagoMapper {
+    PagoResponse toResponse(Pago pago);
+}
+```
+
+Agrega los dos métodos de consulta a `PagoService` (3.14):
+
+```java
+    List<PagoResponse> listar();
+
+    PagoResponse obtener(Long id);
+```
+
+Y su implementación en `PagoServiceImpl`, con el mismo patrón de `CategoriaService` (S1): inyecta `PagoMapper`, y un `buscarOFallar` privado que dispara `ResourceNotFoundException` (3.9) si el `id` no existe:
+
+```java
+    private final PagoMapper pagoMapper;
+
+    @Override
+    public List<PagoResponse> listar() {
+        return pagoRepository.findAll().stream()
+                .map(pagoMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    public PagoResponse obtener(Long id) {
+        return pagoMapper.toResponse(buscarOFallar(id));
+    }
+
+    private Pago buscarOFallar(Long id) {
+        return pagoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Pago no encontrado: " + id));
+    }
+```
+
+**`services/pagatu-pago-ms/src/main/java/pe/edu/upeu/pago/controller/PagoController.java`:**
+
+```java
+package pe.edu.upeu.pago.controller;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import pe.edu.upeu.pago.dto.PagoResponse;
+import pe.edu.upeu.pago.service.PagoService;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/v1/pagos")
+@RequiredArgsConstructor
+public class PagoController {
+
+    private final PagoService pagoService;
+
+    @GetMapping
+    public List<PagoResponse> listar() {
+        return pagoService.listar();
+    }
+
+    @GetMapping("/{id}")
+    public PagoResponse obtener(@PathVariable Long id) {
+        return pagoService.obtener(id);
+    }
+}
+```
+
+Mismo patrón que `CategoriaController` (S1): el controlador no arma la respuesta, solo delega en el servicio; `obtener` deja que `ResourceNotFoundException` suba hasta el `GlobalExceptionHandler` (3.9) y responda `404`.
+
+**Error frecuente**: `GET /api/v1/pagos` responde `403 Forbidden` en vez de la lista. Revisa que `authorizeHttpRequests` use `anyRequest().permitAll()` y no `anyRequest().authenticated()` — este paso deja el endpoint abierto a propósito.
+
+### 3.16 Levantar `pagatu-pago-ms` y comprobar que escucha
 
 **Producto del paso:** `pagatu-pago-ms` corriendo, con su tabla creada y suscrito a `orden-eventos`.
 
@@ -1337,9 +1503,17 @@ docker exec -it pagatu-postgres-pago-dev psql -U pagatu -d pagatu_pago_db -c "\d
 
 Resultado esperado: `pagos` y `flyway_schema_history`.
 
+Prueba también el endpoint de 3.15:
+
+```powershell
+Invoke-RestMethod -Method Get -Uri "http://localhost:8086/api/v1/pagos"
+```
+
+Resultado esperado: `[]` — la tabla existe pero todavía no hay ningún pago, porque `pagatu-orden-ms` aún no publica `orden.creada` (3.17).
+
 **Error frecuente**: en el log se repite `Connection to node -1 (localhost/127.0.0.1:19092) could not be established`. Kafka no está corriendo, o el `bootstrap-servers` no apunta a la dirección `EXTERNAL`. Revisa `docker ps` y 3.2.
 
-### 3.16 Publicar `orden.creada` desde `pagatu-orden-ms`
+### 3.17 Publicar `orden.creada` desde `pagatu-orden-ms`
 
 **Producto del paso:** `pagatu-orden-ms` publicando `orden.creada` cada vez que registra una orden lista para pagar.
 
@@ -1563,7 +1737,7 @@ Y al final del método `crear`, reemplaza el `return` por:
 
 El evento se publica **solo** si la orden quedó `PENDIENTE_PAGO`, es decir, con todos sus productos validados (S6): una orden que quedó en `CARRITO` porque un producto no se pudo consultar todavía no se puede cobrar.
 
-### 3.17 Consumir `pago.validado` en `pagatu-orden-ms`
+### 3.18 Consumir `pago.validado` en `pagatu-orden-ms`
 
 **Producto del paso:** `pagatu-orden-ms` pasando la orden a `PAGADA` cuando llega la confirmación del pago.
 
@@ -1627,7 +1801,7 @@ Solo una orden `PENDIENTE_PAGO` pasa a `PAGADA`; cualquier otra se ignora y se r
 
 Reinicia `pagatu-orden-ms` para que lea la configuración nueva y arranque el consumidor. En su log debes ver `partitions assigned` seguido de las particiones de `pago-eventos`.
 
-### 3.18 Probar de punta a punta
+### 3.19 Probar de punta a punta
 
 **Producto del paso:** una orden que pasa de `PENDIENTE_PAGO` a `PAGADA` por eventos, con la evidencia en cada punto.
 
@@ -1666,7 +1840,13 @@ Ahora reúne la evidencia, en este orden:
 docker exec -it pagatu-postgres-pago-dev psql -U pagatu -d pagatu_pago_db -c "SELECT id, orden_id, monto, metodo_pago, estado FROM pagos ORDER BY id;"
 ```
 
-6. **La orden, ya pagada** (usa el `id` de la orden que creaste):
+6. **El mismo pago, por el endpoint de 3.15** (no solo por `psql`):
+
+```powershell
+Invoke-RestMethod -Method Get -Uri "http://localhost:8086/api/v1/pagos"
+```
+
+7. **La orden, ya pagada** (usa el `id` de la orden que creaste):
 
 PowerShell:
 
@@ -1686,20 +1866,20 @@ Resultado esperado: `PAGADA`. Nadie la marcó a mano: pasó por los eventos.
 
 **Error frecuente**: la orden se queda en `PENDIENTE_PAGO` para siempre. Sigue la cadena de 2.6: ¿el log de `pagatu-orden-ms` muestra `status=published`? ¿El mensaje está en el topic, en Kafka UI? ¿`pagatu-pago-ms` lo consumió? El primer eslabón que falla es el problema.
 
-### 3.19 Probar el desacople
+### 3.20 Probar el desacople
 
 **Producto del paso:** la evidencia de que `pagatu-orden-ms` no depende de que `pagatu-pago-ms` esté encendido, y de que ningún aviso se pierde mientras tanto.
 
 1. **Apaga `pagatu-pago-ms`** (`Ctrl+C` en su terminal). En Eureka, `PAGATU-PAGO-MS` desaparece tras unos segundos.
-2. **Crea una orden** con el mismo comando de 3.18. Resultado esperado: `201 Created`, igual que antes. `pagatu-orden-ms` no notó la ausencia.
+2. **Crea una orden** con el mismo comando de 3.19. Resultado esperado: `201 Created`, igual que antes. `pagatu-orden-ms` no notó la ausencia.
 3. **Consulta la orden:** sigue en `PENDIENTE_PAGO`, porque nadie ha cobrado.
 4. **Mira Kafka UI:** en el topic `orden-eventos`, el mensaje está ahí; en *Consumers*, el grupo `pagatu-pago-ms` muestra *lag* `1`: un aviso esperando.
-5. **Levanta `pagatu-pago-ms`** de nuevo (3.15). En su log aparece, de inmediato, el `status=consumed` del evento pendiente.
+5. **Levanta `pagatu-pago-ms`** de nuevo (3.16). En su log aparece, de inmediato, el `status=consumed` del evento pendiente.
 6. **Consulta la orden otra vez:** ahora `PAGADA`, y el *lag* del grupo volvió a `0`.
 
 Es la evidencia central de la sesión: mientras un servicio estuvo caído, el otro siguió funcionando, y el aviso esperó en Kafka hasta que hubo quien lo atendiera. Con una llamada síncrona (S6), el paso 2 habría fallado.
 
-### 3.20 Documentar el contrato de los eventos
+### 3.21 Documentar el contrato de los eventos
 
 **Producto del paso:** el contrato de `orden.creada` y `pago.validado` documentado, mismo formato de los eventos de un sistema real.
 
@@ -1711,7 +1891,7 @@ Topic:
 orden-eventos
 ```
 
-Productor: `pagatu-orden-ms` (3.16). Consumidor: `pagatu-pago-ms` (3.14). *Key*: `ordenId`. Se publica al registrar una orden en estado `PENDIENTE_PAGO`.
+Productor: `pagatu-orden-ms` (3.17). Consumidor: `pagatu-pago-ms` (3.14). *Key*: `ordenId`. Se publica al registrar una orden en estado `PENDIENTE_PAGO`.
 
 Payload:
 
@@ -1745,7 +1925,7 @@ Topic:
 pago-eventos
 ```
 
-Productor: `pagatu-pago-ms` (3.14). Consumidor: `pagatu-orden-ms` (3.17). *Key*: `ordenId`. Se publica cuando el pago quedó guardado como `VALIDADO`.
+Productor: `pagatu-pago-ms` (3.14). Consumidor: `pagatu-orden-ms` (3.18). *Key*: `ordenId`. Se publica cuando el pago quedó guardado como `VALIDADO`.
 
 Payload:
 
@@ -1769,7 +1949,7 @@ Payload:
 | `origen` | string | Servicio que publicó el evento. |
 | `timestamp` | number | Momento de publicación, en milisegundos *epoch*. |
 
-Los dos payloads son los que produce el código de hoy: los `JSON` de arriba salen de serializar los eventos de 3.13 y 3.16 con la configuración de 3.11. Si cambias un campo en un servicio, el contrato cambia para los dos: actualiza la clase de ambos y esta tabla.
+Los dos payloads son los que produce el código de hoy: los `JSON` de arriba salen de serializar los eventos de 3.13 y 3.17 con la configuración de 3.11. Si cambias un campo en un servicio, el contrato cambia para los dos: actualiza la clase de ambos y esta tabla.
 
 **Evidencia de aprendizaje:**
 
@@ -1791,7 +1971,7 @@ Integración de un **evento de negocio adicional** en el sistema propio del equi
 Completa y evidencia estas tareas:
 
 1. Elige un evento de negocio de tu propio dominio que **no** sea `orden.creada` ni `pago.validado`, y que otro servicio necesite conocer (por ejemplo, en `pagatu`: `pago.validado` consumido por `pagatu-cliente-ms` para registrar el envío del comprobante al WhatsApp del cliente).
-2. Define su contrato: nombre del evento, topic, *key*, y cada campo con su tipo y su significado, con el mismo formato de 3.20.
+2. Define su contrato: nombre del evento, topic, *key*, y cada campo con su tipo y su significado, con el mismo formato de 3.21.
 3. Publícalo desde el servicio dueño del hecho, **después** de que la transacción se confirme, con un log de publicación como el de 3.14.
 4. Consúmelo en un servicio distinto (nuevo o existente) con su propio `group-id`, sin que los dos servicios se llamen directamente.
 5. Prueba el flujo completo y evidencia la publicación, el mensaje en Kafka UI y el consumo.

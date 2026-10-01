@@ -10,7 +10,7 @@ import pe.edu.upeu.pago.service.PagoService;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class OrdenEventosListener {
+public class OrdenEventosConsumer {
 
     private static final String ORDEN_CREADA = "orden.creada";
 
