@@ -2505,7 +2505,7 @@
 </table>
 <p><strong>Error frecuente</strong>: pensar que asíncrono significa "más rápido". La orden no se paga antes: se paga <strong>después</strong>, y quien la registró ya no espera por ello. Lo que se gana es independencia entre los servicios, no velocidad de cobro.</p>
 <h3 id="23-broker-de-mensajes-topic-productor-y-consumidor">2.3 Broker de mensajes, topic, productor y consumidor<a class="headerlink" href="#23-broker-de-mensajes-topic-productor-y-consumidor" title="Permanent link">&para;</a></h3>
-<p>Un <strong>broker de mensajes</strong> es un servicio intermedio que recibe mensajes de quienes los publican y los guarda hasta que quienes los necesitan los lean. <strong>Apache Kafka</strong> es un broker que guarda los mensajes en un registro ordenado y persistente, organizado en <em>topics</em> (Apache Software Foundation, 2024). Como el broker guarda los mensajes, publicar y consumir no tienen que ocurrir al mismo tiempo.</p>
+<p>Un <strong>broker de mensajes</strong> (intermediario de mensajes) es un servicio intermedio que recibe mensajes de quienes los publican y los guarda hasta que quienes los necesitan los lean. <strong>Apache Kafka</strong> es un broker que guarda los mensajes en un registro ordenado y persistente, organizado en <em>topics</em> (Apache Software Foundation, 2024). Como el broker guarda los mensajes, publicar y consumir no tienen que ocurrir al mismo tiempo.</p>
 <p><strong>Tabla 3. Conceptos de Kafka de esta sesión</strong></p>
 <table>
 <thead>
@@ -2558,6 +2558,39 @@
 </tr>
 </tbody>
 </table>
+<p><strong>Figura 3. Flujo completo: <code>pagatu-orden-ms</code> y <code>pagatu-pago-ms</code> se escuchan de ida y vuelta</strong></p>
+<pre class="mermaid"><code>flowchart LR
+    OrdenProducer["PRODUCER&lt;br/&gt;pagatu-orden-ms&lt;br/&gt;orden.creada"]
+    PythonProducer["PRODUCER&lt;br/&gt;pagatu-eventos-py&lt;br/&gt;orden.creada"]
+
+    subgraph KafkaOrden["BROKER KAFKA (kafka:9092)"]
+        direction TB
+        subgraph OrdenTopic["TOPIC: orden-eventos"]
+            OrdenP0["Partición 0&lt;br/&gt;offsets: 0 → 1 → 2 → 3"]
+        end
+    end
+
+    PythonConsumer["CONSUMER&lt;br/&gt;pagatu-eventos-py&lt;br/&gt;group: pagatu-eventos-py-group"]
+    PagoConsumer["CONSUMER&lt;br/&gt;pagatu-pago-ms&lt;br/&gt;group: pagatu-pago-ms"]
+    PagoProducer["PRODUCER&lt;br/&gt;pagatu-pago-ms&lt;br/&gt;pago.validado"]
+
+    subgraph KafkaPago["BROKER KAFKA (kafka:9092)"]
+        direction TB
+        subgraph PagoTopic["TOPIC: pago-eventos"]
+            PagoP0["Partición 0&lt;br/&gt;offsets: 0 → 1"]
+        end
+    end
+
+    OrdenConsumer["CONSUMER&lt;br/&gt;pagatu-orden-ms&lt;br/&gt;group: pagatu-orden-ms"]
+
+    OrdenProducer --&gt;|"publica, key=ordenId"| OrdenTopic
+    PythonProducer --&gt;|"publica, key=ordenId"| OrdenTopic
+    OrdenP0 --&gt;|"lee"| PythonConsumer
+    OrdenP0 --&gt;|"lee"| PagoConsumer
+    PagoConsumer --&gt;|"procesa pago"| PagoProducer
+    PagoProducer --&gt;|"publica"| PagoTopic
+    PagoP0 --&gt;|"lee"| OrdenConsumer</code></pre>
+<p><code>pagatu-pago-ms</code> y <code>pagatu-eventos-py</code> (3.6) leen del <strong>mismo</strong> topic (<code>orden-eventos</code>) sin competir entre sí porque cada uno tiene su propio <em>consumer group</em> — Kafka entrega una copia completa de los mensajes a cada consumer group, no los reparte como si fuera una sola cola compartida. El ciclo se cierra con <code>pagatu-orden-ms</code> leyendo de vuelta <code>pago-eventos</code>: el mismo servicio es productor de un topic y consumidor del otro, no dos roles separados en dos servicios distintos — así es como la orden pasa de <code>PENDIENTE_PAGO</code> a <code>PAGADA</code> sin que nadie llame a nadie por HTTP. En la práctica manual (3.3) solo existe <code>orden-eventos</code>; <code>pago-eventos</code> aparece recién cuando <code>pagatu-pago-ms</code> publica su primer <code>pago.validado</code> (3.14).</p>
 <p>El broker de esta sesión corre en el modo KRaft (<em>Kafka Raft</em>), en el que Kafka se coordina por sí mismo, sin un servicio adicional. En Spring, el <code>producer</code> se maneja con un <code>KafkaTemplate</code> y el <code>consumer</code> con la anotación <code>@KafkaListener</code> (Spring for Apache Kafka, 2026).</p>
 <h3 id="24-evento-de-negocio-y-su-contrato">2.4 Evento de negocio y su contrato<a class="headerlink" href="#24-evento-de-negocio-y-su-contrato" title="Permanent link">&para;</a></h3>
 <p>Un <strong>evento de negocio</strong> es el registro de un hecho que <strong>ya ocurrió</strong> en el negocio, dicho en pasado: <code>orden.creada</code>, <code>pago.validado</code>. No le pide nada a nadie: informa. Esa es la diferencia con una orden o comando ("cobra esta orden"), que exige una acción y espera un resultado. Fowler (2017) distingue dos usos: el evento como simple <strong>notificación</strong> de un cambio, donde quien lo emite no se ocupa de la respuesta, y el evento que <strong>lleva el estado</strong> suficiente para que el receptor no tenga que consultar de vuelta a quien lo emitió.</p>
@@ -2602,7 +2635,7 @@
 <p>El <strong>contrato</strong> del evento es el acuerdo entre quien lo publica y quien lo consume sobre esas partes: nombres, tipos y significado, escritos en JSON (<em>JavaScript Object Notation</em>). En <code>pagatu</code> cada servicio tiene <strong>su propia copia</strong> de las clases del evento, en su paquete <code>event</code>: no hay una librería compartida, porque compartirla ataría los dos servicios a la misma versión y volvería a acoplarlos. Lo que los mantiene de acuerdo es el contrato documentado (3.21).</p>
 <h3 id="25-desacople-entre-servicios-y-su-evidencia">2.5 Desacople entre servicios y su evidencia<a class="headerlink" href="#25-desacople-entre-servicios-y-su-evidencia" title="Permanent link">&para;</a></h3>
 <p>Dos servicios están <strong>desacoplados</strong> cuando pueden cambiar, fallar o apagarse por separado sin arrastrar al otro. Con eventos, <code>pagatu-orden-ms</code> no sabe si <code>pagatu-pago-ms</code> existe: solo publica un hecho. Y como Kafka conserva los mensajes, si <code>pagatu-pago-ms</code> está apagado, <code>orden-eventos</code> acumula los avisos; al volver, el servicio retoma desde su último <em>offset</em>. Esa es la evidencia que se pide hoy (3.20): apagar un servicio y comprobar que el otro no se entera.</p>
-<p><strong>Figura 3. Recorrido de una orden pagada, de punta a punta</strong></p>
+<p><strong>Figura 4. Recorrido de una orden pagada, de punta a punta</strong></p>
 <pre class="mermaid"><code>sequenceDiagram
     actor C as Cliente
     participant O as pagatu-orden-ms
