@@ -174,7 +174,7 @@ En una comunicación **síncrona**, quien llama espera la respuesta antes de seg
 
 ### 2.3 Broker de mensajes, topic, productor y consumidor
 
-Un **broker de mensajes** es un servicio intermedio que recibe mensajes de quienes los publican y los guarda hasta que quienes los necesitan los lean. **Apache Kafka** es un broker que guarda los mensajes en un registro ordenado y persistente, organizado en *topics* (Apache Software Foundation, 2024). Como el broker guarda los mensajes, publicar y consumir no tienen que ocurrir al mismo tiempo.
+Un **broker de mensajes** (intermediario de mensajes) es un servicio intermedio que recibe mensajes de quienes los publican y los guarda hasta que quienes los necesitan los lean. **Apache Kafka** es un broker que guarda los mensajes en un registro ordenado y persistente, organizado en *topics* (Apache Software Foundation, 2024). Como el broker guarda los mensajes, publicar y consumir no tienen que ocurrir al mismo tiempo.
 
 **Tabla 3. Conceptos de Kafka de esta sesión**
 
@@ -188,6 +188,44 @@ Un **broker de mensajes** es un servicio intermedio que recibe mensajes de quien
 | `consumer group` | Conjunto de consumidores que se reparten los mensajes de un topic: cada mensaje lo procesa uno solo del grupo. | `pagatu-pago-ms` y `pagatu-orden-ms`, cada uno con su grupo. |
 | `offset` | Posición de un mensaje dentro de una partición; el grupo recuerda hasta cuál leyó. | Es lo que permite retomar donde se quedó cuando un servicio vuelve. |
 | `key` | Valor que decide en qué partición cae un mensaje: la misma key va siempre a la misma partición. | El `ordenId`: todos los eventos de una orden conservan su orden. |
+
+**Figura 3. Flujo completo: `pagatu-orden-ms` y `pagatu-pago-ms` se escuchan de ida y vuelta**
+
+```mermaid
+flowchart LR
+    OrdenProducer["PRODUCER<br/>pagatu-orden-ms<br/>orden.creada"]
+    PythonProducer["PRODUCER<br/>pagatu-eventos-py<br/>orden.creada"]
+
+    subgraph KafkaOrden["BROKER KAFKA (kafka:9092)"]
+        direction TB
+        subgraph OrdenTopic["TOPIC: orden-eventos"]
+            OrdenP0["Partición 0<br/>offsets: 0 → 1 → 2 → 3"]
+        end
+    end
+
+    PythonConsumer["CONSUMER<br/>pagatu-eventos-py<br/>group: pagatu-eventos-py-group"]
+    PagoConsumer["CONSUMER<br/>pagatu-pago-ms<br/>group: pagatu-pago-ms"]
+    PagoProducer["PRODUCER<br/>pagatu-pago-ms<br/>pago.validado"]
+
+    subgraph KafkaPago["BROKER KAFKA (kafka:9092)"]
+        direction TB
+        subgraph PagoTopic["TOPIC: pago-eventos"]
+            PagoP0["Partición 0<br/>offsets: 0 → 1"]
+        end
+    end
+
+    OrdenConsumer["CONSUMER<br/>pagatu-orden-ms<br/>group: pagatu-orden-ms"]
+
+    OrdenProducer -->|"publica, key=ordenId"| OrdenTopic
+    PythonProducer -->|"publica, key=ordenId"| OrdenTopic
+    OrdenP0 -->|"lee"| PythonConsumer
+    OrdenP0 -->|"lee"| PagoConsumer
+    PagoConsumer -->|"procesa pago"| PagoProducer
+    PagoProducer -->|"publica"| PagoTopic
+    PagoP0 -->|"lee"| OrdenConsumer
+```
+
+`pagatu-pago-ms` y `pagatu-eventos-py` (3.6) leen del **mismo** topic (`orden-eventos`) sin competir entre sí porque cada uno tiene su propio *consumer group* — Kafka entrega una copia completa de los mensajes a cada consumer group, no los reparte como si fuera una sola cola compartida. El ciclo se cierra con `pagatu-orden-ms` leyendo de vuelta `pago-eventos`: el mismo servicio es productor de un topic y consumidor del otro, no dos roles separados en dos servicios distintos — así es como la orden pasa de `PENDIENTE_PAGO` a `PAGADA` sin que nadie llame a nadie por HTTP. En la práctica manual (3.3) solo existe `orden-eventos`; `pago-eventos` aparece recién cuando `pagatu-pago-ms` publica su primer `pago.validado` (3.14).
 
 El broker de esta sesión corre en el modo KRaft (*Kafka Raft*), en el que Kafka se coordina por sí mismo, sin un servicio adicional. En Spring, el `producer` se maneja con un `KafkaTemplate` y el `consumer` con la anotación `@KafkaListener` (Spring for Apache Kafka, 2026).
 
@@ -213,7 +251,7 @@ El **contrato** del evento es el acuerdo entre quien lo publica y quien lo consu
 
 Dos servicios están **desacoplados** cuando pueden cambiar, fallar o apagarse por separado sin arrastrar al otro. Con eventos, `pagatu-orden-ms` no sabe si `pagatu-pago-ms` existe: solo publica un hecho. Y como Kafka conserva los mensajes, si `pagatu-pago-ms` está apagado, `orden-eventos` acumula los avisos; al volver, el servicio retoma desde su último *offset*. Esa es la evidencia que se pide hoy (3.20): apagar un servicio y comprobar que el otro no se entera.
 
-**Figura 3. Recorrido de una orden pagada, de punta a punta**
+**Figura 4. Recorrido de una orden pagada, de punta a punta**
 
 ```mermaid
 sequenceDiagram
