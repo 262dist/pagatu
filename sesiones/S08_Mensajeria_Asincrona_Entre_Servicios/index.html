@@ -2456,7 +2456,7 @@
         Pago["pagatu-pago-ms&lt;br/&gt;pagatu_pago_db"]
     end
 
-    subgraph Broker["Kafka (intermediario de mensajes)"]
+    subgraph Broker["Kafka (broker)"]
         direction LR
         T1[["topic orden-eventos&lt;br/&gt;orden.creada"]]
         T2[["topic pago-eventos&lt;br/&gt;pago.validado"]]
@@ -2556,10 +2556,21 @@
 <td>Valor que decide en qué partición cae un mensaje: la misma key va siempre a la misma partición.</td>
 <td>El <code>ordenId</code>: todos los eventos de una orden conservan su orden.</td>
 </tr>
+<tr>
+<td><code>cluster</code></td>
+<td>El grupo de brokers que funciona como un solo sistema: las particiones de un topic se reparten entre ellos, y si uno se cae, otro que tenga la réplica sigue respondiendo.</td>
+<td>Un cluster de <strong>un solo broker</strong> (<code>pagatu-kafka-dev</code>) — el mínimo posible, pensado para DEV, no para producción.</td>
+</tr>
+<tr>
+<td><code>replication factor</code></td>
+<td>En cuántos brokers del cluster se guarda copia de cada partición.</td>
+<td><code>1</code> (3.3, <code>KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR</code>): con un solo broker no hay a dónde replicar.</td>
+</tr>
 </tbody>
 </table>
+<p>Un <strong>cluster</strong> no es un servidor: es el grupo de brokers trabajando juntos. Cada broker de la Tabla 3 es un servidor individual; el cluster es el conjunto. Un Kafka de producción real suele tener 3 o más brokers, con <code>replication factor</code> 3: cada partición vive copiada en tres de ellos, así que perder un broker no pierde datos. El de esta sesión es un cluster de un solo broker (<code>replication factor</code> 1) — correcto para aprender y para DEV, donde no hace falta tolerar la caída de un servidor que no existe.</p>
 <p><strong>Figura 3. Flujo completo: <code>pagatu-orden-ms</code> y <code>pagatu-pago-ms</code> se escuchan de ida y vuelta</strong></p>
-<pre class="mermaid"><code>flowchart LR
+<pre class="mermaid"><code>flowchart TB
     OrdenProducer["PRODUCER&lt;br/&gt;pagatu-orden-ms&lt;br/&gt;orden.creada"]
     PythonProducer["PRODUCER&lt;br/&gt;pagatu-eventos-py&lt;br/&gt;orden.creada"]
 
@@ -2591,7 +2602,7 @@
     PagoProducer --&gt;|"publica"| PagoTopic
     PagoP0 --&gt;|"lee"| OrdenConsumer</code></pre>
 <p><code>pagatu-pago-ms</code> y <code>pagatu-eventos-py</code> (3.6) leen del <strong>mismo</strong> topic (<code>orden-eventos</code>) sin competir entre sí porque cada uno tiene su propio <em>consumer group</em> — Kafka entrega una copia completa de los mensajes a cada consumer group, no los reparte como si fuera una sola cola compartida. El ciclo se cierra con <code>pagatu-orden-ms</code> leyendo de vuelta <code>pago-eventos</code>: el mismo servicio es productor de un topic y consumidor del otro, no dos roles separados en dos servicios distintos — así es como la orden pasa de <code>PENDIENTE_PAGO</code> a <code>PAGADA</code> sin que nadie llame a nadie por HTTP. En la práctica manual (3.3) solo existe <code>orden-eventos</code>; <code>pago-eventos</code> aparece recién cuando <code>pagatu-pago-ms</code> publica su primer <code>pago.validado</code> (3.14).</p>
-<p>El broker de esta sesión corre en el modo KRaft (<em>Kafka Raft</em>), en el que Kafka se coordina por sí mismo, sin un servicio adicional. En Spring, el <code>producer</code> se maneja con un <code>KafkaTemplate</code> y el <code>consumer</code> con la anotación <code>@KafkaListener</code> (Spring for Apache Kafka, 2026).</p>
+<p>En un cluster de varios brokers, alguien tiene que decidir cuál es el líder de cada partición y detectar cuándo uno se cae — eso lo hacía antes <strong>ZooKeeper</strong>, un servicio aparte. El broker de esta sesión corre en el modo <strong>KRaft</strong> (<em>Kafka Raft</em>), donde esa coordinación la hacen los propios brokers entre sí, sin ZooKeeper ni ningún servicio adicional (Apache Software Foundation, 2024). Por eso <code>KAFKA_PROCESS_ROLES: broker,controller</code> (3.2) le pide al único contenedor que haga los dos papeles a la vez: guardar y entregar mensajes (<code>broker</code>) y coordinar el cluster (<code>controller</code>) — en un cluster de 3 o más brokers, normalmente unos pocos se dedican solo al rol de <code>controller</code>. En Spring, el <code>producer</code> se maneja con un <code>KafkaTemplate</code> y el <code>consumer</code> con la anotación <code>@KafkaListener</code> (Spring for Apache Kafka, 2026).</p>
 <h3 id="24-evento-de-negocio-y-su-contrato">2.4 Evento de negocio y su contrato<a class="headerlink" href="#24-evento-de-negocio-y-su-contrato" title="Permanent link">&para;</a></h3>
 <p>Un <strong>evento de negocio</strong> es el registro de un hecho que <strong>ya ocurrió</strong> en el negocio, dicho en pasado: <code>orden.creada</code>, <code>pago.validado</code>. No le pide nada a nadie: informa. Esa es la diferencia con una orden o comando ("cobra esta orden"), que exige una acción y espera un resultado. Fowler (2017) distingue dos usos: el evento como simple <strong>notificación</strong> de un cambio, donde quien lo emite no se ocupa de la respuesta, y el evento que <strong>lleva el estado</strong> suficiente para que el receptor no tenga que consultar de vuelta a quien lo emitió.</p>
 <p>Los eventos de <code>pagatu</code> hacen lo segundo: <code>orden.creada</code> lleva el monto y el método de pago, así que <code>pagatu-pago-ms</code> cobra sin llamar a <code>pagatu-orden-ms</code>. Si tuviera que consultarla, volvería el acoplamiento que los eventos quieren evitar.</p>
@@ -2811,7 +2822,7 @@
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>kafka
 docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-dev.yml<span class="w"> </span>up<span class="w"> </span>-d
 </code></pre></div>
-<p>Abre <code>http://localhost:18085</code>: Kafka UI debe mostrar el clúster <code>pagatu-dev</code> en línea, sin ningún topic todavía.</p>
+<p>Abre <code>http://localhost:18085</code>: Kafka UI debe mostrar el cluster <code>pagatu-dev</code> en línea, sin ningún topic todavía.</p>
 <h3 id="33-probar-kafka-por-consola">3.3 Probar Kafka por consola<a class="headerlink" href="#33-probar-kafka-por-consola" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> el topic <code>orden-eventos</code> creado a mano, con las mismas 3 particiones que declarará el código en 3.14, y probado con un producer y un consumer manuales.</p>
 <p>Entra al contenedor:</p>
@@ -2855,7 +2866,7 @@ docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> 
 <p><strong>Producto del paso:</strong> confirmación visual del topic, sus mensajes y sus offsets.</p>
 <p>Abre <code>http://localhost:18085</code> y verifica:</p>
 <ul>
-<li>El clúster <code>pagatu-dev</code> aparece conectado.</li>
+<li>El cluster <code>pagatu-dev</code> aparece conectado.</li>
 <li>El topic <code>orden-eventos</code> existe, con 3 particiones.</li>
 <li>El mensaje manual de 3.3 aparece en la pestaña de mensajes, con columnas <code>partition</code> y <code>offset</code>.</li>
 </ul>
