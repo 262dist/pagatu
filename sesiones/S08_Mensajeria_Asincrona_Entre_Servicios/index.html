@@ -1296,10 +1296,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#37-levantar-la-base-de-datos-de-pagatu-pago-ms" class="md-nav__link">
+  <a href="#37-crear-el-proyecto-base-de-pagatu-pago-ms" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.7 Levantar la base de datos de pagatu-pago-ms
+        3.7 Crear el proyecto base de pagatu-pago-ms
       
     </span>
   </a>
@@ -1307,10 +1307,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#38-crear-el-proyecto-base-de-pagatu-pago-ms" class="md-nav__link">
+  <a href="#38-levantar-la-base-de-datos-de-pagatu-pago-ms" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.8 Crear el proyecto base de pagatu-pago-ms
+        3.8 Levantar la base de datos de pagatu-pago-ms
       
     </span>
   </a>
@@ -2012,10 +2012,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#37-levantar-la-base-de-datos-de-pagatu-pago-ms" class="md-nav__link">
+  <a href="#37-crear-el-proyecto-base-de-pagatu-pago-ms" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.7 Levantar la base de datos de pagatu-pago-ms
+        3.7 Crear el proyecto base de pagatu-pago-ms
       
     </span>
   </a>
@@ -2023,10 +2023,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#38-crear-el-proyecto-base-de-pagatu-pago-ms" class="md-nav__link">
+  <a href="#38-levantar-la-base-de-datos-de-pagatu-pago-ms" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.8 Crear el proyecto base de pagatu-pago-ms
+        3.8 Levantar la base de datos de pagatu-pago-ms
       
     </span>
   </a>
@@ -2689,8 +2689,8 @@
 <li><strong>3.4</strong> Verificar con Kafka UI.</li>
 <li><strong>3.5</strong> Probar el contrato del evento desde Kafka UI.</li>
 <li><strong>3.6</strong> Probar con Python (uso rápido).</li>
-<li><strong>3.7</strong> Levantar la base de datos de <code>pagatu-pago-ms</code>.</li>
-<li><strong>3.8</strong> Crear el proyecto base de <code>pagatu-pago-ms</code>.</li>
+<li><strong>3.7</strong> Crear el proyecto base de <code>pagatu-pago-ms</code>.</li>
+<li><strong>3.8</strong> Levantar la base de datos de <code>pagatu-pago-ms</code>.</li>
 <li><strong>3.9</strong> Crear el manejador de errores y el filtro de trazabilidad.</li>
 <li><strong>3.10</strong> Conectar <code>pagatu-pago-ms</code> a <code>pagatu-config</code> y a <code>pagatu-eureka</code>, y crear su migración.</li>
 <li><strong>3.11</strong> Configurar <code>pagatu-pago-ms</code> en <code>config-repo</code>.</li>
@@ -3077,37 +3077,7 @@ docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> 
 </code></pre></div>
 <p>El consumidor debe imprimir una línea JSON por evento, con <code>topic</code>/<code>partition</code>/<code>offset</code> reales del mismo topic <code>orden-eventos</code> de 3.3, <code>idCliente</code> y <code>metodoPago</code> (no <code>estado</code>: ese campo no existe en el contrato de <code>pagatu</code>, a diferencia de otros cursos) y <code>status: "consumed"</code>. Publica también, desde otra terminal, texto plano en el topic (el mismo <code>kafka-console-producer.sh</code> de 3.3, o el JSON de 3.5 con una coma de más): el consumidor no debe caerse, debe marcarlo <code>status: "invalid"</code> y exponer <code>rawPayload</code>/<code>decodeError</code> — un consumidor real convive con mensajes que no controla, y ya se está preparando el mismo criterio que usará <code>ErrorHandlingDeserializer</code> en <code>pagatu-pago-ms</code> (3.11).</p>
 <p><strong>Error frecuente</strong>: el contenedor no arranca, con un error de red al unirse a <code>pagatu-kafka-dev-net</code>. Kafka (3.2) tiene que estar levantado primero — esta red la crea <code>kafka/compose-dev.yml</code>, no este <code>compose.yml</code>, que solo se conecta a ella como red externa.</p>
-<h3 id="37-levantar-la-base-de-datos-de-pagatu-pago-ms">3.7 Levantar la base de datos de <code>pagatu-pago-ms</code><a class="headerlink" href="#37-levantar-la-base-de-datos-de-pagatu-pago-ms" title="Permanent link">&para;</a></h3>
-<p><strong>Producto del paso:</strong> PostgreSQL de <code>pagatu-pago-ms</code> corriendo en DEV.</p>
-<p><strong><code>services/pagatu-pago-ms/compose-dev.yml</code>:</strong></p>
-<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-pago-dev</span>
-
-<span class="nt">services</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">postgres-pago-dev</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres:16-alpine</span>
-<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-postgres-pago-dev</span>
-<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
-<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">POSTGRES_DB</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu_pago_db</span>
-<span class="w">      </span><span class="nt">POSTGRES_USER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
-<span class="w">      </span><span class="nt">POSTGRES_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
-<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"15435:5432"</span>
-<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu_pago_dev_data:/var/lib/postgresql/data</span>
-
-<span class="nt">volumes</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">pagatu_pago_dev_data</span><span class="p">:</span>
-</code></pre></div>
-<p>El puerto <code>15435</code> y el nombre <code>pagatu_pago_db</code> siguen la convención del proyecto (<code>15431</code> auth, <code>15434</code> orden). El puerto de aplicación en DEV es <code>8086</code>, el siguiente libre después de <code>8085</code> (<code>pagatu-auth-ms</code>, S7).</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>services/pagatu-pago-ms
-docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-dev.yml<span class="w"> </span>up<span class="w"> </span>-d
-</code></pre></div>
-<p>Comprueba que la base de datos está lista:</p>
-<div class="highlight"><pre><span></span><code>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-pago-dev<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_pago_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">"SELECT current_database();"</span>
-</code></pre></div>
-<p>Resultado esperado: <code>pagatu_pago_db</code>.</p>
-<h3 id="38-crear-el-proyecto-base-de-pagatu-pago-ms">3.8 Crear el proyecto base de <code>pagatu-pago-ms</code><a class="headerlink" href="#38-crear-el-proyecto-base-de-pagatu-pago-ms" title="Permanent link">&para;</a></h3>
+<h3 id="37-crear-el-proyecto-base-de-pagatu-pago-ms">3.7 Crear el proyecto base de <code>pagatu-pago-ms</code><a class="headerlink" href="#37-crear-el-proyecto-base-de-pagatu-pago-ms" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> proyecto <code>pagatu-pago-ms</code> creado, con las mismas dependencias base que <code>pagatu-orden-ms</code> más Kafka.</p>
 <p><strong>Tabla 5. Configuración de <code>pagatu-pago-ms</code> en Spring Initializr</strong></p>
 <table>
@@ -3173,6 +3143,36 @@ docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> 
 <span class="nt">&lt;/dependency&gt;</span>
 </code></pre></div>
 <p>Config Client y Eureka Discovery Client se marcan aquí, desde el inicio, con la propiedad <code>&lt;spring-cloud.version&gt;</code> y el <code>&lt;dependencyManagement&gt;</code> que Spring Initializr genera por su cuenta. Ubica el proyecto en <code>services/pagatu-pago-ms</code>.</p>
+<h3 id="38-levantar-la-base-de-datos-de-pagatu-pago-ms">3.8 Levantar la base de datos de <code>pagatu-pago-ms</code><a class="headerlink" href="#38-levantar-la-base-de-datos-de-pagatu-pago-ms" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> PostgreSQL de <code>pagatu-pago-ms</code> corriendo en DEV.</p>
+<p><strong><code>services/pagatu-pago-ms/compose-dev.yml</code>:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-pago-dev</span>
+
+<span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">postgres-pago-dev</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres:16-alpine</span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-postgres-pago-dev</span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">POSTGRES_DB</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu_pago_db</span>
+<span class="w">      </span><span class="nt">POSTGRES_USER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
+<span class="w">      </span><span class="nt">POSTGRES_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"15435:5432"</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu_pago_dev_data:/var/lib/postgresql/data</span>
+
+<span class="nt">volumes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pagatu_pago_dev_data</span><span class="p">:</span>
+</code></pre></div>
+<p>El puerto <code>15435</code> y el nombre <code>pagatu_pago_db</code> siguen la convención del proyecto (<code>15431</code> auth, <code>15434</code> orden). El puerto de aplicación en DEV es <code>8086</code>, el siguiente libre después de <code>8085</code> (<code>pagatu-auth-ms</code>, S7). Este archivo va <strong>dentro</strong> del proyecto creado en 3.7 (<code>services/pagatu-pago-ms/</code>) — por eso ese paso va primero: sin la carpeta del proyecto, no hay dónde poner este <code>compose-dev.yml</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>services/pagatu-pago-ms
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-dev.yml<span class="w"> </span>up<span class="w"> </span>-d
+</code></pre></div>
+<p>Comprueba que la base de datos está lista:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-pago-dev<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_pago_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">"SELECT current_database();"</span>
+</code></pre></div>
+<p>Resultado esperado: <code>pagatu_pago_db</code>.</p>
 <h3 id="39-crear-el-manejador-de-errores-y-el-filtro-de-trazabilidad">3.9 Crear el manejador de errores y el filtro de trazabilidad<a class="headerlink" href="#39-crear-el-manejador-de-errores-y-el-filtro-de-trazabilidad" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> <code>pagatu-pago-ms</code> con el mismo manejo de errores y la misma trazabilidad por petición que <code>pagatu-catalogo-ms</code> (S1) y <code>pagatu-orden-ms</code> (S6).</p>
 <p>Son una <strong>copia</strong> de las de <code>pagatu-orden-ms</code> (<code>exception/</code>, <code>filter/</code> y <code>logback-spring.xml</code>); solo cambia el nombre del artefacto: el paquete <code>pe.edu.upeu.orden</code> pasa a <code>pe.edu.upeu.pago</code>, y el archivo de log, de <code>orden.log</code> a <code>pago.log</code>.</p>
@@ -3774,7 +3774,7 @@ curl<span class="w"> </span>http://localhost:18888/pagatu-pago-ms/prod
 <p><code>procesar</code> es el corazón del servicio: guarda el pago y prepara el evento de respuesta. Como la pasarela de pagos es externa y no existe en este laboratorio, aquí se <strong>simula</strong>: el pago siempre queda <code>VALIDADO</code>. Todo ocurre dentro de una transacción, y el evento <code>pago.validado</code> sale solo si el pago quedó guardado.</p>
 <p><strong>Error frecuente</strong>: <code>pagatu-pago-ms</code> arranca sin errores pero nunca procesa nada. Revisa que <code>app.kafka.topic.ordenes</code> valga exactamente <code>orden-eventos</code>, el mismo nombre que usa <code>pagatu-orden-ms</code> al publicar: un topic con otro nombre es otro topic, y Kafka no avisa.</p>
 <h3 id="315-exponer-el-listado-de-pagos">3.15 Exponer el listado de pagos<a class="headerlink" href="#315-exponer-el-listado-de-pagos" title="Permanent link">&para;</a></h3>
-<p><strong>Producto del paso:</strong> <code>pagatu-pago-ms</code> con su primer endpoint de negocio — <code>GET /api/v1/pagos</code> y <code>GET /api/v1/pagos/{id}</code> — y Spring Security ya conectado al JWT de <code>pagatu-auth-ms</code> (3.8, 3.11), aunque todavía sin exigirlo: el endpoint queda abierto a propósito, para no inventar un rol que ninguna sesión anterior definió para "ver pagos".</p>
+<p><strong>Producto del paso:</strong> <code>pagatu-pago-ms</code> con su primer endpoint de negocio — <code>GET /api/v1/pagos</code> y <code>GET /api/v1/pagos/{id}</code> — y Spring Security ya conectado al JWT de <code>pagatu-auth-ms</code> (3.7, 3.11), aunque todavía sin exigirlo: el endpoint queda abierto a propósito, para no inventar un rol que ninguna sesión anterior definió para "ver pagos".</p>
 <p><strong><code>services/pagatu-pago-ms/src/main/java/pe/edu/upeu/pago/config/SecurityConfig.java</code>:</strong></p>
 <div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.pago.config</span><span class="p">;</span>
 
@@ -3916,7 +3916,7 @@ curl<span class="w"> </span>http://localhost:18888/pagatu-pago-ms/prod
 <p><strong>Error frecuente</strong>: en el log se repite <code>Connection to node -1 (localhost/127.0.0.1:19092) could not be established</code>. Kafka no está corriendo, o el <code>bootstrap-servers</code> no apunta a la dirección <code>EXTERNAL</code>. Revisa <code>docker ps</code> y 3.2.</p>
 <h3 id="317-publicar-ordencreada-desde-pagatu-orden-ms">3.17 Publicar <code>orden.creada</code> desde <code>pagatu-orden-ms</code><a class="headerlink" href="#317-publicar-ordencreada-desde-pagatu-orden-ms" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> <code>pagatu-orden-ms</code> publicando <code>orden.creada</code> cada vez que registra una orden lista para pagar.</p>
-<p>Primero agrega Kafka al <code>pom.xml</code> de <code>pagatu-orden-ms</code>, con la misma dependencia de 3.8:</p>
+<p>Primero agrega Kafka al <code>pom.xml</code> de <code>pagatu-orden-ms</code>, con la misma dependencia de 3.7:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">&lt;dependency&gt;</span>
 <span class="w">    </span><span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
 <span class="w">    </span><span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-kafka<span class="nt">&lt;/artifactId&gt;</span>
