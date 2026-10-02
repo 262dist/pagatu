@@ -81,7 +81,25 @@ docker compose -f compose-dev.yml up -d
 .\mvnw.cmd spring-boot:run
 ```
 
-El resto de servicios (`pagatu-cliente-ms`, `pagatu-auth-ms`, `pagatu-pago-ms`) siguen el mismo patrón, cada uno en su carpeta de `services/`.
+```powershell
+cd services/pagatu-cliente-ms
+docker compose -f compose-dev.yml up -d
+.\mvnw.cmd spring-boot:run
+```
+
+```powershell
+cd services/pagatu-auth-ms
+docker compose -f compose-dev.yml up -d
+.\mvnw.cmd spring-boot:run
+```
+
+```powershell
+cd services/pagatu-pago-ms
+docker compose -f compose-dev.yml up -d
+.\mvnw.cmd spring-boot:run
+```
+
+`pagatu-cliente-ms` es autónomo (S2) y no depende de ningún otro microservicio ni de Kafka — súbelo solo si lo vas a usar. `pagatu-pago-ms` sí necesita Kafka arriba (paso 2). Detalle de cada uno, con Swagger/health/endpoints, en [`services/README.md`](services/README.md).
 
 **4. Verificar**
 
