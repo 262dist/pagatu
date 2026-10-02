@@ -12,7 +12,7 @@ import pe.edu.upeu.orden.event.OrdenCreadaEvento;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class OrdenEventosPublisher {
+public class OrdenEventosProducer {
 
     private final KafkaTemplate<String, OrdenCreadaEvento> kafkaTemplate;
 

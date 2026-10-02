@@ -2,7 +2,7 @@ package pe.edu.upeu.orden.service;
 
 import pe.edu.upeu.orden.dto.*;
 import pe.edu.upeu.orden.event.OrdenCreadaEvento;
-import pe.edu.upeu.orden.messaging.OrdenEventosPublisher;
+import pe.edu.upeu.orden.messaging.OrdenEventosProducer;
 import pe.edu.upeu.orden.entity.EstadoOrden;
 import pe.edu.upeu.orden.entity.Orden;
 import pe.edu.upeu.orden.entity.OrdenDetalle;
@@ -24,7 +24,7 @@ public class OrdenServiceImpl implements OrdenService {
 
     private final OrdenRepository ordenRepository;
     private final ProductoConsultaService productoConsultaService;
-    private final OrdenEventosPublisher publisher;
+    private final OrdenEventosProducer producer;
 
     @Override
     @Transactional
@@ -73,7 +73,7 @@ public class OrdenServiceImpl implements OrdenService {
         Orden guardada = ordenRepository.save(orden);
 
         if (guardada.getEstado() == EstadoOrden.PENDIENTE_PAGO) {
-            publisher.publicarTrasCommit(OrdenCreadaEvento.builder()
+            producer.publicarTrasCommit(OrdenCreadaEvento.builder()
                     .tipoEvento("orden.creada")
                     .ordenId(guardada.getId())
                     .idCliente(guardada.getIdCliente())

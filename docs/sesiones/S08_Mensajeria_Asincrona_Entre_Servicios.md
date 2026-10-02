@@ -141,7 +141,7 @@ flowchart TB
         Pago["pagatu-pago-ms<br/>pagatu_pago_db"]
     end
 
-    subgraph Broker["Kafka (intermediario de mensajes)"]
+    subgraph Broker["Kafka (broker)"]
         direction LR
         T1[["topic orden-eventos<br/>orden.creada"]]
         T2[["topic pago-eventos<br/>pago.validado"]]
@@ -188,11 +188,15 @@ Un **broker de mensajes** (intermediario de mensajes) es un servicio intermedio 
 | `consumer group` | Conjunto de consumidores que se reparten los mensajes de un topic: cada mensaje lo procesa uno solo del grupo. | `pagatu-pago-ms` y `pagatu-orden-ms`, cada uno con su grupo. |
 | `offset` | Posición de un mensaje dentro de una partición; el grupo recuerda hasta cuál leyó. | Es lo que permite retomar donde se quedó cuando un servicio vuelve. |
 | `key` | Valor que decide en qué partición cae un mensaje: la misma key va siempre a la misma partición. | El `ordenId`: todos los eventos de una orden conservan su orden. |
+| `cluster` | El grupo de brokers que funciona como un solo sistema: las particiones de un topic se reparten entre ellos, y si uno se cae, otro que tenga la réplica sigue respondiendo. | Un cluster de **un solo broker** (`pagatu-kafka-dev`) — el mínimo posible, pensado para DEV, no para producción. |
+| `replication factor` | En cuántos brokers del cluster se guarda copia de cada partición. | `1` (3.3, `KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR`): con un solo broker no hay a dónde replicar. |
+
+Un **cluster** no es un servidor: es el grupo de brokers trabajando juntos. Cada broker de la Tabla 3 es un servidor individual; el cluster es el conjunto. Un Kafka de producción real suele tener 3 o más brokers, con `replication factor` 3: cada partición vive copiada en tres de ellos, así que perder un broker no pierde datos. El de esta sesión es un cluster de un solo broker (`replication factor` 1) — correcto para aprender y para DEV, donde no hace falta tolerar la caída de un servidor que no existe.
 
 **Figura 3. Flujo completo: `pagatu-orden-ms` y `pagatu-pago-ms` se escuchan de ida y vuelta**
 
 ```mermaid
-flowchart LR
+flowchart TB
     OrdenProducer["PRODUCER<br/>pagatu-orden-ms<br/>orden.creada"]
     PythonProducer["PRODUCER<br/>pagatu-eventos-py<br/>orden.creada"]
 
@@ -227,7 +231,7 @@ flowchart LR
 
 `pagatu-pago-ms` y `pagatu-eventos-py` (3.6) leen del **mismo** topic (`orden-eventos`) sin competir entre sí porque cada uno tiene su propio *consumer group* — Kafka entrega una copia completa de los mensajes a cada consumer group, no los reparte como si fuera una sola cola compartida. El ciclo se cierra con `pagatu-orden-ms` leyendo de vuelta `pago-eventos`: el mismo servicio es productor de un topic y consumidor del otro, no dos roles separados en dos servicios distintos — así es como la orden pasa de `PENDIENTE_PAGO` a `PAGADA` sin que nadie llame a nadie por HTTP. En la práctica manual (3.3) solo existe `orden-eventos`; `pago-eventos` aparece recién cuando `pagatu-pago-ms` publica su primer `pago.validado` (3.14).
 
-El broker de esta sesión corre en el modo KRaft (*Kafka Raft*), en el que Kafka se coordina por sí mismo, sin un servicio adicional. En Spring, el `producer` se maneja con un `KafkaTemplate` y el `consumer` con la anotación `@KafkaListener` (Spring for Apache Kafka, 2026).
+En un cluster de varios brokers, alguien tiene que decidir cuál es el líder de cada partición y detectar cuándo uno se cae — eso lo hacía antes **ZooKeeper**, un servicio aparte. El broker de esta sesión corre en el modo **KRaft** (*Kafka Raft*), donde esa coordinación la hacen los propios brokers entre sí, sin ZooKeeper ni ningún servicio adicional (Apache Software Foundation, 2024). Por eso `KAFKA_PROCESS_ROLES: broker,controller` (3.2) le pide al único contenedor que haga los dos papeles a la vez: guardar y entregar mensajes (`broker`) y coordinar el cluster (`controller`) — en un cluster de 3 o más brokers, normalmente unos pocos se dedican solo al rol de `controller`. En Spring, el `producer` se maneja con un `KafkaTemplate` y el `consumer` con la anotación `@KafkaListener` (Spring for Apache Kafka, 2026).
 
 ### 2.4 Evento de negocio y su contrato
 
@@ -467,7 +471,7 @@ cd kafka
 docker compose -f compose-dev.yml up -d
 ```
 
-Abre `http://localhost:18085`: Kafka UI debe mostrar el clúster `pagatu-dev` en línea, sin ningún topic todavía.
+Abre `http://localhost:18085`: Kafka UI debe mostrar el cluster `pagatu-dev` en línea, sin ningún topic todavía.
 
 ### 3.3 Probar Kafka por consola
 
@@ -544,7 +548,7 @@ Nota el `--bootstrap-server kafka:9092`, no `localhost:19092`: dentro del conten
 
 Abre `http://localhost:18085` y verifica:
 
-- El clúster `pagatu-dev` aparece conectado.
+- El cluster `pagatu-dev` aparece conectado.
 - El topic `orden-eventos` existe, con 3 particiones.
 - El mensaje manual de 3.3 aparece en la pestaña de mensajes, con columnas `partition` y `offset`.
 

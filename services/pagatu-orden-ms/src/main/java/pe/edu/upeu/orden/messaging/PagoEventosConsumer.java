@@ -10,7 +10,7 @@ import pe.edu.upeu.orden.service.OrdenService;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class PagoEventosListener {
+public class PagoEventosConsumer {
 
     private static final String PAGO_VALIDADO = "pago.validado";
 
