@@ -580,6 +580,197 @@ Es exactamente la forma de `OrdenCreadaEvento` (3.13, 3.17): los mismos siete ca
 
 Los pasos 3.3 a 3.5 prueban Kafka de a un mensaje a la vez, escrito a mano. `uso-rapido/pagatu-eventos-py/` es un contenedor Python independiente, sin ningún puerto expuesto (no es un servicio con el que hable nada más que Kafka), con un productor que publica un evento cada 2 segundos en bucle y un consumidor que los procesa y registra en el mismo formato de log (`component`, `eventType`, `ordenId`, `status`) que usarán después `pagatu-pago-ms` (3.14) y `pagatu-orden-ms` (3.17).
 
+Crea los siguientes cinco archivos.
+
+**`uso-rapido/pagatu-eventos-py/compose.yml`:**
+
+```yaml
+name: pagatu-eventos-py
+
+services:
+  pagatu-eventos-py:
+    build: .
+    container_name: pagatu-eventos-py
+    volumes:
+      - ./app:/app
+    working_dir: /app
+    command: sleep infinity
+    networks:
+      - pagatu-kafka-dev-net
+
+networks:
+  pagatu-kafka-dev-net:
+    external: true
+    name: pagatu-kafka-dev-net
+```
+
+**`uso-rapido/pagatu-eventos-py/Dockerfile`:**
+
+```dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY app/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+CMD ["sleep", "infinity"]
+```
+
+**`uso-rapido/pagatu-eventos-py/app/requirements.txt`:**
+
+```text
+kafka-python==2.0.2
+```
+
+**`uso-rapido/pagatu-eventos-py/app/producer_ordenes.py`:**
+
+```python
+import json
+import random
+import time
+
+from kafka import KafkaProducer
+
+
+TOPIC_ORDENES = "orden-eventos"
+METODOS_PAGO = ["YAPE_PLIN", "TARJETA", "PAGO_EFECTIVO"]
+
+producer = KafkaProducer(
+    bootstrap_servers="kafka:9092",
+    value_serializer=lambda value: json.dumps(value).encode("utf-8"),
+)
+
+print(json.dumps({
+    "service": "pagatu-eventos-py",
+    "component": "producer",
+    "bootstrapServers": "kafka:9092",
+    "status": "connected",
+}))
+
+while True:
+    data = {
+        "tipoEvento": "orden.creada",
+        "ordenId": random.randint(1, 1000),
+        "idCliente": random.randint(1, 20),
+        "total": float(random.randint(50, 500)),
+        "metodoPago": random.choice(METODOS_PAGO),
+        "origen": "python",
+        "timestamp": int(time.time() * 1000),
+    }
+
+    metadata = producer.send(TOPIC_ORDENES, value=data).get(timeout=10)
+
+    log = {
+        "service": "pagatu-eventos-py",
+        "component": "producer",
+        "topic": metadata.topic,
+        "partition": metadata.partition,
+        "offset": metadata.offset,
+        "eventType": data["tipoEvento"],
+        "ordenId": data["ordenId"],
+        "timestamp": data["timestamp"],
+        "status": "published",
+    }
+
+    print(json.dumps(log))
+    time.sleep(2)
+```
+
+**`uso-rapido/pagatu-eventos-py/app/consumer_ordenes.py`:**
+
+```python
+import json
+import os
+import time
+
+from kafka import KafkaConsumer
+
+
+TOPIC_ORDENES = os.getenv("KAFKA_TOPIC_ORDENES", "orden-eventos")
+GROUP_ID = os.getenv("KAFKA_GROUP_ID", "pagatu-eventos-py-group")
+BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")
+
+
+def deserialize_message(value):
+    text = value.decode("utf-8")
+    try:
+        return {
+            "payload": json.loads(text),
+            "raw": text,
+            "isJson": True,
+            "decodeError": None,
+        }
+    except json.JSONDecodeError as ex:
+        return {
+            "payload": None,
+            "raw": text,
+            "isJson": False,
+            "decodeError": str(ex),
+        }
+
+
+consumer = KafkaConsumer(
+    TOPIC_ORDENES,
+    bootstrap_servers=BOOTSTRAP_SERVERS,
+    auto_offset_reset="earliest",
+    enable_auto_commit=True,
+    group_id=GROUP_ID,
+    value_deserializer=deserialize_message,
+)
+
+print(json.dumps({
+    "service": "pagatu-eventos-py",
+    "component": "consumer",
+    "topic": TOPIC_ORDENES,
+    "groupId": GROUP_ID,
+    "bootstrapServers": BOOTSTRAP_SERVERS,
+    "status": "listening",
+}))
+
+for msg in consumer:
+    decoded = msg.value
+    event = decoded["payload"] if decoded["isJson"] else {}
+    timestamp = event.get("timestamp")
+    processed_at = int(time.time() * 1000)
+    latency_ms = processed_at - timestamp if timestamp is not None else None
+    is_valid = (
+        decoded["isJson"] and
+        event.get("tipoEvento") is not None
+        and event.get("ordenId") is not None
+        and event.get("total") is not None
+        and timestamp is not None
+    )
+
+    log = {
+        "service": "pagatu-eventos-py",
+        "component": "consumer",
+        "topic": msg.topic,
+        "partition": msg.partition,
+        "offset": msg.offset,
+        "groupId": GROUP_ID,
+        "eventType": event.get("tipoEvento"),
+        "ordenId": event.get("ordenId"),
+        "idCliente": event.get("idCliente"),
+        "total": event.get("total"),
+        "metodoPago": event.get("metodoPago"),
+        "origen": event.get("origen"),
+        "timestamp": timestamp,
+        "isValid": is_valid,
+        "processedAt": processed_at,
+        "latencyMs": latency_ms,
+        "payload": event,
+        "rawPayload": decoded["raw"],
+        "isJson": decoded["isJson"],
+        "decodeError": decoded["decodeError"],
+        "status": "consumed" if is_valid else "invalid",
+    }
+
+    print(json.dumps(log))
+```
+
+`producer_ordenes.py` y `consumer_ordenes.py` van en `app/`: es la carpeta que `compose.yml` monta dentro del contenedor (`./app:/app`), y la que `Dockerfile` usa para instalar `kafka-python` (`requirements.txt`). El productor no valida nada que reciba — solo publica; el consumidor sí, por eso distingue `status: "consumed"` de `status: "invalid"` según si el mensaje es JSON con los campos del contrato (2.4) o no.
+
 ```powershell
 cd uso-rapido/pagatu-eventos-py
 docker compose up -d --build
