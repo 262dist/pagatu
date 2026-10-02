@@ -2888,6 +2888,180 @@ docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> 
 <h3 id="36-probar-con-python-uso-rapido">3.6 Probar con Python (uso rápido)<a class="headerlink" href="#36-probar-con-python-uso-rapido" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> el mismo evento <code>orden.creada</code> publicado y consumido, ahora con un cliente distinto al de consola y al de Kafka UI — un productor y un consumidor reales en Python, en bucle, para confirmar que el flujo aguanta tráfico continuo antes de escribir la primera línea de <code>pagatu-pago-ms</code>.</p>
 <p>Los pasos 3.3 a 3.5 prueban Kafka de a un mensaje a la vez, escrito a mano. <code>uso-rapido/pagatu-eventos-py/</code> es un contenedor Python independiente, sin ningún puerto expuesto (no es un servicio con el que hable nada más que Kafka), con un productor que publica un evento cada 2 segundos en bucle y un consumidor que los procesa y registra en el mismo formato de log (<code>component</code>, <code>eventType</code>, <code>ordenId</code>, <code>status</code>) que usarán después <code>pagatu-pago-ms</code> (3.14) y <code>pagatu-orden-ms</code> (3.17).</p>
+<p>Crea los siguientes cinco archivos.</p>
+<p><strong><code>uso-rapido/pagatu-eventos-py/compose.yml</code>:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-eventos-py</span>
+
+<span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pagatu-eventos-py</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.</span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-eventos-py</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./app:/app</span>
+<span class="w">    </span><span class="nt">working_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/app</span>
+<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sleep infinity</span>
+<span class="w">    </span><span class="nt">networks</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-kafka-dev-net</span>
+
+<span class="nt">networks</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pagatu-kafka-dev-net</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">external</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-kafka-dev-net</span>
+</code></pre></div>
+<p><strong><code>uso-rapido/pagatu-eventos-py/Dockerfile</code>:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">python:3.11-slim</span>
+
+<span class="k">WORKDIR</span><span class="w"> </span><span class="s">/app</span>
+
+<span class="k">COPY</span><span class="w"> </span>app/requirements.txt<span class="w"> </span>.
+<span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--no-cache-dir<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+
+<span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">"sleep"</span><span class="p">,</span><span class="w"> </span><span class="s2">"infinity"</span><span class="p">]</span>
+</code></pre></div>
+<p><strong><code>uso-rapido/pagatu-eventos-py/app/requirements.txt</code>:</strong></p>
+<div class="highlight"><pre><span></span><code>kafka-python==2.0.2
+</code></pre></div>
+<p><strong><code>uso-rapido/pagatu-eventos-py/app/producer_ordenes.py</code>:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">kafka</span><span class="w"> </span><span class="kn">import</span> <span class="n">KafkaProducer</span>
+
+
+<span class="n">TOPIC_ORDENES</span> <span class="o">=</span> <span class="s2">"orden-eventos"</span>
+<span class="n">METODOS_PAGO</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"YAPE_PLIN"</span><span class="p">,</span> <span class="s2">"TARJETA"</span><span class="p">,</span> <span class="s2">"PAGO_EFECTIVO"</span><span class="p">]</span>
+
+<span class="n">producer</span> <span class="o">=</span> <span class="n">KafkaProducer</span><span class="p">(</span>
+    <span class="n">bootstrap_servers</span><span class="o">=</span><span class="s2">"kafka:9092"</span><span class="p">,</span>
+    <span class="n">value_serializer</span><span class="o">=</span><span class="k">lambda</span> <span class="n">value</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+    <span class="s2">"service"</span><span class="p">:</span> <span class="s2">"pagatu-eventos-py"</span><span class="p">,</span>
+    <span class="s2">"component"</span><span class="p">:</span> <span class="s2">"producer"</span><span class="p">,</span>
+    <span class="s2">"bootstrapServers"</span><span class="p">:</span> <span class="s2">"kafka:9092"</span><span class="p">,</span>
+    <span class="s2">"status"</span><span class="p">:</span> <span class="s2">"connected"</span><span class="p">,</span>
+<span class="p">}))</span>
+
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">"tipoEvento"</span><span class="p">:</span> <span class="s2">"orden.creada"</span><span class="p">,</span>
+        <span class="s2">"ordenId"</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span>
+        <span class="s2">"idCliente"</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span>
+        <span class="s2">"total"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">500</span><span class="p">)),</span>
+        <span class="s2">"metodoPago"</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">METODOS_PAGO</span><span class="p">),</span>
+        <span class="s2">"origen"</span><span class="p">:</span> <span class="s2">"python"</span><span class="p">,</span>
+        <span class="s2">"timestamp"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">),</span>
+    <span class="p">}</span>
+
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">producer</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">TOPIC_ORDENES</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="n">log</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">"service"</span><span class="p">:</span> <span class="s2">"pagatu-eventos-py"</span><span class="p">,</span>
+        <span class="s2">"component"</span><span class="p">:</span> <span class="s2">"producer"</span><span class="p">,</span>
+        <span class="s2">"topic"</span><span class="p">:</span> <span class="n">metadata</span><span class="o">.</span><span class="n">topic</span><span class="p">,</span>
+        <span class="s2">"partition"</span><span class="p">:</span> <span class="n">metadata</span><span class="o">.</span><span class="n">partition</span><span class="p">,</span>
+        <span class="s2">"offset"</span><span class="p">:</span> <span class="n">metadata</span><span class="o">.</span><span class="n">offset</span><span class="p">,</span>
+        <span class="s2">"eventType"</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">"tipoEvento"</span><span class="p">],</span>
+        <span class="s2">"ordenId"</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">"ordenId"</span><span class="p">],</span>
+        <span class="s2">"timestamp"</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">"timestamp"</span><span class="p">],</span>
+        <span class="s2">"status"</span><span class="p">:</span> <span class="s2">"published"</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">log</span><span class="p">))</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</code></pre></div>
+<p><strong><code>uso-rapido/pagatu-eventos-py/app/consumer_ordenes.py</code>:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">kafka</span><span class="w"> </span><span class="kn">import</span> <span class="n">KafkaConsumer</span>
+
+
+<span class="n">TOPIC_ORDENES</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"KAFKA_TOPIC_ORDENES"</span><span class="p">,</span> <span class="s2">"orden-eventos"</span><span class="p">)</span>
+<span class="n">GROUP_ID</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"KAFKA_GROUP_ID"</span><span class="p">,</span> <span class="s2">"pagatu-eventos-py-group"</span><span class="p">)</span>
+<span class="n">BOOTSTRAP_SERVERS</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"KAFKA_BOOTSTRAP_SERVERS"</span><span class="p">,</span> <span class="s2">"kafka:9092"</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">deserialize_message</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">"payload"</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">text</span><span class="p">),</span>
+            <span class="s2">"raw"</span><span class="p">:</span> <span class="n">text</span><span class="p">,</span>
+            <span class="s2">"isJson"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">"decodeError"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">"payload"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">"raw"</span><span class="p">:</span> <span class="n">text</span><span class="p">,</span>
+            <span class="s2">"isJson"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">"decodeError"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">),</span>
+        <span class="p">}</span>
+
+
+<span class="n">consumer</span> <span class="o">=</span> <span class="n">KafkaConsumer</span><span class="p">(</span>
+    <span class="n">TOPIC_ORDENES</span><span class="p">,</span>
+    <span class="n">bootstrap_servers</span><span class="o">=</span><span class="n">BOOTSTRAP_SERVERS</span><span class="p">,</span>
+    <span class="n">auto_offset_reset</span><span class="o">=</span><span class="s2">"earliest"</span><span class="p">,</span>
+    <span class="n">enable_auto_commit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">group_id</span><span class="o">=</span><span class="n">GROUP_ID</span><span class="p">,</span>
+    <span class="n">value_deserializer</span><span class="o">=</span><span class="n">deserialize_message</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+    <span class="s2">"service"</span><span class="p">:</span> <span class="s2">"pagatu-eventos-py"</span><span class="p">,</span>
+    <span class="s2">"component"</span><span class="p">:</span> <span class="s2">"consumer"</span><span class="p">,</span>
+    <span class="s2">"topic"</span><span class="p">:</span> <span class="n">TOPIC_ORDENES</span><span class="p">,</span>
+    <span class="s2">"groupId"</span><span class="p">:</span> <span class="n">GROUP_ID</span><span class="p">,</span>
+    <span class="s2">"bootstrapServers"</span><span class="p">:</span> <span class="n">BOOTSTRAP_SERVERS</span><span class="p">,</span>
+    <span class="s2">"status"</span><span class="p">:</span> <span class="s2">"listening"</span><span class="p">,</span>
+<span class="p">}))</span>
+
+<span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">consumer</span><span class="p">:</span>
+    <span class="n">decoded</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">event</span> <span class="o">=</span> <span class="n">decoded</span><span class="p">[</span><span class="s2">"payload"</span><span class="p">]</span> <span class="k">if</span> <span class="n">decoded</span><span class="p">[</span><span class="s2">"isJson"</span><span class="p">]</span> <span class="k">else</span> <span class="p">{}</span>
+    <span class="n">timestamp</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"timestamp"</span><span class="p">)</span>
+    <span class="n">processed_at</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+    <span class="n">latency_ms</span> <span class="o">=</span> <span class="n">processed_at</span> <span class="o">-</span> <span class="n">timestamp</span> <span class="k">if</span> <span class="n">timestamp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">is_valid</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">decoded</span><span class="p">[</span><span class="s2">"isJson"</span><span class="p">]</span> <span class="ow">and</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tipoEvento"</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="ow">and</span> <span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"ordenId"</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="ow">and</span> <span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"total"</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="ow">and</span> <span class="n">timestamp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="p">)</span>
+
+    <span class="n">log</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">"service"</span><span class="p">:</span> <span class="s2">"pagatu-eventos-py"</span><span class="p">,</span>
+        <span class="s2">"component"</span><span class="p">:</span> <span class="s2">"consumer"</span><span class="p">,</span>
+        <span class="s2">"topic"</span><span class="p">:</span> <span class="n">msg</span><span class="o">.</span><span class="n">topic</span><span class="p">,</span>
+        <span class="s2">"partition"</span><span class="p">:</span> <span class="n">msg</span><span class="o">.</span><span class="n">partition</span><span class="p">,</span>
+        <span class="s2">"offset"</span><span class="p">:</span> <span class="n">msg</span><span class="o">.</span><span class="n">offset</span><span class="p">,</span>
+        <span class="s2">"groupId"</span><span class="p">:</span> <span class="n">GROUP_ID</span><span class="p">,</span>
+        <span class="s2">"eventType"</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tipoEvento"</span><span class="p">),</span>
+        <span class="s2">"ordenId"</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"ordenId"</span><span class="p">),</span>
+        <span class="s2">"idCliente"</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"idCliente"</span><span class="p">),</span>
+        <span class="s2">"total"</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"total"</span><span class="p">),</span>
+        <span class="s2">"metodoPago"</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"metodoPago"</span><span class="p">),</span>
+        <span class="s2">"origen"</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"origen"</span><span class="p">),</span>
+        <span class="s2">"timestamp"</span><span class="p">:</span> <span class="n">timestamp</span><span class="p">,</span>
+        <span class="s2">"isValid"</span><span class="p">:</span> <span class="n">is_valid</span><span class="p">,</span>
+        <span class="s2">"processedAt"</span><span class="p">:</span> <span class="n">processed_at</span><span class="p">,</span>
+        <span class="s2">"latencyMs"</span><span class="p">:</span> <span class="n">latency_ms</span><span class="p">,</span>
+        <span class="s2">"payload"</span><span class="p">:</span> <span class="n">event</span><span class="p">,</span>
+        <span class="s2">"rawPayload"</span><span class="p">:</span> <span class="n">decoded</span><span class="p">[</span><span class="s2">"raw"</span><span class="p">],</span>
+        <span class="s2">"isJson"</span><span class="p">:</span> <span class="n">decoded</span><span class="p">[</span><span class="s2">"isJson"</span><span class="p">],</span>
+        <span class="s2">"decodeError"</span><span class="p">:</span> <span class="n">decoded</span><span class="p">[</span><span class="s2">"decodeError"</span><span class="p">],</span>
+        <span class="s2">"status"</span><span class="p">:</span> <span class="s2">"consumed"</span> <span class="k">if</span> <span class="n">is_valid</span> <span class="k">else</span> <span class="s2">"invalid"</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">log</span><span class="p">))</span>
+</code></pre></div>
+<p><code>producer_ordenes.py</code> y <code>consumer_ordenes.py</code> van en <code>app/</code>: es la carpeta que <code>compose.yml</code> monta dentro del contenedor (<code>./app:/app</code>), y la que <code>Dockerfile</code> usa para instalar <code>kafka-python</code> (<code>requirements.txt</code>). El productor no valida nada que reciba — solo publica; el consumidor sí, por eso distingue <code>status: "consumed"</code> de <code>status: "invalid"</code> según si el mensaje es JSON con los campos del contrato (2.4) o no.</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd </span><span class="n">uso-rapido</span><span class="p">/</span><span class="n">pagatu-eventos-py</span>
 <span class="n">docker</span> <span class="n">compose</span> <span class="n">up</span> <span class="n">-d</span> <span class="p">-</span><span class="n">-build</span>
 <span class="n">docker</span> <span class="n">compose</span> <span class="nb">ps</span>
