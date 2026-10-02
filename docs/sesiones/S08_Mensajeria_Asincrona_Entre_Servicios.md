@@ -310,8 +310,8 @@ Tiempo: 4h.
 - **3.4** Verificar con Kafka UI.
 - **3.5** Probar el contrato del evento desde Kafka UI.
 - **3.6** Probar con Python (uso rápido).
-- **3.7** Levantar la base de datos de `pagatu-pago-ms`.
-- **3.8** Crear el proyecto base de `pagatu-pago-ms`.
+- **3.7** Crear el proyecto base de `pagatu-pago-ms`.
+- **3.8** Levantar la base de datos de `pagatu-pago-ms`.
 - **3.9** Crear el manejador de errores y el filtro de trazabilidad.
 - **3.10** Conectar `pagatu-pago-ms` a `pagatu-config` y a `pagatu-eureka`, y crear su migración.
 - **3.11** Configurar `pagatu-pago-ms` en `config-repo`.
@@ -799,49 +799,7 @@ El consumidor debe imprimir una línea JSON por evento, con `topic`/`partition`/
 
 **Error frecuente**: el contenedor no arranca, con un error de red al unirse a `pagatu-kafka-dev-net`. Kafka (3.2) tiene que estar levantado primero — esta red la crea `kafka/compose-dev.yml`, no este `compose.yml`, que solo se conecta a ella como red externa.
 
-### 3.7 Levantar la base de datos de `pagatu-pago-ms`
-
-**Producto del paso:** PostgreSQL de `pagatu-pago-ms` corriendo en DEV.
-
-**`services/pagatu-pago-ms/compose-dev.yml`:**
-
-```yaml
-name: pagatu-pago-dev
-
-services:
-  postgres-pago-dev:
-    image: postgres:16-alpine
-    container_name: pagatu-postgres-pago-dev
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: pagatu_pago_db
-      POSTGRES_USER: pagatu
-      POSTGRES_PASSWORD: pagatu
-    ports:
-      - "15435:5432"
-    volumes:
-      - pagatu_pago_dev_data:/var/lib/postgresql/data
-
-volumes:
-  pagatu_pago_dev_data:
-```
-
-El puerto `15435` y el nombre `pagatu_pago_db` siguen la convención del proyecto (`15431` auth, `15434` orden). El puerto de aplicación en DEV es `8086`, el siguiente libre después de `8085` (`pagatu-auth-ms`, S7).
-
-```bash
-cd services/pagatu-pago-ms
-docker compose -f compose-dev.yml up -d
-```
-
-Comprueba que la base de datos está lista:
-
-```bash
-docker exec -it pagatu-postgres-pago-dev psql -U pagatu -d pagatu_pago_db -c "SELECT current_database();"
-```
-
-Resultado esperado: `pagatu_pago_db`.
-
-### 3.8 Crear el proyecto base de `pagatu-pago-ms`
+### 3.7 Crear el proyecto base de `pagatu-pago-ms`
 
 **Producto del paso:** proyecto `pagatu-pago-ms` creado, con las mismas dependencias base que `pagatu-orden-ms` más Kafka.
 
@@ -879,6 +837,48 @@ Resultado esperado: `pagatu_pago_db`.
 ```
 
 Config Client y Eureka Discovery Client se marcan aquí, desde el inicio, con la propiedad `<spring-cloud.version>` y el `<dependencyManagement>` que Spring Initializr genera por su cuenta. Ubica el proyecto en `services/pagatu-pago-ms`.
+
+### 3.8 Levantar la base de datos de `pagatu-pago-ms`
+
+**Producto del paso:** PostgreSQL de `pagatu-pago-ms` corriendo en DEV.
+
+**`services/pagatu-pago-ms/compose-dev.yml`:**
+
+```yaml
+name: pagatu-pago-dev
+
+services:
+  postgres-pago-dev:
+    image: postgres:16-alpine
+    container_name: pagatu-postgres-pago-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: pagatu_pago_db
+      POSTGRES_USER: pagatu
+      POSTGRES_PASSWORD: pagatu
+    ports:
+      - "15435:5432"
+    volumes:
+      - pagatu_pago_dev_data:/var/lib/postgresql/data
+
+volumes:
+  pagatu_pago_dev_data:
+```
+
+El puerto `15435` y el nombre `pagatu_pago_db` siguen la convención del proyecto (`15431` auth, `15434` orden). El puerto de aplicación en DEV es `8086`, el siguiente libre después de `8085` (`pagatu-auth-ms`, S7). Este archivo va **dentro** del proyecto creado en 3.7 (`services/pagatu-pago-ms/`) — por eso ese paso va primero: sin la carpeta del proyecto, no hay dónde poner este `compose-dev.yml`.
+
+```bash
+cd services/pagatu-pago-ms
+docker compose -f compose-dev.yml up -d
+```
+
+Comprueba que la base de datos está lista:
+
+```bash
+docker exec -it pagatu-postgres-pago-dev psql -U pagatu -d pagatu_pago_db -c "SELECT current_database();"
+```
+
+Resultado esperado: `pagatu_pago_db`.
 
 ### 3.9 Crear el manejador de errores y el filtro de trazabilidad
 
@@ -1566,7 +1566,7 @@ public class PagoServiceImpl implements PagoService {
 
 ### 3.15 Exponer el listado de pagos
 
-**Producto del paso:** `pagatu-pago-ms` con su primer endpoint de negocio — `GET /api/v1/pagos` y `GET /api/v1/pagos/{id}` — y Spring Security ya conectado al JWT de `pagatu-auth-ms` (3.8, 3.11), aunque todavía sin exigirlo: el endpoint queda abierto a propósito, para no inventar un rol que ninguna sesión anterior definió para "ver pagos".
+**Producto del paso:** `pagatu-pago-ms` con su primer endpoint de negocio — `GET /api/v1/pagos` y `GET /api/v1/pagos/{id}` — y Spring Security ya conectado al JWT de `pagatu-auth-ms` (3.7, 3.11), aunque todavía sin exigirlo: el endpoint queda abierto a propósito, para no inventar un rol que ninguna sesión anterior definió para "ver pagos".
 
 **`services/pagatu-pago-ms/src/main/java/pe/edu/upeu/pago/config/SecurityConfig.java`:**
 
@@ -1750,7 +1750,7 @@ Resultado esperado: `[]` — la tabla existe pero todavía no hay ningún pago, 
 
 **Producto del paso:** `pagatu-orden-ms` publicando `orden.creada` cada vez que registra una orden lista para pagar.
 
-Primero agrega Kafka al `pom.xml` de `pagatu-orden-ms`, con la misma dependencia de 3.8:
+Primero agrega Kafka al `pom.xml` de `pagatu-orden-ms`, con la misma dependencia de 3.7:
 
 ```xml
 <dependency>
