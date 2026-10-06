@@ -117,6 +117,41 @@ cd obs
 docker compose -f compose-dev.yml up -d
 ```
 
+## Detener
+
+`Ctrl+C` detiene cada microservicio en su propia terminal. Para los
+contenedores, cada carpeta con su propio `compose-dev.yml` (`kafka/`, cada
+`services/pagatu-*-ms/`, `obs/`) baja solo los suyos con
+`docker compose -f compose-dev.yml down`.
+
+Todos los contenedores de `pagatu` se nombran con el prefijo `pagatu-`
+(`pagatu-kafka-dev`, `pagatu-postgres-orden-dev`, `pagatu-grafana-dev`...) —
+para pararlos todos juntos sin entrar carpeta por carpeta:
+
+```powershell
+docker stop (docker ps --filter "name=pagatu-" -q)
+```
+
+```bash
+docker stop $(docker ps --filter "name=pagatu-" -q)
+```
+
+Si tienes **otros cursos** corriendo en paralelo (lambda26, bomerp) y
+necesitas liberar memoria de verdad, para absolutamente todo lo que esté
+corriendo en Docker, sin filtrar por nombre:
+
+```powershell
+docker stop (docker ps -q)
+```
+
+```bash
+docker stop $(docker ps -q)
+```
+
+`docker stop` (no `down`): deja los contenedores creados, listos para un
+`docker start (docker ps -a --filter "name=pagatu-" -q)` rápido la próxima
+vez, en vez de recrearlos desde cero con `compose up`.
+
 ## Puertos en DEV
 
 | Componente | Puerto (host) |
