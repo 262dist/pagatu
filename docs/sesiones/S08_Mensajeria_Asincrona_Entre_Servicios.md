@@ -1746,6 +1746,13 @@ Resultado esperado: `[]` — la tabla existe pero todavía no hay ningún pago, 
 
 **Error frecuente**: en el log se repite `Connection to node -1 (localhost/127.0.0.1:19092) could not be established`. Kafka no está corriendo, o el `bootstrap-servers` no apunta a la dirección `EXTERNAL`. Revisa `docker ps` y 3.2.
 
+**Error frecuente**: `UnsatisfiedDependencyException` al crear `pagoController`/`pagoServiceImpl`, terminando en `No qualifying bean of type 'pe.edu.upeu.pago.mapper.PagoMapper' available` — típico justo después de reiniciar la laptop (o el IDE), aunque el `@Mapper` ya tenga `componentModel = "spring"` y nada del código haya cambiado. No es un bug del mapper: es el *build* el que quedó desincronizado — el IDE reconstruye en segundo plano al reabrir el proyecto, y el siguiente `spring-boot:run` desde consola no vuelve a comparar bien contra ese estado, así que Maven se salta la recompilación y deja `target/` en un punto intermedio. Fuerza una recompilación completa antes de volver a correr:
+
+```powershell
+.\mvnw.cmd clean compile
+.\mvnw.cmd spring-boot:run
+```
+
 ### 3.17 Publicar `orden.creada` desde `pagatu-orden-ms`
 
 **Producto del paso:** `pagatu-orden-ms` publicando `orden.creada` cada vez que registra una orden lista para pagar.
