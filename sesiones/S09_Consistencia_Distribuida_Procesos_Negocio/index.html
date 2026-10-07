@@ -2687,7 +2687,10 @@
 <li><strong>3.12</strong> Restaurar el stock al compensar.</li>
 <li><strong>3.13</strong> Probar el flujo de stock de punta a punta.</li>
 </ul>
-<p><strong>Punto de partida común:</strong> todo el equipo debe comenzar exactamente desde donde quedó S8. Levanta <code>pagatu-config</code>, <code>pagatu-eureka</code>, <code>pagatu-gateway</code>, <code>pagatu-auth-ms</code>, Kafka, <code>pagatu-catalogo-ms</code>, <code>pagatu-orden-ms</code> y <code>pagatu-pago-ms</code> (S1-S8), confirma que una orden nueva sigue llegando a <code>PAGADA</code> por eventos (S8, 3.19) antes de tocar código nuevo.</p>
+<p><strong>Punto de partida común:</strong> todo el equipo debe comenzar exactamente desde donde quedó S8 (mensajería asíncrona), no desde su propio avance individual. Clona la rama <code>s08-mensajeria-asincrona</code>:</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>--branch<span class="w"> </span>s08-mensajeria-asincrona<span class="w"> </span>https://github.com/262dist/pagatu.git
+</code></pre></div>
+<p>Levanta <code>pagatu-config</code>, <code>pagatu-eureka</code>, <code>pagatu-gateway</code>, <code>pagatu-auth-ms</code>, Kafka, <code>pagatu-catalogo-ms</code>, <code>pagatu-orden-ms</code> y <code>pagatu-pago-ms</code> (S1-S8), confirma que una orden nueva sigue llegando a <code>PAGADA</code> por eventos (S8, 3.19) antes de tocar código nuevo.</p>
 <h3 id="parte-a-reproducir-el-problema-y-agregar-idempotencia-a-pagatu-pago-ms">Parte A — Reproducir el problema y agregar idempotencia a <code>pagatu-pago-ms</code><a class="headerlink" href="#parte-a-reproducir-el-problema-y-agregar-idempotencia-a-pagatu-pago-ms" title="Permanent link">&para;</a></h3>
 <h4 id="31-verificar-el-punto-de-partida">3.1 Verificar el punto de partida<a class="headerlink" href="#31-verificar-el-punto-de-partida" title="Permanent link">&para;</a></h4>
 <p><strong>Producto del paso:</strong> confirmación de que el flujo completo de S8 (<code>PENDIENTE_PAGO → PAGADA</code> por eventos) sigue funcionando, con una orden real para reutilizar en 3.2.</p>
