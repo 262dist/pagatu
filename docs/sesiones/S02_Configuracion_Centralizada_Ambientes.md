@@ -616,6 +616,8 @@ spring:
   devtools:
     restart:
       enabled: true
+      quiet-period: 2s
+      poll-interval: 3s
     livereload:
       enabled: true
 

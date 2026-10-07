@@ -595,6 +595,8 @@ spring:
   devtools:
     restart:
       enabled: true
+      quiet-period: 2s
+      poll-interval: 3s
     livereload:
       enabled: true
 
@@ -619,6 +621,8 @@ management:
 El puerto queda fijo en `8080` para todo el resto de esta guía — más simple para probar con Swagger/shell sin tener que buscar qué puerto asignó Spring Boot cada vez. Cuando en 3.4 se necesite escalar a varias instancias, el puerto de la segunda se pasa como argumento de línea de comandos, sin tocar este archivo (ver 3.4).
 
 En DEV, Flyway queda activo y ejecuta automáticamente `V1__create_catalogo_tables.sql` al arrancar la aplicación (se crea en 3.5.1). JPA/Hibernate no crea tablas; solo valida que las entidades coincidan con la estructura de la base de datos mediante `ddl-auto: validate`.
+
+`devtools.restart.quiet-period`/`poll-interval` no son los valores por defecto (`400ms`/`1s`) a propósito: DevTools reinicia el contexto de Spring en caliente apenas detecta un cambio en `target/classes`, sin esperar a que termine de escribirse del todo — si usas un IDE que recompila en segundo plano (VS Code con la extensión de Java, por ejemplo), esa recompilación puede tardar más que el período de silencio por defecto, y DevTools reinicia contra una clase a medio escribir. El síntoma es un `UnsatisfiedDependencyException`/`No qualifying bean` que desaparece sin que cambies nada en el código, apenas la IDE termina de compilar y dispara un segundo reinicio. Alargar ambos valores le da tiempo de sobra al IDE antes de que DevTools reinicie, evitando el primer intento fallido.
 
 En S2 esta configuración se moverá progresivamente al Config Server, que busca el archivo de configuración por `spring.application.name` (`pagatu-catalogo-ms.yml` en el config-repo) — por eso ese nombre lleva el mismo prefijo `pagatu-` que el `artifactId`, y no queda como `pagatu-catalogo-ms` a secas: evita ambigüedad si en algún momento hay otro proyecto con un servicio del mismo nombre corriendo contra un registro compartido. En S1 la configuración se mantiene local para que el alumno entienda primero qué necesita el microservicio para arrancar.
 

@@ -136,4 +136,16 @@ public class OrdenServiceImpl implements OrdenService {
                 .detalles(detalles)
                 .build();
     }
+    @Override
+    @Transactional
+    public void compensar(Long ordenId) {
+        Orden orden = ordenRepository.findById(ordenId).orElse(null);
+        if (orden == null || orden.getEstado() != EstadoOrden.PENDIENTE_PAGO) {
+            log.warn("component=processor ordenId={} status=ignored motivo=\"la orden no existe o ya no esta pendiente de pago\"", ordenId);
+            return;
+        }
+        orden.setEstado(EstadoOrden.CANCELADA);
+        log.info("component=processor ordenId={} estado={} status=compensated", ordenId, orden.getEstado());
+    }
+
 }

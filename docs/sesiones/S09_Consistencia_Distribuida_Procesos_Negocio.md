@@ -512,7 +512,26 @@ En **`OrdenServiceImpl.java`**, agrega el método, después de `marcarPagada`:
 
 **Producto del paso:** una orden que pasa de `PENDIENTE_PAGO` a `CANCELADA` por eventos, con la evidencia en cada punto.
 
-Reinicia `pagatu-pago-ms` y `pagatu-orden-ms`. Crea una orden con `metodoPago: "TARJETA_RECHAZADA"`:
+Reinicia `pagatu-pago-ms` y `pagatu-orden-ms`. El token de `CLIENTE` de 3.1 dura 1 hora en DEV (`jwt.expiracion-segundos`); si ya pasó ese tiempo desde que lo obtuviste, vuelve a loguearte antes de seguir:
+
+PowerShell:
+
+```powershell
+$login = Invoke-RestMethod -Method Post -Uri "http://localhost:18080/api/v1/auth/login" `
+  -ContentType "application/json" `
+  -Body '{"email": "cliente@pagatu.com", "password": "cliente123"}'
+$tokenCliente = $login.access_token
+```
+
+bash macOS/Linux (requiere `jq`):
+
+```bash
+TOKEN_CLIENTE=$(curl -s -X POST http://localhost:18080/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "cliente@pagatu.com", "password": "cliente123"}' | jq -r '.access_token')
+```
+
+Crea una orden con `metodoPago: "TARJETA_RECHAZADA"`:
 
 PowerShell:
 

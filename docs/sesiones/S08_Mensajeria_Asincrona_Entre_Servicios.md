@@ -1092,6 +1092,8 @@ spring:
   devtools:
     restart:
       enabled: true
+      quiet-period: 2s
+      poll-interval: 3s
     livereload:
       enabled: true
   kafka:
@@ -1746,10 +1748,10 @@ Resultado esperado: `[]` — la tabla existe pero todavía no hay ningún pago, 
 
 **Error frecuente**: en el log se repite `Connection to node -1 (localhost/127.0.0.1:19092) could not be established`. Kafka no está corriendo, o el `bootstrap-servers` no apunta a la dirección `EXTERNAL`. Revisa `docker ps` y 3.2.
 
-**Error frecuente**: `UnsatisfiedDependencyException` al crear `pagoController`/`pagoServiceImpl`, terminando en `No qualifying bean of type 'pe.edu.upeu.pago.mapper.PagoMapper' available` — típico justo después de reiniciar la laptop (o el IDE), aunque el `@Mapper` ya tenga `componentModel = "spring"` y nada del código haya cambiado. No es un bug del mapper: es el *build* el que quedó desincronizado — el IDE reconstruye en segundo plano al reabrir el proyecto, y el siguiente `spring-boot:run` desde consola no vuelve a comparar bien contra ese estado, así que Maven se salta la recompilación y deja `target/` en un punto intermedio. Fuerza una recompilación completa antes de volver a correr:
+**Error frecuente**: `UnsatisfiedDependencyException` al crear `pagoController`/`pagoServiceImpl`, terminando en `No qualifying bean of type '...' available` — ya sea de `PagoMapper` o, igual de posible, de `PagoRepository` (o cualquier otro *bean* del proyecto). Típico justo después de reiniciar la laptop, de reabrir el IDE, o de agregar un método nuevo a una interfaz, aunque el código esté bien escrito y nada debería fallar. No es un bug del propio *bean*: es el *build* el que quedó desincronizado — si usas VS Code, su extensión de Java recompila en segundo plano al guardar o al reabrir el proyecto (compilador Eclipse JDT, no `mvnw`), escribiendo directo en el mismo `target/classes` que usa Maven; si `spring-boot:run` arranca justo en ese instante, puede leer `target/classes` a medio escribir. Desactivar `"java.autobuild.enabled": false` en la configuración de VS Code evita la causa de fondo (aunque no siempre atrapa la reconstrucción que la extensión dispara **al abrir** el proyecto). Para destrabarlo cuando ya pasó, no alcanza con `clean compile` — hace falta forzar todo el ciclo, incluido el empaquetado:
 
 ```powershell
-.\mvnw.cmd clean compile
+.\mvnw.cmd clean package -DskipTests
 .\mvnw.cmd spring-boot:run
 ```
 

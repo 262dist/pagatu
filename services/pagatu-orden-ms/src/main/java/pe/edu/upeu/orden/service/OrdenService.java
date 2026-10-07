@@ -9,4 +9,6 @@ public interface OrdenService {
     void marcarPagada(Long ordenId);
     OrdenResponse findById(Long id);
     List<OrdenResponse> listar();
+
+    void compensar(Long ordenId);    
 }
