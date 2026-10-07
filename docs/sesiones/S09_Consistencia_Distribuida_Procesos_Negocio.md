@@ -290,7 +290,13 @@ Tiempo: 3h (+1h opcional para la Parte E).
 - **3.12** Restaurar el stock al compensar.
 - **3.13** Probar el flujo de stock de punta a punta.
 
-**Punto de partida común:** todo el equipo debe comenzar exactamente desde donde quedó S8. Levanta `pagatu-config`, `pagatu-eureka`, `pagatu-gateway`, `pagatu-auth-ms`, Kafka, `pagatu-catalogo-ms`, `pagatu-orden-ms` y `pagatu-pago-ms` (S1-S8), confirma que una orden nueva sigue llegando a `PAGADA` por eventos (S8, 3.19) antes de tocar código nuevo.
+**Punto de partida común:** todo el equipo debe comenzar exactamente desde donde quedó S8 (mensajería asíncrona), no desde su propio avance individual. Clona la rama `s08-mensajeria-asincrona`:
+
+```bash
+git clone --branch s08-mensajeria-asincrona https://github.com/262dist/pagatu.git
+```
+
+Levanta `pagatu-config`, `pagatu-eureka`, `pagatu-gateway`, `pagatu-auth-ms`, Kafka, `pagatu-catalogo-ms`, `pagatu-orden-ms` y `pagatu-pago-ms` (S1-S8), confirma que una orden nueva sigue llegando a `PAGADA` por eventos (S8, 3.19) antes de tocar código nuevo.
 
 ### Parte A — Reproducir el problema y agregar idempotencia a `pagatu-pago-ms`
 
