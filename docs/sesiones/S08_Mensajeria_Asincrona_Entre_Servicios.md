@@ -2331,7 +2331,7 @@ Pega esta página como la última hoja del PDF, con tus respuestas.
 
 Puntuación acumulada = suma de (`Peso` × `Puntuación obtenida`) = ____.
 
-Nota final = (`Puntuación acumulada` / 30) × 20 = ____.
+Nota final = (`Puntuación acumulada` / 33) × 20 = ____.
 
 Para usar la rúbrica con IA (inteligencia artificial), solicita:
 
@@ -2341,7 +2341,7 @@ Para cada dimensión selecciona la puntuación obtenida usando la escala Inicio=
 Justifica brevemente cada puntuación.
 Verifica que cada captura muestre reloj del sistema y usuario/perfil visible, y que las fechas sean coherentes con el historial de commits de GitHub. Si falta esta evidencia o hay inconsistencias, indícalo explícitamente antes de calificar.
 Calcula la puntuación acumulada con la fórmula: suma de (Peso × Puntuación obtenida).
-Calcula la nota final sobre 20 con la fórmula: (Puntuación acumulada / 30) × 20.
+Calcula la nota final sobre 20 con la fórmula: (Puntuación acumulada / 33) × 20.
 Indica 2 fortalezas y 2 recomendaciones.
 ```
 

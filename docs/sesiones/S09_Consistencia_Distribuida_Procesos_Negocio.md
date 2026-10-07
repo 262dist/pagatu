@@ -179,6 +179,9 @@ La alternativa, **exactly-once delivery** (*entrega exactamente una vez*), exist
 | El mensaje llega en orden, dentro de su partición | Sí | — |
 | El mensaje nunca llega duplicado | **No** | Idempotencia (2.3) |
 | Procesar el duplicado no causa un efecto doble | — | Sí, si el consumidor lo implementa |
+| El evento nunca se pierde si el servicio se cae justo después de guardar, antes de publicar | — | **No, todavía no** — ver nota abajo |
+
+S8 (2.5) ya dejó anotada esta última fila como una limitación explícita, sin resolverla: *"si la publicación falla después de guardar, el evento se pierde y la orden queda en `PENDIENTE_PAGO`"*. Esta sesión **no** la cierra tampoco — lo que hoy construyes (idempotencia, compensación) protege contra mensajes que **sí llegaron**, duplicados o con un resultado de fallo; no protege contra un mensaje que **nunca llegó a publicarse** porque el proceso murió entre el `save()` y el `publicarTrasCommit()`. Cerrar esa brecha de verdad exige el **Outbox Pattern** (2.4): guardar el evento pendiente de publicar en la misma transacción local que guarda el pago, y un proceso aparte que lo publique desde ahí — fuera del alcance de `pagatu`.
 
 ### 2.3 Idempotencia: consumidores seguros ante reintentos
 
@@ -188,14 +191,18 @@ Un consumidor de eventos enfrenta el mismo problema, sin que nadie se lo haya pe
 
 **Error frecuente**: ignorar **cualquier** mensaje repetido sin revisar nada más, en vez de revisar si la acción específica ya se ejecutó. Eso resolvería el duplicado de hoy, pero descartaría silenciosamente un mensaje legítimo que *coincidiera* en alguna clave superficial — la idempotencia se verifica contra el **resultado** de la operación (¿ya existe el pago de esta orden?), no contra "si ya vi este mensaje antes" en abstracto.
 
+Lo que acabas de construir en 3.3 tiene nombre propio en el catálogo de patrones de microservicios: **Idempotent Consumer** (*consumidor idempotente*) — un consumidor que detecta y descarta mensajes duplicados antes de ejecutar su efecto de negocio (Richardson, 2018, cap. 4). No es una solución improvisada para este caso puntual: es la pieza que hace posible, en general, que una Saga coreografiada (2.4) sea confiable con una garantía de entrega "al menos una vez".
+
 ### 2.4 El patrón Saga coreografiada
 
-Una operación de negocio que cruza varios servicios, cada uno con su propia base de datos, no puede envolverse en una única transacción ACID (*Atomicity, Consistency, Isolation, Durability*) como si fuera una sola base — eso exigiría una transacción distribuida (*two-phase commit*), costosa y poco escalable en un sistema con microservicios independientes. El patrón **Saga** resuelve esto de otra forma: la operación completa se parte en una secuencia de **pasos locales**, cada uno con su propia transacción local y corto, y cada paso que pueda fallar define su **compensación** — una acción que deshace el efecto de negocio de los pasos ya confirmados, sin poder revertir la base de datos de otro servicio directamente (porque no tiene acceso a ella).
+**El problema que resuelve.** Una transacción distribuida clásica (*two-phase commit*, 2PC) exige que todos los participantes bloqueen sus recursos hasta que un coordinador confirme o aborte la operación completa — funciona dentro de una sola base de datos, pero no escala entre microservicios independientes, cada uno con su propia base y su propio ciclo de vida: bloquear la base de `pagatu-pago-ms` mientras se espera una respuesta de `pagatu-orden-ms` (o viceversa) acoplaría en tiempo real dos servicios que S6-S8 ya construyeron, a propósito, para poder fallar y escalar por separado.
 
-Hay dos formas de coordinar una Saga (Richardson, 2018):
+El patrón **Saga** (Richardson, 2018, cap. 4; Garcia-Molina y Salem, 1987) resuelve esto de otra forma: la operación completa se parte en una secuencia de **transacciones locales**, una por servicio, cada una corta y confirmada por su cuenta — nunca hay un bloqueo distribuido esperando una respuesta ajena. El costo es que el sistema puede estar **temporalmente inconsistente** mientras la Saga todavía no termina (una orden `PENDIENTE_PAGO` es, literalmente, ese estado intermedio) — la Saga garantiza **consistencia eventual**, no instantánea. Y cada paso que pueda fallar define su **transacción de compensación**: una acción que deshace el *efecto de negocio* de los pasos ya confirmados, nunca una reversión de base de datos ajena (porque ningún servicio tiene acceso directo a la base de otro).
 
-- **Orquestada**: un componente central (un *orchestrator*) le dice a cada servicio, paso a paso, qué hacer y cuándo compensar. Centraliza la lógica de la Saga completa en un solo lugar, a costa de ese componente central.
-- **Coreografiada** (la que ya construiste, sin el nombre, desde S8): no hay ningún coordinador — cada servicio reacciona a los eventos del anterior y publica el suyo propio. `pagatu-orden-ms` no sabe que existe un paso de compensación en curso cuando publica `orden.creada`; simplemente reacciona cuando le llega `pago.fallido`, igual que reaccionaba a `pago.validado`.
+Hay dos formas de coordinar una Saga:
+
+- **Orquestada**: un *Saga Orchestrator* central conoce el flujo completo. Le envía un **comando** a cada servicio, espera su respuesta y decide el siguiente paso; si uno falla, el propio orquestador dispara las compensaciones de los pasos ya completados, **en orden inverso**. Centraliza la lógica (más fácil de entender, probar y depurar: todo el flujo vive en un solo lugar) a costa de acoplar a ese coordinador a **todos** los servicios participantes, que pasan a depender de él para avanzar.
+- **Coreografiada** (la que ya construiste, sin el nombre, desde S8): no hay ningún coordinador. Cada servicio escucha los eventos que le interesan, ejecuta su transacción local al recibir el que le corresponde, y publica su propio evento anunciando lo que hizo — el siguiente servicio de la cadena reacciona a ese evento, y así sucesivamente. `pagatu-orden-ms` no sabe que existe un paso de compensación en curso cuando publica `orden.creada`; simplemente reacciona cuando le llega `pago.fallido`, igual que reaccionaba a `pago.validado`. Elimina el punto único de coordinación, pero el flujo de negocio queda **implícito**, repartido entre los *listeners* de cada servicio — más difícil de visualizar de punta a punta sin algo como la cadena de logs de 3.7/2.7.
 
 **Tabla 3. Los pasos de la Saga de `pagatu`, con su compensación**
 
@@ -205,9 +212,31 @@ Hay dos formas de coordinar una Saga (Richardson, 2018):
 | 2. Validar el pago | `pagatu-pago-ms` | La pasarela (simulada) rechaza el pago | Publica `pago.fallido` en vez de `pago.validado` |
 | 3. Confirmar la orden | `pagatu-orden-ms` | — (último paso) | Al recibir `pago.fallido`: `PENDIENTE_PAGO → CANCELADA` |
 
-*Nota.* Adaptado de *Pattern: Saga*, por Richardson, C., 2018, microservices.io (https://microservices.io/patterns/data/saga.html).
+*Nota.* Adaptado de *Saga Pattern*, por SACAViX, s. f., System Design (https://systemdesign.sacavix.com/patterns/saga), y de *Pattern: Saga*, por Richardson, C., 2018, microservices.io (https://microservices.io/patterns/data/saga.html).
 
 La compensación del paso 3 no es "deshacer la orden como si nunca hubiera existido" (eso sería borrarla, perdiendo la trazabilidad de que existió y falló) — es una **transición de estado nueva** (`CANCELADA`) que dice, de forma permanente y auditable, que esa orden se registró y su pago fue rechazado. Es el mismo criterio que ya se aplicó con `anular`/`ANULADA` en los cursos hermanos de este mismo ciclo (BomERP): una compensación deja rastro, no reescribe la historia.
+
+¿Por qué `CANCELADA` y no `EXPIRADA`, si las dos ya estaban declaradas en el `enum` desde S6 sin usarse? S6 las distingue por su causa, no por su resultado: *"`CANCELADA` es una decisión activa (el cliente o el negocio la descartan), `EXPIRADA` es que el plazo de `expira_en` se cumplió sin que nadie la confirmara ni la pagara"*. Un pago rechazado no es un plazo vencido — es la regla de negocio de `pagatu-pago-ms` descartando la orden de forma activa, aunque automatizada en vez de manual. `EXPIRADA` queda reservada para un caso que esta sesión no construye: una orden `PENDIENTE_PAGO` de la que nunca llega **ningún** evento, ni `pago.validado` ni `pago.fallido` — ese caso necesitaría un temporizador que hoy no existe, y sigue siendo una brecha abierta después de S9.
+
+S6 también anticipó algo que esta sesión **todavía no cierra**: si el stock se reservara al construir la orden, una orden `CANCELADA` o `EXPIRADA` debería devolver ese stock reservado. Hoy no hace falta devolver nada porque `pagatu-orden-ms` nunca llegó a reservar stock en primer lugar (S6, 3.13: `OrdenServiceImpl` valida contra `pagatu-catalogo-ms` por Feign, pero solo **consulta**, no descuenta) — la brecha de S6 sigue abierta, intacta, un nivel más atrás de lo que esta sesión resuelve.
+
+**Tabla 4. Errores comunes al implementar una Saga, y cómo queda esta sesión frente a cada uno**
+
+| Error común (SACAViX, s. f.) | ¿Aplica a la Saga de `pagatu` hoy? |
+|---|---|
+| No implementar todas las transacciones de compensación | No aplica todavía: la Saga de hoy tiene un solo paso compensable (el pago, Tabla 3) — el paso 1 nunca necesita compensación porque falla *antes* de confirmar nada (S6). Si tu Saga propia (4.1) tiene más de un paso que pueda fallar, cada uno necesita la suya — este es justo el error que esa actividad te pide evitar. |
+| Transacciones de compensación que también pueden fallar, sin manejo | **Sí aplica, y queda pendiente a propósito**: `compensar()` (3.6) no tiene ningún reintento ni *dead-letter queue* si fallara (por ejemplo, la base de `pagatu-orden-ms` caída justo en ese instante). Fuera del alcance de esta sesión — anótalo como limitación conocida en tu documentación (3.9). |
+| Saga demasiado larga (muchos pasos aumentan el riesgo de fallo) | No aplica: la Saga de `pagatu` tiene solo dos pasos remotos (registrar, pagar). |
+| No implementar idempotencia en los pasos de la Saga | Era el estado real de `pagatu-pago-ms` **antes** de 3.3 (2.2-2.3) — el motivo de ser de toda la Parte A de esta sesión. |
+| Usar coreografía en sagas muy largas, donde el flujo termina disperso e imposible de rastrear | Vale la pena tenerlo presente: con dos pasos, la coreografía se seguía bien con los logs de 3.7. Si `pagatu` agregara más pasos (envío, notificación...), llegaría un punto donde orquestar el flujo completo (en vez de repartirlo entre *listeners*) sería más fácil de razonar — no es una regla fija, es un costo que crece con cada paso nuevo. |
+
+*Nota.* Adaptado de *Saga Pattern*, por SACAViX, s. f., System Design (https://systemdesign.sacavix.com/patterns/saga).
+
+El patrón **Idempotent Consumer** (2.3) está en la lista de "patrones relacionados" de la propia referencia de Saga — no es casualidad: una Saga coreografiada sin consumidores idempotentes no es una Saga confiable, es una carrera entre duplicados. Dos patrones relacionados que **no** se construyen en esta sesión, pero vale la pena conocer de nombre: **Event Sourcing** (guardar cada cambio de estado como un evento, en vez de solo el estado final) y **Outbox Pattern** (garantizar que una transacción local y la publicación de su evento ocurran de forma atómica, sin la ventana de riesgo que existe hoy entre `ordenRepository.save()` y `producer.publicarTrasCommit()`, S8 2.4) — ambos aparecen en cursos más avanzados de arquitectura de microservicios, fuera del alcance de `pagatu`.
+
+**Lo que existe en producción, en vez de construirlo a mano.** [Axon Framework](https://www.axoniq.io/axon-framework) (Java, AxonIQ, código abierto) empaqueta justamente estos tres patrones — CQRS (*Command Query Responsibility Segregation*), Event Sourcing y Saga — como un solo toolkit: una clase anotada `@Saga` escucha eventos y puede emitir comandos, con su ciclo de vida (crear la instancia, asociarla a una orden concreta, terminarla) gestionado por el framework, sin que haya que escribir a mano el `@KafkaListener` ni el seguimiento de idempotencia de 3.3. Es exactamente el mismo criterio que Keycloak frente al JWT propio (S10b, ADR-005 de LP2): esta sesión construye la Saga a mano **a propósito**, para entender la mecánica — la idempotencia, la compensación, la ventana de riesgo entre guardar y publicar (S8, 2.5) — antes de delegarla a una herramienta que la resuelve por dentro.
+
+Fuera del ecosistema Java, tres nombres más, por si los escuchas en una entrevista o en otro curso — ninguno se usa en `pagatu`, y conviene conocer su diferencia de fondo: **Temporal** (código abierto, con una nube paga opcional) deja escribir la Saga como código normal (Java, Go, Python...) y el propio motor garantiza que cada paso sobreviva a una caída, con reintentos automáticos — el candidato más directo si `pagatu` creciera y la coreografía (2.4, Tabla 4) empezara a quedar difícil de rastrear. **Camunda** representa el flujo como un diagrama BPMN (*Business Process Model and Notation*) en vez de código — mejor cuando el proceso incluye pasos que espera a una persona, no sirve tanto para un flujo puramente entre microservicios. **AWS Step Functions** es el equivalente totalmente administrado y de pago por uso, pero solo dentro de la infraestructura de AWS. Y el más cercano a esta guía: **Eventuate Tram Sagas**, la librería Java/Spring Boot del propio Richardson (2018) — implementa Outbox y Saga (orquestada y coreografiada) exactamente como se describen aquí, sin inventar nada nuevo.
 
 ### 2.5 Compensación: deshacer un paso ya confirmado
 
@@ -512,7 +541,7 @@ Resultado esperado: el pago de esta orden con `"estado": "FALLIDO"`.
 
 Resultado esperado: `CANCELADA` — nunca llegó a `PAGADA`.
 
-**Error frecuente**: la orden queda en `PENDIENTE_PAGO`, ni `PAGADA` ni `CANCELADA`. Sigue la misma cadena de diagnóstico de S8 (2.6, su Error frecuente): ¿el log de `pagatu-pago-ms` muestra `estado=FALLIDO`? ¿Publicó en `pago-eventos`? ¿`pagatu-orden-ms` lo consumió? Confirma también que el `switch` de 3.6 compila con las dos constantes como `case`, no con literales de texto sueltos.
+**Error frecuente**: la orden queda en `PENDIENTE_PAGO`, ni `PAGADA` ni `CANCELADA`. Sigue la misma cadena de diagnóstico de S8 (2.6): ¿el log de `pagatu-pago-ms` muestra `estado=FALLIDO`? ¿Publicó en `pago-eventos`? ¿`pagatu-orden-ms` lo consumió? Confirma también que el `switch` de 3.6 compila con las dos constantes como `case`, no con literales de texto sueltos.
 
 ### Parte C — Verificar la idempotencia de la compensación
 
@@ -658,7 +687,7 @@ Pega esta página como la última hoja del PDF, con tus respuestas.
 
 ### 4.6 Rúbrica de evaluación
 
-**Tabla 4. Rúbrica de evaluación**
+**Tabla 5. Rúbrica de evaluación**
 
 | Dimensión | Peso | 3 - Logro destacado | 2 - Logro | 1 - Proceso | 0 - Inicio | Puntuación obtenida |
 |---|---:|---|---|---|---|---:|
@@ -701,6 +730,14 @@ Tiempo: 5 min.
 ## Bibliografía
 
 - U.S. Securities and Exchange Commission. (2013). *In the Matter of Knight Capital Americas LLC* (Release No. 34-70694). https://www.sec.gov/litigation/admin/2013/34-70694.pdf
+- Richardson, C. (2018). *Microservices Patterns: With Examples in Java* (cap. 4, "Managing transactions with sagas"). Manning Publications.
 - Richardson, C. (2018). *Pattern: Saga*. microservices.io. https://microservices.io/patterns/data/saga.html
+- SACAViX. (s. f.). *Saga Pattern*. System Design. https://systemdesign.sacavix.com/patterns/saga
+- Garcia-Molina, H., y Salem, K. (1987). *Sagas*. ACM SIGMOD Record, 16(3), 249-259. https://doi.org/10.1145/38713.38742
+- AxonIQ. (2026). *Axon Framework - DDD, CQRS and Event Sourcing, all in one*. https://www.axoniq.io/axon-framework
+- Eventuate, Inc. (2026). *Eventuate Tram Sagas*. https://eventuate.io/docs/manual/eventuate-tram/latest/getting-started-eventuate-tram-sagas.html
+- Temporal Technologies. (2026). *Temporal Documentation*. https://docs.temporal.io/
+- Camunda. (2026). *Camunda Platform Documentation*. https://docs.camunda.io/
+- Amazon Web Services. (2026). *AWS Step Functions Developer Guide*. https://docs.aws.amazon.com/step-functions/
 - Apache Software Foundation. (2024). *Apache Kafka Documentation*. https://kafka.apache.org/documentation/
 - Spring for Apache Kafka. (2026). *Spring for Apache Kafka Reference* (versión 4.1.1). https://docs.spring.io/spring-kafka/reference/
