@@ -27,7 +27,7 @@ Al concluir la clase, estarás en condiciones de:
 
 ### 1.4 Producto de sesión
 
-`pagatu-pago-ms` idempotente ante un `orden.creada` duplicado: lo reconoce y lo ignora, sin crear un segundo pago ni caerse. Un nuevo estado `FALLIDO` en `Pago`, con una forma explícita de simular el rechazo de un pago (`metodoPago: "TARJETA_RECHAZADA"`), publicando `pago.fallido` en ese caso en vez de `pago.validado`. `pagatu-orden-ms` consumiendo `pago.fallido` y **compensando** la orden (`PENDIENTE_PAGO → CANCELADA`, reutilizando un estado que ya existía sin usarse desde S6), con la misma protección contra duplicados que `marcarPagada` ya tenía desde S8. Y el flujo de negocio completo, con sus estados, sus transiciones y sus dos compensaciones posibles, documentado de punta a punta.
+`pagatu-pago-ms` idempotente ante un `orden.creada` duplicado: lo reconoce y lo ignora, sin crear un segundo pago ni caerse. Un nuevo estado `FALLIDO` en `Pago`, con una forma explícita de simular el rechazo de un pago (`metodoPago: "TARJETA_RECHAZADA"`), publicando `pago.fallido` en ese caso en vez de `pago.validado`. `pagatu-orden-ms` consumiendo `pago.fallido` y **compensando** la orden (`PENDIENTE_PAGO → CANCELADA`, reutilizando un estado que ya existía sin usarse desde S6), con la misma protección contra duplicados que `marcarPagada` ya tenía desde S8. El flujo de negocio completo, con sus estados y transiciones, documentado de punta a punta. Y, como ejercicio opcional tipo examen (Parte E): `pagatu-catalogo-ms` ganando dos operaciones de stock (`descontar-stock`, `restaurar-stock`), con `pagatu-orden-ms` reservándolo al crear la orden y restaurándolo al compensarla — cerrando, para quien lo complete, la brecha que S6 dejó documentada y sin cerrar.
 
 ### 1.5 Metodología
 
@@ -36,7 +36,7 @@ Al concluir la clase, estarás en condiciones de:
 | Actividades a Realizar en el Periodo | Orientaciones generales (Orientaciones Metodológicas) | Material de estudio recomendado |
 |---|---|---|
 | Revisión previa individual | Repasar S8 completo (3.13-3.19): el contrato de los dos eventos, `OrdenEventosConsumer`/`PagoEventosConsumer`, y la pregunta 7 de 4.5 ("¿por qué hoy no está resuelto?"). Confirmar que `pagatu-orden-ms` y `pagatu-pago-ms` siguen corriendo con una orden ya pasada a `PAGADA`. Trabajo individual, antes de clase. | S8 completo, en especial 2.5-2.6 y 3.13-3.19. |
-| Clase presencial | Reproducir el bug de duplicados, agregar idempotencia a `pagatu-pago-ms`, simular el fallo de un pago, y consumir `pago.fallido` compensando la orden en `pagatu-orden-ms`. Trabajo individual, siguiendo al docente paso a paso; consulta inmediata ante un log que no muestra lo esperado. | Pasos 3.1 a 3.9 de esta guía. |
+| Clase presencial | Reproducir el bug de duplicados, agregar idempotencia a `pagatu-pago-ms`, simular el fallo de un pago, consumir `pago.fallido` compensando la orden en `pagatu-orden-ms`, y documentar el flujo completo. Trabajo individual, siguiendo al docente paso a paso; consulta inmediata ante un log que no muestra lo esperado. La Parte E (reservar/restaurar stock, 3.10-3.13) es opcional, tipo examen — no se construye necesariamente en clase. | Pasos 3.1 a 3.9 obligatorios; 3.10 a 3.13 opcionales. |
 | Evaluación formativa | Revisión en clase de los tres casos con evidencia real: duplicado ignorado, pago rechazado con la orden compensada, y compensación también idempotente. La evidencia se completa y sustenta de forma individual, fuera del aula, según los criterios mínimos de la sección 4.4. | Indicaciones de entrega (4.3), rúbrica de evaluación (4.6). |
 
 ### 1.6 Motivación de la sesión
@@ -208,9 +208,9 @@ Hay dos formas de coordinar una Saga:
 
 | Paso | Servicio | Si falla | Compensación |
 |---|---|---|---|
-| 1. Registrar la orden | `pagatu-orden-ms` | No se publica nada (S6: falla antes de la transacción local) | No aplica — nada que compensar, no se confirmó nada |
+| 1. Registrar la orden y reservar stock | `pagatu-orden-ms` → `pagatu-catalogo-ms` (Feign) | No se publica nada (S6: falla antes de la transacción local) | No aplica — nada que compensar, no se confirmó nada |
 | 2. Validar el pago | `pagatu-pago-ms` | La pasarela (simulada) rechaza el pago | Publica `pago.fallido` en vez de `pago.validado` |
-| 3. Confirmar la orden | `pagatu-orden-ms` | — (último paso) | Al recibir `pago.fallido`: `PENDIENTE_PAGO → CANCELADA` |
+| 3. Confirmar la orden | `pagatu-orden-ms` | — (último paso) | Al recibir `pago.fallido`: `PENDIENTE_PAGO → CANCELADA`, y **restaurar el stock reservado en el paso 1** |
 
 *Nota.* Adaptado de *Saga Pattern*, por SACAViX, s. f., System Design (https://systemdesign.sacavix.com/patterns/saga), y de *Pattern: Saga*, por Richardson, C., 2018, microservices.io (https://microservices.io/patterns/data/saga.html).
 
@@ -218,14 +218,14 @@ La compensación del paso 3 no es "deshacer la orden como si nunca hubiera exist
 
 ¿Por qué `CANCELADA` y no `EXPIRADA`, si las dos ya estaban declaradas en el `enum` desde S6 sin usarse? S6 las distingue por su causa, no por su resultado: *"`CANCELADA` es una decisión activa (el cliente o el negocio la descartan), `EXPIRADA` es que el plazo de `expira_en` se cumplió sin que nadie la confirmara ni la pagara"*. Un pago rechazado no es un plazo vencido — es la regla de negocio de `pagatu-pago-ms` descartando la orden de forma activa, aunque automatizada en vez de manual. `EXPIRADA` queda reservada para un caso que esta sesión no construye: una orden `PENDIENTE_PAGO` de la que nunca llega **ningún** evento, ni `pago.validado` ni `pago.fallido` — ese caso necesitaría un temporizador que hoy no existe, y sigue siendo una brecha abierta después de S9.
 
-S6 también anticipó algo que esta sesión **todavía no cierra**: si el stock se reservara al construir la orden, una orden `CANCELADA` o `EXPIRADA` debería devolver ese stock reservado. Hoy no hace falta devolver nada porque `pagatu-orden-ms` nunca llegó a reservar stock en primer lugar (S6, 3.13: `OrdenServiceImpl` valida contra `pagatu-catalogo-ms` por Feign, pero solo **consulta**, no descuenta) — la brecha de S6 sigue abierta, intacta, un nivel más atrás de lo que esta sesión resuelve.
+S6 también anticipó algo que esta sesión **sí cierra, en la Parte D**: si el stock se reserva al construir la orden, una orden `CANCELADA` debe devolver ese stock reservado. Hasta 3.8, `pagatu-orden-ms` solo **consultaba** el catálogo por Feign (S6, 3.13), sin descontar nada — 3.10 a 3.13 (opcional, Parte E) agregan la reserva (al crear) y la devolución (al compensar), dejando la brecha de S6 por fin cerrada si completas ese tramo. `EXPIRADA` queda todavía sin resolver: ninguna sesión construye hoy el temporizador que la dispararía.
 
 **Tabla 4. Errores comunes al implementar una Saga, y cómo queda esta sesión frente a cada uno**
 
 | Error común (SACAViX, s. f.) | ¿Aplica a la Saga de `pagatu` hoy? |
 |---|---|
 | No implementar todas las transacciones de compensación | No aplica todavía: la Saga de hoy tiene un solo paso compensable (el pago, Tabla 3) — el paso 1 nunca necesita compensación porque falla *antes* de confirmar nada (S6). Si tu Saga propia (4.1) tiene más de un paso que pueda fallar, cada uno necesita la suya — este es justo el error que esa actividad te pide evitar. |
-| Transacciones de compensación que también pueden fallar, sin manejo | **Sí aplica, y queda pendiente a propósito**: `compensar()` (3.6) no tiene ningún reintento ni *dead-letter queue* si fallara (por ejemplo, la base de `pagatu-orden-ms` caída justo en ese instante). Fuera del alcance de esta sesión — anótalo como limitación conocida en tu documentación (3.9). |
+| Transacciones de compensación que también pueden fallar, sin manejo | **Sí aplica, y queda pendiente a propósito** — y si completas el ejercicio opcional de la Parte E, desde 3.12 es un riesgo real, no solo hipotético: `compensar()` hace ahí una llamada Feign a `pagatu-catalogo-ms` para restaurar stock, y esa llamada puede fallar (catálogo caído, circuito abierto). El *fallback* de 3.12 solo registra el error en el log y deja la orden `CANCELADA` igual — el stock queda desincronizado hasta una corrección manual. Ni reintento ni *dead-letter queue* para este caso: anótalo como limitación conocida en tu documentación (3.9). |
 | Saga demasiado larga (muchos pasos aumentan el riesgo de fallo) | No aplica: la Saga de `pagatu` tiene solo dos pasos remotos (registrar, pagar). |
 | No implementar idempotencia en los pasos de la Saga | Era el estado real de `pagatu-pago-ms` **antes** de 3.3 (2.2-2.3) — el motivo de ser de toda la Parte A de esta sesión. |
 | Usar coreografía en sagas muy largas, donde el flujo termina disperso e imposible de rastrear | Vale la pena tenerlo presente: con dos pasos, la coreografía se seguía bien con los logs de 3.7. Si `pagatu` agregara más pasos (envío, notificación...), llegaría un punto donde orquestar el flujo completo (en vez de repartirlo entre *listeners*) sería más fácil de razonar — no es una regla fija, es un costo que crece con cada paso nuevo. |
@@ -252,13 +252,13 @@ El mismo criterio de logs de S8 (`component`, `eventType`, `ordenId`, `status`) 
 
 ## 3. Aplica: actividad práctica guiada
 
-Tiempo: 3h.
+Tiempo: 3h (+1h opcional para la Parte E).
 
 **Actividad:** reproducción guiada del problema de duplicados, idempotencia en `pagatu-pago-ms`, simulación del fallo de un pago, y compensación de la orden en `pagatu-orden-ms` (Producto de la sesión en 1.4).
 
 **Propósito de la actividad:** que cada estudiante vea el efecto real de un evento duplicado antes de arreglarlo, implemente idempotencia con una revisión explícita respaldada por la restricción `UNIQUE` ya existente, y construya el paso de compensación completo de una Saga coreografiada, con evidencia real de los tres casos (duplicado, fallo con compensación, y compensación también idempotente).
 
-**Orientaciones metodológicas:** el docente provoca primero el bug en vivo frente a la clase (Parte A), lo arregla, simula el fallo de pago y construye la compensación (Parte B), y cierra verificando que la propia compensación también es idempotente (Parte C); los estudiantes replican cada paso en su propia laptop y provocan ellos mismos el duplicado y el fallo para ver los tres resultados reales en su propia consola.
+**Orientaciones metodológicas:** el docente provoca primero el bug en vivo frente a la clase (Parte A), lo arregla, simula el fallo de pago y construye la compensación (Parte B), verifica que la propia compensación también es idempotente (Parte C), y cierra documentando el flujo completo (Parte D); los estudiantes replican cada paso en su propia laptop y provocan ellos mismos el duplicado y el fallo para ver los resultados reales en su propia consola. La Parte E (reservar y restaurar stock real) queda como ejercicio opcional, tipo examen, para quien quiera acercar la compensación a lo que haría un sistema real — no es necesario construirla en clase ni para aprobar la sesión.
 
 **Actividades para realizar:**
 
@@ -282,6 +282,13 @@ Tiempo: 3h.
 *Parte D — Documentar:*
 
 - **3.9** Documentar el flujo de negocio: estados, transiciones y compensaciones.
+
+*Parte E — Acercar la compensación a la realidad: reservar y restaurar stock (opcional, ejercicio tipo examen):*
+
+- **3.10** Agregar descuento y restauración de stock en `pagatu-catalogo-ms`.
+- **3.11** Reservar stock al crear la orden en `pagatu-orden-ms`.
+- **3.12** Restaurar el stock al compensar.
+- **3.13** Probar el flujo de stock de punta a punta.
 
 **Punto de partida común:** todo el equipo debe comenzar exactamente desde donde quedó S8. Levanta `pagatu-config`, `pagatu-eureka`, `pagatu-gateway`, `pagatu-auth-ms`, Kafka, `pagatu-catalogo-ms`, `pagatu-orden-ms` y `pagatu-pago-ms` (S1-S8), confirma que una orden nueva sigue llegando a `PAGADA` por eventos (S8, 3.19) antes de tocar código nuevo.
 
@@ -572,6 +579,218 @@ stateDiagram-v2
 
 Documenta, con tus propias palabras y en tu evidencia (4.3), la tabla de transiciones completa (igual formato que la Tabla 3 de esta guía), aplicada a tu propio sistema si tu Proyecto Sello tiene un flujo de negocio equivalente — o, si no lo tiene todavía, aplicada a `pagatu` como referencia para la actividad autónoma (4.1).
 
+### Parte E — Acercar la compensación a la realidad: reservar y restaurar stock (opcional, ejercicio tipo examen)
+
+Esta parte **no** se construye necesariamente en clase: el docente puede dejarla como autoevaluación antes del examen, o como demostración opcional de dominio. Nada de lo anterior (Partes A-D) depende de ella, y la sesión está completa sin este tramo — tómala si quieres acercar la compensación de 3.6 a lo que haría un sistema real (devolver stock, no solo cambiar un estado), practicando por tu cuenta antes de que te lo pidan evaluado.
+
+#### 3.10 Agregar descuento y restauración de stock en `pagatu-catalogo-ms`
+
+**Producto del paso:** `pagatu-catalogo-ms` expone dos operaciones nuevas — descontar stock (con `409` si no alcanza) y restaurarlo — sobre el mismo `Producto` que ya expone S1.
+
+**`services/pagatu-catalogo-ms/src/main/java/pe/edu/upeu/catalogo/exception/StockInsuficienteException.java`:**
+
+```java
+package pe.edu.upeu.catalogo.exception;
+
+public class StockInsuficienteException extends RuntimeException {
+    public StockInsuficienteException(String mensaje) {
+        super(mensaje);
+    }
+}
+```
+
+**`services/pagatu-catalogo-ms/src/main/java/pe/edu/upeu/catalogo/exception/GlobalExceptionHandler.java`** — agrega el método, junto a `handleNotFound`:
+
+```java
+    @ExceptionHandler(StockInsuficienteException.class)
+    public ResponseEntity<Map<String, Object>> handleStockInsuficiente(StockInsuficienteException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", Instant.now().toString());
+        body.put("status", HttpStatus.CONFLICT.value());
+        body.put("error", "Conflict");
+        body.put("message", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+    }
+```
+
+**`services/pagatu-catalogo-ms/src/main/java/pe/edu/upeu/catalogo/service/ProductoService.java`** — agrega los dos métodos, junto a `eliminar`:
+
+```java
+    @Transactional
+    public void descontarStock(Long id, Integer cantidad) {
+        Producto producto = buscarOFallar(id);
+        if (producto.getStock() < cantidad) {
+            throw new StockInsuficienteException("Stock insuficiente para el producto: " + id);
+        }
+        producto.setStock(producto.getStock() - cantidad);
+        productoRepository.save(producto);
+    }
+
+    @Transactional
+    public void restaurarStock(Long id, Integer cantidad) {
+        Producto producto = buscarOFallar(id);
+        producto.setStock(producto.getStock() + cantidad);
+        productoRepository.save(producto);
+    }
+```
+
+Agrega los imports que faltan:
+
+```java
+import org.springframework.transaction.annotation.Transactional;
+import pe.edu.upeu.catalogo.exception.StockInsuficienteException;
+```
+
+Ningún otro método de esta clase lleva `@Transactional` explícito hasta hoy — se agrega aquí a propósito: leer el stock, compararlo y guardarlo son tres pasos separados, y sin una transacción explícita que los agrupe, dos peticiones casi simultáneas podrían leer el mismo stock antes de que ninguna guarde, perdiendo un descuento (el mismo tipo de condición de carrera que 2.3 ya resolvió del lado de `pagatu-pago-ms`, aquí aplicado a una resta en vez de a un `INSERT`).
+
+**`services/pagatu-catalogo-ms/src/main/java/pe/edu/upeu/catalogo/controller/ProductoController.java`** — agrega los dos endpoints:
+
+```java
+    @PatchMapping("/{id}/descontar-stock")
+    public void descontarStock(@PathVariable Long id, @RequestParam Integer cantidad) {
+        productoService.descontarStock(id, cantidad);
+    }
+
+    @PatchMapping("/{id}/restaurar-stock")
+    public void restaurarStock(@PathVariable Long id, @RequestParam Integer cantidad) {
+        productoService.restaurarStock(id, cantidad);
+    }
+```
+
+**Error frecuente**: olvidar `@Transactional` y dejar que `descontarStock` haga su lectura y su escritura en dos transacciones separadas (una por cada llamada al repositorio). Con stock bajo y dos pedidos casi simultáneos del mismo producto, ambos podrían leer el mismo valor antes de que ninguno descuente — el stock terminaría descontado una sola vez en vez de dos, vendiendo más de lo que existía.
+
+#### 3.11 Reservar stock al crear la orden en `pagatu-orden-ms`
+
+**Producto del paso:** `crear()` descuenta el stock real de cada línea válida, no solo consulta su precio y su nombre.
+
+**`services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/client/ProductoClient.java`** — agrega los dos métodos:
+
+```java
+    @PatchMapping("/api/v1/productos/{id}/descontar-stock")
+    void descontarStock(@PathVariable("id") Long id, @RequestParam("cantidad") Integer cantidad);
+
+    @PatchMapping("/api/v1/productos/{id}/restaurar-stock")
+    void restaurarStock(@PathVariable("id") Long id, @RequestParam("cantidad") Integer cantidad);
+```
+
+Agrega los imports (`PatchMapping`, `RequestParam`) junto a los que ya existen.
+
+**`ProductoConsultaService.java`** — agrega los dos métodos, con el mismo Circuit Breaker nombrado `catalogo` que ya protege `consultarProducto` (S6, 3.16-3.17):
+
+```java
+    @CircuitBreaker(name = "catalogo", fallbackMethod = "fallbackDescontarStock")
+    public boolean descontarStock(Long idProducto, Integer cantidad) {
+        productoClient.descontarStock(idProducto, cantidad);
+        return true;
+    }
+
+    public boolean fallbackDescontarStock(Long idProducto, Integer cantidad, Throwable ex) {
+        log.warn("[CATALOGO] No se pudo descontar stock de {}. Motivo: {}", idProducto, ex.getMessage());
+        return false;
+    }
+```
+
+`descontarStock` devuelve `boolean` a propósito, no lanza la excepción hacia arriba: la razón por la que falló (catálogo caído, circuito abierto, o `409` por stock insuficiente) no le importa a `OrdenServiceImpl` — lo único que necesita saber es si la línea quedó reservada o no, el mismo criterio binario que ya usa con `producto == null` (S6, 3.13).
+
+**`OrdenServiceImpl.java`** — dentro del bucle de `crear()`, agrega la reserva justo después de la consulta exitosa:
+
+```java
+        for (DetalleOrdenRequest item : request.getDetalles()) {
+            ProductoDto producto = productoConsultaService.consultarProducto(item.getIdProducto());
+            boolean stockReservado = producto != null
+                    && productoConsultaService.descontarStock(item.getIdProducto(), item.getCantidad());
+
+            if (!stockReservado) {
+                validacionCompleta = false;
+                detalles.add(OrdenDetalle.builder()
+                        .orden(orden)
+                        .idProducto(item.getIdProducto())
+                        .nombreProducto(null)
+                        .cantidad(item.getCantidad())
+                        .precioUnitario(null)
+                        .build());
+                continue;
+            }
+
+            BigDecimal subtotal = producto.getPrecio()
+                    .multiply(BigDecimal.valueOf(item.getCantidad()));
+            total = total.add(subtotal);
+
+            detalles.add(OrdenDetalle.builder()
+                    .orden(orden)
+                    .idProducto(item.getIdProducto())
+                    .nombreProducto(producto.getNombre())
+                    .cantidad(item.getCantidad())
+                    .precioUnitario(producto.getPrecio())
+                    .build());
+        }
+```
+
+Una orden con un producto sin stock suficiente sigue el mismo camino que una con un producto inexistente (S6): queda en `CARRITO`, no en `PENDIENTE_PAGO` — y las líneas que **sí** alcanzaron a reservar stock antes de que una fallara **se quedan reservadas**, sin devolverse. Esta sesión no corrige eso (sería compensar dentro de la propia transacción local de `crear()`, un caso distinto al de la Saga completa) — anótalo como limitación conocida, igual que la de 3.12.
+
+#### 3.12 Restaurar el stock al compensar
+
+**Producto del paso:** `compensar()` devuelve el stock de cada línea de la orden, antes de marcarla `CANCELADA`.
+
+**`OrdenServiceImpl.java`** — reemplaza el método `compensar`:
+
+```java
+    @Override
+    @Transactional
+    public void compensar(Long ordenId) {
+        Orden orden = ordenRepository.findById(ordenId).orElse(null);
+        if (orden == null || orden.getEstado() != EstadoOrden.PENDIENTE_PAGO) {
+            log.warn("component=processor ordenId={} status=ignored motivo=\"la orden no existe o ya no esta pendiente de pago\"", ordenId);
+            return;
+        }
+        for (OrdenDetalle detalle : orden.getDetalles()) {
+            productoConsultaService.restaurarStock(detalle.getIdProducto(), detalle.getCantidad());
+        }
+        orden.setEstado(EstadoOrden.CANCELADA);
+        log.info("component=processor ordenId={} estado={} status=compensated", ordenId, orden.getEstado());
+    }
+```
+
+**`ProductoConsultaService.java`** — agrega el método:
+
+```java
+    @CircuitBreaker(name = "catalogo", fallbackMethod = "fallbackRestaurarStock")
+    public void restaurarStock(Long idProducto, Integer cantidad) {
+        productoClient.restaurarStock(idProducto, cantidad);
+    }
+
+    public void fallbackRestaurarStock(Long idProducto, Integer cantidad, Throwable ex) {
+        log.error("[CATALOGO] No se pudo restaurar stock de {} al compensar. Motivo: {} — requiere correccion manual",
+                idProducto, ex.getMessage());
+    }
+```
+
+El *fallback* de `restaurarStock` **no** relanza la excepción — a propósito (Tabla 4, fila 2): si `pagatu-catalogo-ms` está caído justo cuando se compensa una orden, `compensar()` sigue adelante y la orden queda `CANCELADA` igual, con el stock desincronizado hasta que alguien lo corrija a mano. La alternativa (detener la compensación si el stock no se pudo restaurar) dejaría la orden en un limbo peor: ni pagada, ni compensada, con un pago ya marcado `FALLIDO` del otro lado. Esta sesión elige la compensación de estado como la garantía mínima no negociable, y el stock como un efecto secundario que puede quedar pendiente de reconciliar — una decisión de diseño real, no un descuido.
+
+**Error frecuente**: devolver stock de una línea que **nunca llegó a reservarse** (una de las que quedó con `nombreProducto: null` en 3.11, por no haber alcanzado stock o no existir). Recorrer `orden.getDetalles()` sin distinguir unas de otras en 3.12 restauraría stock de más. Esta sesión no construye esa distinción (ninguna orden que llega a `compensar()` tiene líneas inválidas, porque solo las `PENDIENTE_PAGO` llegan ahí, y esas ya pasaron la validación completa de 3.11) — pero vale la pena tenerlo presente si tu actividad autónoma (4.1) reutiliza este patrón sobre un proceso que sí mezcla líneas válidas e inválidas en el mismo registro.
+
+#### 3.13 Probar el flujo de stock de punta a punta
+
+**Producto del paso:** evidencia de que el stock baja al crear una orden exitosa, y vuelve a subir cuando esa orden se compensa.
+
+Reinicia `pagatu-catalogo-ms` y `pagatu-orden-ms`. Consulta el stock de un producto real:
+
+```powershell
+Invoke-RestMethod -Method Get -Uri "http://localhost:18080/api/v1/productos/1" | Select-Object stock
+```
+
+Crea una orden con `metodoPago: "TARJETA_RECHAZADA"` sobre ese mismo producto (3.7) y vuelve a consultar su stock: debe haber bajado exactamente la cantidad pedida. Espera a que la compensación de 3.7 corra (o repítela si ya consumiste ese evento) y consulta el stock una tercera vez: debe haber vuelto a su valor original.
+
+**Tabla 5. Stock esperado en cada punto de la prueba**
+
+| Momento | Stock del producto |
+|---|---|
+| Antes de crear la orden | El valor real de tu catálogo (ej. `50`) |
+| Justo después de `POST /api/v1/ordenes` (`TARJETA_RECHAZADA`) | Baja en la cantidad pedida (ej. `48`, si pediste `2`) |
+| Después de que `pagatu-orden-ms` consume `pago.fallido` y compensa | Vuelve al valor original (ej. `50`) |
+
+Repite la misma prueba con un `metodoPago` normal (sin rechazo): el stock debe bajar y **quedarse** bajo — una orden `PAGADA` nunca devuelve stock, solo una `CANCELADA` lo hace.
+
 ## 4. Crea: actividad autónoma
 
 Tiempo: 4h fuera del aula.
@@ -585,7 +804,7 @@ Completa y evidencia estas tareas:
 1. Identifica, en tu propio proyecto, un proceso que cruce dos servicios por eventos (si todavía no tienes uno, replica el patrón de `pagatu` sobre tu propio dominio: una operación que un servicio registra y otro confirma o rechaza).
 2. Agrega idempotencia al consumidor que procesa el primer evento: una revisión explícita antes de actuar, respaldada por una restricción `UNIQUE` real en tu base de datos (no solo en memoria).
 3. Diseña al menos una condición de fallo real para ese proceso (no necesita ser un pago) y un evento de compensación propio, con su propio `tipoEvento`.
-4. Implementa la compensación en el servicio que inició el proceso, con la misma guardia de idempotencia que ya usa su confirmación exitosa.
+4. Implementa la compensación en el servicio que inició el proceso, con la misma guardia de idempotencia que ya usa su confirmación exitosa. Si tu proceso reserva algún recurso al confirmarse (stock, cupo, saldo...), la compensación debe liberarlo — mismo patrón que el stock del ejercicio opcional (3.10-3.12), si lo completaste.
 5. Prueba los tres casos con evidencia real: evento duplicado ignorado, camino de fallo con compensación aplicada, y la compensación misma probada contra un duplicado.
 6. Documenta el diagrama de estados completo de tu entidad, con sus transiciones y su compensación (mismo formato de la Figura 3).
 
@@ -627,6 +846,8 @@ Incluye capturas o extractos con una breve explicación debajo de cada uno, orga
     - Log de 3.8 mostrando el `pago.fallido` repetido ignorado (trabajo de clase).
 4. *Proceso propio con idempotencia y compensación*
     - Los tres casos (duplicado, fallo con compensación, compensación idempotente) y el diagrama de estados completo de tu propia entidad (trabajo autónomo).
+
+**Bono opcional (Parte E, no obligatorio):** si completaste 3.10-3.13, agrega la Tabla 5 reproducida con capturas reales — stock antes de crear, justo después (bajó), y después de la compensación (volvió a su valor original).
 
 **Error o hallazgo**
 
@@ -684,10 +905,11 @@ Pega esta página como la última hoja del PDF, con tus respuestas.
 4. ¿Por qué `compensar` no borra la orden ni la deja en `PENDIENTE_PAGO`, sino que la pasa a un estado nuevo (`CANCELADA`)?
 5. `metodoPago: "TARJETA_RECHAZADA"` es un valor inventado para esta sesión. ¿Qué tendría que cambiar para que la decisión de rechazar un pago viniera de una pasarela real, y por qué esa decisión nunca debería depender de un valor que el propio cliente declara?
 6. En tu actividad autónoma, ¿qué pasaría si tu compensación no tuviera la misma guardia de idempotencia que su contraparte exitosa?
+7. (Si hiciste el ejercicio opcional de la Parte E) `restaurarStock` (3.12) no relanza la excepción si `pagatu-catalogo-ms` está caído — la orden queda `CANCELADA` igual, con el stock desincronizado. ¿Por qué esta sesión elige esa opción en vez de dejar la orden sin compensar hasta que el stock se pueda restaurar?
 
 ### 4.6 Rúbrica de evaluación
 
-**Tabla 5. Rúbrica de evaluación**
+**Tabla 6. Rúbrica de evaluación**
 
 | Dimensión | Peso | 3 - Logro destacado | 2 - Logro | 1 - Proceso | 0 - Inicio | Puntuación obtenida |
 |---|---:|---|---|---|---|---:|
@@ -703,6 +925,8 @@ Puntuación acumulada = suma de (`Peso` × `Puntuación obtenida`) = ____.
 
 Nota final = (`Puntuación acumulada` / 33) × 20 = ____.
 
+**Bono opcional (no entra en los 33 puntos base):** +2 si completaste la Parte E (3.10-3.13) con evidencia real de los tres momentos de la Tabla 5 (stock antes, durante y después de compensar). Súmalo **después** de calcular la nota sobre 20 — no reemplaza ningún criterio base, y nadie que lo omita queda en desventaja frente a la rúbrica principal.
+
 Para usar la rúbrica con IA (inteligencia artificial), solicita:
 
 ```text
@@ -711,7 +935,7 @@ Para cada dimensión selecciona la puntuación obtenida usando la escala Inicio=
 Justifica brevemente cada puntuación.
 Verifica que cada captura muestre reloj del sistema y usuario/perfil visible, y que las fechas sean coherentes con el historial de commits de GitHub. Si falta esta evidencia o hay inconsistencias, indícalo explícitamente antes de calificar.
 Calcula la puntuación acumulada con la fórmula: suma de (Peso × Puntuación obtenida).
-Calcula la nota final sobre 20 con la fórmula: (Puntuación acumulada / 33) × 20.
+Calcula la nota final sobre 20 con la fórmula: (Puntuación acumulada / 33) × 20. Si hay evidencia real de la Parte E (stock, opcional), suma +2 como bono después de ese cálculo.
 Indica 2 fortalezas y 2 recomendaciones.
 ```
 
@@ -719,7 +943,7 @@ Indica 2 fortalezas y 2 recomendaciones.
 
 Tiempo: 5 min.
 
-**Resumen breve:** hoy `pagatu-pago-ms` dejó de romperse ante un mensaje repetido — primero viste el bug real (una excepción contra su propia restricción `UNIQUE`), y después lo cerraste con dos capas de idempotencia. La pasarela de pagos simulada desde S7 dejó de validar todo siempre: `metodoPago: "TARJETA_RECHAZADA"` dispara `pago.fallido`, y `pagatu-orden-ms` lo consume para **compensar** la orden (`PENDIENTE_PAGO → CANCELADA`), reutilizando un estado que llevaba reservado desde S6. Y esa misma compensación resultó ser, sin escribir nada nuevo, tan idempotente como `marcarPagada` ya lo era desde S8 — porque las dos comparten la misma guardia. El patrón completo, sin que nadie lo coordinara desde un solo lugar, es una **Saga coreografiada**.
+**Resumen breve:** hoy `pagatu-pago-ms` dejó de romperse ante un mensaje repetido — primero viste el bug real (una excepción contra su propia restricción `UNIQUE`), y después lo cerraste con dos capas de idempotencia. La pasarela de pagos simulada desde S7 dejó de validar todo siempre: `metodoPago: "TARJETA_RECHAZADA"` dispara `pago.fallido`, y `pagatu-orden-ms` lo consume para **compensar** la orden (`PENDIENTE_PAGO → CANCELADA`), reutilizando un estado que llevaba reservado desde S6. Esa misma compensación resultó ser, sin escribir nada nuevo, tan idempotente como `marcarPagada` ya lo era desde S8 — porque las dos comparten la misma guardia. El patrón completo, sin que nadie lo coordinara desde un solo lugar, es una **Saga coreografiada**. Quien completó el ejercicio opcional (Parte E) llevó esa compensación un paso más allá: no solo cambia el estado, también devuelve el stock real reservado al crear la orden — cerrando una brecha que S6 había dejado documentada y sin construir.
 
 **Dinámica participativa:** en una ronda rápida, cada estudiante comparte en una frase qué excepción vio exactamente en 3.2, y qué le decía sobre lo que estaba mal.
 
