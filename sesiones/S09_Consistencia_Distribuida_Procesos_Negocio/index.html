@@ -1,0 +1,2995 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://262dist.github.io/pagatu/sesiones/S09_Consistencia_Distribuida_Procesos_Negocio/">
+      
+      
+        <link rel="prev" href="../S08_Mensajeria_Asincrona_Entre_Servicios/">
+      
+      
+        <link rel="next" href="../S12_Evaluacion_Unidad_2/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+  
+    <title>Pagatu - S9 - Consistencia distribuida en procesos de negocio</title>
+  
+
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#s9-consistencia-distribuida-en-procesos-de-negocio" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Pagatu" class="md-header__button md-logo" aria-label="Pagatu" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Pagatu
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              S9 - Consistencia distribuida en procesos de negocio
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/262dist/pagatu" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    262dist/pagatu
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Pagatu" class="md-nav__button md-logo" aria-label="Pagatu" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Pagatu
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/262dist/pagatu" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    262dist/pagatu
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía de Proyecto Sello
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guía de Proyecto Sello
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía del proyecto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief técnico (plantilla)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/u1-producto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Producto U1 (plantilla-ejemplo)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/u2-producto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Producto U2 (plantilla-ejemplo)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/u3-producto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Producto U3 / Producto Final (plantilla-ejemplo)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/matriz-competencias/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Matriz de competencias (ICACIT)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/alcance-microservicios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Alcance por microservicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/acad/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sistema académico (referencia)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/produccion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sistema de producción y comercialización (referencia)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabos
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Silabos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabo 2026-1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabo 2026-2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I. Sistema distribuido base orientado a producción
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    I. Sistema distribuido base orientado a producción
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S01_Construccion_Servicio_Base/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S1 - Construcción de un servicio base para un sistema distribuido
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S02_Configuracion_Centralizada_Ambientes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S2 - Gestión centralizada de configuración y ambientes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S03_Registro_Descubrimiento_Ejecucion_Concurrente/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S3 - Registro, descubrimiento y ejecución concurrente de servicios
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S04_Punto_Unico_Acceso_Distribucion_Trafico/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S4 - Punto único de acceso y distribución de tráfico
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S05_Evaluacion_Unidad_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S5 - Evaluación de la Unidad I
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    II. Sistema distribuido robusto
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    II. Sistema distribuido robusto
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S06_Comunicacion_Sincrona_Resiliente/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S6 - Comunicación síncrona resiliente entre servicios
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S07_Seguridad_Distribuida_Control_Acceso/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S7 - Seguridad distribuida y control de acceso
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S08_Mensajeria_Asincrona_Entre_Servicios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S8 - Mensajería asíncrona entre servicios
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S9 - Consistencia distribuida en procesos de negocio
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S9 - Consistencia distribuida en procesos de negocio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introducción
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introducción">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-presentacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Presentación de la sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-indice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Índice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-proposito-de-aprendizaje" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Propósito de aprendizaje
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-producto-de-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Producto de sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-metodologia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Metodología
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-motivacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6 Motivación de la sesión
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.6 Motivación de la sesión">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#161-caso-la-senal-que-se-repitio-sola-sin-que-nadie-la-detuviera" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6.1 Caso: la señal que se repitió sola, sin que nadie la detuviera
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-ubicacion-en-el-curso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.7 Ubicación en el curso
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-explica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Explica
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Explica">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-arquitectura-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Arquitectura de la sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-entrega-al-menos-una-vez-por-que-los-duplicados-son-inevitables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Entrega al menos una vez: por qué los duplicados son inevitables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-idempotencia-consumidores-seguros-ante-reintentos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Idempotencia: consumidores seguros ante reintentos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-el-patron-saga-coreografiada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 El patrón Saga coreografiada
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-compensacion-deshacer-un-paso-ya-confirmado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Compensación: deshacer un paso ya confirmado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-simular-el-fallo-de-un-paso-a-proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6 Simular el fallo de un paso, a propósito
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#27-observabilidad-del-flujo-completo-exito-y-compensacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.7 Observabilidad del flujo completo: éxito y compensación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-aplica-actividad-practica-guiada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Aplica: actividad práctica guiada
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Aplica: actividad práctica guiada">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parte-a-reproducir-el-problema-y-agregar-idempotencia-a-pagatu-pago-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte A — Reproducir el problema y agregar idempotencia a pagatu-pago-ms
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parte A — Reproducir el problema y agregar idempotencia a pagatu-pago-ms">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-verificar-el-punto-de-partida" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Verificar el punto de partida
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-reproducir-un-evento-duplicado-el-bug-a-proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Reproducir un evento duplicado (el bug, a propósito)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-agregar-idempotencia-a-pagatu-pago-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Agregar idempotencia a pagatu-pago-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-probar-que-el-duplicado-ya-no-rompe-nada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Probar que el duplicado ya no rompe nada
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parte-b-simular-el-fallo-de-un-pago-y-compensar-en-pagatu-orden-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte B — Simular el fallo de un pago y compensar en pagatu-orden-ms
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parte B — Simular el fallo de un pago y compensar en pagatu-orden-ms">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#35-agregar-el-estado-fallido-y-simular-el-rechazo-del-pago" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Agregar el estado FALLIDO y simular el rechazo del pago
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-consumir-pagofallido-y-compensar-la-orden-en-pagatu-orden-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 Consumir pago.fallido y compensar la orden en pagatu-orden-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-probar-el-fallo-de-pago-de-punta-a-punta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7 Probar el fallo de pago de punta a punta
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parte-c-verificar-la-idempotencia-de-la-compensacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte C — Verificar la idempotencia de la compensación
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parte C — Verificar la idempotencia de la compensación">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#38-probar-que-la-compensacion-tambien-es-idempotente" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.8 Probar que la compensación también es idempotente
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parte-d-documentar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte D — Documentar
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parte D — Documentar">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#39-documentar-el-flujo-de-negocio-estados-transiciones-y-compensaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.9 Documentar el flujo de negocio: estados, transiciones y compensaciones
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-crea-actividad-autonoma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Crea: actividad autónoma
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Crea: actividad autónoma">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-actividad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Actividad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Propósito
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-indicaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Indicaciones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3 Indicaciones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#431-estructura-del-informe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.1 Estructura del informe
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-criterios-minimos-de-aceptacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Criterios mínimos de aceptación
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-preguntas-de-defensa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 Preguntas de defensa
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-rubrica-de-evaluacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 Rúbrica de evaluación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-cierre" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Cierre
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bibliografia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bibliografía
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S12_Evaluacion_Unidad_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S12 - Evaluación de la Unidad II
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    III. Validación y consolidación del producto del curso
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    III. Validación y consolidación del producto del curso
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S15_Evaluacion_Unidad_3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S15 - Evaluación de la Unidad III
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introducción
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introducción">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-presentacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Presentación de la sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-indice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Índice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-proposito-de-aprendizaje" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Propósito de aprendizaje
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-producto-de-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Producto de sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-metodologia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Metodología
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-motivacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6 Motivación de la sesión
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.6 Motivación de la sesión">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#161-caso-la-senal-que-se-repitio-sola-sin-que-nadie-la-detuviera" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6.1 Caso: la señal que se repitió sola, sin que nadie la detuviera
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-ubicacion-en-el-curso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.7 Ubicación en el curso
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-explica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Explica
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Explica">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-arquitectura-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Arquitectura de la sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-entrega-al-menos-una-vez-por-que-los-duplicados-son-inevitables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Entrega al menos una vez: por qué los duplicados son inevitables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-idempotencia-consumidores-seguros-ante-reintentos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Idempotencia: consumidores seguros ante reintentos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-el-patron-saga-coreografiada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 El patrón Saga coreografiada
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-compensacion-deshacer-un-paso-ya-confirmado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Compensación: deshacer un paso ya confirmado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-simular-el-fallo-de-un-paso-a-proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6 Simular el fallo de un paso, a propósito
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#27-observabilidad-del-flujo-completo-exito-y-compensacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.7 Observabilidad del flujo completo: éxito y compensación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-aplica-actividad-practica-guiada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Aplica: actividad práctica guiada
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Aplica: actividad práctica guiada">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parte-a-reproducir-el-problema-y-agregar-idempotencia-a-pagatu-pago-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte A — Reproducir el problema y agregar idempotencia a pagatu-pago-ms
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parte A — Reproducir el problema y agregar idempotencia a pagatu-pago-ms">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-verificar-el-punto-de-partida" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Verificar el punto de partida
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-reproducir-un-evento-duplicado-el-bug-a-proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Reproducir un evento duplicado (el bug, a propósito)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-agregar-idempotencia-a-pagatu-pago-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Agregar idempotencia a pagatu-pago-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-probar-que-el-duplicado-ya-no-rompe-nada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Probar que el duplicado ya no rompe nada
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parte-b-simular-el-fallo-de-un-pago-y-compensar-en-pagatu-orden-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte B — Simular el fallo de un pago y compensar en pagatu-orden-ms
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parte B — Simular el fallo de un pago y compensar en pagatu-orden-ms">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#35-agregar-el-estado-fallido-y-simular-el-rechazo-del-pago" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Agregar el estado FALLIDO y simular el rechazo del pago
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-consumir-pagofallido-y-compensar-la-orden-en-pagatu-orden-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 Consumir pago.fallido y compensar la orden en pagatu-orden-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-probar-el-fallo-de-pago-de-punta-a-punta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7 Probar el fallo de pago de punta a punta
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parte-c-verificar-la-idempotencia-de-la-compensacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte C — Verificar la idempotencia de la compensación
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parte C — Verificar la idempotencia de la compensación">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#38-probar-que-la-compensacion-tambien-es-idempotente" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.8 Probar que la compensación también es idempotente
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parte-d-documentar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte D — Documentar
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parte D — Documentar">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#39-documentar-el-flujo-de-negocio-estados-transiciones-y-compensaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.9 Documentar el flujo de negocio: estados, transiciones y compensaciones
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-crea-actividad-autonoma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Crea: actividad autónoma
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Crea: actividad autónoma">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-actividad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Actividad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Propósito
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-indicaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Indicaciones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3 Indicaciones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#431-estructura-del-informe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.1 Estructura del informe
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-criterios-minimos-de-aceptacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Criterios mínimos de aceptación
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-preguntas-de-defensa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 Preguntas de defensa
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-rubrica-de-evaluacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 Rúbrica de evaluación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-cierre" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Cierre
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bibliografia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bibliografía
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="s9-consistencia-distribuida-en-procesos-de-negocio">S9 - Consistencia Distribuida en Procesos de Negocio<a class="headerlink" href="#s9-consistencia-distribuida-en-procesos-de-negocio" title="Permanent link">&para;</a></h1>
+<p><em>Por: Angel Sullon Macalupu @asullom - 2026</em></p>
+<h2 id="1-introduccion">1. Introducción<a class="headerlink" href="#1-introduccion" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 20 min.</p>
+<h3 id="11-presentacion-de-la-sesion">1.1 Presentación de la sesión<a class="headerlink" href="#11-presentacion-de-la-sesion" title="Permanent link">&para;</a></h3>
+<p>S8 dejó dos preguntas abiertas a propósito (su 4.5, pregunta 7, y su Proyección): <em>"si Kafka entrega un mensaje al menos una vez, ¿qué problema puede causar en <code>pagatu-pago-ms</code>, y por qué hoy no está resuelto?"</em> — y la pasarela de pagos externa, simulada desde S7, donde <strong>el pago siempre se valida</strong>. Esta sesión responde las dos. Primero, en vivo: vas a reenviar un <code>orden.creada</code> ya procesado y ver a <code>pagatu-pago-ms</code> romperse contra su propia restricción <code>UNIQUE</code> de base de datos, una y otra vez, porque hoy nada le dice "esto ya lo vi". Después lo arreglas con <strong>idempotencia</strong>. Segundo: la pasarela deja de validar todo siempre — aparece <code>pago.fallido</code>, y <code>pagatu-orden-ms</code> tiene que <strong>compensar</strong> una orden que ya había confirmado. Las dos piezas juntas — pasos que se repiten sin romper nada, y pasos que se deshacen cuando algo falla más adelante — son lo que la literatura de sistemas distribuidos llama una <strong>Saga coreografiada</strong>, el patrón que ya está construido desde S8 sin que esta guía le hubiera puesto nombre todavía.</p>
+<h3 id="12-indice">1.2 Índice<a class="headerlink" href="#12-indice" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Entrega al menos una vez: por qué los duplicados son inevitables.</li>
+<li>Idempotencia: consumidores seguros ante reintentos.</li>
+<li>El patrón Saga coreografiada.</li>
+<li>Compensación: deshacer un paso ya confirmado.</li>
+<li>Simular el fallo de un paso, a propósito.</li>
+<li>Observabilidad del flujo completo: éxito y compensación.</li>
+</ol>
+<h3 id="13-proposito-de-aprendizaje">1.3 Propósito de aprendizaje<a class="headerlink" href="#13-proposito-de-aprendizaje" title="Permanent link">&para;</a></h3>
+<p>Al concluir la clase, estarás en condiciones de:</p>
+<ul>
+<li><strong>Diagnosticar</strong> el efecto real de un mensaje duplicado sobre un consumidor Kafka, <strong>implementar</strong> idempotencia para tolerarlo sin romper nada, <strong>diseñar y construir</strong> el paso compensador de una Saga coreografiada cuando un paso remoto falla, y <strong>documentar</strong> el flujo de negocio completo —estados, transiciones y compensaciones— con evidencia real de ambos casos.</li>
+</ul>
+<h3 id="14-producto-de-sesion">1.4 Producto de sesión<a class="headerlink" href="#14-producto-de-sesion" title="Permanent link">&para;</a></h3>
+<p><code>pagatu-pago-ms</code> idempotente ante un <code>orden.creada</code> duplicado: lo reconoce y lo ignora, sin crear un segundo pago ni caerse. Un nuevo estado <code>FALLIDO</code> en <code>Pago</code>, con una forma explícita de simular el rechazo de un pago (<code>metodoPago: "TARJETA_RECHAZADA"</code>), publicando <code>pago.fallido</code> en ese caso en vez de <code>pago.validado</code>. <code>pagatu-orden-ms</code> consumiendo <code>pago.fallido</code> y <strong>compensando</strong> la orden (<code>PENDIENTE_PAGO → CANCELADA</code>, reutilizando un estado que ya existía sin usarse desde S6), con la misma protección contra duplicados que <code>marcarPagada</code> ya tenía desde S8. Y el flujo de negocio completo, con sus estados, sus transiciones y sus dos compensaciones posibles, documentado de punta a punta.</p>
+<h3 id="15-metodologia">1.5 Metodología<a class="headerlink" href="#15-metodologia" title="Permanent link">&para;</a></h3>
+<p><strong>Tabla 1. Metodología de la sesión</strong></p>
+<table>
+<thead>
+<tr>
+<th>Actividades a Realizar en el Periodo</th>
+<th>Orientaciones generales (Orientaciones Metodológicas)</th>
+<th>Material de estudio recomendado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Revisión previa individual</td>
+<td>Repasar S8 completo (3.13-3.19): el contrato de los dos eventos, <code>OrdenEventosConsumer</code>/<code>PagoEventosConsumer</code>, y la pregunta 7 de 4.5 ("¿por qué hoy no está resuelto?"). Confirmar que <code>pagatu-orden-ms</code> y <code>pagatu-pago-ms</code> siguen corriendo con una orden ya pasada a <code>PAGADA</code>. Trabajo individual, antes de clase.</td>
+<td>S8 completo, en especial 2.5-2.6 y 3.13-3.19.</td>
+</tr>
+<tr>
+<td>Clase presencial</td>
+<td>Reproducir el bug de duplicados, agregar idempotencia a <code>pagatu-pago-ms</code>, simular el fallo de un pago, y consumir <code>pago.fallido</code> compensando la orden en <code>pagatu-orden-ms</code>. Trabajo individual, siguiendo al docente paso a paso; consulta inmediata ante un log que no muestra lo esperado.</td>
+<td>Pasos 3.1 a 3.9 de esta guía.</td>
+</tr>
+<tr>
+<td>Evaluación formativa</td>
+<td>Revisión en clase de los tres casos con evidencia real: duplicado ignorado, pago rechazado con la orden compensada, y compensación también idempotente. La evidencia se completa y sustenta de forma individual, fuera del aula, según los criterios mínimos de la sección 4.4.</td>
+<td>Indicaciones de entrega (4.3), rúbrica de evaluación (4.6).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="16-motivacion-de-la-sesion">1.6 Motivación de la sesión<a class="headerlink" href="#16-motivacion-de-la-sesion" title="Permanent link">&para;</a></h3>
+<h4 id="161-caso-la-senal-que-se-repitio-sola-sin-que-nadie-la-detuviera">1.6.1 Caso: la señal que se repitió sola, sin que nadie la detuviera<a class="headerlink" href="#161-caso-la-senal-que-se-repitio-sola-sin-que-nadie-la-detuviera" title="Permanent link">&para;</a></h4>
+<p>El 1 de agosto de 2012, Knight Capital Group desplegó un módulo de <em>trading</em> nuevo en ocho servidores de producción — pero el despliegue falló en uno de ellos: ese octavo servidor conservó una bandera de código antigua que, por error, volvió a activar una función obsoleta (<em>Power Peg</em>), ya retirada años antes. Durante los 45 minutos siguientes, <strong>cada orden normal del mercado que llegaba</strong> —miles de señales por minuto, el tráfico de siempre— disparaba de nuevo esa función obsoleta en ese servidor, sin que ningún mecanismo reconociera "esta señal ya la procesé de esta forma" ni detuviera la repetición. El resultado: 4 millones de ejecuciones sobre 397 millones de acciones, y una pérdida de aproximadamente 440 millones de dólares en menos de una hora.</p>
+<p>Fuente: U.S. Securities and Exchange Commission. (2013). <em>In the Matter of Knight Capital Americas LLC</em> (Release No. 34-70694). <a href="https://www.sec.gov/litigation/admin/2013/34-70694.pdf">https://www.sec.gov/litigation/admin/2013/34-70694.pdf</a></p>
+<p>El problema de fondo no fue que llegaran muchas señales — eso es justamente lo que un sistema de <em>trading</em> espera recibir sin parar. El problema fue que ese servidor <strong>no tenía ninguna noción de qué señales ya había procesado de esa forma</strong>: cada mensaje nuevo volvía a disparar la acción completa, sin ningún guardia que comparara contra un estado ya resuelto. Es exactamente el mismo mecanismo (a una escala mucho menor y sin consecuencias financieras) que vas a provocar tú mismo en 3.2, contra tu propio <code>pagatu-pago-ms</code>.</p>
+<p><strong>Preguntas de análisis</strong></p>
+<p><strong>Activación de conocimientos previos</strong></p>
+<ol>
+<li>En S8, <code>pagatu-pago-ms</code> nunca revisa si ya existe un pago para un <code>ordenId</code> antes de crear uno. ¿Qué tendría que pasar para que el mismo <code>orden.creada</code> llegara dos veces?</li>
+<li>Kafka garantiza entrega <strong>al menos una vez</strong> (<em>at-least-once</em>), no exactamente una vez. ¿Por qué garantizar "exactamente una vez" de verdad es mucho más difícil de lo que suena?</li>
+</ol>
+<p><strong>Comprensión de idempotencia y compensación</strong></p>
+<ol>
+<li>Si <code>pagatu-pago-ms</code> simplemente ignorara <strong>cualquier</strong> mensaje repetido de <code>orden-eventos</code> sin revisar nada más, ¿qué problema distinto introduciría eso?</li>
+<li><code>pagatu-orden-ms</code> ya protege <code>marcarPagada</code> contra duplicados desde S8 (solo actúa si la orden está <code>PENDIENTE_PAGO</code>). ¿Por qué esa misma guardia, aplicada también a la compensación de hoy, no es una casualidad sino el mismo patrón repetido a propósito?</li>
+</ol>
+<h3 id="17-ubicacion-en-el-curso">1.7 Ubicación en el curso<a class="headerlink" href="#17-ubicacion-en-el-curso" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Unidad: U2 - Sistema distribuido robusto.</li>
+<li>Producto del curso: sistema distribuido de microservicios end-to-end, configurable, escalable, seguro, resiliente, consistente, observable, integrado con frontend y defendido técnicamente.</li>
+<li>Producto de unidad: sistema distribuido seguro, resiliente, consistente, observable e integrado con cliente frontend.</li>
+<li>Avance del producto en esta sesión: <code>pagatu-pago-ms</code> idempotente, simulación de fallo de pago con <code>pago.fallido</code>, y compensación de la orden en <code>pagatu-orden-ms</code>.</li>
+</ul>
+<p><strong>Figura 1. Roadmap del producto de la unidad</strong></p>
+<pre class="mermaid"><code>flowchart TB
+    ClientePrueba["Cliente de prueba&lt;br/&gt;PowerShell / bash / Swagger"]
+    ClienteAngular["Cliente real&lt;br/&gt;Angular 22 (S11)&lt;br/&gt;puerto 4200 (DEV)"]
+    Config["pagatu-config&lt;br/&gt;S2 · puerto 18888 (DEV)"]
+    Obs[("Observabilidad&lt;br/&gt;S10 · logs, métricas, paneles")]
+    Gateway["pagatu-gateway&lt;br/&gt;S4 · puerto 18080 (DEV)"]
+    Auth["pagatu-auth-ms&lt;br/&gt;S7 · JWT"]
+    Catalogo["pagatu-catalogo-ms&lt;br/&gt;S1"]
+    Orden["pagatu-orden-ms&lt;br/&gt;S6 · Feign + Circuit Breaker&lt;br/&gt;S9: compensa con pago.fallido&lt;br/&gt;produce: orden-eventos&lt;br/&gt;consume: pago-eventos"]
+    Pago["pagatu-pago-ms&lt;br/&gt;S8&lt;br/&gt;S9: idempotente + pago.fallido&lt;br/&gt;consume: orden-eventos&lt;br/&gt;produce: pago-eventos"]
+    Eureka["pagatu-eureka&lt;br/&gt;S3 · puerto 18761 (DEV)"]
+    Kafka[("Kafka&lt;br/&gt;S8 · puerto 19092 (DEV)&lt;br/&gt;topics: orden-eventos, pago-eventos")]
+    Pasarela["Pasarela de pagos&lt;br/&gt;(externa, simulada)"]
+
+    ClientePrueba --&gt; Gateway
+    ClienteAngular --&gt; Gateway
+    Gateway --&gt;|"lb://pagatu-auth-ms"| Auth
+    Gateway --&gt;|"lb://pagatu-catalogo-ms"| Catalogo
+    Gateway --&gt;|"lb://pagatu-orden-ms"| Orden
+    Gateway --&gt;|"lb://pagatu-pago-ms"| Pago
+    Gateway -. "descubre servicios" .-&gt; Eureka
+    Eureka -. "carga configuración" .-&gt; Config
+    Orden --&gt;|"Feign: consulta producto"| Catalogo
+    Orden -.-&gt;|"1) orden.creada"| Kafka
+    Kafka -.-&gt;|"2) consume (idempotente)"| Pago
+    Pago -.-&gt;|"3) pago.validado o pago.fallido"| Kafka
+    Kafka -.-&gt;|"4) consume: paga o compensa"| Orden
+    Pago --&gt;|"autoriza / rechaza"| Pasarela
+
+    classDef done fill:#e8f5e9,stroke:#2e7d32,color:#111;
+    classDef today fill:#ffe08a,stroke:#9a6b00,stroke-width:2px,color:#111;
+    classDef futuro fill:#f5f5f5,stroke:#9e9e9e,color:#555,stroke-dasharray: 5 5;
+    classDef externo fill:#e3f2fd,stroke:#1565c0,color:#0d3c73;
+    class Catalogo,Config,Eureka,Auth,Gateway,Kafka done;
+    class Orden,Pago today;
+    class ClienteAngular,Obs futuro;
+    class Pasarela externo;</code></pre>
+<p><em>Leyenda.</em> Este diagrama es el mismo de S7/S8; solo cambia el color: verde = construido en sesiones anteriores, amarillo = se trabaja hoy, gris punteado = todavía no existe, azul = sistema externo.</p>
+<p><strong>Hoy:</strong> <code>pagatu-pago-ms</code> y <code>pagatu-orden-ms</code> no cambian de lugar en el diagrama — siguen hablándose por los mismos dos topics de S8. Lo que cambia es <strong>qué hacen</strong> cuando un mensaje se repite, y <strong>qué pasa</strong> cuando la pasarela (simulada) rechaza un pago.</p>
+<h2 id="2-explica">2. Explica<a class="headerlink" href="#2-explica" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 30 min.</p>
+<h3 id="21-arquitectura-de-la-sesion">2.1 Arquitectura de la sesión<a class="headerlink" href="#21-arquitectura-de-la-sesion" title="Permanent link">&para;</a></h3>
+<p><strong>Figura 2. Los dos caminos posibles de un pago, y la idempotencia en cada consumidor</strong></p>
+<pre class="mermaid"><code>flowchart TB
+    Orden["pagatu-orden-ms&lt;br/&gt;publica orden.creada"]
+
+    subgraph Kafka1["Kafka: orden-eventos"]
+        direction LR
+        K1[("mensaje,&lt;br/&gt;key = ordenId")]
+    end
+
+    subgraph PagoMs["pagatu-pago-ms"]
+        direction TB
+        Idem{"¿ya existe un&lt;br/&gt;pago para este&lt;br/&gt;ordenId?"}
+        Simula{"¿metodoPago ==&lt;br/&gt;TARJETA_RECHAZADA?"}
+        Validado["Pago VALIDADO"]
+        Fallido["Pago FALLIDO"]
+    end
+
+    subgraph Kafka2["Kafka: pago-eventos"]
+        direction LR
+        K2[("pago.validado&lt;br/&gt;o&lt;br/&gt;pago.fallido")]
+    end
+
+    subgraph OrdenConsume["pagatu-orden-ms"]
+        direction TB
+        Rama{"tipoEvento"}
+        Pagada["PENDIENTE_PAGO&lt;br/&gt;→ PAGADA"]
+        Cancelada["PENDIENTE_PAGO&lt;br/&gt;→ CANCELADA&lt;br/&gt;(compensación)"]
+    end
+
+    Orden --&gt; K1 --&gt; Idem
+    Idem --&gt;|"sí: ignorar&lt;br/&gt;(duplicado)"| Idem
+    Idem --&gt;|"no"| Simula
+    Simula --&gt;|"no"| Validado
+    Simula --&gt;|"sí"| Fallido
+    Validado --&gt; K2
+    Fallido --&gt; K2
+    K2 --&gt; Rama
+    Rama --&gt;|"pago.validado"| Pagada
+    Rama --&gt;|"pago.fallido"| Cancelada</code></pre>
+<p>El camino feliz (<code>pago.validado</code> → <code>PAGADA</code>) es el de S8, sin ningún cambio. Lo nuevo son dos guardias (<code>Idem</code> en <code>pagatu-pago-ms</code>, y su equivalente simétrico dentro de <code>marcarPagada</code>/<code>compensar</code> en <code>pagatu-orden-ms</code>) y una bifurcación (<code>Simula</code>/<code>Rama</code>) que decide cuál de los dos finales le toca a la orden. Cada apartado siguiente desarrolla una pieza, en el mismo orden del Índice (1.2).</p>
+<h3 id="22-entrega-al-menos-una-vez-por-que-los-duplicados-son-inevitables">2.2 Entrega al menos una vez: por qué los duplicados son inevitables<a class="headerlink" href="#22-entrega-al-menos-una-vez-por-que-los-duplicados-son-inevitables" title="Permanent link">&para;</a></h3>
+<p>Kafka (y la mayoría de sistemas de mensajería distribuidos) garantizan <strong>at-least-once delivery</strong> (<em>entrega al menos una vez</em>): un mensaje publicado <strong>va a llegar</strong>, pero puede llegar <strong>más de una vez</strong>. La causa más común no es un error de Kafka: es que el consumidor procesa el mensaje, pero el <em>commit</em> del offset (la marca de "ya leí hasta aquí") se pierde antes de confirmarse — por un reinicio del consumidor, una partición que se reasigna a otra instancia, o simplemente la ventana entre procesar y confirmar. Cuando eso pasa, el consumidor vuelve a arrancar desde el último offset confirmado, y <strong>reprocesa</strong> mensajes que ya había procesado.</p>
+<p>La alternativa, <strong>exactly-once delivery</strong> (<em>entrega exactamente una vez</em>), existe como garantía formal en Kafka (transacciones <em>producer-to-consumer</em>), pero exige coordinar productor y consumidor dentro de la misma transacción distribuida — mucho más costoso, y fuera del alcance de este curso. La práctica estándar en sistemas distribuidos no es perseguir "exactamente una vez" al nivel del transporte: es aceptar "al menos una vez" y hacer que <strong>procesar el mismo mensaje dos veces no tenga efecto distinto a procesarlo una sola</strong>. Eso es idempotencia (2.3), y es la responsabilidad del consumidor, no de Kafka.</p>
+<p><strong>Tabla 2. Qué garantiza Kafka, y qué le corresponde al consumidor</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Lo garantiza Kafka</th>
+<th>Lo garantiza el consumidor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>El mensaje llega</td>
+<td>Sí, al menos una vez</td>
+<td>—</td>
+</tr>
+<tr>
+<td>El mensaje llega en orden, dentro de su partición</td>
+<td>Sí</td>
+<td>—</td>
+</tr>
+<tr>
+<td>El mensaje nunca llega duplicado</td>
+<td><strong>No</strong></td>
+<td>Idempotencia (2.3)</td>
+</tr>
+<tr>
+<td>Procesar el duplicado no causa un efecto doble</td>
+<td>—</td>
+<td>Sí, si el consumidor lo implementa</td>
+</tr>
+</tbody>
+</table>
+<h3 id="23-idempotencia-consumidores-seguros-ante-reintentos">2.3 Idempotencia: consumidores seguros ante reintentos<a class="headerlink" href="#23-idempotencia-consumidores-seguros-ante-reintentos" title="Permanent link">&para;</a></h3>
+<p>Una operación es <strong>idempotente</strong> cuando aplicarla una vez o aplicarla diez veces produce el mismo resultado. <code>PUT /api/v1/productos/5</code> con el mismo cuerpo es idempotente: el producto 5 queda igual sin importar cuántas veces se repita la petición. <code>POST /api/v1/ordenes</code> <strong>no</strong> lo es por diseño: cada llamada crea una orden nueva — por eso un cliente HTTP nunca debería reintentar un <code>POST</code> fallido sin que el servidor tenga forma de reconocer el reintento.</p>
+<p>Un consumidor de eventos enfrenta el mismo problema, sin que nadie se lo haya pedido explícitamente: Kafka puede volver a entregarle un mensaje que ya procesó (2.2), y <code>pagatu-pago-ms</code> hoy no tiene ninguna forma de distinguir "esto es nuevo" de "esto ya lo vi". La solución estándar: antes de ejecutar la acción, revisar si ya existe evidencia de que se ejecutó — en este caso, <code>uk_pagos_orden</code> (S8, 3.10) ya es exactamente esa evidencia, con una ventaja adicional: al ser una restricción <code>UNIQUE</code> en la base de datos, protege incluso si <strong>dos instancias</strong> de <code>pagatu-pago-ms</code> procesaran el mismo mensaje al mismo tiempo (una condición de carrera que una simple revisión en memoria no evitaría). 3.3 usa las dos capas juntas: una revisión explícita (clara de leer, rápida en el caso normal) y la restricción <code>UNIQUE</code> como respaldo (la que de verdad garantiza la propiedad, incluso en el caso raro de una carrera real).</p>
+<p><strong>Error frecuente</strong>: ignorar <strong>cualquier</strong> mensaje repetido sin revisar nada más, en vez de revisar si la acción específica ya se ejecutó. Eso resolvería el duplicado de hoy, pero descartaría silenciosamente un mensaje legítimo que <em>coincidiera</em> en alguna clave superficial — la idempotencia se verifica contra el <strong>resultado</strong> de la operación (¿ya existe el pago de esta orden?), no contra "si ya vi este mensaje antes" en abstracto.</p>
+<h3 id="24-el-patron-saga-coreografiada">2.4 El patrón Saga coreografiada<a class="headerlink" href="#24-el-patron-saga-coreografiada" title="Permanent link">&para;</a></h3>
+<p>Una operación de negocio que cruza varios servicios, cada uno con su propia base de datos, no puede envolverse en una única transacción ACID (<em>Atomicity, Consistency, Isolation, Durability</em>) como si fuera una sola base — eso exigiría una transacción distribuida (<em>two-phase commit</em>), costosa y poco escalable en un sistema con microservicios independientes. El patrón <strong>Saga</strong> resuelve esto de otra forma: la operación completa se parte en una secuencia de <strong>pasos locales</strong>, cada uno con su propia transacción local y corto, y cada paso que pueda fallar define su <strong>compensación</strong> — una acción que deshace el efecto de negocio de los pasos ya confirmados, sin poder revertir la base de datos de otro servicio directamente (porque no tiene acceso a ella).</p>
+<p>Hay dos formas de coordinar una Saga (Richardson, 2018):</p>
+<ul>
+<li><strong>Orquestada</strong>: un componente central (un <em>orchestrator</em>) le dice a cada servicio, paso a paso, qué hacer y cuándo compensar. Centraliza la lógica de la Saga completa en un solo lugar, a costa de ese componente central.</li>
+<li><strong>Coreografiada</strong> (la que ya construiste, sin el nombre, desde S8): no hay ningún coordinador — cada servicio reacciona a los eventos del anterior y publica el suyo propio. <code>pagatu-orden-ms</code> no sabe que existe un paso de compensación en curso cuando publica <code>orden.creada</code>; simplemente reacciona cuando le llega <code>pago.fallido</code>, igual que reaccionaba a <code>pago.validado</code>.</li>
+</ul>
+<p><strong>Tabla 3. Los pasos de la Saga de <code>pagatu</code>, con su compensación</strong></p>
+<table>
+<thead>
+<tr>
+<th>Paso</th>
+<th>Servicio</th>
+<th>Si falla</th>
+<th>Compensación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Registrar la orden</td>
+<td><code>pagatu-orden-ms</code></td>
+<td>No se publica nada (S6: falla antes de la transacción local)</td>
+<td>No aplica — nada que compensar, no se confirmó nada</td>
+</tr>
+<tr>
+<td>2. Validar el pago</td>
+<td><code>pagatu-pago-ms</code></td>
+<td>La pasarela (simulada) rechaza el pago</td>
+<td>Publica <code>pago.fallido</code> en vez de <code>pago.validado</code></td>
+</tr>
+<tr>
+<td>3. Confirmar la orden</td>
+<td><code>pagatu-orden-ms</code></td>
+<td>— (último paso)</td>
+<td>Al recibir <code>pago.fallido</code>: <code>PENDIENTE_PAGO → CANCELADA</code></td>
+</tr>
+</tbody>
+</table>
+<p><em>Nota.</em> Adaptado de <em>Pattern: Saga</em>, por Richardson, C., 2018, microservices.io (<a href="https://microservices.io/patterns/data/saga.html">https://microservices.io/patterns/data/saga.html</a>).</p>
+<p>La compensación del paso 3 no es "deshacer la orden como si nunca hubiera existido" (eso sería borrarla, perdiendo la trazabilidad de que existió y falló) — es una <strong>transición de estado nueva</strong> (<code>CANCELADA</code>) que dice, de forma permanente y auditable, que esa orden se registró y su pago fue rechazado. Es el mismo criterio que ya se aplicó con <code>anular</code>/<code>ANULADA</code> en los cursos hermanos de este mismo ciclo (BomERP): una compensación deja rastro, no reescribe la historia.</p>
+<h3 id="25-compensacion-deshacer-un-paso-ya-confirmado">2.5 Compensación: deshacer un paso ya confirmado<a class="headerlink" href="#25-compensacion-deshacer-un-paso-ya-confirmado" title="Permanent link">&para;</a></h3>
+<p>Técnicamente, <code>compensar</code> (3.6) es casi idéntico a <code>marcarPagada</code> (S8): busca la orden, verifica una precondición de estado, y transiciona. La diferencia está en qué significa ese cambio para el negocio: <code>marcarPagada</code> <strong>avanza</strong> el proceso (la orden sigue su curso normal); <code>compensar</code> lo <strong>revierte</strong> (el proceso no puede continuar, y hay que dejarlo en un estado final consistente con lo que realmente pasó). Ambas comparten la misma guardia de idempotencia — ninguna de las dos actúa si la orden ya no está <code>PENDIENTE_PAGO</code> —, porque ambas son, en el fondo, reacciones a un evento que Kafka puede entregar más de una vez (2.2, 2.3): una Saga coreografiada sin consumidores idempotentes no es una Saga confiable, es una carrera entre duplicados.</p>
+<h3 id="26-simular-el-fallo-de-un-paso-a-proposito">2.6 Simular el fallo de un paso, a propósito<a class="headerlink" href="#26-simular-el-fallo-de-un-paso-a-proposito" title="Permanent link">&para;</a></h3>
+<p>Desde S7, la pasarela de pagos externa se simula siempre validando (<em>"La pasarela de pagos externa se simula hoy: el pago siempre se valida"</em>). Probar un camino de compensación sin que un paso falle realmente es imposible — por eso esta sesión introduce un <strong>gatillo determinista</strong>: <code>metodoPago: "TARJETA_RECHAZADA"</code> hace que <code>pagatu-pago-ms</code> simule un rechazo, siempre, de forma reproducible. No es aleatorio a propósito: una prueba de evidencia necesita un resultado repetible, no "a veces falla, a veces no" — eso dificultaría demostrar el camino de compensación con una captura de pantalla confiable.</p>
+<h3 id="27-observabilidad-del-flujo-completo-exito-y-compensacion">2.7 Observabilidad del flujo completo: éxito y compensación<a class="headerlink" href="#27-observabilidad-del-flujo-completo-exito-y-compensacion" title="Permanent link">&para;</a></h3>
+<p>El mismo criterio de logs de S8 (<code>component</code>, <code>eventType</code>, <code>ordenId</code>, <code>status</code>) se extiende con dos valores nuevos de <code>status</code>: <code>ignored</code> (un duplicado reconocido y descartado, en cualquiera de los dos servicios) y <code>compensated</code> (una compensación aplicada, en <code>pagatu-orden-ms</code>). Seguir un mismo <code>ordenId</code> a través de los logs de ambos servicios sigue siendo la forma de reconstruir, de punta a punta, qué pasó con una orden — ahora con dos finales posibles en vez de uno.</p>
+<h2 id="3-aplica-actividad-practica-guiada">3. Aplica: actividad práctica guiada<a class="headerlink" href="#3-aplica-actividad-practica-guiada" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 3h.</p>
+<p><strong>Actividad:</strong> reproducción guiada del problema de duplicados, idempotencia en <code>pagatu-pago-ms</code>, simulación del fallo de un pago, y compensación de la orden en <code>pagatu-orden-ms</code> (Producto de la sesión en 1.4).</p>
+<p><strong>Propósito de la actividad:</strong> que cada estudiante vea el efecto real de un evento duplicado antes de arreglarlo, implemente idempotencia con una revisión explícita respaldada por la restricción <code>UNIQUE</code> ya existente, y construya el paso de compensación completo de una Saga coreografiada, con evidencia real de los tres casos (duplicado, fallo con compensación, y compensación también idempotente).</p>
+<p><strong>Orientaciones metodológicas:</strong> el docente provoca primero el bug en vivo frente a la clase (Parte A), lo arregla, simula el fallo de pago y construye la compensación (Parte B), y cierra verificando que la propia compensación también es idempotente (Parte C); los estudiantes replican cada paso en su propia laptop y provocan ellos mismos el duplicado y el fallo para ver los tres resultados reales en su propia consola.</p>
+<p><strong>Actividades para realizar:</strong></p>
+<p><em>Parte A — Reproducir el problema y agregar idempotencia a <code>pagatu-pago-ms</code>:</em></p>
+<ul>
+<li><strong>3.1</strong> Verificar el punto de partida.</li>
+<li><strong>3.2</strong> Reproducir un evento duplicado (el bug, a propósito).</li>
+<li><strong>3.3</strong> Agregar idempotencia a <code>pagatu-pago-ms</code>.</li>
+<li><strong>3.4</strong> Probar que el duplicado ya no rompe nada.</li>
+</ul>
+<p><em>Parte B — Simular el fallo de un pago y compensar en <code>pagatu-orden-ms</code>:</em></p>
+<ul>
+<li><strong>3.5</strong> Agregar el estado <code>FALLIDO</code> y simular el rechazo del pago.</li>
+<li><strong>3.6</strong> Consumir <code>pago.fallido</code> y compensar la orden en <code>pagatu-orden-ms</code>.</li>
+<li><strong>3.7</strong> Probar el fallo de pago de punta a punta.</li>
+</ul>
+<p><em>Parte C — Verificar la idempotencia de la compensación:</em></p>
+<ul>
+<li><strong>3.8</strong> Probar que la compensación también es idempotente.</li>
+</ul>
+<p><em>Parte D — Documentar:</em></p>
+<ul>
+<li><strong>3.9</strong> Documentar el flujo de negocio: estados, transiciones y compensaciones.</li>
+</ul>
+<p><strong>Punto de partida común:</strong> todo el equipo debe comenzar exactamente desde donde quedó S8. Levanta <code>pagatu-config</code>, <code>pagatu-eureka</code>, <code>pagatu-gateway</code>, <code>pagatu-auth-ms</code>, Kafka, <code>pagatu-catalogo-ms</code>, <code>pagatu-orden-ms</code> y <code>pagatu-pago-ms</code> (S1-S8), confirma que una orden nueva sigue llegando a <code>PAGADA</code> por eventos (S8, 3.19) antes de tocar código nuevo.</p>
+<h3 id="parte-a-reproducir-el-problema-y-agregar-idempotencia-a-pagatu-pago-ms">Parte A — Reproducir el problema y agregar idempotencia a <code>pagatu-pago-ms</code><a class="headerlink" href="#parte-a-reproducir-el-problema-y-agregar-idempotencia-a-pagatu-pago-ms" title="Permanent link">&para;</a></h3>
+<h4 id="31-verificar-el-punto-de-partida">3.1 Verificar el punto de partida<a class="headerlink" href="#31-verificar-el-punto-de-partida" title="Permanent link">&para;</a></h4>
+<p><strong>Producto del paso:</strong> confirmación de que el flujo completo de S8 (<code>PENDIENTE_PAGO → PAGADA</code> por eventos) sigue funcionando, con una orden real para reutilizar en 3.2.</p>
+<p>Crea una orden con el token de <code>CLIENTE</code> (como en S8, 3.19) y confirma que llega a <code>PAGADA</code>. Anota su <code>id</code> — la vas a reutilizar en 3.2.</p>
+<h4 id="32-reproducir-un-evento-duplicado-el-bug-a-proposito">3.2 Reproducir un evento duplicado (el bug, a propósito)<a class="headerlink" href="#32-reproducir-un-evento-duplicado-el-bug-a-proposito" title="Permanent link">&para;</a></h4>
+<p><strong>Producto del paso:</strong> evidencia real de que <code>pagatu-pago-ms</code>, hoy, no tolera un <code>orden.creada</code> repetido.</p>
+<p>En Kafka UI (<code>http://localhost:18085</code>), abre el topic <code>orden-eventos</code> → <em>Messages</em>, busca el mensaje de la orden de 3.1 (filtra por su <em>key</em>, el <code>ordenId</code>) y copia su valor JSON completo. Ve a <em>Produce Message</em>, pega la misma <em>key</em> y el mismo valor, y publícalo de nuevo — estás simulando exactamente lo que pasaría si Kafka reentregara ese mensaje.</p>
+<p>Mira el log de <code>pagatu-pago-ms</code> de inmediato. Resultado esperado: una excepción, repetida varias veces (reintentos del manejador de errores por defecto de Spring Kafka), con un mensaje de la forma <code>duplicate key value violates unique constraint "uk_pagos_orden"</code> — <code>pagoRepository.save(...)</code> intentó crear un <strong>segundo</strong> pago para el mismo <code>ordenId</code>, y la restricción <code>UNIQUE</code> de la tabla (S8, 3.10) lo rechazó, pero nada en el código estaba preparado para esa excepción.</p>
+<p><strong>Error frecuente</strong>: esto <strong>no</strong> es un error de la guía ni un bug de tu código — es el comportamiento real de S8, sin ninguna protección de idempotencia, con un mensaje duplicado real. Es exactamente el punto: vas a arreglarlo en 3.3.</p>
+<h4 id="33-agregar-idempotencia-a-pagatu-pago-ms">3.3 Agregar idempotencia a <code>pagatu-pago-ms</code><a class="headerlink" href="#33-agregar-idempotencia-a-pagatu-pago-ms" title="Permanent link">&para;</a></h4>
+<p><strong>Producto del paso:</strong> un <code>orden.creada</code> repetido se reconoce y se ignora, sin excepción y sin un segundo pago.</p>
+<p><strong><code>services/pagatu-pago-ms/src/main/java/pe/edu/upeu/pago/repository/PagoRepository.java</code></strong> — agrega la consulta:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.pago.repository</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.data.jpa.repository.JpaRepository</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.pago.entity.Pago</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">java.util.Optional</span><span class="p">;</span>
+
+<span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">PagoRepository</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">JpaRepository</span><span class="o">&lt;</span><span class="n">Pago</span><span class="p">,</span><span class="w"> </span><span class="n">Long</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Optional</span><span class="o">&lt;</span><span class="n">Pago</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">findByOrdenId</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">ordenId</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong><code>services/pagatu-pago-ms/src/main/java/pe/edu/upeu/pago/service/PagoServiceImpl.java</code></strong> — reemplaza el método <code>procesar</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">PAGO_VALIDADO</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"pago.validado"</span><span class="p">;</span>
+
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="nd">@Transactional</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">procesar</span><span class="p">(</span><span class="n">OrdenCreadaEvento</span><span class="w"> </span><span class="n">orden</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">pagoRepository</span><span class="p">.</span><span class="na">findByOrdenId</span><span class="p">(</span><span class="n">orden</span><span class="p">.</span><span class="na">getOrdenId</span><span class="p">()).</span><span class="na">isPresent</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">log</span><span class="p">.</span><span class="na">warn</span><span class="p">(</span><span class="s">"component=processor ordenId={} status=ignored motivo=\"pago ya procesado (evento duplicado)\""</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">orden</span><span class="p">.</span><span class="na">getOrdenId</span><span class="p">());</span>
+<span class="w">            </span><span class="k">return</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="n">Pago</span><span class="w"> </span><span class="n">pago</span><span class="p">;</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">pago</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pagoRepository</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">Pago</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">                    </span><span class="p">.</span><span class="na">ordenId</span><span class="p">(</span><span class="n">orden</span><span class="p">.</span><span class="na">getOrdenId</span><span class="p">())</span>
+<span class="w">                    </span><span class="p">.</span><span class="na">monto</span><span class="p">(</span><span class="n">orden</span><span class="p">.</span><span class="na">getTotal</span><span class="p">())</span>
+<span class="w">                    </span><span class="p">.</span><span class="na">metodoPago</span><span class="p">(</span><span class="n">orden</span><span class="p">.</span><span class="na">getMetodoPago</span><span class="p">())</span>
+<span class="w">                    </span><span class="p">.</span><span class="na">estado</span><span class="p">(</span><span class="n">EstadoPago</span><span class="p">.</span><span class="na">VALIDADO</span><span class="p">)</span>
+<span class="w">                    </span><span class="p">.</span><span class="na">fechaPago</span><span class="p">(</span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">now</span><span class="p">())</span>
+<span class="w">                    </span><span class="p">.</span><span class="na">build</span><span class="p">());</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">DataIntegrityViolationException</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">log</span><span class="p">.</span><span class="na">warn</span><span class="p">(</span><span class="s">"component=processor ordenId={} status=ignored motivo=\"pago ya procesado (condicion de carrera)\""</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">orden</span><span class="p">.</span><span class="na">getOrdenId</span><span class="p">());</span>
+<span class="w">            </span><span class="k">return</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="n">producer</span><span class="p">.</span><span class="na">publicarTrasCommit</span><span class="p">(</span><span class="n">PagoValidadoEvento</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">                </span><span class="p">.</span><span class="na">tipoEvento</span><span class="p">(</span><span class="n">PAGO_VALIDADO</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">ordenId</span><span class="p">(</span><span class="n">pago</span><span class="p">.</span><span class="na">getOrdenId</span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="na">monto</span><span class="p">(</span><span class="n">pago</span><span class="p">.</span><span class="na">getMonto</span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="na">estado</span><span class="p">(</span><span class="n">pago</span><span class="p">.</span><span class="na">getEstado</span><span class="p">().</span><span class="na">name</span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="na">origen</span><span class="p">(</span><span class="n">nombreServicio</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">timestamp</span><span class="p">(</span><span class="n">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toEpochMilli</span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">());</span>
+
+<span class="w">        </span><span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">"component=processor ordenId={} estado={} status=processed"</span><span class="p">,</span><span class="w"> </span><span class="n">pago</span><span class="p">.</span><span class="na">getOrdenId</span><span class="p">(),</span><span class="w"> </span><span class="n">pago</span><span class="p">.</span><span class="na">getEstado</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+<p>Agrega el import que falta:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.dao.DataIntegrityViolationException</span><span class="p">;</span>
+</code></pre></div>
+<p>Dos capas, no una sola (2.3): <code>findByOrdenId</code> resuelve el caso normal (un reintento real de Kafka, uno detrás de otro) sin tocar la base de datos con un intento de escritura que sabes que va a fallar. El <code>try</code>/<code>catch</code> sobre <code>DataIntegrityViolationException</code> es el respaldo para el caso raro — dos mensajes llegando casi al mismo tiempo, ambos pasando la revisión antes de que ninguno guarde — donde la única garantía real es la restricción <code>UNIQUE</code> de la base de datos, no una revisión en memoria.</p>
+<h4 id="34-probar-que-el-duplicado-ya-no-rompe-nada">3.4 Probar que el duplicado ya no rompe nada<a class="headerlink" href="#34-probar-que-el-duplicado-ya-no-rompe-nada" title="Permanent link">&para;</a></h4>
+<p><strong>Producto del paso:</strong> evidencia de que el mismo mensaje de 3.2, repetido, ya no genera un segundo pago ni una excepción.</p>
+<p>Reinicia <code>pagatu-pago-ms</code>. Repite exactamente la publicación manual de 3.2 (mismo <em>key</em>, mismo valor JSON, desde Kafka UI). Resultado esperado en el log: <code>component=processor ordenId=... status=ignored motivo="pago ya procesado (evento duplicado)"</code> — sin ninguna excepción.</p>
+<p>Confirma en la base de datos que sigue habiendo un solo pago:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pagatu-postgres-pago-dev<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_pago_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">"SELECT COUNT(*) FROM pagos WHERE orden_id = ID_DE_TU_ORDEN;"</span>
+</code></pre></div>
+<p>Resultado esperado: <code>1</code>.</p>
+<h3 id="parte-b-simular-el-fallo-de-un-pago-y-compensar-en-pagatu-orden-ms">Parte B — Simular el fallo de un pago y compensar en <code>pagatu-orden-ms</code><a class="headerlink" href="#parte-b-simular-el-fallo-de-un-pago-y-compensar-en-pagatu-orden-ms" title="Permanent link">&para;</a></h3>
+<h4 id="35-agregar-el-estado-fallido-y-simular-el-rechazo-del-pago">3.5 Agregar el estado <code>FALLIDO</code> y simular el rechazo del pago<a class="headerlink" href="#35-agregar-el-estado-fallido-y-simular-el-rechazo-del-pago" title="Permanent link">&para;</a></h4>
+<p><strong>Producto del paso:</strong> un pago con <code>metodoPago: "TARJETA_RECHAZADA"</code> se guarda como <code>FALLIDO</code> y publica <code>pago.fallido</code> en vez de <code>pago.validado</code>.</p>
+<p><strong><code>services/pagatu-pago-ms/src/main/java/pe/edu/upeu/pago/entity/EstadoPago.java</code>:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.pago.entity</span><span class="p">;</span>
+
+<span class="kd">public</span><span class="w"> </span><span class="kd">enum</span><span class="w"> </span><span class="n">EstadoPago</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">VALIDADO</span><span class="p">,</span>
+<span class="w">    </span><span class="n">FALLIDO</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong><code>PagoServiceImpl.java</code></strong> — agrega la constante y la bifurcación dentro de <code>procesar</code> (después de la guardia de idempotencia de 3.3, antes del <code>try</code>):</p>
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">PAGO_FALLIDO</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"pago.fallido"</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">METODO_RECHAZADO</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"TARJETA_RECHAZADA"</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="w">        </span><span class="kt">boolean</span><span class="w"> </span><span class="n">rechazado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">METODO_RECHAZADO</span><span class="p">.</span><span class="na">equalsIgnoreCase</span><span class="p">(</span><span class="n">orden</span><span class="p">.</span><span class="na">getMetodoPago</span><span class="p">());</span>
+<span class="w">        </span><span class="n">EstadoPago</span><span class="w"> </span><span class="n">estadoResultante</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rechazado</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">EstadoPago</span><span class="p">.</span><span class="na">FALLIDO</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">EstadoPago</span><span class="p">.</span><span class="na">VALIDADO</span><span class="p">;</span>
+
+<span class="w">        </span><span class="n">Pago</span><span class="w"> </span><span class="n">pago</span><span class="p">;</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">pago</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pagoRepository</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">Pago</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">                    </span><span class="p">.</span><span class="na">ordenId</span><span class="p">(</span><span class="n">orden</span><span class="p">.</span><span class="na">getOrdenId</span><span class="p">())</span>
+<span class="w">                    </span><span class="p">.</span><span class="na">monto</span><span class="p">(</span><span class="n">orden</span><span class="p">.</span><span class="na">getTotal</span><span class="p">())</span>
+<span class="w">                    </span><span class="p">.</span><span class="na">metodoPago</span><span class="p">(</span><span class="n">orden</span><span class="p">.</span><span class="na">getMetodoPago</span><span class="p">())</span>
+<span class="w">                    </span><span class="p">.</span><span class="na">estado</span><span class="p">(</span><span class="n">estadoResultante</span><span class="p">)</span>
+<span class="w">                    </span><span class="p">.</span><span class="na">fechaPago</span><span class="p">(</span><span class="n">LocalDateTime</span><span class="p">.</span><span class="na">now</span><span class="p">())</span>
+<span class="w">                    </span><span class="p">.</span><span class="na">build</span><span class="p">());</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">DataIntegrityViolationException</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">log</span><span class="p">.</span><span class="na">warn</span><span class="p">(</span><span class="s">"component=processor ordenId={} status=ignored motivo=\"pago ya procesado (condicion de carrera)\""</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">orden</span><span class="p">.</span><span class="na">getOrdenId</span><span class="p">());</span>
+<span class="w">            </span><span class="k">return</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">tipoEventoResultante</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rechazado</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">PAGO_FALLIDO</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">PAGO_VALIDADO</span><span class="p">;</span>
+<span class="w">        </span><span class="n">producer</span><span class="p">.</span><span class="na">publicarTrasCommit</span><span class="p">(</span><span class="n">PagoValidadoEvento</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">                </span><span class="p">.</span><span class="na">tipoEvento</span><span class="p">(</span><span class="n">tipoEventoResultante</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">ordenId</span><span class="p">(</span><span class="n">pago</span><span class="p">.</span><span class="na">getOrdenId</span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="na">monto</span><span class="p">(</span><span class="n">pago</span><span class="p">.</span><span class="na">getMonto</span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="na">estado</span><span class="p">(</span><span class="n">pago</span><span class="p">.</span><span class="na">getEstado</span><span class="p">().</span><span class="na">name</span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="na">origen</span><span class="p">(</span><span class="n">nombreServicio</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="na">timestamp</span><span class="p">(</span><span class="n">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toEpochMilli</span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">());</span>
+</code></pre></div>
+<p><code>"TARJETA_RECHAZADA"</code> no es un método de pago real de la pasarela (simulada): es un valor que esta sesión reserva a propósito, para que el fallo sea determinista y reproducible (2.6) — en un sistema real, la decisión vendría de la respuesta real de la pasarela, nunca del valor que el propio cliente envía.</p>
+<h4 id="36-consumir-pagofallido-y-compensar-la-orden-en-pagatu-orden-ms">3.6 Consumir <code>pago.fallido</code> y compensar la orden en <code>pagatu-orden-ms</code><a class="headerlink" href="#36-consumir-pagofallido-y-compensar-la-orden-en-pagatu-orden-ms" title="Permanent link">&para;</a></h4>
+<p><strong>Producto del paso:</strong> <code>pagatu-orden-ms</code> reacciona a <code>pago.fallido</code> igual que ya reacciona a <code>pago.validado</code>, pero compensando en vez de confirmar.</p>
+<p>En <strong><code>OrdenService.java</code></strong>, agrega la operación:</p>
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">compensar</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">ordenId</span><span class="p">);</span>
+</code></pre></div>
+<p>En <strong><code>OrdenServiceImpl.java</code></strong>, agrega el método, después de <code>marcarPagada</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="nd">@Transactional</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">compensar</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">ordenId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Orden</span><span class="w"> </span><span class="n">orden</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ordenRepository</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">ordenId</span><span class="p">).</span><span class="na">orElse</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">orden</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">orden</span><span class="p">.</span><span class="na">getEstado</span><span class="p">()</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">EstadoOrden</span><span class="p">.</span><span class="na">PENDIENTE_PAGO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">log</span><span class="p">.</span><span class="na">warn</span><span class="p">(</span><span class="s">"component=processor ordenId={} status=ignored motivo=\"la orden no existe o ya no esta pendiente de pago\""</span><span class="p">,</span><span class="w"> </span><span class="n">ordenId</span><span class="p">);</span>
+<span class="w">            </span><span class="k">return</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">orden</span><span class="p">.</span><span class="na">setEstado</span><span class="p">(</span><span class="n">EstadoOrden</span><span class="p">.</span><span class="na">CANCELADA</span><span class="p">);</span>
+<span class="w">        </span><span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">"component=processor ordenId={} estado={} status=compensated"</span><span class="p">,</span><span class="w"> </span><span class="n">ordenId</span><span class="p">,</span><span class="w"> </span><span class="n">orden</span><span class="p">.</span><span class="na">getEstado</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+<p><strong><code>services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/messaging/PagoEventosConsumer.java</code></strong> — reemplaza el cuerpo de la clase:</p>
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">PAGO_VALIDADO</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"pago.validado"</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">PAGO_FALLIDO</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"pago.fallido"</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">OrdenService</span><span class="w"> </span><span class="n">ordenService</span><span class="p">;</span>
+
+<span class="w">    </span><span class="nd">@KafkaListener</span><span class="p">(</span><span class="n">topics</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"${app.kafka.topic.pagos}"</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">alRecibirPago</span><span class="p">(</span><span class="n">PagoValidadoEvento</span><span class="w"> </span><span class="n">evento</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">evento</span><span class="p">.</span><span class="na">getTipoEvento</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">case</span><span class="w"> </span><span class="n">PAGO_VALIDADO</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">"component=consumer eventType={} ordenId={} status=consumed"</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">evento</span><span class="p">.</span><span class="na">getTipoEvento</span><span class="p">(),</span><span class="w"> </span><span class="n">evento</span><span class="p">.</span><span class="na">getOrdenId</span><span class="p">());</span>
+<span class="w">                </span><span class="n">ordenService</span><span class="p">.</span><span class="na">marcarPagada</span><span class="p">(</span><span class="n">evento</span><span class="p">.</span><span class="na">getOrdenId</span><span class="p">());</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="k">case</span><span class="w"> </span><span class="n">PAGO_FALLIDO</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">"component=consumer eventType={} ordenId={} status=consumed"</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">evento</span><span class="p">.</span><span class="na">getTipoEvento</span><span class="p">(),</span><span class="w"> </span><span class="n">evento</span><span class="p">.</span><span class="na">getOrdenId</span><span class="p">());</span>
+<span class="w">                </span><span class="n">ordenService</span><span class="p">.</span><span class="na">compensar</span><span class="p">(</span><span class="n">evento</span><span class="p">.</span><span class="na">getOrdenId</span><span class="p">());</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="k">default</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">log</span><span class="p">.</span><span class="na">warn</span><span class="p">(</span><span class="s">"component=consumer eventType={} status=ignored"</span><span class="p">,</span><span class="w"> </span><span class="n">evento</span><span class="p">.</span><span class="na">getTipoEvento</span><span class="p">());</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+<p><code>EstadoOrden.CANCELADA</code> ya existía desde S6 (nunca se había usado): no hace falta ninguna migración de base de datos para esta sesión, solo darle, por fin, un camino real que lo alcance. <code>compensar</code> comparte la misma guardia de idempotencia de <code>marcarPagada</code> (2.5): solo actúa si la orden sigue <code>PENDIENTE_PAGO</code>.</p>
+<h4 id="37-probar-el-fallo-de-pago-de-punta-a-punta">3.7 Probar el fallo de pago de punta a punta<a class="headerlink" href="#37-probar-el-fallo-de-pago-de-punta-a-punta" title="Permanent link">&para;</a></h4>
+<p><strong>Producto del paso:</strong> una orden que pasa de <code>PENDIENTE_PAGO</code> a <code>CANCELADA</code> por eventos, con la evidencia en cada punto.</p>
+<p>Reinicia <code>pagatu-pago-ms</code> y <code>pagatu-orden-ms</code>. Crea una orden con <code>metodoPago: "TARJETA_RECHAZADA"</code>:</p>
+<p>PowerShell:</p>
+<div class="highlight"><pre><span></span><code><span class="nv">$ordenRechazada</span> <span class="p">=</span> <span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Post</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18080/api/v1/ordenes"</span> <span class="p">`</span>
+  <span class="n">-Headers</span> <span class="p">@{</span> <span class="n">Authorization</span> <span class="p">=</span> <span class="s2">"Bearer $tokenCliente"</span> <span class="p">}</span> <span class="p">`</span>
+  <span class="n">-ContentType</span> <span class="s2">"application/json"</span> <span class="p">`</span>
+  <span class="n">-Body</span> <span class="s1">'{"metodoPago": "TARJETA_RECHAZADA", "detalles": [{"idProducto": 1, "cantidad": 1}]}'</span>
+<span class="nv">$ordenRechazada</span><span class="p">.</span><span class="n">id</span>
+</code></pre></div>
+<p>bash macOS/Linux:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-i<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:18080/api/v1/ordenes<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$TOKEN_CLIENTE</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"metodoPago": "TARJETA_RECHAZADA", "detalles": [{"idProducto": 1, "cantidad": 1}]}'</span>
+</code></pre></div>
+<p>Reúne la evidencia, en orden:</p>
+<ol>
+<li><strong>Log de <code>pagatu-pago-ms</code>:</strong> <code>component=processor ordenId=... estado=FALLIDO status=processed</code>, y <code>component=producer topic=pago-eventos ... eventType=pago.fallido ... status=published</code>.</li>
+<li><strong>Log de <code>pagatu-orden-ms</code>:</strong> <code>component=consumer eventType=pago.fallido ordenId=... status=consumed</code>, y <code>component=processor ordenId=... estado=CANCELADA status=compensated</code>.</li>
+<li><strong>El pago, con su estado real:</strong></li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:8086/api/v1/pagos"</span>
+</code></pre></div>
+<p>Resultado esperado: el pago de esta orden con <code>"estado": "FALLIDO"</code>.</p>
+<ol>
+<li><strong>La orden, compensada:</strong></li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18080/api/v1/ordenes/</span><span class="p">$(</span><span class="nv">$ordenRechazada</span><span class="p">.</span><span class="n">id</span><span class="p">)</span><span class="s2">"</span> <span class="p">`</span>
+  <span class="n">-Headers</span> <span class="p">@{</span> <span class="n">Authorization</span> <span class="p">=</span> <span class="s2">"Bearer $tokenCliente"</span> <span class="p">}).</span><span class="n">estado</span>
+</code></pre></div>
+<p>Resultado esperado: <code>CANCELADA</code> — nunca llegó a <code>PAGADA</code>.</p>
+<p><strong>Error frecuente</strong>: la orden queda en <code>PENDIENTE_PAGO</code>, ni <code>PAGADA</code> ni <code>CANCELADA</code>. Sigue la misma cadena de diagnóstico de S8 (2.6, su Error frecuente): ¿el log de <code>pagatu-pago-ms</code> muestra <code>estado=FALLIDO</code>? ¿Publicó en <code>pago-eventos</code>? ¿<code>pagatu-orden-ms</code> lo consumió? Confirma también que el <code>switch</code> de 3.6 compila con las dos constantes como <code>case</code>, no con literales de texto sueltos.</p>
+<h3 id="parte-c-verificar-la-idempotencia-de-la-compensacion">Parte C — Verificar la idempotencia de la compensación<a class="headerlink" href="#parte-c-verificar-la-idempotencia-de-la-compensacion" title="Permanent link">&para;</a></h3>
+<h4 id="38-probar-que-la-compensacion-tambien-es-idempotente">3.8 Probar que la compensación también es idempotente<a class="headerlink" href="#38-probar-que-la-compensacion-tambien-es-idempotente" title="Permanent link">&para;</a></h4>
+<p><strong>Producto del paso:</strong> evidencia de que un <code>pago.fallido</code> repetido no intenta compensar dos veces una orden que ya está <code>CANCELADA</code>.</p>
+<p>En Kafka UI, abre <code>pago-eventos</code> → <em>Messages</em>, ubica el mensaje <code>pago.fallido</code> de la orden de 3.7, copia su valor y publícalo de nuevo con la misma <em>key</em>. Resultado esperado en el log de <code>pagatu-orden-ms</code>: <code>component=processor ordenId=... status=ignored motivo="la orden no existe o ya no esta pendiente de pago"</code> — la misma guardia que ya protegía <code>marcarPagada</code> desde S8, protegiendo ahora también <code>compensar</code>, sin que hiciera falta escribir nada nuevo para este caso.</p>
+<h3 id="parte-d-documentar">Parte D — Documentar<a class="headerlink" href="#parte-d-documentar" title="Permanent link">&para;</a></h3>
+<h4 id="39-documentar-el-flujo-de-negocio-estados-transiciones-y-compensaciones">3.9 Documentar el flujo de negocio: estados, transiciones y compensaciones<a class="headerlink" href="#39-documentar-el-flujo-de-negocio-estados-transiciones-y-compensaciones" title="Permanent link">&para;</a></h4>
+<p><strong>Producto del paso:</strong> el diagrama de estados completo de <code>Orden</code>, con sus dos finales posibles.</p>
+<p><strong>Figura 3. Ciclo de vida completo de <code>Orden</code>, con su compensación</strong></p>
+<pre class="mermaid"><code>stateDiagram-v2
+    [*] --&gt; CARRITO : crear() con algun producto no valido
+    [*] --&gt; PENDIENTE_PAGO : crear() exitoso
+    PENDIENTE_PAGO --&gt; PAGADA : pago.validado (marcarPagada)
+    PENDIENTE_PAGO --&gt; CANCELADA : pago.fallido (compensar)
+    PAGADA --&gt; [*]
+    CANCELADA --&gt; [*]
+    CARRITO --&gt; [*]</code></pre>
+<p>Documenta, con tus propias palabras y en tu evidencia (4.3), la tabla de transiciones completa (igual formato que la Tabla 3 de esta guía), aplicada a tu propio sistema si tu Proyecto Sello tiene un flujo de negocio equivalente — o, si no lo tiene todavía, aplicada a <code>pagatu</code> como referencia para la actividad autónoma (4.1).</p>
+<h2 id="4-crea-actividad-autonoma">4. Crea: actividad autónoma<a class="headerlink" href="#4-crea-actividad-autonoma" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 4h fuera del aula.</p>
+<h3 id="41-actividad">4.1 Actividad<a class="headerlink" href="#41-actividad" title="Permanent link">&para;</a></h3>
+<p>Implementación de idempotencia y compensación sobre un <strong>proceso de negocio propio</strong> del Proyecto Sello del equipo, con evidencia individual.</p>
+<p>Completa y evidencia estas tareas:</p>
+<ol>
+<li>Identifica, en tu propio proyecto, un proceso que cruce dos servicios por eventos (si todavía no tienes uno, replica el patrón de <code>pagatu</code> sobre tu propio dominio: una operación que un servicio registra y otro confirma o rechaza).</li>
+<li>Agrega idempotencia al consumidor que procesa el primer evento: una revisión explícita antes de actuar, respaldada por una restricción <code>UNIQUE</code> real en tu base de datos (no solo en memoria).</li>
+<li>Diseña al menos una condición de fallo real para ese proceso (no necesita ser un pago) y un evento de compensación propio, con su propio <code>tipoEvento</code>.</li>
+<li>Implementa la compensación en el servicio que inició el proceso, con la misma guardia de idempotencia que ya usa su confirmación exitosa.</li>
+<li>Prueba los tres casos con evidencia real: evento duplicado ignorado, camino de fallo con compensación aplicada, y la compensación misma probada contra un duplicado.</li>
+<li>Documenta el diagrama de estados completo de tu entidad, con sus transiciones y su compensación (mismo formato de la Figura 3).</li>
+</ol>
+<h3 id="42-proposito">4.2 Propósito<a class="headerlink" href="#42-proposito" title="Permanent link">&para;</a></h3>
+<p>Que cada estudiante demuestre, de forma individual y fuera del aula, que puede reconocer dónde un proceso distribuido necesita idempotencia, diseñar una compensación real para un paso que puede fallar, y documentar el flujo de negocio completo de su propio sistema — sin el acompañamiento del docente.</p>
+<p>Esta actividad autónoma se desarrolla sobre el proyecto de fin de curso del equipo. El producto de la unidad se construye por acumulación de los avances de cada sesión; por eso, la evidencia de esta sesión debe incorporarse a la documentación del proyecto y quedar trazable en GitHub.</p>
+<h3 id="43-indicaciones">4.3 Indicaciones<a class="headerlink" href="#43-indicaciones" title="Permanent link">&para;</a></h3>
+<p>Entrega un PDF con el siguiente nombre:</p>
+<div class="highlight"><pre><span></span><code>S09_Equipo##_ApellidoNombre.pdf
+</code></pre></div>
+<p>Cada captura de pantalla del informe debe mostrar, sin recortar, el reloj del sistema (fecha y hora) y tu usuario o foto de perfil (Windows, VS Code o navegador) visibles en pantalla — es lo que permite verificar que la evidencia es tuya y que corresponde al momento real de tu trabajo.</p>
+<h4 id="431-estructura-del-informe">4.3.1 Estructura del informe<a class="headerlink" href="#431-estructura-del-informe" title="Permanent link">&para;</a></h4>
+<p><strong>Datos del estudiante</strong></p>
+<ul>
+<li>Nombre:</li>
+<li>Equipo:</li>
+<li>Sesión: S09 - Consistencia distribuida en procesos de negocio</li>
+<li>Rol o aporte realizado:</li>
+<li>Link de GitHub:</li>
+</ul>
+<p><strong>Evidencia técnica</strong></p>
+<p>Incluye capturas o extractos con una breve explicación debajo de cada uno, organizados en los mismos 4 bloques de la rúbrica (4.6):</p>
+<ol>
+<li><em>El bug reproducido, y la idempotencia de <code>pagatu-pago-ms</code></em><ul>
+<li>Log de la excepción real de 3.2, y log de 3.4 mostrando el duplicado ignorado sin excepción (trabajo de clase).</li>
+</ul>
+</li>
+<li><em>Fallo de pago y compensación en <code>pagatu</code></em><ul>
+<li>Logs de <code>pago.fallido</code> publicado y consumido, y la orden pasando a <code>CANCELADA</code> (trabajo de clase).</li>
+</ul>
+</li>
+<li><em>Compensación idempotente</em><ul>
+<li>Log de 3.8 mostrando el <code>pago.fallido</code> repetido ignorado (trabajo de clase).</li>
+</ul>
+</li>
+<li><em>Proceso propio con idempotencia y compensación</em><ul>
+<li>Los tres casos (duplicado, fallo con compensación, compensación idempotente) y el diagrama de estados completo de tu propia entidad (trabajo autónomo).</li>
+</ul>
+</li>
+</ol>
+<p><strong>Error o hallazgo</strong></p>
+<p>Describe un error real: un <code>case</code> del <code>switch</code> de 3.6 que no compiló porque la constante no era <code>final</code>, un log que mostraba <code>status=ignored</code> por el motivo equivocado (revisaste la condición y no la excepción, o al revés), o una condición de fallo propia que terminó compensando una orden que no debía.</p>
+<p><strong>Reflexión técnica breve</strong></p>
+<p>Responde en 5 a 8 líneas:</p>
+<div class="highlight"><pre><span></span><code>¿Por qué 'exactamente una vez' es una garantía tan difícil de dar en un
+sistema distribuido que la práctica estándar es aceptar 'al menos una
+vez' y resolver el problema en el consumidor? Relaciona tu respuesta con
+el caso de Knight Capital (1.6).
+</code></pre></div>
+<p><strong>Anexo: Feedback de la sesión</strong></p>
+<p>Pega esta página como la última hoja del PDF, con tus respuestas.</p>
+<ol>
+<li>¿Cuál es el aprendizaje más importante que te llevas de la clase de hoy?</li>
+<li>¿Qué punto de la clase te resultó más confuso o te dejó con dudas?</li>
+<li>¿Tienes alguna pregunta que te gustaría que sea respondida la siguiente clase?</li>
+<li>Sobre tu nivel de comprensión de la clase de hoy, marca una opción:<ul>
+<li>¡Entendido! - Lo domino y podría explicarlo.</li>
+<li>Más o menos. - Entendí la idea general, pero tengo dudas.</li>
+<li>Necesito ayuda. - Me siento perdido/a con este tema.</li>
+</ul>
+</li>
+<li>¿Cómo puedo ayudarte a comprender mejor el tema?</li>
+<li>Pensando en tu participación y esfuerzo en la clase de hoy, ¿cómo te autoevaluarías? Marca una opción:<ul>
+<li>Muy Comprometido/a: Me esforcé al máximo.</li>
+<li>Comprometido/a: Sé que podría haberme esforzado un poco más.</li>
+<li>Poco Comprometido/a: Hoy no di mi mejor esfuerzo.</li>
+</ul>
+</li>
+<li>Mi satisfacción con la clase fue... (califica del 1 al 10, donde 1 es insatisfecho y 10 es muy satisfecho).</li>
+</ol>
+<h3 id="44-criterios-minimos-de-aceptacion">4.4 Criterios mínimos de aceptación<a class="headerlink" href="#44-criterios-minimos-de-aceptacion" title="Permanent link">&para;</a></h3>
+<ul>
+<li>PDF con nombre correcto.</li>
+<li>Evidencia real del bug de duplicados (3.2) y de su corrección con idempotencia (3.3-3.4), sin excepción en el log tras el fix.</li>
+<li>Evidencia del fallo de pago simulado y la compensación real de la orden (<code>PENDIENTE_PAGO → CANCELADA</code>).</li>
+<li>Evidencia de que la compensación también es idempotente ante un evento repetido.</li>
+<li>Proceso propio con idempotencia (revisión explícita + restricción <code>UNIQUE</code> real) y compensación (evento propio, guardia de idempotencia), con los tres casos probados.</li>
+<li>Diagrama de estados completo de la entidad propia, con su compensación.</li>
+<li>Cada captura de la evidencia técnica muestra el reloj del sistema y el usuario/perfil visible, sin recortar.</li>
+<li>Las fechas y horas de las capturas son coherentes con el historial de commits de su repositorio en GitHub.</li>
+<li>Incluye un error o hallazgo técnico diagnosticado.</li>
+<li>Incluye la reflexión técnica breve solicitada.</li>
+<li>Incluye el Anexo de feedback de la sesión respondido, como última página del PDF.</li>
+<li>Aporte individual verificable.</li>
+</ul>
+<h3 id="45-preguntas-de-defensa">4.5 Preguntas de defensa<a class="headerlink" href="#45-preguntas-de-defensa" title="Permanent link">&para;</a></h3>
+<ol>
+<li>¿Por qué Kafka garantiza "al menos una vez" y no "exactamente una vez" por defecto, y qué le costaría a un sistema real exigir la segunda garantía?</li>
+<li>¿Por qué la idempotencia de 3.3 revisa primero <code>findByOrdenId</code> y además envuelve el <code>save</code> en un <code>try</code>/<code>catch</code>, en vez de confiar solo en uno de los dos?</li>
+<li>¿Qué diferencia de fondo hay entre una Saga orquestada y una coreografiada, y cuál de las dos es la de <code>pagatu</code>?</li>
+<li>¿Por qué <code>compensar</code> no borra la orden ni la deja en <code>PENDIENTE_PAGO</code>, sino que la pasa a un estado nuevo (<code>CANCELADA</code>)?</li>
+<li><code>metodoPago: "TARJETA_RECHAZADA"</code> es un valor inventado para esta sesión. ¿Qué tendría que cambiar para que la decisión de rechazar un pago viniera de una pasarela real, y por qué esa decisión nunca debería depender de un valor que el propio cliente declara?</li>
+<li>En tu actividad autónoma, ¿qué pasaría si tu compensación no tuviera la misma guardia de idempotencia que su contraparte exitosa?</li>
+</ol>
+<h3 id="46-rubrica-de-evaluacion">4.6 Rúbrica de evaluación<a class="headerlink" href="#46-rubrica-de-evaluacion" title="Permanent link">&para;</a></h3>
+<p><strong>Tabla 4. Rúbrica de evaluación</strong></p>
+<table>
+<thead>
+<tr>
+<th>Dimensión</th>
+<th style="text-align: right;">Peso</th>
+<th>3 - Logro destacado</th>
+<th>2 - Logro</th>
+<th>1 - Proceso</th>
+<th>0 - Inicio</th>
+<th style="text-align: right;">Puntuación obtenida</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Bug reproducido e idempotencia de <code>pagatu-pago-ms</code></td>
+<td style="text-align: right;">2</td>
+<td>Excepción real evidenciada en 3.2, y duplicado ignorado sin excepción tras el fix, con las dos capas (revisión + <code>UNIQUE</code>) explicadas.</td>
+<td>Idempotencia funcional, con la evidencia del bug original incompleta.</td>
+<td>Idempotencia parcial (una sola de las dos capas).</td>
+<td>No evidencia idempotencia funcional.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>2. Fallo de pago y compensación</td>
+<td style="text-align: right;">2</td>
+<td><code>pago.fallido</code> publicado y consumido, orden compensada a <code>CANCELADA</code>, evidenciado en logs y endpoints.</td>
+<td>Flujo funcional, con evidencia parcial de algún tramo.</td>
+<td>Un solo sentido del flujo, o evidencia poco clara.</td>
+<td>No evidencia compensación funcional.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>3. Compensación idempotente</td>
+<td style="text-align: right;">2</td>
+<td>Evento de compensación repetido, ignorado correctamente, sin doble compensación.</td>
+<td>Prueba realizada, con la explicación incompleta.</td>
+<td>Prueba parcial o sin evidencia clara del log.</td>
+<td>No prueba la idempotencia de la compensación.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>4. Proceso propio con idempotencia y compensación</td>
+<td style="text-align: right;">2</td>
+<td>Proceso propio con idempotencia real (<code>UNIQUE</code> + revisión), compensación con su propio evento, y los tres casos probados.</td>
+<td>Proceso propio funcional, con idempotencia o compensación incompleta.</td>
+<td>Proceso propio parcial.</td>
+<td>No integra un proceso propio.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>5. Diagrama de estados y documentación</td>
+<td style="text-align: right;">1</td>
+<td>Diagrama completo y coherente con el código, con todas las transiciones y la compensación.</td>
+<td>Diagrama completo, con inconsistencias menores.</td>
+<td>Diagrama incompleto.</td>
+<td>No documenta el diagrama de estados.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>6. Aporte individual</td>
+<td style="text-align: right;">1</td>
+<td>Aporte claro y verificable.</td>
+<td>Aporte identificable.</td>
+<td>Aporte general.</td>
+<td>No se identifica aporte.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>7. Orden y reflexión</td>
+<td style="text-align: right;">1</td>
+<td>PDF ordenado y reflexión técnica clara.</td>
+<td>Evidencia suficiente.</td>
+<td>Evidencia poco clara.</td>
+<td>PDF insuficiente.</td>
+<td style="text-align: right;"></td>
+</tr>
+</tbody>
+</table>
+<p>Puntuación acumulada = suma de (<code>Peso</code> × <code>Puntuación obtenida</code>) = ____.</p>
+<p>Nota final = (<code>Puntuación acumulada</code> / 33) × 20 = ____.</p>
+<p>Para usar la rúbrica con IA (inteligencia artificial), solicita:</p>
+<div class="highlight"><pre><span></span><code>Evalúa el PDF usando la rúbrica de la sesión.
+Para cada dimensión selecciona la puntuación obtenida usando la escala Inicio=0, Proceso=1, Logro=2, Logro destacado=3.
+Justifica brevemente cada puntuación.
+Verifica que cada captura muestre reloj del sistema y usuario/perfil visible, y que las fechas sean coherentes con el historial de commits de GitHub. Si falta esta evidencia o hay inconsistencias, indícalo explícitamente antes de calificar.
+Calcula la puntuación acumulada con la fórmula: suma de (Peso × Puntuación obtenida).
+Calcula la nota final sobre 20 con la fórmula: (Puntuación acumulada / 33) × 20.
+Indica 2 fortalezas y 2 recomendaciones.
+</code></pre></div>
+<h2 id="5-cierre">5. Cierre<a class="headerlink" href="#5-cierre" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 5 min.</p>
+<p><strong>Resumen breve:</strong> hoy <code>pagatu-pago-ms</code> dejó de romperse ante un mensaje repetido — primero viste el bug real (una excepción contra su propia restricción <code>UNIQUE</code>), y después lo cerraste con dos capas de idempotencia. La pasarela de pagos simulada desde S7 dejó de validar todo siempre: <code>metodoPago: "TARJETA_RECHAZADA"</code> dispara <code>pago.fallido</code>, y <code>pagatu-orden-ms</code> lo consume para <strong>compensar</strong> la orden (<code>PENDIENTE_PAGO → CANCELADA</code>), reutilizando un estado que llevaba reservado desde S6. Y esa misma compensación resultó ser, sin escribir nada nuevo, tan idempotente como <code>marcarPagada</code> ya lo era desde S8 — porque las dos comparten la misma guardia. El patrón completo, sin que nadie lo coordinara desde un solo lugar, es una <strong>Saga coreografiada</strong>.</p>
+<p><strong>Dinámica participativa:</strong> en una ronda rápida, cada estudiante comparte en una frase qué excepción vio exactamente en 3.2, y qué le decía sobre lo que estaba mal.</p>
+<p><strong>Metacognición:</strong> ¿qué te costó más entender hoy: por qué Kafka puede entregar el mismo mensaje dos veces sin que eso sea un error de Kafka, o por qué <code>compensar</code> necesita la misma guardia que <code>marcarPagada</code> en vez de una propia?</p>
+<p><strong>Proyección:</strong> S10 extiende Prometheus, Loki y Grafana (ya en pie desde S3-S4 para <code>pagatu-catalogo-ms</code>) a <code>pagatu-auth-ms</code>, <code>pagatu-cliente-ms</code>, <code>pagatu-orden-ms</code> y <code>pagatu-pago-ms</code> — con paneles de diagnóstico sobre el mismo flujo de hoy: cuántas órdenes se compensaron, cuántos duplicados se ignoraron, y dónde se detiene un flujo que no llega a su final esperado.</p>
+<h2 id="bibliografia">Bibliografía<a class="headerlink" href="#bibliografia" title="Permanent link">&para;</a></h2>
+<ul>
+<li>U.S. Securities and Exchange Commission. (2013). <em>In the Matter of Knight Capital Americas LLC</em> (Release No. 34-70694). <a href="https://www.sec.gov/litigation/admin/2013/34-70694.pdf">https://www.sec.gov/litigation/admin/2013/34-70694.pdf</a></li>
+<li>Richardson, C. (2018). <em>Pattern: Saga</em>. microservices.io. <a href="https://microservices.io/patterns/data/saga.html">https://microservices.io/patterns/data/saga.html</a></li>
+<li>Apache Software Foundation. (2024). <em>Apache Kafka Documentation</em>. <a href="https://kafka.apache.org/documentation/">https://kafka.apache.org/documentation/</a></li>
+<li>Spring for Apache Kafka. (2026). <em>Spring for Apache Kafka Reference</em> (versión 4.1.1). <a href="https://docs.spring.io/spring-kafka/reference/">https://docs.spring.io/spring-kafka/reference/</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
