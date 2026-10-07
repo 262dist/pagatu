@@ -1435,6 +1435,67 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#parte-e-acercar-la-compensacion-a-la-realidad-reservar-y-restaurar-stock-opcional-ejercicio-tipo-examen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte E — Acercar la compensación a la realidad: reservar y restaurar stock (opcional, ejercicio tipo examen)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parte E — Acercar la compensación a la realidad: reservar y restaurar stock (opcional, ejercicio tipo examen)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#310-agregar-descuento-y-restauracion-de-stock-en-pagatu-catalogo-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.10 Agregar descuento y restauración de stock en pagatu-catalogo-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#311-reservar-stock-al-crear-la-orden-en-pagatu-orden-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.11 Reservar stock al crear la orden en pagatu-orden-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#312-restaurar-el-stock-al-compensar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.12 Restaurar el stock al compensar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#313-probar-el-flujo-de-stock-de-punta-a-punta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.13 Probar el flujo de stock de punta a punta
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2098,6 +2159,67 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#parte-e-acercar-la-compensacion-a-la-realidad-reservar-y-restaurar-stock-opcional-ejercicio-tipo-examen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte E — Acercar la compensación a la realidad: reservar y restaurar stock (opcional, ejercicio tipo examen)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parte E — Acercar la compensación a la realidad: reservar y restaurar stock (opcional, ejercicio tipo examen)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#310-agregar-descuento-y-restauracion-de-stock-en-pagatu-catalogo-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.10 Agregar descuento y restauración de stock en pagatu-catalogo-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#311-reservar-stock-al-crear-la-orden-en-pagatu-orden-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.11 Reservar stock al crear la orden en pagatu-orden-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#312-restaurar-el-stock-al-compensar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.12 Restaurar el stock al compensar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#313-probar-el-flujo-de-stock-de-punta-a-punta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.13 Probar el flujo de stock de punta a punta
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2266,7 +2388,7 @@
 <li><strong>Diagnosticar</strong> el efecto real de un mensaje duplicado sobre un consumidor Kafka, <strong>implementar</strong> idempotencia para tolerarlo sin romper nada, <strong>diseñar y construir</strong> el paso compensador de una Saga coreografiada cuando un paso remoto falla, y <strong>documentar</strong> el flujo de negocio completo —estados, transiciones y compensaciones— con evidencia real de ambos casos.</li>
 </ul>
 <h3 id="14-producto-de-sesion">1.4 Producto de sesión<a class="headerlink" href="#14-producto-de-sesion" title="Permanent link">&para;</a></h3>
-<p><code>pagatu-pago-ms</code> idempotente ante un <code>orden.creada</code> duplicado: lo reconoce y lo ignora, sin crear un segundo pago ni caerse. Un nuevo estado <code>FALLIDO</code> en <code>Pago</code>, con una forma explícita de simular el rechazo de un pago (<code>metodoPago: "TARJETA_RECHAZADA"</code>), publicando <code>pago.fallido</code> en ese caso en vez de <code>pago.validado</code>. <code>pagatu-orden-ms</code> consumiendo <code>pago.fallido</code> y <strong>compensando</strong> la orden (<code>PENDIENTE_PAGO → CANCELADA</code>, reutilizando un estado que ya existía sin usarse desde S6), con la misma protección contra duplicados que <code>marcarPagada</code> ya tenía desde S8. Y el flujo de negocio completo, con sus estados, sus transiciones y sus dos compensaciones posibles, documentado de punta a punta.</p>
+<p><code>pagatu-pago-ms</code> idempotente ante un <code>orden.creada</code> duplicado: lo reconoce y lo ignora, sin crear un segundo pago ni caerse. Un nuevo estado <code>FALLIDO</code> en <code>Pago</code>, con una forma explícita de simular el rechazo de un pago (<code>metodoPago: "TARJETA_RECHAZADA"</code>), publicando <code>pago.fallido</code> en ese caso en vez de <code>pago.validado</code>. <code>pagatu-orden-ms</code> consumiendo <code>pago.fallido</code> y <strong>compensando</strong> la orden (<code>PENDIENTE_PAGO → CANCELADA</code>, reutilizando un estado que ya existía sin usarse desde S6), con la misma protección contra duplicados que <code>marcarPagada</code> ya tenía desde S8. El flujo de negocio completo, con sus estados y transiciones, documentado de punta a punta. Y, como ejercicio opcional tipo examen (Parte E): <code>pagatu-catalogo-ms</code> ganando dos operaciones de stock (<code>descontar-stock</code>, <code>restaurar-stock</code>), con <code>pagatu-orden-ms</code> reservándolo al crear la orden y restaurándolo al compensarla — cerrando, para quien lo complete, la brecha que S6 dejó documentada y sin cerrar.</p>
 <h3 id="15-metodologia">1.5 Metodología<a class="headerlink" href="#15-metodologia" title="Permanent link">&para;</a></h3>
 <p><strong>Tabla 1. Metodología de la sesión</strong></p>
 <table>
@@ -2285,8 +2407,8 @@
 </tr>
 <tr>
 <td>Clase presencial</td>
-<td>Reproducir el bug de duplicados, agregar idempotencia a <code>pagatu-pago-ms</code>, simular el fallo de un pago, y consumir <code>pago.fallido</code> compensando la orden en <code>pagatu-orden-ms</code>. Trabajo individual, siguiendo al docente paso a paso; consulta inmediata ante un log que no muestra lo esperado.</td>
-<td>Pasos 3.1 a 3.9 de esta guía.</td>
+<td>Reproducir el bug de duplicados, agregar idempotencia a <code>pagatu-pago-ms</code>, simular el fallo de un pago, consumir <code>pago.fallido</code> compensando la orden en <code>pagatu-orden-ms</code>, y documentar el flujo completo. Trabajo individual, siguiendo al docente paso a paso; consulta inmediata ante un log que no muestra lo esperado. La Parte E (reservar/restaurar stock, 3.10-3.13) es opcional, tipo examen — no se construye necesariamente en clase.</td>
+<td>Pasos 3.1 a 3.9 obligatorios; 3.10 a 3.13 opcionales.</td>
 </tr>
 <tr>
 <td>Evaluación formativa</td>
@@ -2467,8 +2589,8 @@
 </thead>
 <tbody>
 <tr>
-<td>1. Registrar la orden</td>
-<td><code>pagatu-orden-ms</code></td>
+<td>1. Registrar la orden y reservar stock</td>
+<td><code>pagatu-orden-ms</code> → <code>pagatu-catalogo-ms</code> (Feign)</td>
 <td>No se publica nada (S6: falla antes de la transacción local)</td>
 <td>No aplica — nada que compensar, no se confirmó nada</td>
 </tr>
@@ -2482,14 +2604,14 @@
 <td>3. Confirmar la orden</td>
 <td><code>pagatu-orden-ms</code></td>
 <td>— (último paso)</td>
-<td>Al recibir <code>pago.fallido</code>: <code>PENDIENTE_PAGO → CANCELADA</code></td>
+<td>Al recibir <code>pago.fallido</code>: <code>PENDIENTE_PAGO → CANCELADA</code>, y <strong>restaurar el stock reservado en el paso 1</strong></td>
 </tr>
 </tbody>
 </table>
 <p><em>Nota.</em> Adaptado de <em>Saga Pattern</em>, por SACAViX, s. f., System Design (<a href="https://systemdesign.sacavix.com/patterns/saga">https://systemdesign.sacavix.com/patterns/saga</a>), y de <em>Pattern: Saga</em>, por Richardson, C., 2018, microservices.io (<a href="https://microservices.io/patterns/data/saga.html">https://microservices.io/patterns/data/saga.html</a>).</p>
 <p>La compensación del paso 3 no es "deshacer la orden como si nunca hubiera existido" (eso sería borrarla, perdiendo la trazabilidad de que existió y falló) — es una <strong>transición de estado nueva</strong> (<code>CANCELADA</code>) que dice, de forma permanente y auditable, que esa orden se registró y su pago fue rechazado. Es el mismo criterio que ya se aplicó con <code>anular</code>/<code>ANULADA</code> en los cursos hermanos de este mismo ciclo (BomERP): una compensación deja rastro, no reescribe la historia.</p>
 <p>¿Por qué <code>CANCELADA</code> y no <code>EXPIRADA</code>, si las dos ya estaban declaradas en el <code>enum</code> desde S6 sin usarse? S6 las distingue por su causa, no por su resultado: <em>"<code>CANCELADA</code> es una decisión activa (el cliente o el negocio la descartan), <code>EXPIRADA</code> es que el plazo de <code>expira_en</code> se cumplió sin que nadie la confirmara ni la pagara"</em>. Un pago rechazado no es un plazo vencido — es la regla de negocio de <code>pagatu-pago-ms</code> descartando la orden de forma activa, aunque automatizada en vez de manual. <code>EXPIRADA</code> queda reservada para un caso que esta sesión no construye: una orden <code>PENDIENTE_PAGO</code> de la que nunca llega <strong>ningún</strong> evento, ni <code>pago.validado</code> ni <code>pago.fallido</code> — ese caso necesitaría un temporizador que hoy no existe, y sigue siendo una brecha abierta después de S9.</p>
-<p>S6 también anticipó algo que esta sesión <strong>todavía no cierra</strong>: si el stock se reservara al construir la orden, una orden <code>CANCELADA</code> o <code>EXPIRADA</code> debería devolver ese stock reservado. Hoy no hace falta devolver nada porque <code>pagatu-orden-ms</code> nunca llegó a reservar stock en primer lugar (S6, 3.13: <code>OrdenServiceImpl</code> valida contra <code>pagatu-catalogo-ms</code> por Feign, pero solo <strong>consulta</strong>, no descuenta) — la brecha de S6 sigue abierta, intacta, un nivel más atrás de lo que esta sesión resuelve.</p>
+<p>S6 también anticipó algo que esta sesión <strong>sí cierra, en la Parte D</strong>: si el stock se reserva al construir la orden, una orden <code>CANCELADA</code> debe devolver ese stock reservado. Hasta 3.8, <code>pagatu-orden-ms</code> solo <strong>consultaba</strong> el catálogo por Feign (S6, 3.13), sin descontar nada — 3.10 a 3.13 (opcional, Parte E) agregan la reserva (al crear) y la devolución (al compensar), dejando la brecha de S6 por fin cerrada si completas ese tramo. <code>EXPIRADA</code> queda todavía sin resolver: ninguna sesión construye hoy el temporizador que la dispararía.</p>
 <p><strong>Tabla 4. Errores comunes al implementar una Saga, y cómo queda esta sesión frente a cada uno</strong></p>
 <table>
 <thead>
@@ -2505,7 +2627,7 @@
 </tr>
 <tr>
 <td>Transacciones de compensación que también pueden fallar, sin manejo</td>
-<td><strong>Sí aplica, y queda pendiente a propósito</strong>: <code>compensar()</code> (3.6) no tiene ningún reintento ni <em>dead-letter queue</em> si fallara (por ejemplo, la base de <code>pagatu-orden-ms</code> caída justo en ese instante). Fuera del alcance de esta sesión — anótalo como limitación conocida en tu documentación (3.9).</td>
+<td><strong>Sí aplica, y queda pendiente a propósito</strong> — y si completas el ejercicio opcional de la Parte E, desde 3.12 es un riesgo real, no solo hipotético: <code>compensar()</code> hace ahí una llamada Feign a <code>pagatu-catalogo-ms</code> para restaurar stock, y esa llamada puede fallar (catálogo caído, circuito abierto). El <em>fallback</em> de 3.12 solo registra el error en el log y deja la orden <code>CANCELADA</code> igual — el stock queda desincronizado hasta una corrección manual. Ni reintento ni <em>dead-letter queue</em> para este caso: anótalo como limitación conocida en tu documentación (3.9).</td>
 </tr>
 <tr>
 <td>Saga demasiado larga (muchos pasos aumentan el riesgo de fallo)</td>
@@ -2532,10 +2654,10 @@
 <h3 id="27-observabilidad-del-flujo-completo-exito-y-compensacion">2.7 Observabilidad del flujo completo: éxito y compensación<a class="headerlink" href="#27-observabilidad-del-flujo-completo-exito-y-compensacion" title="Permanent link">&para;</a></h3>
 <p>El mismo criterio de logs de S8 (<code>component</code>, <code>eventType</code>, <code>ordenId</code>, <code>status</code>) se extiende con dos valores nuevos de <code>status</code>: <code>ignored</code> (un duplicado reconocido y descartado, en cualquiera de los dos servicios) y <code>compensated</code> (una compensación aplicada, en <code>pagatu-orden-ms</code>). Seguir un mismo <code>ordenId</code> a través de los logs de ambos servicios sigue siendo la forma de reconstruir, de punta a punta, qué pasó con una orden — ahora con dos finales posibles en vez de uno.</p>
 <h2 id="3-aplica-actividad-practica-guiada">3. Aplica: actividad práctica guiada<a class="headerlink" href="#3-aplica-actividad-practica-guiada" title="Permanent link">&para;</a></h2>
-<p>Tiempo: 3h.</p>
+<p>Tiempo: 3h (+1h opcional para la Parte E).</p>
 <p><strong>Actividad:</strong> reproducción guiada del problema de duplicados, idempotencia en <code>pagatu-pago-ms</code>, simulación del fallo de un pago, y compensación de la orden en <code>pagatu-orden-ms</code> (Producto de la sesión en 1.4).</p>
 <p><strong>Propósito de la actividad:</strong> que cada estudiante vea el efecto real de un evento duplicado antes de arreglarlo, implemente idempotencia con una revisión explícita respaldada por la restricción <code>UNIQUE</code> ya existente, y construya el paso de compensación completo de una Saga coreografiada, con evidencia real de los tres casos (duplicado, fallo con compensación, y compensación también idempotente).</p>
-<p><strong>Orientaciones metodológicas:</strong> el docente provoca primero el bug en vivo frente a la clase (Parte A), lo arregla, simula el fallo de pago y construye la compensación (Parte B), y cierra verificando que la propia compensación también es idempotente (Parte C); los estudiantes replican cada paso en su propia laptop y provocan ellos mismos el duplicado y el fallo para ver los tres resultados reales en su propia consola.</p>
+<p><strong>Orientaciones metodológicas:</strong> el docente provoca primero el bug en vivo frente a la clase (Parte A), lo arregla, simula el fallo de pago y construye la compensación (Parte B), verifica que la propia compensación también es idempotente (Parte C), y cierra documentando el flujo completo (Parte D); los estudiantes replican cada paso en su propia laptop y provocan ellos mismos el duplicado y el fallo para ver los resultados reales en su propia consola. La Parte E (reservar y restaurar stock real) queda como ejercicio opcional, tipo examen, para quien quiera acercar la compensación a lo que haría un sistema real — no es necesario construirla en clase ni para aprobar la sesión.</p>
 <p><strong>Actividades para realizar:</strong></p>
 <p><em>Parte A — Reproducir el problema y agregar idempotencia a <code>pagatu-pago-ms</code>:</em></p>
 <ul>
@@ -2557,6 +2679,13 @@
 <p><em>Parte D — Documentar:</em></p>
 <ul>
 <li><strong>3.9</strong> Documentar el flujo de negocio: estados, transiciones y compensaciones.</li>
+</ul>
+<p><em>Parte E — Acercar la compensación a la realidad: reservar y restaurar stock (opcional, ejercicio tipo examen):</em></p>
+<ul>
+<li><strong>3.10</strong> Agregar descuento y restauración de stock en <code>pagatu-catalogo-ms</code>.</li>
+<li><strong>3.11</strong> Reservar stock al crear la orden en <code>pagatu-orden-ms</code>.</li>
+<li><strong>3.12</strong> Restaurar el stock al compensar.</li>
+<li><strong>3.13</strong> Probar el flujo de stock de punta a punta.</li>
 </ul>
 <p><strong>Punto de partida común:</strong> todo el equipo debe comenzar exactamente desde donde quedó S8. Levanta <code>pagatu-config</code>, <code>pagatu-eureka</code>, <code>pagatu-gateway</code>, <code>pagatu-auth-ms</code>, Kafka, <code>pagatu-catalogo-ms</code>, <code>pagatu-orden-ms</code> y <code>pagatu-pago-ms</code> (S1-S8), confirma que una orden nueva sigue llegando a <code>PAGADA</code> por eventos (S8, 3.19) antes de tocar código nuevo.</p>
 <h3 id="parte-a-reproducir-el-problema-y-agregar-idempotencia-a-pagatu-pago-ms">Parte A — Reproducir el problema y agregar idempotencia a <code>pagatu-pago-ms</code><a class="headerlink" href="#parte-a-reproducir-el-problema-y-agregar-idempotencia-a-pagatu-pago-ms" title="Permanent link">&para;</a></h3>
@@ -2767,6 +2896,181 @@
     CANCELADA --&gt; [*]
     CARRITO --&gt; [*]</code></pre>
 <p>Documenta, con tus propias palabras y en tu evidencia (4.3), la tabla de transiciones completa (igual formato que la Tabla 3 de esta guía), aplicada a tu propio sistema si tu Proyecto Sello tiene un flujo de negocio equivalente — o, si no lo tiene todavía, aplicada a <code>pagatu</code> como referencia para la actividad autónoma (4.1).</p>
+<h3 id="parte-e-acercar-la-compensacion-a-la-realidad-reservar-y-restaurar-stock-opcional-ejercicio-tipo-examen">Parte E — Acercar la compensación a la realidad: reservar y restaurar stock (opcional, ejercicio tipo examen)<a class="headerlink" href="#parte-e-acercar-la-compensacion-a-la-realidad-reservar-y-restaurar-stock-opcional-ejercicio-tipo-examen" title="Permanent link">&para;</a></h3>
+<p>Esta parte <strong>no</strong> se construye necesariamente en clase: el docente puede dejarla como autoevaluación antes del examen, o como demostración opcional de dominio. Nada de lo anterior (Partes A-D) depende de ella, y la sesión está completa sin este tramo — tómala si quieres acercar la compensación de 3.6 a lo que haría un sistema real (devolver stock, no solo cambiar un estado), practicando por tu cuenta antes de que te lo pidan evaluado.</p>
+<h4 id="310-agregar-descuento-y-restauracion-de-stock-en-pagatu-catalogo-ms">3.10 Agregar descuento y restauración de stock en <code>pagatu-catalogo-ms</code><a class="headerlink" href="#310-agregar-descuento-y-restauracion-de-stock-en-pagatu-catalogo-ms" title="Permanent link">&para;</a></h4>
+<p><strong>Producto del paso:</strong> <code>pagatu-catalogo-ms</code> expone dos operaciones nuevas — descontar stock (con <code>409</code> si no alcanza) y restaurarlo — sobre el mismo <code>Producto</code> que ya expone S1.</p>
+<p><strong><code>services/pagatu-catalogo-ms/src/main/java/pe/edu/upeu/catalogo/exception/StockInsuficienteException.java</code>:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.exception</span><span class="p">;</span>
+
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">StockInsuficienteException</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">RuntimeException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">StockInsuficienteException</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">mensaje</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">super</span><span class="p">(</span><span class="n">mensaje</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong><code>services/pagatu-catalogo-ms/src/main/java/pe/edu/upeu/catalogo/exception/GlobalExceptionHandler.java</code></strong> — agrega el método, junto a <code>handleNotFound</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">StockInsuficienteException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="nf">handleStockInsuficiente</span><span class="p">(</span><span class="n">StockInsuficienteException</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"timestamp"</span><span class="p">,</span><span class="w"> </span><span class="n">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">toString</span><span class="p">());</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"status"</span><span class="p">,</span><span class="w"> </span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">CONFLICT</span><span class="p">.</span><span class="na">value</span><span class="p">());</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"error"</span><span class="p">,</span><span class="w"> </span><span class="s">"Conflict"</span><span class="p">);</span>
+<span class="w">        </span><span class="n">body</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"message"</span><span class="p">,</span><span class="w"> </span><span class="n">ex</span><span class="p">.</span><span class="na">getMessage</span><span class="p">());</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">CONFLICT</span><span class="p">).</span><span class="na">body</span><span class="p">(</span><span class="n">body</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+<p><strong><code>services/pagatu-catalogo-ms/src/main/java/pe/edu/upeu/catalogo/service/ProductoService.java</code></strong> — agrega los dos métodos, junto a <code>eliminar</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="nd">@Transactional</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">descontarStock</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">Integer</span><span class="w"> </span><span class="n">cantidad</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Producto</span><span class="w"> </span><span class="n">producto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">buscarOFallar</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">producto</span><span class="p">.</span><span class="na">getStock</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">cantidad</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">StockInsuficienteException</span><span class="p">(</span><span class="s">"Stock insuficiente para el producto: "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">id</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">producto</span><span class="p">.</span><span class="na">setStock</span><span class="p">(</span><span class="n">producto</span><span class="p">.</span><span class="na">getStock</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">cantidad</span><span class="p">);</span>
+<span class="w">        </span><span class="n">productoRepository</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">producto</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nd">@Transactional</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">restaurarStock</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">Integer</span><span class="w"> </span><span class="n">cantidad</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Producto</span><span class="w"> </span><span class="n">producto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">buscarOFallar</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+<span class="w">        </span><span class="n">producto</span><span class="p">.</span><span class="na">setStock</span><span class="p">(</span><span class="n">producto</span><span class="p">.</span><span class="na">getStock</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">cantidad</span><span class="p">);</span>
+<span class="w">        </span><span class="n">productoRepository</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">producto</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+<p>Agrega los imports que faltan:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.transaction.annotation.Transactional</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.catalogo.exception.StockInsuficienteException</span><span class="p">;</span>
+</code></pre></div>
+<p>Ningún otro método de esta clase lleva <code>@Transactional</code> explícito hasta hoy — se agrega aquí a propósito: leer el stock, compararlo y guardarlo son tres pasos separados, y sin una transacción explícita que los agrupe, dos peticiones casi simultáneas podrían leer el mismo stock antes de que ninguna guarde, perdiendo un descuento (el mismo tipo de condición de carrera que 2.3 ya resolvió del lado de <code>pagatu-pago-ms</code>, aquí aplicado a una resta en vez de a un <code>INSERT</code>).</p>
+<p><strong><code>services/pagatu-catalogo-ms/src/main/java/pe/edu/upeu/catalogo/controller/ProductoController.java</code></strong> — agrega los dos endpoints:</p>
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="nd">@PatchMapping</span><span class="p">(</span><span class="s">"/{id}/descontar-stock"</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">descontarStock</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="nd">@RequestParam</span><span class="w"> </span><span class="n">Integer</span><span class="w"> </span><span class="n">cantidad</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">productoService</span><span class="p">.</span><span class="na">descontarStock</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">cantidad</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nd">@PatchMapping</span><span class="p">(</span><span class="s">"/{id}/restaurar-stock"</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">restaurarStock</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="nd">@RequestParam</span><span class="w"> </span><span class="n">Integer</span><span class="w"> </span><span class="n">cantidad</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">productoService</span><span class="p">.</span><span class="na">restaurarStock</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">cantidad</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+<p><strong>Error frecuente</strong>: olvidar <code>@Transactional</code> y dejar que <code>descontarStock</code> haga su lectura y su escritura en dos transacciones separadas (una por cada llamada al repositorio). Con stock bajo y dos pedidos casi simultáneos del mismo producto, ambos podrían leer el mismo valor antes de que ninguno descuente — el stock terminaría descontado una sola vez en vez de dos, vendiendo más de lo que existía.</p>
+<h4 id="311-reservar-stock-al-crear-la-orden-en-pagatu-orden-ms">3.11 Reservar stock al crear la orden en <code>pagatu-orden-ms</code><a class="headerlink" href="#311-reservar-stock-al-crear-la-orden-en-pagatu-orden-ms" title="Permanent link">&para;</a></h4>
+<p><strong>Producto del paso:</strong> <code>crear()</code> descuenta el stock real de cada línea válida, no solo consulta su precio y su nombre.</p>
+<p><strong><code>services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/client/ProductoClient.java</code></strong> — agrega los dos métodos:</p>
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="nd">@PatchMapping</span><span class="p">(</span><span class="s">"/api/v1/productos/{id}/descontar-stock"</span><span class="p">)</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">descontarStock</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="p">(</span><span class="s">"id"</span><span class="p">)</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="nd">@RequestParam</span><span class="p">(</span><span class="s">"cantidad"</span><span class="p">)</span><span class="w"> </span><span class="n">Integer</span><span class="w"> </span><span class="n">cantidad</span><span class="p">);</span>
+
+<span class="w">    </span><span class="nd">@PatchMapping</span><span class="p">(</span><span class="s">"/api/v1/productos/{id}/restaurar-stock"</span><span class="p">)</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">restaurarStock</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="p">(</span><span class="s">"id"</span><span class="p">)</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="nd">@RequestParam</span><span class="p">(</span><span class="s">"cantidad"</span><span class="p">)</span><span class="w"> </span><span class="n">Integer</span><span class="w"> </span><span class="n">cantidad</span><span class="p">);</span>
+</code></pre></div>
+<p>Agrega los imports (<code>PatchMapping</code>, <code>RequestParam</code>) junto a los que ya existen.</p>
+<p><strong><code>ProductoConsultaService.java</code></strong> — agrega los dos métodos, con el mismo Circuit Breaker nombrado <code>catalogo</code> que ya protege <code>consultarProducto</code> (S6, 3.16-3.17):</p>
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="nd">@CircuitBreaker</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"catalogo"</span><span class="p">,</span><span class="w"> </span><span class="n">fallbackMethod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"fallbackDescontarStock"</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">descontarStock</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">idProducto</span><span class="p">,</span><span class="w"> </span><span class="n">Integer</span><span class="w"> </span><span class="n">cantidad</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">productoClient</span><span class="p">.</span><span class="na">descontarStock</span><span class="p">(</span><span class="n">idProducto</span><span class="p">,</span><span class="w"> </span><span class="n">cantidad</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">fallbackDescontarStock</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">idProducto</span><span class="p">,</span><span class="w"> </span><span class="n">Integer</span><span class="w"> </span><span class="n">cantidad</span><span class="p">,</span><span class="w"> </span><span class="n">Throwable</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">log</span><span class="p">.</span><span class="na">warn</span><span class="p">(</span><span class="s">"[CATALOGO] No se pudo descontar stock de {}. Motivo: {}"</span><span class="p">,</span><span class="w"> </span><span class="n">idProducto</span><span class="p">,</span><span class="w"> </span><span class="n">ex</span><span class="p">.</span><span class="na">getMessage</span><span class="p">());</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+<p><code>descontarStock</code> devuelve <code>boolean</code> a propósito, no lanza la excepción hacia arriba: la razón por la que falló (catálogo caído, circuito abierto, o <code>409</code> por stock insuficiente) no le importa a <code>OrdenServiceImpl</code> — lo único que necesita saber es si la línea quedó reservada o no, el mismo criterio binario que ya usa con <code>producto == null</code> (S6, 3.13).</p>
+<p><strong><code>OrdenServiceImpl.java</code></strong> — dentro del bucle de <code>crear()</code>, agrega la reserva justo después de la consulta exitosa:</p>
+<div class="highlight"><pre><span></span><code><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">DetalleOrdenRequest</span><span class="w"> </span><span class="n">item</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">getDetalles</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">ProductoDto</span><span class="w"> </span><span class="n">producto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">productoConsultaService</span><span class="p">.</span><span class="na">consultarProducto</span><span class="p">(</span><span class="n">item</span><span class="p">.</span><span class="na">getIdProducto</span><span class="p">());</span>
+<span class="w">            </span><span class="kt">boolean</span><span class="w"> </span><span class="n">stockReservado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">producto</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">                    </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">productoConsultaService</span><span class="p">.</span><span class="na">descontarStock</span><span class="p">(</span><span class="n">item</span><span class="p">.</span><span class="na">getIdProducto</span><span class="p">(),</span><span class="w"> </span><span class="n">item</span><span class="p">.</span><span class="na">getCantidad</span><span class="p">());</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">stockReservado</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">validacionCompleta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
+<span class="w">                </span><span class="n">detalles</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">OrdenDetalle</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">                        </span><span class="p">.</span><span class="na">orden</span><span class="p">(</span><span class="n">orden</span><span class="p">)</span>
+<span class="w">                        </span><span class="p">.</span><span class="na">idProducto</span><span class="p">(</span><span class="n">item</span><span class="p">.</span><span class="na">getIdProducto</span><span class="p">())</span>
+<span class="w">                        </span><span class="p">.</span><span class="na">nombreProducto</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span>
+<span class="w">                        </span><span class="p">.</span><span class="na">cantidad</span><span class="p">(</span><span class="n">item</span><span class="p">.</span><span class="na">getCantidad</span><span class="p">())</span>
+<span class="w">                        </span><span class="p">.</span><span class="na">precioUnitario</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span>
+<span class="w">                        </span><span class="p">.</span><span class="na">build</span><span class="p">());</span>
+<span class="w">                </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
+
+<span class="w">            </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">subtotal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">producto</span><span class="p">.</span><span class="na">getPrecio</span><span class="p">()</span>
+<span class="w">                    </span><span class="p">.</span><span class="na">multiply</span><span class="p">(</span><span class="n">BigDecimal</span><span class="p">.</span><span class="na">valueOf</span><span class="p">(</span><span class="n">item</span><span class="p">.</span><span class="na">getCantidad</span><span class="p">()));</span>
+<span class="w">            </span><span class="n">total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">total</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">subtotal</span><span class="p">);</span>
+
+<span class="w">            </span><span class="n">detalles</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">OrdenDetalle</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">                    </span><span class="p">.</span><span class="na">orden</span><span class="p">(</span><span class="n">orden</span><span class="p">)</span>
+<span class="w">                    </span><span class="p">.</span><span class="na">idProducto</span><span class="p">(</span><span class="n">item</span><span class="p">.</span><span class="na">getIdProducto</span><span class="p">())</span>
+<span class="w">                    </span><span class="p">.</span><span class="na">nombreProducto</span><span class="p">(</span><span class="n">producto</span><span class="p">.</span><span class="na">getNombre</span><span class="p">())</span>
+<span class="w">                    </span><span class="p">.</span><span class="na">cantidad</span><span class="p">(</span><span class="n">item</span><span class="p">.</span><span class="na">getCantidad</span><span class="p">())</span>
+<span class="w">                    </span><span class="p">.</span><span class="na">precioUnitario</span><span class="p">(</span><span class="n">producto</span><span class="p">.</span><span class="na">getPrecio</span><span class="p">())</span>
+<span class="w">                    </span><span class="p">.</span><span class="na">build</span><span class="p">());</span>
+<span class="w">        </span><span class="p">}</span>
+</code></pre></div>
+<p>Una orden con un producto sin stock suficiente sigue el mismo camino que una con un producto inexistente (S6): queda en <code>CARRITO</code>, no en <code>PENDIENTE_PAGO</code> — y las líneas que <strong>sí</strong> alcanzaron a reservar stock antes de que una fallara <strong>se quedan reservadas</strong>, sin devolverse. Esta sesión no corrige eso (sería compensar dentro de la propia transacción local de <code>crear()</code>, un caso distinto al de la Saga completa) — anótalo como limitación conocida, igual que la de 3.12.</p>
+<h4 id="312-restaurar-el-stock-al-compensar">3.12 Restaurar el stock al compensar<a class="headerlink" href="#312-restaurar-el-stock-al-compensar" title="Permanent link">&para;</a></h4>
+<p><strong>Producto del paso:</strong> <code>compensar()</code> devuelve el stock de cada línea de la orden, antes de marcarla <code>CANCELADA</code>.</p>
+<p><strong><code>OrdenServiceImpl.java</code></strong> — reemplaza el método <code>compensar</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="nd">@Transactional</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">compensar</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">ordenId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Orden</span><span class="w"> </span><span class="n">orden</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ordenRepository</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">ordenId</span><span class="p">).</span><span class="na">orElse</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">orden</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">orden</span><span class="p">.</span><span class="na">getEstado</span><span class="p">()</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">EstadoOrden</span><span class="p">.</span><span class="na">PENDIENTE_PAGO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">log</span><span class="p">.</span><span class="na">warn</span><span class="p">(</span><span class="s">"component=processor ordenId={} status=ignored motivo=\"la orden no existe o ya no esta pendiente de pago\""</span><span class="p">,</span><span class="w"> </span><span class="n">ordenId</span><span class="p">);</span>
+<span class="w">            </span><span class="k">return</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">OrdenDetalle</span><span class="w"> </span><span class="n">detalle</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">orden</span><span class="p">.</span><span class="na">getDetalles</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">productoConsultaService</span><span class="p">.</span><span class="na">restaurarStock</span><span class="p">(</span><span class="n">detalle</span><span class="p">.</span><span class="na">getIdProducto</span><span class="p">(),</span><span class="w"> </span><span class="n">detalle</span><span class="p">.</span><span class="na">getCantidad</span><span class="p">());</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">orden</span><span class="p">.</span><span class="na">setEstado</span><span class="p">(</span><span class="n">EstadoOrden</span><span class="p">.</span><span class="na">CANCELADA</span><span class="p">);</span>
+<span class="w">        </span><span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">"component=processor ordenId={} estado={} status=compensated"</span><span class="p">,</span><span class="w"> </span><span class="n">ordenId</span><span class="p">,</span><span class="w"> </span><span class="n">orden</span><span class="p">.</span><span class="na">getEstado</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+<p><strong><code>ProductoConsultaService.java</code></strong> — agrega el método:</p>
+<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="nd">@CircuitBreaker</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"catalogo"</span><span class="p">,</span><span class="w"> </span><span class="n">fallbackMethod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"fallbackRestaurarStock"</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">restaurarStock</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">idProducto</span><span class="p">,</span><span class="w"> </span><span class="n">Integer</span><span class="w"> </span><span class="n">cantidad</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">productoClient</span><span class="p">.</span><span class="na">restaurarStock</span><span class="p">(</span><span class="n">idProducto</span><span class="p">,</span><span class="w"> </span><span class="n">cantidad</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">fallbackRestaurarStock</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">idProducto</span><span class="p">,</span><span class="w"> </span><span class="n">Integer</span><span class="w"> </span><span class="n">cantidad</span><span class="p">,</span><span class="w"> </span><span class="n">Throwable</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">log</span><span class="p">.</span><span class="na">error</span><span class="p">(</span><span class="s">"[CATALOGO] No se pudo restaurar stock de {} al compensar. Motivo: {} — requiere correccion manual"</span><span class="p">,</span>
+<span class="w">                </span><span class="n">idProducto</span><span class="p">,</span><span class="w"> </span><span class="n">ex</span><span class="p">.</span><span class="na">getMessage</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+<p>El <em>fallback</em> de <code>restaurarStock</code> <strong>no</strong> relanza la excepción — a propósito (Tabla 4, fila 2): si <code>pagatu-catalogo-ms</code> está caído justo cuando se compensa una orden, <code>compensar()</code> sigue adelante y la orden queda <code>CANCELADA</code> igual, con el stock desincronizado hasta que alguien lo corrija a mano. La alternativa (detener la compensación si el stock no se pudo restaurar) dejaría la orden en un limbo peor: ni pagada, ni compensada, con un pago ya marcado <code>FALLIDO</code> del otro lado. Esta sesión elige la compensación de estado como la garantía mínima no negociable, y el stock como un efecto secundario que puede quedar pendiente de reconciliar — una decisión de diseño real, no un descuido.</p>
+<p><strong>Error frecuente</strong>: devolver stock de una línea que <strong>nunca llegó a reservarse</strong> (una de las que quedó con <code>nombreProducto: null</code> en 3.11, por no haber alcanzado stock o no existir). Recorrer <code>orden.getDetalles()</code> sin distinguir unas de otras en 3.12 restauraría stock de más. Esta sesión no construye esa distinción (ninguna orden que llega a <code>compensar()</code> tiene líneas inválidas, porque solo las <code>PENDIENTE_PAGO</code> llegan ahí, y esas ya pasaron la validación completa de 3.11) — pero vale la pena tenerlo presente si tu actividad autónoma (4.1) reutiliza este patrón sobre un proceso que sí mezcla líneas válidas e inválidas en el mismo registro.</p>
+<h4 id="313-probar-el-flujo-de-stock-de-punta-a-punta">3.13 Probar el flujo de stock de punta a punta<a class="headerlink" href="#313-probar-el-flujo-de-stock-de-punta-a-punta" title="Permanent link">&para;</a></h4>
+<p><strong>Producto del paso:</strong> evidencia de que el stock baja al crear una orden exitosa, y vuelve a subir cuando esa orden se compensa.</p>
+<p>Reinicia <code>pagatu-catalogo-ms</code> y <code>pagatu-orden-ms</code>. Consulta el stock de un producto real:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18080/api/v1/productos/1"</span> <span class="p">|</span> <span class="nb">Select-Object</span> <span class="n">stock</span>
+</code></pre></div>
+<p>Crea una orden con <code>metodoPago: "TARJETA_RECHAZADA"</code> sobre ese mismo producto (3.7) y vuelve a consultar su stock: debe haber bajado exactamente la cantidad pedida. Espera a que la compensación de 3.7 corra (o repítela si ya consumiste ese evento) y consulta el stock una tercera vez: debe haber vuelto a su valor original.</p>
+<p><strong>Tabla 5. Stock esperado en cada punto de la prueba</strong></p>
+<table>
+<thead>
+<tr>
+<th>Momento</th>
+<th>Stock del producto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Antes de crear la orden</td>
+<td>El valor real de tu catálogo (ej. <code>50</code>)</td>
+</tr>
+<tr>
+<td>Justo después de <code>POST /api/v1/ordenes</code> (<code>TARJETA_RECHAZADA</code>)</td>
+<td>Baja en la cantidad pedida (ej. <code>48</code>, si pediste <code>2</code>)</td>
+</tr>
+<tr>
+<td>Después de que <code>pagatu-orden-ms</code> consume <code>pago.fallido</code> y compensa</td>
+<td>Vuelve al valor original (ej. <code>50</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>Repite la misma prueba con un <code>metodoPago</code> normal (sin rechazo): el stock debe bajar y <strong>quedarse</strong> bajo — una orden <code>PAGADA</code> nunca devuelve stock, solo una <code>CANCELADA</code> lo hace.</p>
 <h2 id="4-crea-actividad-autonoma">4. Crea: actividad autónoma<a class="headerlink" href="#4-crea-actividad-autonoma" title="Permanent link">&para;</a></h2>
 <p>Tiempo: 4h fuera del aula.</p>
 <h3 id="41-actividad">4.1 Actividad<a class="headerlink" href="#41-actividad" title="Permanent link">&para;</a></h3>
@@ -2776,7 +3080,7 @@
 <li>Identifica, en tu propio proyecto, un proceso que cruce dos servicios por eventos (si todavía no tienes uno, replica el patrón de <code>pagatu</code> sobre tu propio dominio: una operación que un servicio registra y otro confirma o rechaza).</li>
 <li>Agrega idempotencia al consumidor que procesa el primer evento: una revisión explícita antes de actuar, respaldada por una restricción <code>UNIQUE</code> real en tu base de datos (no solo en memoria).</li>
 <li>Diseña al menos una condición de fallo real para ese proceso (no necesita ser un pago) y un evento de compensación propio, con su propio <code>tipoEvento</code>.</li>
-<li>Implementa la compensación en el servicio que inició el proceso, con la misma guardia de idempotencia que ya usa su confirmación exitosa.</li>
+<li>Implementa la compensación en el servicio que inició el proceso, con la misma guardia de idempotencia que ya usa su confirmación exitosa. Si tu proceso reserva algún recurso al confirmarse (stock, cupo, saldo...), la compensación debe liberarlo — mismo patrón que el stock del ejercicio opcional (3.10-3.12), si lo completaste.</li>
 <li>Prueba los tres casos con evidencia real: evento duplicado ignorado, camino de fallo con compensación aplicada, y la compensación misma probada contra un duplicado.</li>
 <li>Documenta el diagrama de estados completo de tu entidad, con sus transiciones y su compensación (mismo formato de la Figura 3).</li>
 </ol>
@@ -2817,6 +3121,7 @@
 </ul>
 </li>
 </ol>
+<p><strong>Bono opcional (Parte E, no obligatorio):</strong> si completaste 3.10-3.13, agrega la Tabla 5 reproducida con capturas reales — stock antes de crear, justo después (bajó), y después de la compensación (volvió a su valor original).</p>
 <p><strong>Error o hallazgo</strong></p>
 <p>Describe un error real: un <code>case</code> del <code>switch</code> de 3.6 que no compiló porque la constante no era <code>final</code>, un log que mostraba <code>status=ignored</code> por el motivo equivocado (revisaste la condición y no la excepción, o al revés), o una condición de fallo propia que terminó compensando una orden que no debía.</p>
 <p><strong>Reflexión técnica breve</strong></p>
@@ -2870,9 +3175,10 @@ el caso de Knight Capital (1.6).
 <li>¿Por qué <code>compensar</code> no borra la orden ni la deja en <code>PENDIENTE_PAGO</code>, sino que la pasa a un estado nuevo (<code>CANCELADA</code>)?</li>
 <li><code>metodoPago: "TARJETA_RECHAZADA"</code> es un valor inventado para esta sesión. ¿Qué tendría que cambiar para que la decisión de rechazar un pago viniera de una pasarela real, y por qué esa decisión nunca debería depender de un valor que el propio cliente declara?</li>
 <li>En tu actividad autónoma, ¿qué pasaría si tu compensación no tuviera la misma guardia de idempotencia que su contraparte exitosa?</li>
+<li>(Si hiciste el ejercicio opcional de la Parte E) <code>restaurarStock</code> (3.12) no relanza la excepción si <code>pagatu-catalogo-ms</code> está caído — la orden queda <code>CANCELADA</code> igual, con el stock desincronizado. ¿Por qué esta sesión elige esa opción en vez de dejar la orden sin compensar hasta que el stock se pueda restaurar?</li>
 </ol>
 <h3 id="46-rubrica-de-evaluacion">4.6 Rúbrica de evaluación<a class="headerlink" href="#46-rubrica-de-evaluacion" title="Permanent link">&para;</a></h3>
-<p><strong>Tabla 5. Rúbrica de evaluación</strong></p>
+<p><strong>Tabla 6. Rúbrica de evaluación</strong></p>
 <table>
 <thead>
 <tr>
@@ -2953,18 +3259,19 @@ el caso de Knight Capital (1.6).
 </table>
 <p>Puntuación acumulada = suma de (<code>Peso</code> × <code>Puntuación obtenida</code>) = ____.</p>
 <p>Nota final = (<code>Puntuación acumulada</code> / 33) × 20 = ____.</p>
+<p><strong>Bono opcional (no entra en los 33 puntos base):</strong> +2 si completaste la Parte E (3.10-3.13) con evidencia real de los tres momentos de la Tabla 5 (stock antes, durante y después de compensar). Súmalo <strong>después</strong> de calcular la nota sobre 20 — no reemplaza ningún criterio base, y nadie que lo omita queda en desventaja frente a la rúbrica principal.</p>
 <p>Para usar la rúbrica con IA (inteligencia artificial), solicita:</p>
 <div class="highlight"><pre><span></span><code>Evalúa el PDF usando la rúbrica de la sesión.
 Para cada dimensión selecciona la puntuación obtenida usando la escala Inicio=0, Proceso=1, Logro=2, Logro destacado=3.
 Justifica brevemente cada puntuación.
 Verifica que cada captura muestre reloj del sistema y usuario/perfil visible, y que las fechas sean coherentes con el historial de commits de GitHub. Si falta esta evidencia o hay inconsistencias, indícalo explícitamente antes de calificar.
 Calcula la puntuación acumulada con la fórmula: suma de (Peso × Puntuación obtenida).
-Calcula la nota final sobre 20 con la fórmula: (Puntuación acumulada / 33) × 20.
+Calcula la nota final sobre 20 con la fórmula: (Puntuación acumulada / 33) × 20. Si hay evidencia real de la Parte E (stock, opcional), suma +2 como bono después de ese cálculo.
 Indica 2 fortalezas y 2 recomendaciones.
 </code></pre></div>
 <h2 id="5-cierre">5. Cierre<a class="headerlink" href="#5-cierre" title="Permanent link">&para;</a></h2>
 <p>Tiempo: 5 min.</p>
-<p><strong>Resumen breve:</strong> hoy <code>pagatu-pago-ms</code> dejó de romperse ante un mensaje repetido — primero viste el bug real (una excepción contra su propia restricción <code>UNIQUE</code>), y después lo cerraste con dos capas de idempotencia. La pasarela de pagos simulada desde S7 dejó de validar todo siempre: <code>metodoPago: "TARJETA_RECHAZADA"</code> dispara <code>pago.fallido</code>, y <code>pagatu-orden-ms</code> lo consume para <strong>compensar</strong> la orden (<code>PENDIENTE_PAGO → CANCELADA</code>), reutilizando un estado que llevaba reservado desde S6. Y esa misma compensación resultó ser, sin escribir nada nuevo, tan idempotente como <code>marcarPagada</code> ya lo era desde S8 — porque las dos comparten la misma guardia. El patrón completo, sin que nadie lo coordinara desde un solo lugar, es una <strong>Saga coreografiada</strong>.</p>
+<p><strong>Resumen breve:</strong> hoy <code>pagatu-pago-ms</code> dejó de romperse ante un mensaje repetido — primero viste el bug real (una excepción contra su propia restricción <code>UNIQUE</code>), y después lo cerraste con dos capas de idempotencia. La pasarela de pagos simulada desde S7 dejó de validar todo siempre: <code>metodoPago: "TARJETA_RECHAZADA"</code> dispara <code>pago.fallido</code>, y <code>pagatu-orden-ms</code> lo consume para <strong>compensar</strong> la orden (<code>PENDIENTE_PAGO → CANCELADA</code>), reutilizando un estado que llevaba reservado desde S6. Esa misma compensación resultó ser, sin escribir nada nuevo, tan idempotente como <code>marcarPagada</code> ya lo era desde S8 — porque las dos comparten la misma guardia. El patrón completo, sin que nadie lo coordinara desde un solo lugar, es una <strong>Saga coreografiada</strong>. Quien completó el ejercicio opcional (Parte E) llevó esa compensación un paso más allá: no solo cambia el estado, también devuelve el stock real reservado al crear la orden — cerrando una brecha que S6 había dejado documentada y sin construir.</p>
 <p><strong>Dinámica participativa:</strong> en una ronda rápida, cada estudiante comparte en una frase qué excepción vio exactamente en 3.2, y qué le decía sobre lo que estaba mal.</p>
 <p><strong>Metacognición:</strong> ¿qué te costó más entender hoy: por qué Kafka puede entregar el mismo mensaje dos veces sin que eso sea un error de Kafka, o por qué <code>compensar</code> necesita la misma guardia que <code>marcarPagada</code> en vez de una propia?</p>
 <p><strong>Proyección:</strong> S10 extiende Prometheus, Loki y Grafana (ya en pie desde S3-S4 para <code>pagatu-catalogo-ms</code>) a <code>pagatu-auth-ms</code>, <code>pagatu-cliente-ms</code>, <code>pagatu-orden-ms</code> y <code>pagatu-pago-ms</code> — con paneles de diagnóstico sobre el mismo flujo de hoy: cuántas órdenes se compensaron, cuántos duplicados se ignoraron, y dónde se detiene un flujo que no llega a su final esperado.</p>
