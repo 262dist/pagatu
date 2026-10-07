@@ -2851,7 +2851,19 @@
 <p><code>EstadoOrden.CANCELADA</code> ya existía desde S6 (nunca se había usado): no hace falta ninguna migración de base de datos para esta sesión, solo darle, por fin, un camino real que lo alcance. <code>compensar</code> comparte la misma guardia de idempotencia de <code>marcarPagada</code> (2.5): solo actúa si la orden sigue <code>PENDIENTE_PAGO</code>.</p>
 <h4 id="37-probar-el-fallo-de-pago-de-punta-a-punta">3.7 Probar el fallo de pago de punta a punta<a class="headerlink" href="#37-probar-el-fallo-de-pago-de-punta-a-punta" title="Permanent link">&para;</a></h4>
 <p><strong>Producto del paso:</strong> una orden que pasa de <code>PENDIENTE_PAGO</code> a <code>CANCELADA</code> por eventos, con la evidencia en cada punto.</p>
-<p>Reinicia <code>pagatu-pago-ms</code> y <code>pagatu-orden-ms</code>. Crea una orden con <code>metodoPago: "TARJETA_RECHAZADA"</code>:</p>
+<p>Reinicia <code>pagatu-pago-ms</code> y <code>pagatu-orden-ms</code>. El token de <code>CLIENTE</code> de 3.1 dura 1 hora en DEV (<code>jwt.expiracion-segundos</code>); si ya pasó ese tiempo desde que lo obtuviste, vuelve a loguearte antes de seguir:</p>
+<p>PowerShell:</p>
+<div class="highlight"><pre><span></span><code><span class="nv">$login</span> <span class="p">=</span> <span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Post</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18080/api/v1/auth/login"</span> <span class="p">`</span>
+  <span class="n">-ContentType</span> <span class="s2">"application/json"</span> <span class="p">`</span>
+  <span class="n">-Body</span> <span class="s1">'{"email": "cliente@pagatu.com", "password": "cliente123"}'</span>
+<span class="nv">$tokenCliente</span> <span class="p">=</span> <span class="nv">$login</span><span class="p">.</span><span class="n">access_token</span>
+</code></pre></div>
+<p>bash macOS/Linux (requiere <code>jq</code>):</p>
+<div class="highlight"><pre><span></span><code><span class="nv">TOKEN_CLIENTE</span><span class="o">=</span><span class="k">$(</span>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:18080/api/v1/auth/login<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"email": "cliente@pagatu.com", "password": "cliente123"}'</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">'.access_token'</span><span class="k">)</span>
+</code></pre></div>
+<p>Crea una orden con <code>metodoPago: "TARJETA_RECHAZADA"</code>:</p>
 <p>PowerShell:</p>
 <div class="highlight"><pre><span></span><code><span class="nv">$ordenRechazada</span> <span class="p">=</span> <span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Post</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18080/api/v1/ordenes"</span> <span class="p">`</span>
   <span class="n">-Headers</span> <span class="p">@{</span> <span class="n">Authorization</span> <span class="p">=</span> <span class="s2">"Bearer $tokenCliente"</span> <span class="p">}</span> <span class="p">`</span>
