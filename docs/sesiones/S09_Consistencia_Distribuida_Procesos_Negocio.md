@@ -688,6 +688,17 @@ Ningún otro método de esta clase lleva `@Transactional` explícito hasta hoy �
 
 **Producto del paso:** `crear()` descuenta el stock real de cada línea válida, no solo consulta su precio y su nombre.
 
+En `services/pagatu-orden-ms/pom.xml`, agrega un cliente HTTP real para Feign:
+
+```xml
+<dependency>
+    <groupId>io.github.openfeign</groupId>
+    <artifactId>feign-hc5</artifactId>
+</dependency>
+```
+
+Spring Cloud OpenFeign lo detecta solo en el classpath (no hace falta ninguna propiedad en el YAML). Sin esto, Feign usa por defecto el `HttpURLConnection` del propio JDK, que **no soporta el método PATCH** que vas a agregar a continuación.
+
 **`services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/client/ProductoClient.java`** — agrega los dos métodos:
 
 ```java
@@ -699,6 +710,8 @@ Ningún otro método de esta clase lleva `@Transactional` explícito hasta hoy �
 ```
 
 Agrega los imports (`PatchMapping`, `RequestParam`) junto a los que ya existen.
+
+**Error frecuente**: `[CATALOGO] No se pudo descontar stock de ... Motivo: Invalid HTTP method: PATCH` en el log de `pagatu-orden-ms`, y la orden termina en `CARRITO` en vez de `PENDIENTE_PAGO` — el Circuit Breaker activó el *fallback* de `descontarStock` (abajo) porque el cliente HTTP por defecto de Feign (`HttpURLConnection`) rechaza el método PATCH; es una limitación del propio JDK, no de tu código. La causa casi siempre es haber saltado la dependencia `feign-hc5` de arriba, o no haber vuelto a empaquetar después de agregarla (`.\mvnw.cmd clean package -DskipTests`).
 
 **`ProductoConsultaService.java`** — agrega los dos métodos, con el mismo Circuit Breaker nombrado `catalogo` que ya protege `consultarProducto` (S6, 3.16-3.17):
 

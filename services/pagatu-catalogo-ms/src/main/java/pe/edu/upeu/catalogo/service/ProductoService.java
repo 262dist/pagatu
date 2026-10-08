@@ -10,6 +10,8 @@ import pe.edu.upeu.catalogo.repository.CategoriaRepository;
 import pe.edu.upeu.catalogo.repository.ProductoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import pe.edu.upeu.catalogo.exception.StockInsuficienteException;
 
 import java.util.List;
 
@@ -61,4 +63,23 @@ public class ProductoService {
         return categoriaRepository.findById(categoriaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Categoria no encontrada: " + categoriaId));
     }
+    
+    @Transactional
+    public void descontarStock(Long id, Integer cantidad) {
+        Producto producto = buscarOFallar(id);
+        if (producto.getStock() < cantidad) {
+            throw new StockInsuficienteException("Stock insuficiente para el producto: " + id);
+        }
+        producto.setStock(producto.getStock() - cantidad);
+        productoRepository.save(producto);
+    }
+
+    @Transactional
+    public void restaurarStock(Long id, Integer cantidad) {
+        Producto producto = buscarOFallar(id);
+        producto.setStock(producto.getStock() + cantidad);
+        productoRepository.save(producto);
+    }
+
+
 }
