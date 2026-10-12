@@ -20,3 +20,15 @@ scrape_configs:
         labels:
           application: pagatu-orden-ms
           __path__: /var/log/pagatu-orden-ms/*.log
+  - job_name: pagatu-auth-ms
+    static_configs:
+      - targets: [localhost]
+        labels:
+          application: pagatu-auth-ms
+          __path__: /var/log/pagatu-auth-ms/*.log
+  - job_name: pagatu-pago-ms
+    static_configs:
+      - targets: [localhost]
+        labels:
+          application: pagatu-pago-ms
+          __path__: /var/log/pagatu-pago-ms/*.log

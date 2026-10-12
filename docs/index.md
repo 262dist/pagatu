@@ -47,7 +47,7 @@ Resultado esperado U2: el estudiante implementa comunicación síncrona resilien
 | S8 | Mensajería asíncrona entre servicios. | `orden-ms` → `pago-ms` (nuevo) | `orden-ms` publica `orden.creada` (topic `orden-eventos`); `pago-ms` lo consume y publica `pago.validado` (topic `pago-eventos`); `orden-ms` consume `pago-eventos` y pasa la orden a `PAGADA`. |
 | S9 | Consistencia distribuida en procesos de negocio. | `orden-ms`, `pago-ms` | Idempotencia, compensación, manejo de eventos duplicados. Si el pago falla, `pago-ms` publica `pago.fallido` en `pago-eventos` y `orden-ms` lo consume para compensar la orden ya confirmada. |
 | S10 | Observabilidad y diagnóstico de sistemas distribuidos. | todos | Extiende Prometheus/Loki/Grafana (ya en pie desde S3-S4) a `auth-ms`, `cliente-ms`, `orden-ms` y `pago-ms`; agrega paneles de diagnóstico y alertas sobre todo el sistema, no solo `catalogo-ms`. |
-| S11 | Integración con cliente frontend. | Angular 22 | Cliente consumiendo por Gateway: catálogo, crear orden, ver pago. |
+| S11 | Integración con cliente frontend. | Angular 22, Keycloak (reemplaza `auth-ms`) | Cliente consumiendo por Gateway (catálogo, crear orden, ver pago) con login real `Authorization Code` + PKCE contra Keycloak; "Mis pedidos" refleja la consistencia eventual real (`PENDIENTE_PAGO` → `PAGADA`/`CANCELADA`) con *polling*, sin recargar la página. |
 | S12 | Integración del sistema distribuido robusto: comunicación resiliente, seguridad, mensajería, consistencia eventual, observabilidad e integración frontend. | — | Sustentación del sistema robusto. |
 
 ### U3: Validación y consolidación del producto del curso

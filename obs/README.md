@@ -54,12 +54,12 @@ pagatu-grafana-dev
   `compose-dev.yml`. **No** hay descubrimiento automático — agregar un
   microservicio nuevo requiere una entrada nueva en ambos archivos.
 
-  **Estado actual:** solo `pagatu-catalogo-ms` y `pagatu-orden-ms` están
-  cableados. `pagatu-auth-ms` (S7), `pagatu-cliente-ms` y `pagatu-pago-ms`
-  (S8) **no** aparecen en Loki/Grafana todavía — quedó pendiente desde antes
-  de esta sesión. Para agregarlos: un volumen más en `pagatu-promtail`
-  (`compose-dev.yml`) y un `job_name` más en `promtail-config-dev.yml`, con
-  el mismo patrón que los dos que ya existen.
+  **Estado actual (S10):** los cuatro microservicios reales (`pagatu-auth-ms`,
+  `pagatu-catalogo-ms`, `pagatu-orden-ms`, `pagatu-pago-ms`) ya están
+  cableados. `pagatu-cliente-ms` no existe todavía como servicio — cuando se
+  cree, sigue el mismo patrón: un volumen más en `pagatu-promtail`
+  (`compose-dev.yml`/`compose.yml`) y un `job_name` más en
+  `promtail-config-dev.yml`/`promtail-config.yml`.
 
 ## Verificar
 
