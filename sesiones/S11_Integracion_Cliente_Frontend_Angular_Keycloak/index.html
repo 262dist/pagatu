@@ -1,0 +1,2523 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://262dist.github.io/pagatu/sesiones/S11_Integracion_Cliente_Frontend_Angular_Keycloak/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+  
+    <title>Pagatu - S11 - Integración con Cliente Frontend: Angular 22 sobre el Gateway, con Keycloak</title>
+  
+
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#s11-integracion-con-cliente-frontend-angular-22-sobre-el-gateway-con-keycloak" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Pagatu" class="md-header__button md-logo" aria-label="Pagatu" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Pagatu
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              S11 - Integración con Cliente Frontend: Angular 22 sobre el Gateway, con Keycloak
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/262dist/pagatu" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    262dist/pagatu
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Pagatu" class="md-nav__button md-logo" aria-label="Pagatu" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Pagatu
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/262dist/pagatu" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    262dist/pagatu
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía de Proyecto Sello
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guía de Proyecto Sello
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía del proyecto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief técnico (plantilla)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/u1-producto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Producto U1 (plantilla-ejemplo)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/u2-producto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Producto U2 (plantilla-ejemplo)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/u3-producto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Producto U3 / Producto Final (plantilla-ejemplo)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/matriz-competencias/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Matriz de competencias (ICACIT)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/alcance-microservicios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Alcance por microservicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/acad/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sistema académico (referencia)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/produccion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sistema de producción y comercialización (referencia)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabos
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Silabos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabo 2026-1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabo 2026-2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I. Sistema distribuido base orientado a producción
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    I. Sistema distribuido base orientado a producción
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S01_Construccion_Servicio_Base/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S1 - Construcción de un servicio base para un sistema distribuido
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S02_Configuracion_Centralizada_Ambientes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S2 - Gestión centralizada de configuración y ambientes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S03_Registro_Descubrimiento_Ejecucion_Concurrente/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S3 - Registro, descubrimiento y ejecución concurrente de servicios
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S04_Punto_Unico_Acceso_Distribucion_Trafico/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S4 - Punto único de acceso y distribución de tráfico
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S05_Evaluacion_Unidad_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S5 - Evaluación de la Unidad I
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    II. Sistema distribuido robusto
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    II. Sistema distribuido robusto
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S06_Comunicacion_Sincrona_Resiliente/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S6 - Comunicación síncrona resiliente entre servicios
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S07_Seguridad_Distribuida_Control_Acceso/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S7 - Seguridad distribuida y control de acceso
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S08_Mensajeria_Asincrona_Entre_Servicios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S8 - Mensajería asíncrona entre servicios
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S09_Consistencia_Distribuida_Procesos_Negocio/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S9 - Consistencia distribuida en procesos de negocio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S10_Observabilidad_Diagnostico_Sistemas_Distribuidos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S10 - Observabilidad y diagnóstico de sistemas distribuidos
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S12_Evaluacion_Unidad_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S12 - Evaluación de la Unidad II
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    III. Validación y consolidación del producto del curso
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    III. Validación y consolidación del producto del curso
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S15_Evaluacion_Unidad_3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S15 - Evaluación de la Unidad III
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introducción
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introducción">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-presentacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Presentación de la sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-indice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Índice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-proposito-de-aprendizaje" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Propósito de aprendizaje
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-producto-de-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Producto de sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-metodologia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Metodología
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-motivacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6 Motivación de la sesión
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.6 Motivación de la sesión">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#161-caso-dos-pestanas-la-misma-tarjeta-y-una-condicion-de-carrera-que-starbucks-tardo-mas-de-un-mes-en-admitir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6.1 Caso: dos pestañas, la misma tarjeta, y una condición de carrera que Starbucks tardó más de un mes en admitir
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-ubicacion-en-el-curso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.7 Ubicación en el curso
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-explica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Explica
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Explica">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-arquitectura-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Arquitectura de la sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-ejecutar-la-tabla-6-de-s7-keycloak-reemplaza-a-pagatu-auth-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Ejecutar la Tabla 6 de S7: Keycloak reemplaza a pagatu-auth-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-idcliente-como-user-attribute-protocol-mapper" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 idCliente como user attribute + protocol mapper
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-cors-en-el-gateway-el-primer-cliente-que-llama-desde-un-origen-distinto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 CORS en el Gateway: el primer cliente que llama desde un origen distinto
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-arquitectura-minima-de-la-spa-y-login-con-pkce" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Arquitectura mínima de la SPA y login con PKCE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-consistencia-eventual-en-la-interfaz-de-pendiente-a-pagada-sin-recargar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6 Consistencia eventual en la interfaz: de "pendiente" a "pagada" sin recargar
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-aplica-actividad-practica-guiada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Aplica: actividad práctica guiada
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Aplica: actividad práctica guiada">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-verificar-el-punto-de-partida" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Verificar el punto de partida
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-levantar-keycloak-y-configurar-el-realm-pagatu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Levantar Keycloak y configurar el realm pagatu
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-migrar-el-gateway-y-pagatu-orden-ms-a-keycloak-y-retirar-pagatu-auth-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Migrar el Gateway y pagatu-orden-ms a Keycloak, y retirar pagatu-auth-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-habilitar-cors-en-el-gateway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Habilitar CORS en el Gateway
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-crear-el-proyecto-angular-22-y-su-arquitectura-minima" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Crear el proyecto Angular 22 y su arquitectura mínima
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-login-con-authorization-code-pkce" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 Login con Authorization Code + PKCE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-catalogo-de-productos-a-traves-del-gateway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7 Catálogo de productos, a través del Gateway
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#38-crear-una-orden" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.8 Crear una orden
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#39-agregar-la-consulta-de-pago-por-orden-en-pagatu-pago-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.9 Agregar la consulta de pago por orden en pagatu-pago-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#310-mis-pedidos-consistencia-eventual-con-polling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.10 "Mis pedidos": consistencia eventual con polling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#311-probar-de-punta-a-punta-incluido-un-pago-rechazado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.11 Probar de punta a punta, incluido un pago rechazado
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-crea-actividad-autonoma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Crea: actividad autónoma
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Crea: actividad autónoma">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-actividad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Actividad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Propósito
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-indicaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Indicaciones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3 Indicaciones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#431-estructura-del-informe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.1 Estructura del informe
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-criterios-minimos-de-aceptacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Criterios mínimos de aceptación
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-preguntas-de-defensa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 Preguntas de defensa
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-rubrica-de-evaluacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 Rúbrica de evaluación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-cierre" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Cierre
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bibliografia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bibliografía
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="s11-integracion-con-cliente-frontend-angular-22-sobre-el-gateway-con-keycloak">S11 - Integración con Cliente Frontend: Angular 22 sobre el Gateway, con Keycloak<a class="headerlink" href="#s11-integracion-con-cliente-frontend-angular-22-sobre-el-gateway-con-keycloak" title="Permanent link">&para;</a></h1>
+<p><em>Por: Angel Sullon Macalupu @asullom - 2026</em></p>
+<h2 id="1-introduccion">1. Introducción<a class="headerlink" href="#1-introduccion" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 20 min.</p>
+<h3 id="11-presentacion-de-la-sesion">1.1 Presentación de la sesión<a class="headerlink" href="#11-presentacion-de-la-sesion" title="Permanent link">&para;</a></h3>
+<p>S7 construyó <code>pagatu-auth-ms</code> <strong>a propósito como una pieza temporal</strong> — la Tabla 6 de esa sesión ya dejó escrito, celda por celda, qué reemplaza Keycloak y qué no cambia en el Gateway ni en <code>pagatu-orden-ms</code>; la Figura 6 de esa misma sesión ya dibujó el flujo <em>Authorization Code</em> + PKCE (<em>Proof Key for Code Exchange</em>) "del cliente Angular con Keycloak (S11)"; y 3.27 ya hizo, a mano, el cálculo de <code>code_challenge</code> que "reproduce el cálculo que hará el cliente Angular en S11". Ninguna de esas tres cosas era retórica: hoy se ejecutan. Esta sesión reemplaza <code>pagatu-auth-ms</code> por Keycloak siguiendo exactamente la Tabla 6, y construye el <strong>primer y único cliente frontend del curso</strong> — hasta hoy, <code>pagatu</code> solo se probó desde PowerShell, <code>curl</code> y Swagger.</p>
+<p>El reto real no es solo "hacer un login y mostrar una tabla": <code>pagatu-orden-ms</code> y <code>pagatu-pago-ms</code> se comunican de forma <strong>asíncrona</strong> desde S8 (mensajería con Kafka) y S9 (consistencia distribuida con el patrón Saga) — crear una orden no deja pagada la orden en la misma respuesta HTTP. El cliente Angular tiene que mostrarle a un usuario real una orden que queda <code>PENDIENTE_PAGO</code> al crearse, y que <strong>en algún momento posterior</strong>, sin que nadie recargue la página a mano, pasa a <code>PAGADA</code> o a <code>CANCELADA</code> — la consistencia eventual que S9 resolvió del lado del backend ahora tiene que resolverse también del lado de la interfaz.</p>
+<h3 id="12-indice">1.2 Índice<a class="headerlink" href="#12-indice" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Ejecutar la Tabla 6 de S7: Keycloak reemplaza a <code>pagatu-auth-ms</code>.</li>
+<li><code>idCliente</code> como <em>user attribute</em> + <em>protocol mapper</em> — la diferencia real frente a un <code>sub</code> que ya alcanza por sí solo.</li>
+<li>CORS en el Gateway: el primer cliente que llama desde un origen distinto.</li>
+<li>Arquitectura mínima de la SPA y login con <em>Authorization Code</em> + PKCE.</li>
+<li>Catálogo y creación de una orden, a través del Gateway.</li>
+<li>Consistencia eventual en la interfaz: de "pendiente" a "pagada" sin que el usuario recargue nada.</li>
+</ol>
+<h3 id="13-proposito-de-aprendizaje">1.3 Propósito de aprendizaje<a class="headerlink" href="#13-proposito-de-aprendizaje" title="Permanent link">&para;</a></h3>
+<p>Al concluir la clase, estarás en condiciones de:</p>
+<ul>
+<li><strong>Ejecutar</strong> el reemplazo de un servidor de autorización propio por Keycloak sin tocar el código de los <em>resource servers</em>, <strong>construir</strong> un cliente Angular con <em>Authorization Code</em> + PKCE a través de un API Gateway, y <strong>diseñar</strong> una interfaz que refleje con honestidad un estado que todavía no se resolvió, en vez de asumir que una respuesta HTTP exitosa significa que el proceso de negocio completo ya terminó.</li>
+</ul>
+<h3 id="14-producto-de-sesion">1.4 Producto de sesión<a class="headerlink" href="#14-producto-de-sesion" title="Permanent link">&para;</a></h3>
+<p><code>pagatu-auth-ms</code> retirado; Keycloak, con el realm <code>pagatu</code>, los roles <code>CLIENTE</code>/<code>ADMIN</code> y el <em>protocol mapper</em> de <code>idCliente</code>, validado por el Gateway y <code>pagatu-orden-ms</code> mediante <code>issuer-uri</code> (Tabla 6 de S7, ejecutada); <code>pagatu-frontend</code> (Angular 22) con login real contra Keycloak, catálogo de productos, creación de una orden y una pantalla de "Mis pedidos" que muestra el estado real de cada orden — incluida la transición de <code>PENDIENTE_PAGO</code> a <code>PAGADA</code>/<code>CANCELADA</code>, verificada de punta a punta sin recargar la página a mano.</p>
+<h3 id="15-metodologia">1.5 Metodología<a class="headerlink" href="#15-metodologia" title="Permanent link">&para;</a></h3>
+<p><strong>Tabla 1. Metodología de la sesión</strong></p>
+<table>
+<thead>
+<tr>
+<th>Actividades a Realizar en el Periodo</th>
+<th>Orientaciones generales (Orientaciones Metodológicas)</th>
+<th>Material de estudio recomendado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Revisión previa individual</td>
+<td>Repasar S7 (2.4 completa, Tabla 6, Figura 6, 3.27) y S9 (el patrón Saga y los estados de <code>EstadoOrden</code>). Confirmar que los cuatro microservicios, el Gateway, Kafka y <code>obs/</code> siguen corriendo. Trabajo individual, antes de clase.</td>
+<td>S7 (2.4, Tabla 6), S9 (2.2-2.4).</td>
+</tr>
+<tr>
+<td>Clase presencial</td>
+<td>Migración guiada a Keycloak, construcción del cliente Angular, login con PKCE, catálogo, creación de orden y la pantalla de consistencia eventual. Trabajo individual en la propia laptop, siguiendo al docente paso a paso.</td>
+<td>Contenedores y servicios corriendo, Pasos 3.1 a 3.11 de esta guía.</td>
+</tr>
+<tr>
+<td>Evaluación formativa</td>
+<td>Revisión en clase del login real, la creación de una orden y su transición observada de <code>PENDIENTE_PAGO</code> a su estado final. La evidencia se completa y sustenta de forma individual, fuera del aula, según los criterios mínimos de la sección 4.4.</td>
+<td>Indicaciones de entrega (4.3), rúbrica de evaluación (4.6).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="16-motivacion-de-la-sesion">1.6 Motivación de la sesión<a class="headerlink" href="#16-motivacion-de-la-sesion" title="Permanent link">&para;</a></h3>
+<h4 id="161-caso-dos-pestanas-la-misma-tarjeta-y-una-condicion-de-carrera-que-starbucks-tardo-mas-de-un-mes-en-admitir">1.6.1 Caso: dos pestañas, la misma tarjeta, y una condición de carrera que Starbucks tardó más de un mes en admitir<a class="headerlink" href="#161-caso-dos-pestanas-la-misma-tarjeta-y-una-condicion-de-carrera-que-starbucks-tardo-mas-de-un-mes-en-admitir" title="Permanent link">&para;</a></h4>
+<p>En marzo de 2015, el investigador Egor Homakov encontró que el sistema de recarga y transferencia de saldo entre tarjetas de regalo de Starbucks no serializaba correctamente dos operaciones simultáneas sobre la misma cuenta. Abrió dos sesiones distintas (dos navegadores, dos <em>cookies</em> de sesión) y disparó, casi al mismo instante, dos transferencias idénticas desde la misma tarjeta de origen. El sistema procesó <strong>las dos</strong> como válidas — el saldo de la tarjeta de destino terminó duplicado, como si la validación de "hay saldo suficiente" hubiera revisado el mismo número dos veces antes de que la primera transferencia alcanzara a descontarlo. Homakov reportó el hallazgo el 23 de marzo; Starbucks no respondió hasta el 29 de abril (Schneier, 2015).</p>
+<p>Fuente: Schneier, B. (2015, 27 de mayo). <em>Race Condition Exploit in Starbucks Gift Cards</em>. Schneier on Security. <a href="https://www.schneier.com/blog/archives/2015/05/race_condition_.html">https://www.schneier.com/blog/archives/2015/05/race_condition_.html</a></p>
+<p>El paralelo con <code>pagatu</code> no es decorativo: <code>PagoServiceImpl.procesar</code> (S8) ya se defiende exactamente de este problema — revisa si el <code>ordenId</code> ya tiene un pago registrado <strong>antes</strong> de procesar, y además atrapa <code>DataIntegrityViolationException</code> como una segunda línea de defensa para una condición de carrera real (dos eventos casi simultáneos intentando crear el mismo pago). Esa protección existe desde S8 precisamente porque un sistema distribuido con mensajería asíncrona puede entregar —o un cliente puede, sin querer, provocar— el mismo evento más de una vez. Hoy, el lado que todavía no se construyó es el opuesto: la <strong>interfaz</strong> que un usuario ve. Si el cliente Angular asumiera que la respuesta de <code>POST /api/v1/ordenes</code> ya significa "pagado", o si volviera a enviar la misma orden porque el usuario, ansioso, hizo doble clic sin ver confirmación, el problema de Starbucks —confiar en que una operación ya terminó cuando en realidad sigue en curso— se repetiría del lado del cliente, no del servidor.</p>
+<p><strong>Preguntas de análisis</strong></p>
+<p><strong>Activación de conocimientos previos</strong></p>
+<ol>
+<li>¿Qué tendría que haber hecho el sistema de Starbucks para que las dos transferencias simultáneas no se procesaran ambas como válidas?</li>
+</ol>
+<p><strong>Comprensión de consistencia eventual en la interfaz</strong></p>
+<ol>
+<li>Si <code>pagatu-frontend</code> mostrara "Pedido confirmado" apenas recibe la respuesta <code>201</code> de <code>POST /api/v1/ordenes</code>, ¿qué información real todavía no tiene en ese momento?</li>
+<li>¿Por qué <code>PagoServiceImpl.procesar</code> (S8) revisa si el pago ya existe <strong>antes</strong> de crearlo, en vez de confiar en que Kafka nunca entrega un evento duplicado?</li>
+</ol>
+<h3 id="17-ubicacion-en-el-curso">1.7 Ubicación en el curso<a class="headerlink" href="#17-ubicacion-en-el-curso" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Unidad: U2 - Sistema distribuido robusto.</li>
+<li>Producto del curso: sistema distribuido de microservicios end-to-end, configurable, escalable, seguro, resiliente, consistente, observable, integrado con frontend y defendido técnicamente.</li>
+<li>Producto de unidad: sistema distribuido seguro, resiliente, consistente, observable e integrado con cliente frontend.</li>
+<li>Avance del producto en esta sesión: <code>pagatu-auth-ms</code> reemplazado por Keycloak, y el primer cliente Angular del curso, con login, catálogo, creación de orden y consistencia eventual en la interfaz.</li>
+</ul>
+<p><strong>Figura 1. Roadmap del producto de la unidad</strong></p>
+<pre class="mermaid"><code>flowchart TB
+    S7["`**S7:** Seguridad distribuida`"]
+    S8["`**S8:** Mensajería asíncrona`"]
+    S9["`**S9:** Consistencia distribuida`"]
+    S10["`**S10:** Observabilidad y diagnóstico`"]
+    S11["`**S11:** Integración con cliente frontend`"]
+    S12["`**S12:** Producto U2`"]
+
+    S7 --&gt; S8 --&gt; S9 --&gt; S10 --&gt; S11 --&gt; S12
+
+    classDef today fill:#ffe08a,stroke:#9a6b00,stroke-width:2px,color:#111;
+    class S11 today;</code></pre>
+<h2 id="2-explica">2. Explica<a class="headerlink" href="#2-explica" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 30 min.</p>
+<h3 id="21-arquitectura-de-la-sesion">2.1 Arquitectura de la sesión<a class="headerlink" href="#21-arquitectura-de-la-sesion" title="Permanent link">&para;</a></h3>
+<p><strong>Figura 2. Del login a una orden que todavía no sabe si está pagada</strong></p>
+<pre class="mermaid"><code>sequenceDiagram
+    actor U as Usuario (CLIENTE)
+    participant SPA as pagatu-frontend
+    participant KC as Keycloak (realm pagatu)
+    participant GW as pagatu-gateway
+    participant Ord as pagatu-orden-ms
+    participant Kafka as Kafka
+    participant Pago as pagatu-pago-ms
+
+    U-&gt;&gt;SPA: abre la SPA
+    SPA-&gt;&gt;KC: Authorization Code + PKCE (2.4 de S7)
+    KC--&gt;&gt;SPA: access_token (idCliente, realm_access.roles)
+    SPA-&gt;&gt;GW: POST /api/v1/ordenes (Bearer)
+    GW-&gt;&gt;Ord: enruta (lb://)
+    Ord--&gt;&gt;GW: 201, estado=PENDIENTE_PAGO
+    GW--&gt;&gt;SPA: 201, estado=PENDIENTE_PAGO
+    Ord-&gt;&gt;Kafka: orden.creada
+    Kafka-&gt;&gt;Pago: consume
+    Pago-&gt;&gt;Kafka: pago.validado o pago.fallido
+    Kafka-&gt;&gt;Ord: consume, marca PAGADA o CANCELADA
+    SPA-&gt;&gt;GW: GET /api/v1/ordenes/{id} (consulta repetida)
+    GW-&gt;&gt;Ord: enruta
+    Ord--&gt;&gt;SPA: estado=PAGADA (o CANCELADA)</code></pre>
+<p>Lectura del diagrama: hay un instante —entre la respuesta <code>201</code> y el momento en que <code>pagatu-orden-ms</code> consume el evento de vuelta— en el que la orden existe, tiene un <code>id</code>, y <strong>nadie en el sistema sabe todavía si se va a pagar</strong>. Ese instante no es un error ni un caso raro: es el costo normal de la consistencia eventual que S9 ya construyó del lado del backend. 2.6 desarrolla cómo la interfaz debe comportarse durante ese instante, en vez de ignorarlo.</p>
+<h3 id="22-ejecutar-la-tabla-6-de-s7-keycloak-reemplaza-a-pagatu-auth-ms">2.2 Ejecutar la Tabla 6 de S7: Keycloak reemplaza a <code>pagatu-auth-ms</code><a class="headerlink" href="#22-ejecutar-la-tabla-6-de-s7-keycloak-reemplaza-a-pagatu-auth-ms" title="Permanent link">&para;</a></h3>
+<p>La Tabla 6 de S7 ya enumeró, fila por fila, qué cambia y qué no. Esta sesión la ejecuta tal cual, sin agregar ni quitar ninguna fila — la única que exige tocar código de un <em>resource server</em> es la propiedad <code>jwk-set-uri</code> → <code>issuer-uri</code>, en el Gateway y en <code>pagatu-orden-ms</code> (3.3). Todo lo demás —el conversor de roles, cómo <code>pagatu-orden-ms</code> lee <code>idCliente</code> del JWT, la forma de las reglas <code>hasRole</code>— queda exactamente igual, porque Keycloak emite el mismo formato de claims que <code>pagatu-auth-ms</code> ya imitaba a propósito desde S7 (2.4).</p>
+<h3 id="23-idcliente-como-user-attribute-protocol-mapper">2.3 <code>idCliente</code> como <em>user attribute</em> + <em>protocol mapper</em><a class="headerlink" href="#23-idcliente-como-user-attribute-protocol-mapper" title="Permanent link">&para;</a></h3>
+<p>Esta es la diferencia real frente a lo que hizo LP2 (BomERP) al reemplazar su propio módulo de seguridad por Keycloak: ahí, <code>vendedorId</code> <strong>es</strong> literalmente el <code>sub</code> del token —el identificador del usuario autenticado, que Keycloak siempre incluye, sin configurar nada—, porque un vendedor y el dueño de una venta son la misma persona. Aquí no: <code>idCliente</code> es un dato de <strong>negocio</strong> (S7, 3.13, "un dato de negocio que este servicio guarda por comodidad, no un dato de identidad") que hoy vive en la columna <code>id_cliente</code> de la tabla <code>usuarios</code> de <code>pagatu-auth-ms</code> — no es, conceptualmente, lo mismo que "quién inició sesión", aunque hoy los dos valores coincidan para cada usuario <code>CLIENTE</code>.</p>
+<p>Keycloak no agrega datos de negocio a un token por defecto — hay que decírselo explícitamente con dos piezas, exactamente como S7 ya lo anticipó en la Tabla 6:</p>
+<p><strong>Tabla 2. Las dos piezas que hacen viajar <code>idCliente</code> en el token</strong></p>
+<table>
+<thead>
+<tr>
+<th>Pieza</th>
+<th>Qué es</th>
+<th>Dónde se configura</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>User attribute</em> (atributo de usuario)</td>
+<td>Un campo adicional que Keycloak guarda por usuario, además de email/nombre — aquí, <code>idCliente</code>, con el mismo valor numérico que tenía en <code>pagatu-auth-ms</code>.</td>
+<td><strong>Users</strong> → el usuario → pestaña <strong>Attributes</strong>.</td>
+</tr>
+<tr>
+<td><em>Protocol mapper</em> (mapeador de protocolo)</td>
+<td>La regla que le dice a Keycloak "copia este atributo de usuario dentro del token, con este nombre de claim". Sin esta pieza, el atributo existe en Keycloak pero <strong>nunca</strong> llega al JWT.</td>
+<td><strong>Clients</strong> → <code>pagatu-frontend</code> → <strong>Client scopes</strong> → el <em>dedicated scope</em> del cliente → <strong>Add mapper</strong>.</td>
+</tr>
+</tbody>
+</table>
+<p>3.2 configura las dos. El resultado final es el mismo claim <code>idCliente</code> que <code>OrdenController.crear</code> (S6, S7) ya lee con <code>jwt.getClaim("idCliente")</code> — la Tabla 6 de S7 ya lo prometía: "No — el claim se llama igual".</p>
+<h3 id="24-cors-en-el-gateway-el-primer-cliente-que-llama-desde-un-origen-distinto">2.4 CORS en el Gateway: el primer cliente que llama desde un origen distinto<a class="headerlink" href="#24-cors-en-el-gateway-el-primer-cliente-que-llama-desde-un-origen-distinto" title="Permanent link">&para;</a></h3>
+<p>Hasta hoy, cada petición a <code>pagatu</code> salió de PowerShell, <code>curl</code> o Swagger — ninguno de los tres es un navegador ejecutando JavaScript desde un origen (<em>origin</em>: protocolo + dominio + puerto) distinto al del servidor. <code>pagatu-frontend</code> sí lo es: corre en <code>http://localhost:4200</code> (el puerto por defecto de Angular), y llama a <code>pagatu-gateway</code> en <code>http://localhost:18080</code> — dos orígenes distintos, por definición (CORS, <em>Cross-Origin Resource Sharing</em>, compara los tres componentes, y el puerto ya es suficiente para que difieran). Sin configurar CORS en el Gateway, el navegador bloquea la respuesta <strong>antes</strong> de que el código de Angular la vea, con un error que nunca aparece en Postman/<code>curl</code> porque esa política la aplica el navegador, no el servidor ni ninguna herramienta de línea de comandos.</p>
+<p>El Gateway es el lugar correcto para esta configuración — no cada microservicio por separado: es el único componente por el que pasa cualquier petición del cliente, y configurarlo ahí una sola vez cubre <code>pagatu-catalogo-ms</code>, <code>pagatu-orden-ms</code> y <code>pagatu-pago-ms</code> a la vez, sin tocar ninguno de los tres. 3.4 lo construye.</p>
+<h3 id="25-arquitectura-minima-de-la-spa-y-login-con-pkce">2.5 Arquitectura mínima de la SPA y login con PKCE<a class="headerlink" href="#25-arquitectura-minima-de-la-spa-y-login-con-pkce" title="Permanent link">&para;</a></h3>
+<p><code>pagatu-frontend</code> reutiliza exactamente el mismo mecanismo que S7 (2.4, Figura 6) ya diagramó y que 3.27 de esa sesión ya calculó a mano: generar un <code>code_verifier</code>, derivar su <code>code_challenge</code> con SHA-256, redirigir a Keycloak, recibir un <code>code</code> de un solo uso, y canjearlo por tokens presentando el <code>code_verifier</code> original. Esta sesión no repite esa explicación — la ejecuta en TypeScript en vez de en PowerShell/bash.</p>
+<p><strong>Tabla 3. Dónde vive cada pieza de la sesión, según S7 (2.4, línea de "Errores de diseño más comunes")</strong></p>
+<table>
+<thead>
+<tr>
+<th>Pieza</th>
+<th>Decisión de esta sesión</th>
+<th>Por qué (S7, 2.4)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>access_token</code>/<code>refresh_token</code></td>
+<td>En memoria (un campo privado de un servicio Angular, nunca en <code>localStorage</code>)</td>
+<td>S7 ya lo advirtió: <em>"Guardar access tokens en localStorage, vulnerable a XSS"</em> — es uno de los "errores de diseño más comunes" que esa misma sesión lista para cuando llegara el cliente Angular.</td>
+</tr>
+<tr>
+<td><code>code_verifier</code></td>
+<td><code>sessionStorage</code>, solo durante la ida y vuelta a Keycloak, borrado tras usarse una vez</td>
+<td>La redirección completa recarga la página — el JavaScript en memoria se pierde; el <code>code_verifier</code> por sí solo, sin el <code>code</code> de esa sesión de login específica, no sirve para nada.</td>
+</tr>
+<tr>
+<td><code>state</code> (parámetro anti-CSRF)</td>
+<td>Generado junto al <code>code_verifier</code>, verificado al volver</td>
+<td>S7 ya lo advirtió: <em>"No validar el parámetro state en el redirect, que protege contra CSRF"</em> — es el segundo "error de diseño común" de esa misma lista.</td>
+</tr>
+</tbody>
+</table>
+<p>La fila de <code>refresh_token</code> en una cookie <code>httpOnly</code> —la alternativa que S7 (2.4) menciona como "la habitual"— exige un <em>Backend-for-Frontend</em> que gestione esa cookie, una pieza que ningún servicio de <code>pagatu</code> construye hoy; esta sesión documenta esa limitación con la misma honestidad que S10 documentó el límite de licencia de AWR (<em>Automatic Workload Repository</em>) en Oracle Database Free — no es que no se conozca la opción mejor, es que queda fuera del alcance de esta sesión.</p>
+<h3 id="26-consistencia-eventual-en-la-interfaz-de-pendiente-a-pagada-sin-recargar">2.6 Consistencia eventual en la interfaz: de "pendiente" a "pagada" sin recargar<a class="headerlink" href="#26-consistencia-eventual-en-la-interfaz-de-pendiente-a-pagada-sin-recargar" title="Permanent link">&para;</a></h3>
+<p>La Figura 2 (2.1) ya mostró el instante en el que una orden existe pero su pago todavía no se resolvió. Una interfaz honesta tiene tres opciones reales frente a ese instante — ninguna de las tres es "asumir que ya terminó":</p>
+<p><strong>Tabla 4. Tres formas de reflejar un estado que todavía no se resolvió</strong></p>
+<table>
+<thead>
+<tr>
+<th>Estrategia</th>
+<th>Cómo funciona</th>
+<th>Costo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>Polling</em> (sondeo periódico)</td>
+<td>El cliente vuelve a pedir <code>GET /api/v1/ordenes/{id}</code> cada pocos segundos, mientras el estado siga <code>PENDIENTE_PAGO</code>.</td>
+<td>Tráfico adicional, mientras la respuesta no cambie; simple de construir, sin infraestructura nueva.</td>
+</tr>
+<tr>
+<td><em>WebSocket</em>/<em>Server-Sent Events</em></td>
+<td>El servidor empuja la actualización al cliente apenas cambia el estado, sin que el cliente pregunte.</td>
+<td>Elimina el tráfico redundante del <em>polling</em>, pero exige una conexión persistente y código nuevo en cada microservicio involucrado.</td>
+</tr>
+<tr>
+<td>Recarga manual</td>
+<td>El usuario mismo refresca la pantalla para ver si ya cambió.</td>
+<td>El mínimo esfuerzo de construcción, pero traslada el trabajo de "darse cuenta" al usuario — la peor experiencia de las tres.</td>
+</tr>
+</tbody>
+</table>
+<p>Esta sesión construye <strong>polling</strong> (3.9) — no porque sea la opción ideal en términos absolutos (<em>WebSocket</em> evita tráfico redundante, y una arquitectura orientada a eventos con <code>Server-Sent Events</code> es el camino natural para un sistema que ya es 100% asíncrono del lado del backend), sino porque es la que se puede construir y verificar de punta a punta en una sesión, sin agregar infraestructura nueva a <code>pagatu-orden-ms</code>. Queda documentado, igual que el <em>Backend-for-Frontend</em> de 2.5, como un límite honesto de alcance, no como una decisión de que <em>polling</em> sea la respuesta correcta para cualquier sistema.</p>
+<h2 id="3-aplica-actividad-practica-guiada">3. Aplica: actividad práctica guiada<a class="headerlink" href="#3-aplica-actividad-practica-guiada" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 120 min.</p>
+<p><strong>Actividad:</strong> reemplazo de <code>pagatu-auth-ms</code> por Keycloak (ejecutando la Tabla 6 de S7), configuración de CORS en el Gateway, y construcción del primer cliente Angular del curso — login con <em>Authorization Code</em> + PKCE, catálogo, creación de una orden y una pantalla de "Mis pedidos" que refleja la consistencia eventual real del sistema (Producto de la sesión en 1.4).</p>
+<p><strong>Propósito de la actividad:</strong> que cada estudiante vea, de punta a punta, que todo lo diseñado en S7 sobre papel (Tabla 6, Figura 6) se ejecuta sin sorpresas cuando llega el momento, y que una interfaz real puede mostrar honestamente un estado que el propio sistema todavía no resolvió.</p>
+<p><strong>Orientaciones metodológicas:</strong> el docente ejecuta primero la migración a Keycloak frente a la clase, después construye la SPA paso a paso, probando cada pieza contra el sistema real antes de avanzar; los estudiantes replican cada paso en su propia instancia y provocan ellos mismos el caso de un método de pago rechazado (3.11) para ver la transición a <code>CANCELADA</code> en su propia pantalla.</p>
+<p><strong>Actividades para realizar:</strong></p>
+<ul>
+<li><strong>3.1</strong> Verificar el punto de partida.</li>
+<li><strong>3.2</strong> Levantar Keycloak y configurar el realm <code>pagatu</code>.</li>
+<li><strong>3.3</strong> Migrar el Gateway y <code>pagatu-orden-ms</code> a Keycloak, y retirar <code>pagatu-auth-ms</code>.</li>
+<li><strong>3.4</strong> Habilitar CORS en el Gateway.</li>
+<li><strong>3.5</strong> Crear el proyecto Angular 22 y su arquitectura mínima.</li>
+<li><strong>3.6</strong> Login con <em>Authorization Code</em> + PKCE.</li>
+<li><strong>3.7</strong> Catálogo de productos, a través del Gateway.</li>
+<li><strong>3.8</strong> Crear una orden.</li>
+<li><strong>3.9</strong> Agregar la consulta de pago por orden en <code>pagatu-pago-ms</code>.</li>
+<li><strong>3.10</strong> "Mis pedidos": consistencia eventual con <em>polling</em>.</li>
+<li><strong>3.11</strong> Probar de punta a punta, incluido un pago rechazado.</li>
+</ul>
+<h3 id="31-verificar-el-punto-de-partida">3.1 Verificar el punto de partida<a class="headerlink" href="#31-verificar-el-punto-de-partida" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> confirmación de que los cuatro microservicios, el Gateway, Kafka y <code>obs/</code> siguen corriendo, exactamente donde quedó S10.</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>--branch<span class="w"> </span>s10-observabilidad-diagnostico<span class="w"> </span>https://github.com/262dist/pagatu.git
+</code></pre></div>
+<p>Levanta, en orden, <code>pagatu-config</code>, <code>pagatu-eureka</code>, <code>pagatu-gateway</code>, los cuatro microservicios (incluido <code>pagatu-auth-ms</code>, todavía — se retira recién en 3.3), <code>kafka/</code> y <code>obs/</code>. Confirma en <code>http://localhost:19090/targets</code> que los cinco servicios de aplicación aparecen <code>UP</code>.</p>
+<h3 id="32-levantar-keycloak-y-configurar-el-realm-pagatu">3.2 Levantar Keycloak y configurar el realm <code>pagatu</code><a class="headerlink" href="#32-levantar-keycloak-y-configurar-el-realm-pagatu" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> Keycloak corriendo con su propio Postgres, el realm <code>pagatu</code>, los roles <code>CLIENTE</code>/<code>ADMIN</code>, el <em>protocol mapper</em> de <code>idCliente</code> (2.3), y los usuarios semilla.</p>
+<p><strong><code>infra/pagatu-keycloak/compose-dev.yml</code></strong> (archivo nuevo):</p>
+<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-keycloak-dev</span>
+
+<span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">keycloak-db</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres:17-alpine</span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-keycloak-db</span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">POSTGRES_DB</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu_keycloak</span>
+<span class="w">      </span><span class="nt">POSTGRES_USER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu_keycloak</span>
+<span class="w">      </span><span class="nt">POSTGRES_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"15436:5432"</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu_keycloak_dev_data:/var/lib/postgresql/data</span>
+<span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"CMD-SHELL"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"pg_isready</span><span class="nv"> </span><span class="s">-U</span><span class="nv"> </span><span class="s">pagatu_keycloak</span><span class="nv"> </span><span class="s">-d</span><span class="nv"> </span><span class="s">pagatu_keycloak"</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
+<span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5s</span>
+<span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">      </span><span class="nt">start_period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">15s</span>
+
+<span class="w">  </span><span class="nt">keycloak</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">quay.io/keycloak/keycloak:26.8.0</span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-keycloak</span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
+<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">start-dev</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">KC_BOOTSTRAP_ADMIN_USERNAME</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">admin</span>
+<span class="w">      </span><span class="nt">KC_BOOTSTRAP_ADMIN_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">admin123</span>
+<span class="w">      </span><span class="nt">KC_DB</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres</span>
+<span class="w">      </span><span class="nt">KC_DB_URL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jdbc:postgresql://keycloak-db:5432/pagatu_keycloak</span>
+<span class="w">      </span><span class="nt">KC_DB_USERNAME</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu_keycloak</span>
+<span class="w">      </span><span class="nt">KC_DB_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"18180:8080"</span>
+<span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">keycloak-db</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span>
+
+<span class="nt">volumes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pagatu_keycloak_dev_data</span><span class="p">:</span>
+</code></pre></div>
+<p>El puerto externo <code>18180</code> sigue el mismo criterio de prefijo <code>1</code>=DEV que ya usan <code>pagatu-eureka</code> (<code>18761</code>) y <code>pagatu-gateway</code> (<code>18080</code>) — <code>18085</code> queda ocupado por la UI de Kafka (S8), así que Keycloak toma el siguiente libre. <code>start-dev</code> es, igual que en LP2/BomERP, el modo rápido de desarrollo — sin TLS ni <em>hostname</em> explícito, no apto para producción real (nota aparte, fuera de esta guía).</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>infra/pagatu-keycloak
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-dev.yml<span class="w"> </span>up<span class="w"> </span>-d
+</code></pre></div>
+<p>Confirma en <code>http://localhost:18180</code> y entra a la consola (<code>admin</code>/<code>admin123</code>). Con la consola abierta:</p>
+<ol>
+<li><strong>Manage realms</strong> → <strong>Create realm</strong> → <em>Realm name</em>: <code>pagatu</code>.</li>
+<li>Con <code>pagatu</code> activo: <strong>Realm roles</strong> → <strong>Create role</strong>, crea <code>CLIENTE</code> y <code>ADMIN</code> (sin prefijo <code>ROLE_</code>, igual que <code>pagatu-auth-ms</code> lo hacía, S7).</li>
+<li><strong>Clients</strong> → <strong>Create client</strong>: <em>Client type</em>: <code>OpenID Connect</code>. <em>Client ID</em>: <code>pagatu-frontend</code>. Siguiente.</li>
+<li><strong>Capability config</strong>: <em>Client authentication</em>: <strong>desactivado</strong> (<em>public client</em> — una SPA no guarda secretos, S7, 2.4). <em>Standard flow</em>: activado. <em>Direct access grants</em>: <strong>desactivado</strong> — a diferencia de LP2/BomERP, esta sesión no necesita un atajo de prueba: S7 (3.27) ya verificó el cálculo de PKCE a mano. <em>Require PKCE</em>: <strong>S256</strong>. Siguiente.</li>
+<li><strong>Login settings</strong>: <em>Valid redirect URIs</em>: <code>http://localhost:4200/*</code>. <em>Valid post logout redirect URIs</em>: <code>http://localhost:4200/*</code>. <em>Web origins</em>: <code>http://localhost:4200</code>. Guardar.</li>
+<li><strong><code>idCliente</code> como claim (2.3)</strong>: <strong>Clients</strong> → <code>pagatu-frontend</code> → <strong>Client scopes</strong> → <code>pagatu-frontend-dedicated</code> → <strong>Add mapper</strong> → <strong>By configuration</strong> → <strong>User Attribute</strong>. <em>Name</em>: <code>idCliente</code>. <em>User Attribute</em>: <code>idCliente</code>. <em>Token Claim Name</em>: <code>idCliente</code>. <em>Claim JSON Type</em>: <code>long</code>. Activa <strong>Add to access token</strong>. Guardar.</li>
+<li><strong>Usuarios semilla</strong>: <strong>Users</strong> → <strong>Add user</strong>, por cada uno:<ul>
+<li><code>cliente@pagatu.com</code> — pestaña <strong>Attributes</strong>: <code>idCliente</code> = <code>1</code> (el mismo valor que <code>pagatu-auth-ms</code> ya usaba, S7, 3.13). <strong>Credentials</strong>: <code>cliente123</code>, <em>Temporary</em>: <strong>desactivado</strong>. <strong>Role mapping</strong>: <code>CLIENTE</code>.</li>
+<li><code>admin@pagatu.com</code> — sin atributo <code>idCliente</code> (un <code>ADMIN</code> no crea órdenes como cliente). <strong>Credentials</strong>: <code>admin123</code>, <em>Temporary</em>: <strong>desactivado</strong>. <strong>Role mapping</strong>: <code>ADMIN</code>.</li>
+</ul>
+</li>
+</ol>
+<p><strong>Error frecuente</strong>: olvidar <strong>Add to access token</strong> en el <em>protocol mapper</em> de <code>idCliente</code>. El atributo existe en el usuario, pero sin esa casilla el claim nunca aparece en el JWT que llega a <code>pagatu-orden-ms</code> — el síntoma es idéntico al que S7 (3.27, área de errores) ya describió para un claim mal configurado: <code>OrdenController.crear</code> lanza <code>IllegalArgumentException</code> por <code>idCliente</code> nulo, aunque el login haya funcionado perfecto.</p>
+<h3 id="33-migrar-el-gateway-y-pagatu-orden-ms-a-keycloak-y-retirar-pagatu-auth-ms">3.3 Migrar el Gateway y <code>pagatu-orden-ms</code> a Keycloak, y retirar <code>pagatu-auth-ms</code><a class="headerlink" href="#33-migrar-el-gateway-y-pagatu-orden-ms-a-keycloak-y-retirar-pagatu-auth-ms" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> la única línea de código que la Tabla 6 de S7 prometía cambiar, cambiada en los dos <em>resource servers</em> — y <code>pagatu-auth-ms</code> fuera de servicio.</p>
+<p><strong><code>infra/pagatu-config/config-repo/pagatu-gateway-dev.yml</code></strong> y <strong><code>infra/pagatu-config/config-repo/pagatu-orden-ms-dev.yml</code></strong> — reemplaza la propiedad de validación:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">spring</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">security</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">oauth2</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">resourceserver</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">jwt</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">issuer-uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://localhost:18180/realms/pagatu</span>
+<span class="w">          </span><span class="c1"># jwk-set-uri: http://localhost:8085/.well-known/jwks.json</span>
+</code></pre></div>
+<p>Con <code>issuer-uri</code>, Spring descubre solo la ubicación de las claves a partir del documento de descubrimiento OIDC que Keycloak publica, y además valida que el claim <code>iss</code> del token coincida con ese emisor (S7, 2.4) — algo que <code>jwk-set-uri</code> nunca verificaba, porque <code>pagatu-auth-ms</code> no implementa ese documento. Ningún otro archivo de <code>SecurityConfig</code> cambia: el <code>JwtAuthenticationConverter</code> que traduce <code>realm_access.roles</code> (S7, 3.17) sigue leyendo exactamente el mismo claim, con el mismo formato.</p>
+<p>Reinicia el Gateway y <code>pagatu-orden-ms</code> para que tomen la propiedad nueva, y detén <code>pagatu-auth-ms</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="c"># Ctrl+C en la terminal de pagatu-auth-ms</span>
+</code></pre></div>
+<p>Retira también su Postgres, ya sin uso:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd </span><span class="n">services</span><span class="p">/</span><span class="n">pagatu-auth-ms</span>
+<span class="n">docker</span> <span class="n">compose</span> <span class="o">-f</span> <span class="n">compose-dev</span><span class="p">.</span><span class="n">yml</span> <span class="n">down</span> <span class="n">-v</span>
+</code></pre></div>
+<p><strong>Error frecuente</strong>: reiniciar el Gateway o <code>pagatu-orden-ms</code> antes de confirmar que Keycloak (3.2) ya respondió al menos una vez en <code>http://localhost:18180/realms/pagatu/.well-known/openid-configuration</code> — si el documento de descubrimiento todavía no existe cuando el <em>resource server</em> arranca, falla al iniciar con un error de conexión, no con un <code>401</code> silencioso.</p>
+<h3 id="34-habilitar-cors-en-el-gateway">3.4 Habilitar CORS en el Gateway<a class="headerlink" href="#34-habilitar-cors-en-el-gateway" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> <code>pagatu-gateway</code> aceptando peticiones del navegador desde <code>http://localhost:4200</code> (2.4).</p>
+<p><strong><code>infra/pagatu-config/config-repo/pagatu-gateway-dev.yml</code></strong> — agrega, junto a las rutas que ya existen:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">spring</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">cloud</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">gateway</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">globalcors</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">cors-configurations</span><span class="p">:</span>
+<span class="w">          </span><span class="s">'[/**]'</span><span class="p p-Indicator">:</span>
+<span class="w">            </span><span class="nt">allowedOrigins</span><span class="p">:</span><span class="w"> </span><span class="s">"http://localhost:4200"</span>
+<span class="w">            </span><span class="nt">allowedMethods</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">GET</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">POST</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">PUT</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">PATCH</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">DELETE</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">OPTIONS</span><span class="p p-Indicator">]</span>
+<span class="w">            </span><span class="nt">allowedHeaders</span><span class="p">:</span><span class="w"> </span><span class="s">"*"</span>
+<span class="w">            </span><span class="nt">allowCredentials</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</code></pre></div>
+<p><code>globalcors</code> aplica la misma política a <strong>todas</strong> las rutas del Gateway de una sola vez (2.4) — ninguna de <code>pagatu-catalogo-ms</code>, <code>pagatu-orden-ms</code> ni <code>pagatu-pago-ms</code> necesita su propia configuración de CORS, porque el navegador nunca las llama directamente, siempre a través del Gateway. <code>allowCredentials: true</code> es necesario porque la petición incluye el header <code>Authorization</code> (no una <em>cookie</em>, pero Spring Cloud Gateway trata ambos casos bajo la misma bandera de <em>credentials</em> del estándar CORS).</p>
+<h3 id="35-crear-el-proyecto-angular-22-y-su-arquitectura-minima">3.5 Crear el proyecto Angular 22 y su arquitectura mínima<a class="headerlink" href="#35-crear-el-proyecto-angular-22-y-su-arquitectura-minima" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> <code>pagatu-frontend</code>, un proyecto Angular 22 con el mismo patrón <code>core</code>/<code>features</code> que ya conoces de LP2 (S7 de esa guía) — componentes <em>standalone</em>, <em>routing</em> por <code>loadComponent</code>, <em>change detection</em> sin zonas.</p>
+<div class="highlight"><pre><span></span><code>npm<span class="w"> </span>install<span class="w"> </span>-g<span class="w"> </span>@angular/cli@22
+ng<span class="w"> </span>new<span class="w"> </span>pagatu-frontend<span class="w"> </span>--routing<span class="w"> </span>--style<span class="o">=</span>css<span class="w"> </span>--zoneless<span class="w"> </span>--ssr<span class="o">=</span><span class="nb">false</span>
+<span class="nb">cd</span><span class="w"> </span>pagatu-frontend
+</code></pre></div>
+<p>Estructura mínima (la misma convención que LP2 ya usa, sin repetirla aquí): <code>core/auth/</code> (login, PKCE, decodificación de JWT), <code>core/layout/</code> (encabezado y navegación), <code>core/interceptors/</code> (adjuntar el token), <code>core/guards/</code> (autenticación y rol), <code>features/catalogo/</code> (listar productos), <code>features/pedidos/</code> (crear orden, "Mis pedidos"). Si no construiste la sesión equivalente de LP2 (S7/S11), replica el mismo patrón: componentes <em>standalone</em> con <code>loadComponent</code>, servicios con <code>inject(HttpClient)</code>, sin módulos de Angular clásicos (<code>NgModule</code>).</p>
+<p><strong><code>src/environments/environment.ts</code></strong>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">environment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">gatewayBaseUrl</span><span class="o">:</span><span class="w"> </span><span class="s1">'http://localhost:18080'</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">keycloak</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">issuer</span><span class="o">:</span><span class="w"> </span><span class="s1">'http://localhost:18180/realms/pagatu'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">clientId</span><span class="o">:</span><span class="w"> </span><span class="s1">'pagatu-frontend'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">redirectUri</span><span class="o">:</span><span class="w"> </span><span class="s1">'http://localhost:4200/auth/callback'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">postLogoutRedirectUri</span><span class="o">:</span><span class="w"> </span><span class="s1">'http://localhost:4200/'</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="p">};</span>
+</code></pre></div>
+<p>Todas las llamadas de negocio apuntan a <code>gatewayBaseUrl</code> — ningún componente ni servicio de <code>pagatu-frontend</code> conoce la dirección de <code>pagatu-catalogo-ms</code>, <code>pagatu-orden-ms</code> ni <code>pagatu-pago-ms</code> por separado (2.1): el Gateway es el único punto de entrada, exactamente como ya lo es para PowerShell/<code>curl</code>/Swagger desde S4.</p>
+<h3 id="36-login-con-authorization-code-pkce">3.6 Login con <em>Authorization Code</em> + PKCE<a class="headerlink" href="#36-login-con-authorization-code-pkce" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> <code>AuthService</code>, con el mismo mecanismo de PKCE que S7 (3.27) ya calculó a mano, ahora en TypeScript — token en memoria (Tabla 3, 2.5).</p>
+<p><strong><code>src/app/core/auth/pkce.ts</code></strong>:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">function</span><span class="w"> </span><span class="nx">base64UrlEncode</span><span class="p">(</span><span class="nx">bytes</span><span class="o">:</span><span class="w"> </span><span class="kt">Uint8Array</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="nx">binario</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">''</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">bytes</span><span class="p">.</span><span class="nx">forEach</span><span class="p">((</span><span class="kr">byte</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="nx">binario</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nb">String</span><span class="p">.</span><span class="nx">fromCharCode</span><span class="p">(</span><span class="kr">byte</span><span class="p">)));</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">btoa</span><span class="p">(</span><span class="nx">binario</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\+/g</span><span class="p">,</span><span class="w"> </span><span class="s1">'-'</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\//g</span><span class="p">,</span><span class="w"> </span><span class="s1">'_'</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/=+$/</span><span class="p">,</span><span class="w"> </span><span class="s1">''</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">generarCodeVerifier</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">base64UrlEncode</span><span class="p">(</span><span class="nx">crypto</span><span class="p">.</span><span class="nx">getRandomValues</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="nb">Uint8Array</span><span class="p">(</span><span class="mf">32</span><span class="p">)));</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">generarCodeChallenge</span><span class="p">(</span><span class="nx">verifier</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">hash</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">crypto</span><span class="p">.</span><span class="nx">subtle</span><span class="p">.</span><span class="nx">digest</span><span class="p">(</span><span class="s1">'SHA-256'</span><span class="p">,</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">TextEncoder</span><span class="p">().</span><span class="nx">encode</span><span class="p">(</span><span class="nx">verifier</span><span class="p">));</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">base64UrlEncode</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="nb">Uint8Array</span><span class="p">(</span><span class="nx">hash</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">generarState</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">base64UrlEncode</span><span class="p">(</span><span class="nx">crypto</span><span class="p">.</span><span class="nx">getRandomValues</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="nb">Uint8Array</span><span class="p">(</span><span class="mf">16</span><span class="p">)));</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Compara este resultado contra el de S7 (3.27): el <code>Get-Pkce</code>/<code>pkce</code> que calculaste ahí a mano con <code>[System.Security.Cryptography.SHA256]</code>/<code>openssl dgst -sha256</code> es exactamente el mismo algoritmo que <code>generarCodeChallenge</code> ejecuta aquí con la Web Crypto API del navegador — mismo SHA-256, misma codificación Base64 apta para URL, ninguna sorpresa de cálculo.</p>
+<p><strong><code>src/app/core/auth/auth-service.ts</code></strong> (login + estado en memoria):</p>
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Injectable</span><span class="p">,</span><span class="w"> </span><span class="nx">computed</span><span class="p">,</span><span class="w"> </span><span class="nx">signal</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'@angular/core'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">environment</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'../../../environments/environment'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">generarCodeChallenge</span><span class="p">,</span><span class="w"> </span><span class="nx">generarCodeVerifier</span><span class="p">,</span><span class="w"> </span><span class="nx">generarState</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./pkce'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">decodeJwtPayload</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./jwt'</span><span class="p">;</span>
+
+<span class="kd">interface</span><span class="w"> </span><span class="nx">SesionKeycloak</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">accessToken</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">refreshToken</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">idToken</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">expiraEn</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">CLAVE_VERIFIER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'pagatu_pkce_verifier'</span><span class="p">;</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">CLAVE_STATE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'pagatu_pkce_state'</span><span class="p">;</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">CLAVE_DESTINO</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'pagatu_pkce_destino'</span><span class="p">;</span>
+
+<span class="kd">@Injectable</span><span class="p">({</span><span class="w"> </span><span class="nx">providedIn</span><span class="o">:</span><span class="w"> </span><span class="s1">'root'</span><span class="w"> </span><span class="p">})</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">AuthService</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">private</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="nx">sesion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">signal</span><span class="o">&lt;</span><span class="nx">SesionKeycloak</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="o">&gt;</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">readonly</span><span class="w"> </span><span class="nx">autenticado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">computed</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">actual</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">sesion</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">actual</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">actual</span><span class="p">.</span><span class="nx">expiraEn</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
+<span class="w">  </span><span class="p">});</span>
+
+<span class="w">  </span><span class="k">readonly</span><span class="w"> </span><span class="nx">roles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">computed</span><span class="o">&lt;</span><span class="kt">string</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">    </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">decodeJwtPayload</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">sesion</span><span class="p">()</span><span class="o">?</span><span class="p">.</span><span class="nx">accessToken</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="s1">''</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="nx">realm_access</span><span class="o">?</span><span class="p">.</span><span class="nx">roles</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">readonly</span><span class="w"> </span><span class="nx">idCliente</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">computed</span><span class="o">&lt;</span><span class="kt">number</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">    </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">decodeJwtPayload</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">sesion</span><span class="p">()</span><span class="o">?</span><span class="p">.</span><span class="nx">accessToken</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="s1">''</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="nx">idCliente</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">  </span><span class="p">);</span>
+
+<span class="w">  </span><span class="nx">tieneRol</span><span class="p">(</span><span class="nx">...rolesPermitidos</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[])</span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">rolesPermitidos</span><span class="p">.</span><span class="nx">some</span><span class="p">((</span><span class="nx">rol</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">roles</span><span class="p">().</span><span class="nx">includes</span><span class="p">(</span><span class="nx">rol</span><span class="p">));</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="nx">accessToken</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">sesion</span><span class="p">()</span><span class="o">?</span><span class="p">.</span><span class="nx">accessToken</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">async</span><span class="w"> </span><span class="nx">iniciarLogin</span><span class="p">(</span><span class="nx">destino</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">location</span><span class="p">.</span><span class="nx">pathname</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="ow">void</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">verifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">generarCodeVerifier</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">generarState</span><span class="p">();</span>
+<span class="w">    </span><span class="nx">sessionStorage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="nx">CLAVE_VERIFIER</span><span class="p">,</span><span class="w"> </span><span class="nx">verifier</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">sessionStorage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="nx">CLAVE_STATE</span><span class="p">,</span><span class="w"> </span><span class="nx">state</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">sessionStorage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="nx">CLAVE_DESTINO</span><span class="p">,</span><span class="w"> </span><span class="nx">destino</span><span class="p">);</span>
+
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">parametros</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">URLSearchParams</span><span class="p">({</span>
+<span class="w">      </span><span class="nx">client_id</span><span class="o">:</span><span class="w"> </span><span class="kt">environment.keycloak.clientId</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">response_type</span><span class="o">:</span><span class="w"> </span><span class="s1">'code'</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">redirect_uri</span><span class="o">:</span><span class="w"> </span><span class="kt">environment.keycloak.redirectUri</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">scope</span><span class="o">:</span><span class="w"> </span><span class="s1">'openid profile'</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">state</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">code_challenge</span><span class="o">:</span><span class="w"> </span><span class="kt">await</span><span class="w"> </span><span class="nx">generarCodeChallenge</span><span class="p">(</span><span class="nx">verifier</span><span class="p">),</span>
+<span class="w">      </span><span class="nx">code_challenge_method</span><span class="o">:</span><span class="w"> </span><span class="s1">'S256'</span><span class="p">,</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">    </span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">environment</span><span class="p">.</span><span class="nx">keycloak</span><span class="p">.</span><span class="nx">issuer</span><span class="si">}</span><span class="sb">/protocol/openid-connect/auth?</span><span class="si">${</span><span class="nx">parametros</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">async</span><span class="w"> </span><span class="nx">completarLogin</span><span class="p">(</span><span class="nx">code</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">stateRecibido</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="ow">void</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">stateEsperado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">sessionStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="nx">CLAVE_STATE</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">verifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">sessionStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="nx">CLAVE_VERIFIER</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">sessionStorage</span><span class="p">.</span><span class="nx">removeItem</span><span class="p">(</span><span class="nx">CLAVE_STATE</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">sessionStorage</span><span class="p">.</span><span class="nx">removeItem</span><span class="p">(</span><span class="nx">CLAVE_VERIFIER</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">verifier</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">stateRecibido</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="nx">stateEsperado</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s1">'state o code_verifier invalido: posible CSRF, reinicia el login'</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">cuerpo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">URLSearchParams</span><span class="p">({</span>
+<span class="w">      </span><span class="nx">grant_type</span><span class="o">:</span><span class="w"> </span><span class="s1">'authorization_code'</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">client_id</span><span class="o">:</span><span class="w"> </span><span class="kt">environment.keycloak.clientId</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">redirect_uri</span><span class="o">:</span><span class="w"> </span><span class="kt">environment.keycloak.redirectUri</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">code</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">code_verifier</span><span class="o">:</span><span class="w"> </span><span class="kt">verifier</span><span class="p">,</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">respuesta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">environment</span><span class="p">.</span><span class="nx">keycloak</span><span class="p">.</span><span class="nx">issuer</span><span class="si">}</span><span class="sb">/protocol/openid-connect/token`</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s1">'POST'</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s1">'Content-Type'</span><span class="o">:</span><span class="w"> </span><span class="s1">'application/x-www-form-urlencoded'</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="kt">cuerpo</span><span class="p">,</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">respuesta</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s1">'No se pudo intercambiar el codigo por un token'</span><span class="p">);</span>
+
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">datos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">respuesta</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">sesion</span><span class="p">.</span><span class="nx">set</span><span class="p">({</span>
+<span class="w">      </span><span class="nx">accessToken</span><span class="o">:</span><span class="w"> </span><span class="kt">datos.access_token</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">refreshToken</span><span class="o">:</span><span class="w"> </span><span class="kt">datos.refresh_token</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">idToken</span><span class="o">:</span><span class="w"> </span><span class="kt">datos.id_token</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">expiraEn</span><span class="o">:</span><span class="w"> </span><span class="kt">Date.now</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">datos</span><span class="p">.</span><span class="nx">expires_in</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1000</span><span class="p">,</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="nx">destinoPendiente</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">destino</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">sessionStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="nx">CLAVE_DESTINO</span><span class="p">)</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="s1">'/'</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">sessionStorage</span><span class="p">.</span><span class="nx">removeItem</span><span class="p">(</span><span class="nx">CLAVE_DESTINO</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">destino</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="nx">cerrarSesion</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">idToken</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">sesion</span><span class="p">()</span><span class="o">?</span><span class="p">.</span><span class="nx">idToken</span><span class="p">;</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">sesion</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">parametros</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">URLSearchParams</span><span class="p">({</span>
+<span class="w">      </span><span class="nx">post_logout_redirect_uri</span><span class="o">:</span><span class="w"> </span><span class="kt">environment.keycloak.postLogoutRedirectUri</span><span class="p">,</span>
+<span class="w">      </span><span class="p">...(</span><span class="nx">idToken</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">id_token_hint</span><span class="o">:</span><span class="w"> </span><span class="kt">idToken</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="p">{}),</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">    </span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">environment</span><span class="p">.</span><span class="nx">keycloak</span><span class="p">.</span><span class="nx">issuer</span><span class="si">}</span><span class="sb">/protocol/openid-connect/logout?</span><span class="si">${</span><span class="nx">parametros</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>A diferencia de un cliente que solo valida PKCE, este <code>AuthService</code> también genera y verifica <code>state</code> (Tabla 3) — el segundo "error de diseño común" que S7 (2.4) ya advirtió. <code>completarLogin</code> revisa <code>state</code> <strong>antes</strong> de confiar en el <code>code_verifier</code>: si no coinciden, lanza un error en vez de intentar el intercambio, sin importar si el <code>code_verifier</code> guardado era correcto.</p>
+<p><strong><code>src/app/core/auth/jwt.ts</code></strong> (decodificación, sin validar firma — igual que LP2 S11 y S7, 3.27):</p>
+<div class="highlight"><pre><span></span><code><span class="k">export</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nx">JwtPayload</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">sub</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">exp</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">idCliente?</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">realm_access</span><span class="o">?:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">roles</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[]</span><span class="w"> </span><span class="p">};</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">decodeJwtPayload</span><span class="p">(</span><span class="nx">token</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">JwtPayload</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">partes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">token</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">partes</span><span class="p">.</span><span class="nx">length</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="mf">3</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">  </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">base64</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">partes</span><span class="p">[</span><span class="mf">1</span><span class="p">].</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/-/g</span><span class="p">,</span><span class="w"> </span><span class="s1">'+'</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/_/g</span><span class="p">,</span><span class="w"> </span><span class="s1">'/'</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">json</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">decodeURIComponent</span><span class="p">(</span>
+<span class="w">      </span><span class="nx">atob</span><span class="p">(</span><span class="nx">base64</span><span class="p">).</span><span class="nx">split</span><span class="p">(</span><span class="s1">''</span><span class="p">).</span><span class="nx">map</span><span class="p">((</span><span class="nx">c</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="s1">'%'</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">c</span><span class="p">.</span><span class="nx">charCodeAt</span><span class="p">(</span><span class="mf">0</span><span class="p">).</span><span class="nx">toString</span><span class="p">(</span><span class="mf">16</span><span class="p">).</span><span class="nx">padStart</span><span class="p">(</span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="s1">'0'</span><span class="p">)).</span><span class="nx">join</span><span class="p">(</span><span class="s1">''</span><span class="p">),</span>
+<span class="w">    </span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">json</span><span class="p">)</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">JwtPayload</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong><code>src/app/core/auth/auth-callback.ts</code></strong> (componente de retorno, verifica <code>state</code> antes de completar el login):</p>
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Component</span><span class="p">,</span><span class="w"> </span><span class="nx">inject</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'@angular/core'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">ActivatedRoute</span><span class="p">,</span><span class="w"> </span><span class="nx">Router</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'@angular/router'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">AuthService</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./auth-service'</span><span class="p">;</span>
+
+<span class="kd">@Component</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">selector</span><span class="o">:</span><span class="w"> </span><span class="s1">'app-auth-callback'</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">template</span><span class="o">:</span><span class="w"> </span><span class="sb">`&lt;p&gt;Completando inicio de sesion...&lt;/p&gt;`</span><span class="p">,</span>
+<span class="p">})</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">AuthCallback</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kr">constructor</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">route</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">inject</span><span class="p">(</span><span class="nx">ActivatedRoute</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">router</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">inject</span><span class="p">(</span><span class="nx">Router</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">auth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">inject</span><span class="p">(</span><span class="nx">AuthService</span><span class="p">);</span>
+
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">codigo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">route</span><span class="p">.</span><span class="nx">snapshot</span><span class="p">.</span><span class="nx">queryParamMap</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'code'</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">route</span><span class="p">.</span><span class="nx">snapshot</span><span class="p">.</span><span class="nx">queryParamMap</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'state'</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">codigo</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">!</span><span class="nx">state</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">router</span><span class="p">.</span><span class="nx">navigateByUrl</span><span class="p">(</span><span class="s1">'/'</span><span class="p">);</span>
+<span class="w">      </span><span class="k">return</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nx">auth</span>
+<span class="w">      </span><span class="p">.</span><span class="nx">completarLogin</span><span class="p">(</span><span class="nx">codigo</span><span class="p">,</span><span class="w"> </span><span class="nx">state</span><span class="p">)</span>
+<span class="w">      </span><span class="p">.</span><span class="nx">then</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">router</span><span class="p">.</span><span class="nx">navigateByUrl</span><span class="p">(</span><span class="nx">auth</span><span class="p">.</span><span class="nx">destinoPendiente</span><span class="p">()))</span>
+<span class="w">      </span><span class="p">.</span><span class="k">catch</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">router</span><span class="p">.</span><span class="nx">navigateByUrl</span><span class="p">(</span><span class="s1">'/'</span><span class="p">));</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Agrega la ruta en <code>app.routes.ts</code> (<code>path: 'auth/callback'</code>, fuera de cualquier <em>guard</em>, igual que en LP2 S11) y construye <code>authGuard</code>/<code>rolGuard</code>/el interceptor que adjunta <code>Authorization: Bearer</code> siguiendo exactamente el mismo patrón funcional de LP2 (S11, <em>guards</em> <code>CanActivateFn</code>, interceptor <code>HttpInterceptorFn</code>) — esta sesión no repite ese código, porque ya lo conoces; la única diferencia es que <code>rolGuard</code> compara contra <code>CLIENTE</code>/<code>ADMIN</code>, no contra <code>VENDEDOR</code>/<code>SUPERVISOR</code>/<code>ADMIN</code>.</p>
+<h3 id="37-catalogo-de-productos-a-traves-del-gateway">3.7 Catálogo de productos, a través del Gateway<a class="headerlink" href="#37-catalogo-de-productos-a-traves-del-gateway" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> una pantalla simple que lista los productos de <code>pagatu-catalogo-ms</code>, llamando siempre a través de <code>pagatu-gateway</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// catalogo-service.ts</span>
+<span class="kd">@Injectable</span><span class="p">({</span><span class="w"> </span><span class="nx">providedIn</span><span class="o">:</span><span class="w"> </span><span class="s1">'root'</span><span class="w"> </span><span class="p">})</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">CatalogoService</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">private</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="nx">http</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">inject</span><span class="p">(</span><span class="nx">HttpClient</span><span class="p">);</span>
+
+<span class="w">  </span><span class="nx">listarProductos</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="nx">Observable</span><span class="o">&lt;</span><span class="nx">ProductoResponse</span><span class="p">[]</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">http</span><span class="p">.</span><span class="nx">get</span><span class="o">&lt;</span><span class="nx">ProductoResponse</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">environment</span><span class="p">.</span><span class="nx">gatewayBaseUrl</span><span class="si">}</span><span class="sb">/api/v1/productos`</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>No hace falta ningún rol para consultar el catálogo (S7 no restringe <code>GET /api/v1/productos</code>) — cualquier usuario autenticado, <code>CLIENTE</code> o <code>ADMIN</code>, lo ve igual.</p>
+<h3 id="38-crear-una-orden">3.8 Crear una orden<a class="headerlink" href="#38-crear-una-orden" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> un formulario simple (lista de productos del carrito + método de pago) que llama a <code>POST /api/v1/ordenes</code> con el token del usuario, y muestra el estado inicial real — <code>PENDIENTE_PAGO</code>, nunca "pagado".</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// orden-service.ts</span>
+<span class="kd">@Injectable</span><span class="p">({</span><span class="w"> </span><span class="nx">providedIn</span><span class="o">:</span><span class="w"> </span><span class="s1">'root'</span><span class="w"> </span><span class="p">})</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">OrdenService</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">private</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="nx">http</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">inject</span><span class="p">(</span><span class="nx">HttpClient</span><span class="p">);</span>
+
+<span class="w">  </span><span class="nx">crear</span><span class="p">(</span><span class="nx">request</span><span class="o">:</span><span class="w"> </span><span class="kt">OrdenRequest</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Observable</span><span class="o">&lt;</span><span class="nx">OrdenResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">http</span><span class="p">.</span><span class="nx">post</span><span class="o">&lt;</span><span class="nx">OrdenResponse</span><span class="o">&gt;</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">environment</span><span class="p">.</span><span class="nx">gatewayBaseUrl</span><span class="si">}</span><span class="sb">/api/v1/ordenes`</span><span class="p">,</span><span class="w"> </span><span class="nx">request</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="nx">obtener</span><span class="p">(</span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Observable</span><span class="o">&lt;</span><span class="nx">OrdenResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">http</span><span class="p">.</span><span class="nx">get</span><span class="o">&lt;</span><span class="nx">OrdenResponse</span><span class="o">&gt;</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">environment</span><span class="p">.</span><span class="nx">gatewayBaseUrl</span><span class="si">}</span><span class="sb">/api/v1/ordenes/</span><span class="si">${</span><span class="nx">id</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>En la plantilla, al recibir la respuesta de <code>crear</code>, muestra el <code>estado</code> tal cual llega (<code>PENDIENTE_PAGO</code>) — <strong>no</strong> un mensaje genérico de "¡Compra exitosa!". Es la misma disciplina que el caso de 1.6 motivó: la respuesta <code>201</code> confirma que la orden se registró, no que el pago se resolvió.</p>
+<p><strong>Error frecuente</strong>: usar <code>OrdenRequest.metodoPago = "TARJETA_RECHAZADA"</code> sin querer durante las pruebas. Es el valor exacto que <code>PagoServiceImpl</code> (S8) usa para simular un rechazo — útil a propósito en 3.11, pero confuso si aparece sin que lo esperes durante 3.8.</p>
+<h3 id="39-agregar-la-consulta-de-pago-por-orden-en-pagatu-pago-ms">3.9 Agregar la consulta de pago por orden en <code>pagatu-pago-ms</code><a class="headerlink" href="#39-agregar-la-consulta-de-pago-por-orden-en-pagatu-pago-ms" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> <code>GET /api/v1/pagos/por-orden/{ordenId}</code>, el endpoint que falta para que la SPA pueda mostrar el pago de una orden específica — hoy <code>PagoController</code> solo tiene <code>listar()</code> (todos los pagos) y <code>obtener(id)</code> (por el <code>id</code> del propio pago, no por el de la orden).</p>
+<p><strong><code>services/pagatu-pago-ms/src/main/java/pe/edu/upeu/pago/repository/PagoRepository.java</code></strong> — ya tiene <code>findByOrdenId</code> (lo usa <code>procesar</code>, S8); solo falta exponerlo.</p>
+<p><strong><code>PagoService.java</code></strong> y <strong><code>PagoServiceImpl.java</code></strong> — agrega el método:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Optional</span><span class="o">&lt;</span><span class="n">PagoResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">buscarPorOrden</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">ordenId</span><span class="p">);</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="nd">@Override</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">Optional</span><span class="o">&lt;</span><span class="n">PagoResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">buscarPorOrden</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">ordenId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">pagoRepository</span><span class="p">.</span><span class="na">findByOrdenId</span><span class="p">(</span><span class="n">ordenId</span><span class="p">).</span><span class="na">map</span><span class="p">(</span><span class="n">pagoMapper</span><span class="p">::</span><span class="n">toResponse</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong><code>PagoController.java</code></strong> — agrega el endpoint:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/por-orden/{ordenId}"</span><span class="p">)</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">PagoResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">buscarPorOrden</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">ordenId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">pagoService</span><span class="p">.</span><span class="na">buscarPorOrden</span><span class="p">(</span><span class="n">ordenId</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">ResponseEntity</span><span class="p">::</span><span class="n">ok</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="na">orElseGet</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">notFound</span><span class="p">().</span><span class="na">build</span><span class="p">());</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><code>Optional</code> (no una excepción) es la elección correcta aquí: que una orden todavía no tenga pago registrado <strong>no es un error</strong> — es, precisamente, el estado normal mientras Kafka todavía no entregó el evento (2.1, Figura 2). <code>404</code> es la respuesta honesta: "este pago no existe todavía", no "algo falló".</p>
+<p>Agrega la ruta en el Gateway, junto a las que ya existen (<strong><code>infra/pagatu-config/config-repo/pagatu-gateway-dev.yml</code></strong>):</p>
+<div class="highlight"><pre><span></span><code><span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-pago-consulta</span>
+<span class="w">              </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lb://pagatu-pago-ms</span>
+<span class="w">              </span><span class="nt">predicates</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Path=/api/v1/pagos/**</span>
+</code></pre></div>
+<p>Es la primera ruta de <code>pagatu-pago-ms</code> en el Gateway — hasta hoy, nadie necesitaba llamarlo desde afuera (solo consumía eventos de Kafka).</p>
+<h3 id="310-mis-pedidos-consistencia-eventual-con-polling">3.10 "Mis pedidos": consistencia eventual con <em>polling</em><a class="headerlink" href="#310-mis-pedidos-consistencia-eventual-con-polling" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> una pantalla que lista las órdenes del usuario autenticado y refresca automáticamente cada orden que siga <code>PENDIENTE_PAGO</code>, hasta que cambie.</p>
+<p><strong>Filtrado por <code>idCliente</code> (UX, no seguridad)</strong>: <code>GET /api/v1/ordenes</code> (S7, <code>hasAnyRole("CLIENTE", "ADMIN")</code>) no filtra por dueño del lado del servidor — cualquier <code>CLIENTE</code> autenticado ve todas las órdenes si llama a ese endpoint sin más. "Mis pedidos" filtra del lado del cliente, comparando <code>orden.idCliente</code> contra <code>auth.idCliente()</code> (3.6) — exactamente la misma distinción que LP2 (S11, 2.7) ya estableció: ocultar no es asegurar, el backend sigue siendo quien decide de verdad qué puede hacer cada rol; esto solo mejora lo que un usuario normal ve, sin pretender ser un límite de seguridad.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// mis-pedidos.ts (fragmento relevante)</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">MisPedidos</span><span class="w"> </span><span class="k">implements</span><span class="w"> </span><span class="nx">OnInit</span><span class="p">,</span><span class="w"> </span><span class="nx">OnDestroy</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">private</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="nx">ordenService</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">inject</span><span class="p">(</span><span class="nx">OrdenService</span><span class="p">);</span>
+<span class="w">  </span><span class="k">private</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="nx">pagoService</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">inject</span><span class="p">(</span><span class="nx">PagoService</span><span class="p">);</span>
+<span class="w">  </span><span class="k">protected</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="nx">auth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">inject</span><span class="p">(</span><span class="nx">AuthService</span><span class="p">);</span>
+<span class="w">  </span><span class="k">protected</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="nx">pedidos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">signal</span><span class="o">&lt;</span><span class="nx">PedidoConPago</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">([]);</span>
+<span class="w">  </span><span class="k">private</span><span class="w"> </span><span class="nx">intervalo?</span><span class="o">:</span><span class="w"> </span><span class="kt">ReturnType</span><span class="o">&lt;</span><span class="ow">typeof</span><span class="w"> </span><span class="nx">setInterval</span><span class="o">&gt;</span><span class="p">;</span>
+
+<span class="w">  </span><span class="nx">ngOnInit</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">cargar</span><span class="p">();</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">intervalo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">setInterval</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">refrescarPendientes</span><span class="p">(),</span><span class="w"> </span><span class="mf">4000</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="nx">ngOnDestroy</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">clearInterval</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">intervalo</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">private</span><span class="w"> </span><span class="nx">cargar</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">ordenService</span><span class="p">.</span><span class="nx">listar</span><span class="p">().</span><span class="nx">subscribe</span><span class="p">((</span><span class="nx">ordenes</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">propias</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">ordenes</span><span class="p">.</span><span class="nx">filter</span><span class="p">((</span><span class="nx">o</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">o</span><span class="p">.</span><span class="nx">idCliente</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">idCliente</span><span class="p">());</span>
+<span class="w">      </span><span class="k">this</span><span class="p">.</span><span class="nx">pedidos</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">propias</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">orden</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">({</span><span class="w"> </span><span class="nx">orden</span><span class="p">,</span><span class="w"> </span><span class="nx">pago</span><span class="o">:</span><span class="w"> </span><span class="kt">null</span><span class="w"> </span><span class="p">})));</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">private</span><span class="w"> </span><span class="nx">refrescarPendientes</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">pendientes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">pedidos</span><span class="p">().</span><span class="nx">filter</span><span class="p">((</span><span class="nx">p</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">p</span><span class="p">.</span><span class="nx">orden</span><span class="p">.</span><span class="nx">estado</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s1">'PENDIENTE_PAGO'</span><span class="p">);</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">const</span><span class="w"> </span><span class="nx">pendiente</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="nx">pendientes</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">this</span><span class="p">.</span><span class="nx">ordenService</span><span class="p">.</span><span class="nx">obtener</span><span class="p">(</span><span class="nx">pendiente</span><span class="p">.</span><span class="nx">orden</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">subscribe</span><span class="p">((</span><span class="nx">actualizada</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="nx">pedidos</span><span class="p">.</span><span class="nx">update</span><span class="p">((</span><span class="nx">lista</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span>
+<span class="w">          </span><span class="nx">lista</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">p</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">orden</span><span class="p">.</span><span class="nx">id</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nx">actualizada</span><span class="p">.</span><span class="nx">id</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="nx">p</span><span class="p">,</span><span class="w"> </span><span class="nx">orden</span><span class="o">:</span><span class="w"> </span><span class="kt">actualizada</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nx">p</span><span class="p">)),</span>
+<span class="w">        </span><span class="p">);</span>
+<span class="w">      </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><code>refrescarPendientes</code> solo vuelve a consultar las órdenes que <strong>siguen</strong> <code>PENDIENTE_PAGO</code> — una vez que una orden llega a <code>PAGADA</code> o <code>CANCELADA</code>, deja de incluirse en el sondeo (2.6, Tabla 4: el costo real del <em>polling</em> es tráfico redundante; dejar de preguntar por lo que ya no cambia es la forma más simple de acotarlo). <code>ngOnDestroy</code> limpia el intervalo — sin esto, navegar fuera de "Mis pedidos" dejaría el sondeo corriendo en segundo plano indefinidamente.</p>
+<p>En la plantilla, muestra el estado con una etiqueta clara por cada valor (<code>PENDIENTE_PAGO</code> → "Procesando pago…", <code>PAGADA</code> → "Pagado", <code>CANCELADA</code> → "Pago rechazado") y, para la orden correspondiente, llama a <code>GET /api/v1/pagos/por-orden/{id}</code> (3.9) una vez que el estado ya no es <code>PENDIENTE_PAGO</code>, para mostrar el método de pago y la fecha real.</p>
+<h3 id="311-probar-de-punta-a-punta-incluido-un-pago-rechazado">3.11 Probar de punta a punta, incluido un pago rechazado<a class="headerlink" href="#311-probar-de-punta-a-punta-incluido-un-pago-rechazado" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> evidencia real de los dos desenlaces posibles — una orden que termina <code>PAGADA</code> y una que termina <code>CANCELADA</code> — ambas vistas cambiar en pantalla sin recargar la página a mano.</p>
+<ol>
+<li>Inicia sesión como <code>cliente@pagatu.com</code>.</li>
+<li>Crea una orden con cualquier <code>metodoPago</code> normal (ej. <code>YAPE_PLIN</code>). Confirma que aparece de inmediato en "Mis pedidos" como <code>PENDIENTE_PAGO</code>, y que en pocos segundos (sin tocar nada) cambia a <code>PAGADA</code>.</li>
+<li>Crea una segunda orden con <code>metodoPago: "TARJETA_RECHAZADA"</code> (S8, el valor que <code>PagoServiceImpl</code> rechaza a propósito). Confirma que esta sí cambia, también sola, a <code>CANCELADA</code>.</li>
+<li>Verifica en el tablero de Grafana (S10) que ambas transiciones generaron actividad real en <code>pagatu-pago-ms</code> y <code>pagatu-orden-ms</code> — el mismo tablero de diagnóstico de la sesión anterior, ahora observando tráfico real generado por un cliente de verdad, no por <code>curl</code>.</li>
+</ol>
+<p><strong>Error frecuente</strong>: ver que una orden se queda en <code>PENDIENTE_PAGO</code> indefinidamente. Antes de sospechar del <em>polling</em>, confirma que <code>pagatu-pago-ms</code> sigue corriendo y que el <em>consumer group</em> de Kafka no quedó atascado (S8, 2.6) — el mismo diagnóstico que esa sesión ya enseñó, aplicado ahora a un síntoma visible en la interfaz en vez de en los logs.</p>
+<p><strong>Evidencia de aprendizaje:</strong></p>
+<ul>
+<li><code>pagatu-auth-ms</code> retirado; Gateway y <code>pagatu-orden-ms</code> validando contra Keycloak con <code>issuer-uri</code>.</li>
+<li>Realm <code>pagatu</code>, roles <code>CLIENTE</code>/<code>ADMIN</code> y el <em>protocol mapper</em> de <code>idCliente</code> configurados y verificados.</li>
+<li>CORS habilitado en el Gateway, con la SPA llamando sin error de origen cruzado.</li>
+<li>Login real con <em>Authorization Code</em> + PKCE, con <code>state</code> verificado.</li>
+<li>Catálogo, creación de orden y "Mis pedidos" funcionando a través del Gateway.</li>
+<li>Las dos transiciones de estado (<code>PAGADA</code> y <code>CANCELADA</code>) observadas en vivo, sin recargar la página.</li>
+</ul>
+<h2 id="4-crea-actividad-autonoma">4. Crea: actividad autónoma<a class="headerlink" href="#4-crea-actividad-autonoma" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 3h fuera del aula.</p>
+<h3 id="41-actividad">4.1 Actividad<a class="headerlink" href="#41-actividad" title="Permanent link">&para;</a></h3>
+<p>Extensión del cliente frontend del Proyecto Sello propio del equipo, documentada en evidencia individual.</p>
+<p>Completa y evidencia estas tareas, sobre tu propio proyecto:</p>
+<ol>
+<li>Si tu proyecto todavía no reemplazó su propio servidor de autorización por Keycloak, hazlo siguiendo el mismo criterio de la Tabla 6 de S7 — o, si ya lo hiciste en una sesión anterior, confirma que el cliente de tu propia SPA usa <em>Authorization Code</em> + PKCE, sin <em>Direct access grants</em>.</li>
+<li>Si tu dominio tiene algún dato de negocio que no sea simplemente "quién inició sesión" (como <code>idCliente</code> aquí), replica el patrón de <em>user attribute</em> + <em>protocol mapper</em> (2.3) para que viaje en el token.</li>
+<li>Construye al menos una pantalla de tu propio proyecto que dependa de un proceso asíncrono (una cola, un <em>webhook</em>, un <em>batch</em>) y decida explícitamente cómo reflejar el estado "todavía no se sabe" — <em>polling</em>, otra estrategia de la Tabla 4, o una justificación documentada de por qué tu caso no lo necesita.</li>
+<li>Prueba, con datos reales, el camino feliz y al menos un camino de rechazo/fallo, y documenta ambos con capturas.</li>
+</ol>
+<h3 id="42-proposito">4.2 Propósito<a class="headerlink" href="#42-proposito" title="Permanent link">&para;</a></h3>
+<p>Que cada estudiante demuestre, de forma individual y fuera del aula, que puede migrar un cliente frontend a un proveedor de identidad externo y diseñar una interfaz que refleje con honestidad el estado real de un proceso asíncrono propio — no solo replicar lo visto en clase sobre <code>pagatu</code>.</p>
+<h3 id="43-indicaciones">4.3 Indicaciones<a class="headerlink" href="#43-indicaciones" title="Permanent link">&para;</a></h3>
+<p>Entrega un PDF con el siguiente nombre:</p>
+<div class="highlight"><pre><span></span><code>S11_Equipo##_ApellidoNombre.pdf
+</code></pre></div>
+<p>Cada captura de pantalla del informe debe mostrar, sin recortar, el reloj del sistema (fecha y hora) y tu usuario o foto de perfil (Windows, VS Code o navegador) visibles en pantalla.</p>
+<h4 id="431-estructura-del-informe">4.3.1 Estructura del informe<a class="headerlink" href="#431-estructura-del-informe" title="Permanent link">&para;</a></h4>
+<p><strong>Datos del estudiante</strong></p>
+<ul>
+<li>Nombre:</li>
+<li>Equipo:</li>
+<li>Sesión: S11 - Integración con Cliente Frontend: Angular 22 sobre el Gateway, con Keycloak</li>
+<li>Rol o aporte realizado:</li>
+<li>Link de GitHub:</li>
+</ul>
+<p><strong>Evidencia técnica</strong></p>
+<p>Incluye capturas con una breve explicación debajo de cada una, organizadas en los mismos 4 bloques de la rúbrica (4.6):</p>
+<ol>
+<li><em>Migración a Keycloak</em><ul>
+<li>Realm, roles y <em>protocol mapper</em> de tu propio proyecto, con el login real funcionando.</li>
+</ul>
+</li>
+<li><em>Cliente con Authorization Code + PKCE</em><ul>
+<li>Login completo de punta a punta, con <code>state</code> y <code>code_verifier</code> verificados.</li>
+</ul>
+</li>
+<li><em>Proceso asíncrono reflejado en la interfaz</em><ul>
+<li>La pantalla que decide cómo mostrar un estado "todavía no resuelto", con la estrategia elegida justificada.</li>
+</ul>
+</li>
+<li><em>Camino feliz y camino de fallo</em><ul>
+<li>Ambos desenlaces probados y documentados con capturas reales.</li>
+</ul>
+</li>
+</ol>
+<p><strong>Error o hallazgo</strong></p>
+<p>Describe un error real: un <code>protocol mapper</code> sin <strong>Add to access token</strong>, un <code>state</code> que no coincidía por reusar una pestaña vieja, un <em>polling</em> que seguía corriendo después de salir de la pantalla, o un CORS mal configurado que bloqueaba silenciosamente las peticiones.</p>
+<p><strong>Reflexión técnica breve</strong></p>
+<p>Responde en 5 a 8 líneas:</p>
+<div class="highlight"><pre><span></span><code>¿Por qué el caso de Starbucks (1.6) es un problema de consistencia y
+no solo de seguridad? Relaciona tu respuesta con la decisión de
+diseño que tomaste en tu propia pantalla de 4.1.3 para reflejar un
+estado que tu sistema todavía no había resuelto.
+</code></pre></div>
+<h3 id="44-criterios-minimos-de-aceptacion">4.4 Criterios mínimos de aceptación<a class="headerlink" href="#44-criterios-minimos-de-aceptacion" title="Permanent link">&para;</a></h3>
+<ul>
+<li>El archivo respeta el nombre solicitado.</li>
+<li>Si corresponde, el servidor de autorización propio fue reemplazado por Keycloak (o ya lo estaba, y se verifica PKCE sin <em>Direct access grants</em>).</li>
+<li>Cualquier dato de negocio propio (equivalente a <code>idCliente</code>) viaja en el token mediante <em>user attribute</em> + <em>protocol mapper</em>, verificado con un token real.</li>
+<li>Existe al menos una pantalla que depende de un proceso asíncrono, con una estrategia explícita y justificada para reflejar su estado pendiente.</li>
+<li>Se probaron y documentaron tanto el camino feliz como un camino de rechazo/fallo real.</li>
+<li>Cada captura de la evidencia técnica muestra el reloj del sistema y el usuario/perfil visible, sin recortar.</li>
+<li>Las fechas y horas de las capturas son coherentes con el historial de commits de su repositorio en GitHub.</li>
+<li>Incluye un error o hallazgo técnico diagnosticado.</li>
+<li>Incluye la reflexión técnica breve solicitada.</li>
+</ul>
+<h3 id="45-preguntas-de-defensa">4.5 Preguntas de defensa<a class="headerlink" href="#45-preguntas-de-defensa" title="Permanent link">&para;</a></h3>
+<ol>
+<li>¿Por qué <code>idCliente</code> necesitó un <em>protocol mapper</em> propio, mientras que <code>sub</code> nunca necesitó configurarse?</li>
+<li>¿Qué problema concreto previene verificar <code>state</code> al volver de Keycloak, y qué pasaría si tu cliente lo ignorara?</li>
+<li>¿Por qué una respuesta <code>201</code> de <code>POST /api/v1/ordenes</code> no es evidencia de que el pago se resolvió?</li>
+<li>De las tres estrategias de la Tabla 4 (2.6), ¿cuál elegiste para tu propio proyecto, y qué te hizo descartar las otras dos?</li>
+<li>¿Por qué el Gateway es el lugar correcto para configurar CORS, y no cada microservicio por separado?</li>
+<li>Si <code>GET /api/v1/ordenes</code> no filtra por <code>idCliente</code> del lado del servidor, ¿qué protege realmente el filtrado que hiciste en el frontend, y qué no protege?</li>
+</ol>
+<h3 id="46-rubrica-de-evaluacion">4.6 Rúbrica de evaluación<a class="headerlink" href="#46-rubrica-de-evaluacion" title="Permanent link">&para;</a></h3>
+<p><strong>Tabla 5. Rúbrica de evaluación</strong></p>
+<table>
+<thead>
+<tr>
+<th>Criterio</th>
+<th style="text-align: right;">Peso (%)</th>
+<th>A (20 pts)</th>
+<th>B (15 pts)</th>
+<th>C (10 pts)</th>
+<th>D (5 pts)</th>
+<th style="text-align: right;">Nivel obtenido</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Migración a Keycloak*</td>
+<td style="text-align: right;">25</td>
+<td>Realm, roles y protocol mapper configurados y verificados, con login real funcionando.</td>
+<td>Migración funcional, con alguna configuración incompleta (ej. mapper sin "Add to access token").</td>
+<td>Migración parcial, o PKCE no obligatorio.</td>
+<td>No presenta migración a Keycloak.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>2. Cliente con Authorization Code + PKCE*</td>
+<td style="text-align: right;">25</td>
+<td>Login completo verificado de punta a punta, con state y code_verifier validados correctamente.</td>
+<td>Login funcional, con alguna verificación (state o PKCE) incompleta.</td>
+<td>Login funcional solo con un flujo inseguro.</td>
+<td>No presenta login funcional.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>3. Proceso asíncrono en la interfaz*</td>
+<td style="text-align: right;">25</td>
+<td>Estrategia explícita y bien justificada, verificada con datos reales cambiando de estado sin recargar.</td>
+<td>Estrategia presente, con la verificación incompleta.</td>
+<td>Estrategia presente solo en el diseño, sin implementación real.</td>
+<td>No presenta ninguna estrategia.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>4. Camino feliz y de fallo*</td>
+<td style="text-align: right;">25</td>
+<td>Ambos caminos probados y documentados con evidencia real y clara.</td>
+<td>Ambos presentes, con alguno documentado superficialmente.</td>
+<td>Solo el camino feliz probado.</td>
+<td>No presenta ninguno de los dos caminos.</td>
+<td style="text-align: right;"></td>
+</tr>
+</tbody>
+</table>
+<p>* Agregado manual.</p>
+<p>Nota final = suma de (<code>Peso</code> / 100 × <code>Puntos del nivel obtenido</code>) = ____ / 20.</p>
+<p>Para usar la rúbrica con IA (inteligencia artificial), solicita:</p>
+<div class="highlight"><pre><span></span><code>Evalúa el PDF usando la rúbrica de la sesión.
+Para cada criterio selecciona el nivel obtenido usando la escala A=20, B=15, C=10, D=5 puntos.
+Justifica brevemente cada nivel asignado.
+Verifica que cada captura muestre reloj del sistema y usuario/perfil visible, y que las fechas sean coherentes con el historial de commits de GitHub. Si falta esta evidencia o hay inconsistencias, indícalo explícitamente antes de calificar.
+Calcula la nota final con la fórmula: suma de (Peso/100 × Puntos del nivel obtenido), directamente sobre 20.
+Indica 2 fortalezas y 2 recomendaciones.
+</code></pre></div>
+<h2 id="5-cierre">5. Cierre<a class="headerlink" href="#5-cierre" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 5 min.</p>
+<p><strong>Resumen breve:</strong> hoy <code>pagatu</code> dejó de ser un sistema que solo se probaba desde PowerShell y <code>curl</code> — <code>pagatu-auth-ms</code> se retiró exactamente como la Tabla 6 de S7 lo anticipó, sin tocar el código del Gateway ni de <code>pagatu-orden-ms</code>, y Keycloak quedó emitiendo tokens reales, con <code>idCliente</code> viajando como un atributo propio del usuario. El primer cliente Angular del curso ya inicia sesión con <em>Authorization Code</em> + PKCE, crea órdenes a través del Gateway, y —la pieza que no tenía precedente en ninguna sesión anterior— refleja con honestidad un estado que el propio sistema todavía no resolvió, hasta que la consistencia eventual que S9 construyó del lado del backend termina su trabajo y la orden pasa, sola, a <code>PAGADA</code> o <code>CANCELADA</code>.</p>
+<p><strong>Dinámica participativa:</strong> en una ronda rápida, cada estudiante comparte en una frase cuánto tardó, en su propia prueba, en ver una orden pasar de <code>PENDIENTE_PAGO</code> a su estado final.</p>
+<p><strong>Metacognición:</strong> ¿qué te costó más entender hoy: por qué <code>idCliente</code> necesitaba un <em>protocol mapper</em> propio cuando <code>sub</code> nunca lo necesitó, o por qué una respuesta <code>201</code> no es lo mismo que "el proceso ya terminó"?</p>
+<p><strong>Proyección:</strong> S12 integra todo lo construido en esta unidad —seguridad, mensajería, consistencia, observabilidad y ahora el cliente frontend— en el Producto de Unidad 2: el sistema distribuido robusto completo, sustentado de punta a punta.</p>
+<h2 id="bibliografia">Bibliografía<a class="headerlink" href="#bibliografia" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Schneier, B. (2015, 27 de mayo). <em>Race Condition Exploit in Starbucks Gift Cards</em>. Schneier on Security. <a href="https://www.schneier.com/blog/archives/2015/05/race_condition_.html">https://www.schneier.com/blog/archives/2015/05/race_condition_.html</a></li>
+<li>Sakimura, N., Bradley, J., &amp; Agarwal, N. (2015). <em>Proof Key for Code Exchange by OAuth Public Clients</em> (RFC 7636). IETF. <a href="https://www.rfc-editor.org/rfc/rfc7636">https://www.rfc-editor.org/rfc/rfc7636</a></li>
+<li>Lodderstedt, T., Bradley, J., Labunets, A., &amp; Fett, D. (2025). <em>Best Current Practice for OAuth 2.0 Security</em> (RFC 9700). IETF. <a href="https://datatracker.ietf.org/doc/html/rfc9700">https://datatracker.ietf.org/doc/html/rfc9700</a></li>
+<li>Spring Cloud Gateway. (2026). <em>Global CORS Configuration</em>. <a href="https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway/global-cors-configuration.html">https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway/global-cors-configuration.html</a></li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

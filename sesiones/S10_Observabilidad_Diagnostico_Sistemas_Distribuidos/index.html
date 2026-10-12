@@ -1,0 +1,2731 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://262dist.github.io/pagatu/sesiones/S10_Observabilidad_Diagnostico_Sistemas_Distribuidos/">
+      
+      
+        <link rel="prev" href="../S09_Consistencia_Distribuida_Procesos_Negocio/">
+      
+      
+        <link rel="next" href="../S12_Evaluacion_Unidad_2/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+  
+    <title>Pagatu - S10 - Observabilidad y diagnóstico de sistemas distribuidos</title>
+  
+
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#s10-observabilidad-y-diagnostico-de-sistemas-distribuidos" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Pagatu" class="md-header__button md-logo" aria-label="Pagatu" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Pagatu
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              S10 - Observabilidad y diagnóstico de sistemas distribuidos
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/262dist/pagatu" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    262dist/pagatu
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Pagatu" class="md-nav__button md-logo" aria-label="Pagatu" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Pagatu
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/262dist/pagatu" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    262dist/pagatu
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía de Proyecto Sello
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guía de Proyecto Sello
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía del proyecto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief técnico (plantilla)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/u1-producto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Producto U1 (plantilla-ejemplo)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/u2-producto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Producto U2 (plantilla-ejemplo)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/u3-producto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Producto U3 / Producto Final (plantilla-ejemplo)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/matriz-competencias/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Matriz de competencias (ICACIT)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/alcance-microservicios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Alcance por microservicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/acad/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sistema académico (referencia)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/produccion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sistema de producción y comercialización (referencia)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabos
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Silabos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabo 2026-1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabo 2026-2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I. Sistema distribuido base orientado a producción
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    I. Sistema distribuido base orientado a producción
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S01_Construccion_Servicio_Base/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S1 - Construcción de un servicio base para un sistema distribuido
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S02_Configuracion_Centralizada_Ambientes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S2 - Gestión centralizada de configuración y ambientes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S03_Registro_Descubrimiento_Ejecucion_Concurrente/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S3 - Registro, descubrimiento y ejecución concurrente de servicios
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S04_Punto_Unico_Acceso_Distribucion_Trafico/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S4 - Punto único de acceso y distribución de tráfico
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S05_Evaluacion_Unidad_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S5 - Evaluación de la Unidad I
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    II. Sistema distribuido robusto
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    II. Sistema distribuido robusto
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S06_Comunicacion_Sincrona_Resiliente/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S6 - Comunicación síncrona resiliente entre servicios
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S07_Seguridad_Distribuida_Control_Acceso/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S7 - Seguridad distribuida y control de acceso
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S08_Mensajeria_Asincrona_Entre_Servicios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S8 - Mensajería asíncrona entre servicios
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S09_Consistencia_Distribuida_Procesos_Negocio/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S9 - Consistencia distribuida en procesos de negocio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S10 - Observabilidad y diagnóstico de sistemas distribuidos
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S10 - Observabilidad y diagnóstico de sistemas distribuidos
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introducción
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introducción">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-presentacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Presentación de la sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-indice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Índice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-proposito-de-aprendizaje" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Propósito de aprendizaje
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-producto-de-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Producto de sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-metodologia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Metodología
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-motivacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6 Motivación de la sesión
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.6 Motivación de la sesión">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#161-caso-la-metrica-que-decia-todo-bien-mientras-knight-capital-perdia-dinero-cada-segundo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6.1 Caso: la métrica que decía "todo bien" mientras Knight Capital perdía dinero cada segundo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-ubicacion-en-el-curso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.7 Ubicación en el curso
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-explica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Explica
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Explica">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-arquitectura-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Arquitectura de la sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-health-checks-liveness-y-readiness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Health checks: liveness y readiness
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-metricas-con-micrometer-y-prometheus-ya-construido-s3-s4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Métricas con Micrometer y Prometheus (ya construido, S3-S4)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-logs-centralizados-y-correlacion-entre-servicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Logs centralizados y correlación entre servicios
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-paneles-de-diagnostico-en-grafana" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Paneles de diagnóstico en Grafana
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-aplica-actividad-practica-guiada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Aplica: actividad práctica guiada
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Aplica: actividad práctica guiada">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-verificar-el-punto-de-partida" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Verificar el punto de partida
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-cablear-pagatu-auth-ms-y-pagatu-pago-ms-a-promtail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Cablear pagatu-auth-ms y pagatu-pago-ms a Promtail
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-configurar-health-groups-de-livenessreadiness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Configurar health groups de liveness/readiness
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-propagar-x-trace-id-en-las-llamadas-feign-de-pagatu-orden-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Propagar X-Trace-ID en las llamadas Feign de pagatu-orden-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-probar-la-propagacion-de-punta-a-punta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Probar la propagación de punta a punta
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-armar-el-tablero-de-grafana" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 Armar el tablero de Grafana
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-simular-una-falla-y-diagnosticarla-con-el-tablero" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7 Simular una falla y diagnosticarla con el tablero
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#38-relacionar-con-ads-y-bd2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.8 Relacionar con ADS y BD2
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-crea-actividad-autonoma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Crea: actividad autónoma
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Crea: actividad autónoma">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-actividad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Actividad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Propósito
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-indicaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Indicaciones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3 Indicaciones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#431-estructura-del-informe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.1 Estructura del informe
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-criterios-minimos-de-aceptacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Criterios mínimos de aceptación
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-preguntas-de-defensa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 Preguntas de defensa
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-rubrica-de-evaluacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 Rúbrica de evaluación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-cierre" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Cierre
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bibliografia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bibliografía
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S12_Evaluacion_Unidad_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S12 - Evaluación de la Unidad II
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    III. Validación y consolidación del producto del curso
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    III. Validación y consolidación del producto del curso
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S15_Evaluacion_Unidad_3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S15 - Evaluación de la Unidad III
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introducción
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introducción">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-presentacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Presentación de la sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-indice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Índice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-proposito-de-aprendizaje" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Propósito de aprendizaje
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-producto-de-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Producto de sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-metodologia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Metodología
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-motivacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6 Motivación de la sesión
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.6 Motivación de la sesión">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#161-caso-la-metrica-que-decia-todo-bien-mientras-knight-capital-perdia-dinero-cada-segundo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6.1 Caso: la métrica que decía "todo bien" mientras Knight Capital perdía dinero cada segundo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-ubicacion-en-el-curso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.7 Ubicación en el curso
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-explica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Explica
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Explica">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-arquitectura-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Arquitectura de la sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-health-checks-liveness-y-readiness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Health checks: liveness y readiness
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-metricas-con-micrometer-y-prometheus-ya-construido-s3-s4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Métricas con Micrometer y Prometheus (ya construido, S3-S4)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-logs-centralizados-y-correlacion-entre-servicios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Logs centralizados y correlación entre servicios
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-paneles-de-diagnostico-en-grafana" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Paneles de diagnóstico en Grafana
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-aplica-actividad-practica-guiada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Aplica: actividad práctica guiada
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Aplica: actividad práctica guiada">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-verificar-el-punto-de-partida" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Verificar el punto de partida
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-cablear-pagatu-auth-ms-y-pagatu-pago-ms-a-promtail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Cablear pagatu-auth-ms y pagatu-pago-ms a Promtail
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-configurar-health-groups-de-livenessreadiness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Configurar health groups de liveness/readiness
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-propagar-x-trace-id-en-las-llamadas-feign-de-pagatu-orden-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Propagar X-Trace-ID en las llamadas Feign de pagatu-orden-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-probar-la-propagacion-de-punta-a-punta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Probar la propagación de punta a punta
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-armar-el-tablero-de-grafana" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 Armar el tablero de Grafana
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-simular-una-falla-y-diagnosticarla-con-el-tablero" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7 Simular una falla y diagnosticarla con el tablero
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#38-relacionar-con-ads-y-bd2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.8 Relacionar con ADS y BD2
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-crea-actividad-autonoma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Crea: actividad autónoma
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Crea: actividad autónoma">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-actividad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Actividad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Propósito
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-indicaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Indicaciones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3 Indicaciones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#431-estructura-del-informe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.1 Estructura del informe
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-criterios-minimos-de-aceptacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Criterios mínimos de aceptación
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-preguntas-de-defensa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 Preguntas de defensa
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-rubrica-de-evaluacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 Rúbrica de evaluación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-cierre" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Cierre
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bibliografia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bibliografía
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="s10-observabilidad-y-diagnostico-de-sistemas-distribuidos">S10 - Observabilidad y Diagnóstico de Sistemas Distribuidos<a class="headerlink" href="#s10-observabilidad-y-diagnostico-de-sistemas-distribuidos" title="Permanent link">&para;</a></h1>
+<p><em>Por: Angel Sullon Macalupu @asullom - 2026</em></p>
+<h2 id="1-introduccion">1. Introducción<a class="headerlink" href="#1-introduccion" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 20 min.</p>
+<h3 id="11-presentacion-de-la-sesion">1.1 Presentación de la sesión<a class="headerlink" href="#11-presentacion-de-la-sesion" title="Permanent link">&para;</a></h3>
+<p><code>obs/</code> (Prometheus, Loki, Promtail, Grafana) existe desde S3-S4, y Prometheus ya descubre solo, por Eureka, a cualquier microservicio que exponga <code>/actuator/prometheus</code> — ningún microservicio nuevo de S6-S9 tuvo que tocar ese archivo para aparecer. Pero la observabilidad de <code>pagatu</code> quedó con dos huecos reales, documentados en <code>obs/README.md</code> desde antes de esta sesión: Promtail solo tiene cableados <code>pagatu-catalogo-ms</code> y <code>pagatu-orden-ms</code> — <code>pagatu-auth-ms</code> (S7) y <code>pagatu-pago-ms</code> (S8) nunca llegaron a Loki ni a Grafana. Y el <code>X-Trace-ID</code> que <code>CorrelationIdFilter</code> genera desde S7 (cada servicio, al recibir una petición HTTP) nunca se propaga hacia adelante: cuando <code>pagatu-orden-ms</code> llama por Feign a <code>pagatu-catalogo-ms</code>, el segundo genera su <strong>propio</strong> <code>traceId</code> nuevo — seguir una venta de punta a punta por los logs de los dos servicios, hoy, es imposible. Esta sesión cierra los dos huecos, agrega <em>health groups</em> explícitos (<em>liveness</em>/<em>readiness</em>), y construye el primer tablero de Grafana con paneles de diagnóstico reales — la pieza que faltaba para responder "¿está sano el sistema, ahora mismo?" sin tener que leer el código de ningún servicio.</p>
+<h3 id="12-indice">1.2 Índice<a class="headerlink" href="#12-indice" title="Permanent link">&para;</a></h3>
+<ol>
+<li><em>Health checks</em>: <em>liveness</em> y <em>readiness</em>.</li>
+<li>Métricas con Micrometer y Prometheus (ya construido, S3-S4).</li>
+<li>Logs centralizados y correlación entre servicios.</li>
+<li>Paneles de diagnóstico en Grafana.</li>
+</ol>
+<h3 id="13-proposito-de-aprendizaje">1.3 Propósito de aprendizaje<a class="headerlink" href="#13-proposito-de-aprendizaje" title="Permanent link">&para;</a></h3>
+<p>Al concluir la clase, estarás en condiciones de:</p>
+<ul>
+<li><strong>Configurar</strong> <em>health groups</em> de <em>liveness</em>/<em>readiness</em>, <strong>cerrar</strong> la brecha de centralización de logs y de propagación de <em>trace ID</em> entre servicios, y <strong>construir</strong> un tablero de Grafana que combine métricas, logs y estado de salud para diagnosticar un fallo real sin leer código.</li>
+</ul>
+<h3 id="14-producto-de-sesion">1.4 Producto de sesión<a class="headerlink" href="#14-producto-de-sesion" title="Permanent link">&para;</a></h3>
+<p><code>management.endpoint.health.group.liveness</code>/<code>.readiness</code> configurados en los cuatro microservicios; <code>obs/promtail</code> cableado también para <code>pagatu-auth-ms</code> y <code>pagatu-pago-ms</code> (los cuatro servicios, en Loki); un <code>RequestInterceptor</code> en <code>pagatu-orden-ms</code> que propaga <code>X-Trace-ID</code> hacia <code>pagatu-catalogo-ms</code>, verificado con el mismo <code>traceId</code> apareciendo en los logs de ambos; y un tablero de Grafana con paneles reales de salud, tasa de peticiones, tasa de errores y logs filtrados por <code>traceId</code> — probado de punta a punta simulando la caída de un servicio.</p>
+<h3 id="15-metodologia">1.5 Metodología<a class="headerlink" href="#15-metodologia" title="Permanent link">&para;</a></h3>
+<p><strong>Tabla 1. Metodología de la sesión</strong></p>
+<table>
+<thead>
+<tr>
+<th>Actividades a Realizar en el Periodo</th>
+<th>Orientaciones generales (Orientaciones Metodológicas)</th>
+<th>Material de estudio recomendado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Revisión previa individual</td>
+<td>Repasar <code>CorrelationIdFilter</code> (S7) y <code>obs/README.md</code> (estado actual de Promtail). Confirmar que <code>obs/</code> y los cuatro microservicios siguen arrancando. Trabajo individual, antes de clase.</td>
+<td>S7 (3.9), <code>obs/README.md</code>.</td>
+</tr>
+<tr>
+<td>Clase presencial</td>
+<td>Configuración guiada de <em>health groups</em>, cierre de la brecha de Promtail, propagación de <code>X-Trace-ID</code> por Feign, y construcción del tablero de Grafana. Trabajo individual en la propia laptop, siguiendo al docente paso a paso.</td>
+<td>Contenedor <code>obs/</code> y los cuatro microservicios corriendo, Pasos 3.1 a 3.8 de esta guía.</td>
+</tr>
+<tr>
+<td>Evaluación formativa</td>
+<td>Revisión en clase del tablero de Grafana con datos reales de los cuatro servicios, y de la prueba de propagación de <code>traceId</code>. La evidencia se completa y sustenta de forma individual, fuera del aula, según los criterios mínimos de la sección 4.4.</td>
+<td>Indicaciones de entrega (4.3), rúbrica de evaluación (4.6).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="16-motivacion-de-la-sesion">1.6 Motivación de la sesión<a class="headerlink" href="#16-motivacion-de-la-sesion" title="Permanent link">&para;</a></h3>
+<h4 id="161-caso-la-metrica-que-decia-todo-bien-mientras-knight-capital-perdia-dinero-cada-segundo">1.6.1 Caso: la métrica que decía "todo bien" mientras Knight Capital perdía dinero cada segundo<a class="headerlink" href="#161-caso-la-metrica-que-decia-todo-bien-mientras-knight-capital-perdia-dinero-cada-segundo" title="Permanent link">&para;</a></h4>
+<p>El caso de Knight Capital (S9, 1.6) ya mostró qué pasa cuando un sistema no tiene ninguna noción de "esto ya lo procesé". Hay un ángulo del mismo incidente que no se desarrolló ahí: durante los 45 minutos de la falla, los sistemas de monitoreo de Knight Capital <strong>sí</strong> mostraban actividad — órdenes ejecutándose, el sistema "arriba", respondiendo. Lo que ningún panel mostraba era la pregunta correcta: no "¿está vivo el sistema?", sino "¿está haciendo lo correcto?". Un <em>health check</em> que solo confirma que el proceso responde (<em>liveness</em>) no es lo mismo que uno que confirma que el proceso está listo para operar de forma correcta (<em>readiness</em>) — y ninguno de los dos reemplaza una métrica de negocio real.</p>
+<p>Fuente: U.S. Securities and Exchange Commission. (2013). <em>In the Matter of Knight Capital Americas LLC</em> (Release No. 34-70694). <a href="https://www.sec.gov/litigation/admin/2013/34-70694.pdf">https://www.sec.gov/litigation/admin/2013/34-70694.pdf</a></p>
+<p><strong>Preguntas de análisis</strong></p>
+<p><strong>Activación de conocimientos previos</strong></p>
+<ol>
+<li>Si tuvieras que diagnosticar, hoy, por qué una venta de <code>pagatu</code> falló, ¿qué pasos seguirías con las herramientas que ya tienes desde S7-S9?</li>
+</ol>
+<p><strong>Comprensión de observabilidad distribuida</strong></p>
+<ol>
+<li>¿Qué diferencia hay entre que un servicio esté "arriba" (el proceso responde) y que esté "sano" (listo para operar correctamente)?</li>
+<li>Si <code>pagatu-orden-ms</code> nunca propaga su <code>traceId</code> a <code>pagatu-catalogo-ms</code>, ¿qué efecto concreto tiene eso al buscar una venta específica en Grafana/Loki?</li>
+</ol>
+<h3 id="17-ubicacion-en-el-curso">1.7 Ubicación en el curso<a class="headerlink" href="#17-ubicacion-en-el-curso" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Unidad: U2 - Sistema distribuido robusto.</li>
+<li>Producto del curso: sistema distribuido de microservicios end-to-end, configurable, escalable, seguro, resiliente, consistente, observable, integrado con frontend y defendido técnicamente.</li>
+<li>Producto de unidad: sistema distribuido seguro, resiliente, consistente, observable e integrado con cliente frontend.</li>
+<li>Avance del producto en esta sesión: <em>health groups</em>, logs centralizados de los cuatro microservicios, propagación de <code>traceId</code> entre servicios, y el primer tablero de Grafana con paneles de diagnóstico.</li>
+</ul>
+<p><strong>Figura 1. Roadmap del producto de la unidad</strong></p>
+<pre class="mermaid"><code>flowchart TB
+    S6["`**S6:** Comunicación síncrona resiliente`"]
+    S7["`**S7:** Seguridad distribuida`"]
+    S8["`**S8:** Mensajería asíncrona`"]
+    S9["`**S9:** Consistencia distribuida`"]
+    S10["`**S10:** Observabilidad y diagnóstico`"]
+    S11["`**S11:** Integración con cliente frontend`"]
+    S12["`**S12:** Producto U2`"]
+
+    S6 --&gt; S7 --&gt; S8 --&gt; S9 --&gt; S10 --&gt; S11 --&gt; S12
+
+    classDef today fill:#ffe08a,stroke:#9a6b00,stroke-width:2px,color:#111;
+    class S10 today;</code></pre>
+<h2 id="2-explica">2. Explica<a class="headerlink" href="#2-explica" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 30 min.</p>
+<h3 id="21-arquitectura-de-la-sesion">2.1 Arquitectura de la sesión<a class="headerlink" href="#21-arquitectura-de-la-sesion" title="Permanent link">&para;</a></h3>
+<p><strong>Figura 2. Dos caminos hacia Grafana, y el hueco que cierra esta sesión</strong></p>
+<pre class="mermaid"><code>flowchart TB
+    Auth["pagatu-auth-ms"]
+    Cat["pagatu-catalogo-ms"]
+    Ord["pagatu-orden-ms"]
+    Pago["pagatu-pago-ms"]
+
+    Prom[("Prometheus")]
+    Loki[("Loki")]
+    Graf["Grafana"]
+
+    Auth --&gt;|"/actuator/prometheus&lt;br/&gt;(Eureka SD, ya funciona)"| Prom
+    Cat --&gt;|"/actuator/prometheus"| Prom
+    Ord --&gt;|"/actuator/prometheus"| Prom
+    Pago --&gt;|"/actuator/prometheus"| Prom
+
+    Cat --&gt;|"logs/catalogo.log&lt;br/&gt;(Promtail, ya funciona)"| Loki
+    Ord --&gt;|"logs/orden.log&lt;br/&gt;(Promtail, ya funciona)"| Loki
+    Auth -.-&gt;|"logs/auth.log&lt;br/&gt;(falta cablear, 3.2)"| Loki
+    Pago -.-&gt;|"logs/pago.log&lt;br/&gt;(falta cablear, 3.2)"| Loki
+
+    Ord -.-&gt;|"Feign: X-Trace-ID&lt;br/&gt;(falta propagar, 3.4)"| Cat
+
+    Prom --&gt; Graf
+    Loki --&gt; Graf</code></pre>
+<p>Lectura del diagrama: el camino de <strong>métricas</strong> (línea sólida hacia Prometheus) ya funciona para los cuatro servicios, por <em>service discovery</em> de Eureka (S3-S4) — nada que arreglar ahí. El camino de <strong>logs</strong> (hacia Loki) solo funciona para dos de los cuatro — las líneas punteadas son exactamente lo que 3.2 cierra. Y la flecha entre <code>pagatu-orden-ms</code> y <code>pagatu-catalogo-ms</code> (<code>X-Trace-ID</code>) todavía no existe — 3.4 la agrega. Cada apartado siguiente desarrolla una pieza, en el mismo orden del Índice (1.2).</p>
+<h3 id="22-health-checks-liveness-y-readiness">2.2 <em>Health checks</em>: <em>liveness</em> y <em>readiness</em><a class="headerlink" href="#22-health-checks-liveness-y-readiness" title="Permanent link">&para;</a></h3>
+<p>Spring Boot Actuator expone <code>/actuator/health</code> desde que <code>spring-boot-starter-actuator</code> está en el classpath (ya lo está en los cuatro servicios, desde su creación) — pero por defecto responde una sola cosa: <code>UP</code> o <code>DOWN</code>, sin distinguir <strong>por qué</strong>. Los grupos de <em>health</em> de Kubernetes que Actuator ya trae listos (Spring Boot, 2026) responden dos preguntas distintas, no una:</p>
+<p><strong>Tabla 2. <em>Liveness<em> frente a </em>readiness</em></strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><em>Liveness</em> (<code>/actuator/health/liveness</code>)</th>
+<th><em>Readiness</em> (<code>/actuator/health/readiness</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pregunta que responde</td>
+<td>¿Sigue vivo el proceso, o hay que reiniciarlo?</td>
+<td>¿Puede aceptar tráfico <strong>ahora mismo</strong>?</td>
+</tr>
+<tr>
+<td>Qué revisa</td>
+<td>Que la JVM (<em>Java Virtual Machine</em>) no esté bloqueada/colgada</td>
+<td>Dependencias externas: base de datos, Kafka, otros servicios</td>
+</tr>
+<tr>
+<td>Qué pasa si falla</td>
+<td>El orquestador <strong>reinicia</strong> el contenedor</td>
+<td>El orquestador <strong>deja de enviarle tráfico</strong>, sin reiniciarlo</td>
+</tr>
+<tr>
+<td>Ejemplo en <code>pagatu</code></td>
+<td>El proceso de <code>pagatu-pago-ms</code> sigue corriendo</td>
+<td><code>pagatu-pago-ms</code> corre, pero no puede conectarse a su Postgres</td>
+</tr>
+</tbody>
+</table>
+<p>La diferencia importa porque la respuesta correcta es distinta: si Postgres está caído, reiniciar <code>pagatu-pago-ms</code> (acción de <em>liveness</em>) no soluciona nada — el problema no es el proceso, es su dependencia. Sacarlo de la rotación de tráfico (acción de <em>readiness</em>) sí es correcto: evita que seseen peticiones a un servicio que sabe que va a fallar.</p>
+<h3 id="23-metricas-con-micrometer-y-prometheus-ya-construido-s3-s4">2.3 Métricas con Micrometer y Prometheus (ya construido, S3-S4)<a class="headerlink" href="#23-metricas-con-micrometer-y-prometheus-ya-construido-s3-s4" title="Permanent link">&para;</a></h3>
+<p>Los cuatro microservicios ya exponen <code>/actuator/prometheus</code> (<code>micrometer-registry-prometheus</code>, en el <code>pom.xml</code> de cada uno desde su creación), y <code>obs/prometheus/prometheus-dev.yml</code> ya los descubre por Eureka (<code>eureka_sd_configs</code>) — esta sesión no construye el mecanismo, lo <strong>usa</strong> para diagnosticar.</p>
+<p><strong>Tabla 3. Métricas de Micrometer más útiles para diagnóstico (Micrometer, 2026)</strong></p>
+<table>
+<thead>
+<tr>
+<th>Métrica</th>
+<th>Qué mide</th>
+<th>Pregunta que responde</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>http_server_requests_seconds_count</code></td>
+<td>Cuántas peticiones HTTP recibió el servicio, por <code>status</code> y <code>uri</code></td>
+<td>¿Cuántas peticiones, y cuántas fallaron (<code>status=5xx</code>)?</td>
+</tr>
+<tr>
+<td><code>http_server_requests_seconds_sum</code> / <code>_count</code></td>
+<td>Tiempo total entre peticiones</td>
+<td>Latencia promedio por endpoint</td>
+</tr>
+<tr>
+<td><code>process_uptime_seconds</code></td>
+<td>Hace cuánto arrancó el proceso</td>
+<td>¿Se reinició recientemente, sin que lo esperaras?</td>
+</tr>
+<tr>
+<td><code>up{job="pagatu-microservicios"}</code></td>
+<td>Si el último <em>scrape</em> de Prometheus tuvo éxito (métrica propia de Prometheus, no de Micrometer)</td>
+<td>¿Está el <em>target</em> arriba, visto desde afuera?</td>
+</tr>
+</tbody>
+</table>
+<p><code>up</code> es la misma métrica que lambda26 (BigData) usa para <code>kafka-exporter</code> — Prometheus la genera para <strong>cualquier</strong> <em>target</em>, sin importar qué exponga: es la señal más básica y más confiable de todas, porque no depende de que el propio servicio reporte bien su estado.</p>
+<h3 id="24-logs-centralizados-y-correlacion-entre-servicios">2.4 Logs centralizados y correlación entre servicios<a class="headerlink" href="#24-logs-centralizados-y-correlacion-entre-servicios" title="Permanent link">&para;</a></h3>
+<p>Cada microservicio ya escribe a <code>logs/&lt;nombre&gt;.log</code> (<code>logback-spring.xml</code>, con el patrón <code>%X{traceId}</code>) y Promtail ya sube esos archivos a Loki — para dos de los cuatro servicios (2.1). <code>CorrelationIdFilter</code> (S7, 3.9) pone ese <code>traceId</code> en el MDC (<em>Mapped Diagnostic Context</em>) de SLF4J al recibir cada petición HTTP: si ya trae el header <code>X-Trace-ID</code>, lo reutiliza; si no, genera uno nuevo con <code>UUID.randomUUID()</code>.</p>
+<p><strong>El hueco real</strong>: <code>CorrelationIdFilter</code> <strong>recibe</strong> el header, pero ningún cliente HTTP de <code>pagatu</code> lo <strong>envía</strong> hacia adelante. Cuando <code>pagatu-orden-ms</code> llama a <code>pagatu-catalogo-ms</code> por Feign (S6, 3.13), esa llamada sale sin el header <code>X-Trace-ID</code> — <code>pagatu-catalogo-ms</code> nunca lo recibe, así que <code>CorrelationIdFilter</code> de ese lado genera un <code>traceId</code> <strong>completamente nuevo</strong>, sin relación con el de <code>pagatu-orden-ms</code>. El resultado: una sola venta, en los logs, aparece con dos <code>traceId</code> distintos según en qué servicio la busques — seguirla de punta a punta por Loki es imposible hoy. 3.4 cierra esto con un <code>RequestInterceptor</code> de Feign (OpenFeign, 2026), el mismo mecanismo con el que Spring propaga cualquier <em>header</em> saliente.</p>
+<h3 id="25-paneles-de-diagnostico-en-grafana">2.5 Paneles de diagnóstico en Grafana<a class="headerlink" href="#25-paneles-de-diagnostico-en-grafana" title="Permanent link">&para;</a></h3>
+<p>Un panel de diagnóstico útil combina más de una fuente — ninguna métrica sola cuenta la historia completa (el mismo principio que lambda26 S09, 2.2, aplicado aquí a microservicios en vez de a un pipeline de streaming):</p>
+<p><strong>Tabla 4. Paneles mínimos de un tablero de diagnóstico, con el panel de logs en LogQL (Grafana Labs, 2026)</strong></p>
+<table>
+<thead>
+<tr>
+<th>Panel</th>
+<th>Fuente</th>
+<th>Qué responde</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Servicios arriba</td>
+<td>Prometheus, <code>up{job="pagatu-microservicios"}</code></td>
+<td>¿Cuáles de los cuatro responden ahora mismo?</td>
+</tr>
+<tr>
+<td>Tasa de peticiones</td>
+<td>Prometheus, <code>rate(http_server_requests_seconds_count[1m])</code></td>
+<td>¿Cuánto tráfico recibe cada servicio?</td>
+</tr>
+<tr>
+<td>Tasa de errores</td>
+<td>Prometheus, <code>rate(http_server_requests_seconds_count{status=~"5.."}[1m])</code></td>
+<td>¿Está fallando algo, y en cuál servicio?</td>
+</tr>
+<tr>
+<td>Logs por <code>traceId</code></td>
+<td>Loki, <code>{application=~"pagatu-.*"} \| json \| traceId="..."</code></td>
+<td>Dado un error, ¿qué pasó en cada servicio, en orden?</td>
+</tr>
+</tbody>
+</table>
+<p>Los primeros tres paneles dicen <strong>que</strong> algo está mal; el cuarto dice <strong>por qué</strong> — es la razón por la que esta sesión no se conforma con un tablero de solo métricas: sin el panel de logs correlacionados, confirmar una hipótesis exige volver a la terminal a buscar archivo por archivo.</p>
+<h2 id="3-aplica-actividad-practica-guiada">3. Aplica: actividad práctica guiada<a class="headerlink" href="#3-aplica-actividad-practica-guiada" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 3h.</p>
+<p><strong>Actividad:</strong> configuración de <em>health groups</em>, cierre de la brecha de Promtail para los cuatro microservicios, propagación de <code>X-Trace-ID</code> por Feign, y construcción de un tablero de Grafana con paneles de diagnóstico, probado simulando una falla real (Producto de la sesión en 1.4).</p>
+<p><strong>Propósito de la actividad:</strong> que cada estudiante deje el sistema en condiciones de diagnosticarse solo — con métricas, logs correlacionados y estado de salud combinados en un único lugar, no repartidos entre cuatro terminales distintas.</p>
+<p><strong>Orientaciones metodológicas:</strong> el docente cierra primero la brecha de Promtail y la propagación de <code>traceId</code> frente a la clase, después construye el tablero; los estudiantes replican cada paso en su propio entorno y provocan ellos mismos la falla simulada de 3.7 para ver el diagnóstico completo en su propia consola.</p>
+<p><strong>Actividades para realizar:</strong></p>
+<ul>
+<li><strong>3.1</strong> Verificar el punto de partida.</li>
+<li><strong>3.2</strong> Cablear <code>pagatu-auth-ms</code> y <code>pagatu-pago-ms</code> a Promtail.</li>
+<li><strong>3.3</strong> Configurar <em>health groups</em> de <em>liveness</em>/<em>readiness</em>.</li>
+<li><strong>3.4</strong> Propagar <code>X-Trace-ID</code> en las llamadas Feign de <code>pagatu-orden-ms</code>.</li>
+<li><strong>3.5</strong> Probar la propagación de punta a punta.</li>
+<li><strong>3.6</strong> Armar el tablero de Grafana.</li>
+<li><strong>3.7</strong> Simular una falla y diagnosticarla con el tablero.</li>
+<li><strong>3.8</strong> Relacionar con ADS y BD2.</li>
+</ul>
+<h3 id="31-verificar-el-punto-de-partida">3.1 Verificar el punto de partida<a class="headerlink" href="#31-verificar-el-punto-de-partida" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> confirmación de que los cuatro microservicios y <code>obs/</code> siguen corriendo.</p>
+<p>Todo el equipo debe comenzar exactamente desde donde quedó S9 (consistencia distribuida), no desde su propio avance individual. Clona la rama <code>s09-consistencia-distribuida</code>:</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>--branch<span class="w"> </span>s09-consistencia-distribuida<span class="w"> </span>https://github.com/262dist/pagatu.git
+</code></pre></div>
+<p>Levanta, si no están arriba, <code>pagatu-config</code>, <code>pagatu-eureka</code>, <code>pagatu-auth-ms</code>, <code>pagatu-catalogo-ms</code>, <code>pagatu-orden-ms</code> y <code>pagatu-pago-ms</code> (S1-S9), y luego <code>obs/</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd </span><span class="n">obs</span>
+<span class="n">docker</span> <span class="n">compose</span> <span class="o">-f</span> <span class="n">compose-dev</span><span class="p">.</span><span class="n">yml</span> <span class="n">up</span> <span class="n">-d</span>
+</code></pre></div>
+<p>Confirma en Prometheus (<code>http://localhost:19090/targets</code>) que los cuatro microservicios aparecen <code>UP</code> bajo el <em>job</em> <code>pagatu-microservicios</code> — esto ya funcionaba antes de hoy (2.3), solo lo estás verificando.</p>
+<h3 id="32-cablear-pagatu-auth-ms-y-pagatu-pago-ms-a-promtail">3.2 Cablear <code>pagatu-auth-ms</code> y <code>pagatu-pago-ms</code> a Promtail<a class="headerlink" href="#32-cablear-pagatu-auth-ms-y-pagatu-pago-ms-a-promtail" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> los cuatro microservicios, no solo dos, con sus logs llegando a Loki.</p>
+<p><strong><code>obs/compose-dev.yml</code></strong> — agrega los dos volúmenes que faltan, junto a los que ya existen en <code>pagatu-promtail</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">../services/pagatu-auth-ms/logs:/var/log/pagatu-auth-ms:ro</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">../services/pagatu-pago-ms/logs:/var/log/pagatu-pago-ms:ro</span>
+</code></pre></div>
+<p><strong><code>obs/promtail/promtail-config-dev.yml</code></strong> — agrega los dos <em>jobs</em> que faltan, con el mismo patrón que los dos que ya existen:</p>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-auth-ms</span>
+<span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">localhost</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">application</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-auth-ms</span>
+<span class="w">          </span><span class="nt">__path__</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/log/pagatu-auth-ms/*.log</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-pago-ms</span>
+<span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">localhost</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">application</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-pago-ms</span>
+<span class="w">          </span><span class="nt">__path__</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/log/pagatu-pago-ms/*.log</span>
+</code></pre></div>
+<p>Repite el mismo cambio en <strong><code>obs/compose.yml</code></strong> y <strong><code>obs/promtail/promtail-config.yml</code></strong> (PROD local) — son los mismos dos archivos, con el prefijo de puertos <code>2xxxx</code> en vez de <code>1xxxx</code> (<code>obs/README.md</code>), no una configuración distinta.</p>
+<p>Sube de nuevo Promtail para que tome los archivos nuevos:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd </span><span class="n">obs</span>
+<span class="n">docker</span> <span class="n">compose</span> <span class="o">-f</span> <span class="n">compose-dev</span><span class="p">.</span><span class="n">yml</span> <span class="n">up</span> <span class="n">-d</span> <span class="n">promtail</span>
+</code></pre></div>
+<p><strong>Error frecuente</strong>: agregar el <code>job_name</code> en <code>promtail-config-dev.yml</code> pero olvidar el volumen en <code>compose-dev.yml</code> (o al revés). Promtail necesita las dos cosas: el volumen monta el archivo real dentro del contenedor, y el <code>job_name</code> le dice dónde buscarlo (<code>__path__</code>) — sin el volumen, el <code>__path__</code> apunta a una carpeta vacía dentro del contenedor, y Promtail no encuentra nada que subir, sin ningún error visible.</p>
+<h3 id="33-configurar-health-groups-de-livenessreadiness">3.3 Configurar <em>health groups</em> de <em>liveness</em>/<em>readiness</em><a class="headerlink" href="#33-configurar-health-groups-de-livenessreadiness" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> <code>/actuator/health/liveness</code> y <code>/actuator/health/readiness</code> respondiendo, en los cuatro microservicios.</p>
+<p>En <code>application-dev.yml</code> de cada uno de los cuatro servicios (<code>infra/pagatu-config/config-repo/pagatu-&lt;servicio&gt;-dev.yml</code>, S2), agrega:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">management</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">endpoint</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">health</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">probes</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">group</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">liveness</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">livenessState</span>
+<span class="w">        </span><span class="nt">readiness</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">readinessState, db</span>
+</code></pre></div>
+<p><code>probes.enabled: true</code> habilita los dos grupos (Spring Boot los trae listos desde que detecta que corre en un entorno que los soporta, pero no los expone por defecto en todos los casos — esta propiedad lo fuerza siempre). El grupo <code>readiness</code> de cada servicio con base de datos agrega <code>db</code> al chequeo: si la conexión a Postgres (o a Oracle, para los que persisten ahí) falla, <code>/actuator/health/readiness</code> responde <code>DOWN</code> aunque el proceso (<em>liveness</em>) siga perfectamente vivo.</p>
+<p>Confirma, con cada servicio corriendo:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:8085/actuator/health/liveness"</span>
+<span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:8085/actuator/health/readiness"</span>
+</code></pre></div>
+<p>Resultado esperado: <code>{"status": "UP"}</code> en ambos, para los cuatro puertos de servicio.</p>
+<h3 id="34-propagar-x-trace-id-en-las-llamadas-feign-de-pagatu-orden-ms">3.4 Propagar <code>X-Trace-ID</code> en las llamadas Feign de <code>pagatu-orden-ms</code><a class="headerlink" href="#34-propagar-x-trace-id-en-las-llamadas-feign-de-pagatu-orden-ms" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> cada llamada de <code>pagatu-orden-ms</code> a <code>pagatu-catalogo-ms</code> (vía Feign, S6) sale con el mismo <code>X-Trace-ID</code> que <code>CorrelationIdFilter</code> ya puso en el MDC de la petición entrante.</p>
+<p><strong><code>services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/config/FeignTraceConfig.java</code></strong> (nuevo):</p>
+<div class="highlight"><pre><span></span><code><span class="kn">package</span><span class="w"> </span><span class="nn">pe.edu.upeu.orden.config</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">feign.RequestInterceptor</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.slf4j.MDC</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.context.annotation.Bean</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.context.annotation.Configuration</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pe.edu.upeu.orden.filter.CorrelationIdFilter</span><span class="p">;</span>
+
+<span class="nd">@Configuration</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">FeignTraceConfig</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="nd">@Bean</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">RequestInterceptor</span><span class="w"> </span><span class="nf">traceIdInterceptor</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">template</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">String</span><span class="w"> </span><span class="n">traceId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MDC</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">CorrelationIdFilter</span><span class="p">.</span><span class="na">MDC_KEY</span><span class="p">);</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">traceId</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">template</span><span class="p">.</span><span class="na">header</span><span class="p">(</span><span class="n">CorrelationIdFilter</span><span class="p">.</span><span class="na">TRACE_ID_HEADER</span><span class="p">,</span><span class="w"> </span><span class="n">traceId</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">};</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><code>RequestInterceptor</code> es el mecanismo estándar de OpenFeign para agregar algo a <strong>todas</strong> las peticiones salientes de un cliente Feign, sin tocar ninguna interfaz <code>@FeignClient</code> existente (<code>ProductoClient</code>, S6) — se aplica solo con que este <em>bean</em> exista en el contexto de Spring. <code>MDC.get(...)</code> lee el mismo <code>traceId</code> que <code>CorrelationIdFilter</code> (S7) ya puso ahí para la petición HTTP entrante actual — es la misma variable, leída desde un punto distinto del código, no una copia.</p>
+<p><strong>Error frecuente</strong>: esperar que esto funcione para las llamadas asíncronas de Kafka (S8). <code>MDC</code> es <strong>por hilo</strong> (<em>thread-local</em>): el <code>@KafkaListener</code> que consume <code>orden.creada</code> en <code>pagatu-pago-ms</code> corre en un hilo completamente distinto al que procesó la petición HTTP original en <code>pagatu-orden-ms</code> — no hay ningún <code>traceId</code> en el MDC de ese hilo nuevo, con o sin este interceptor. Propagar correlación a través de eventos Kafka es un problema distinto (agregar el <code>traceId</code> como parte del <em>payload</em> del evento, no como un <em>header</em> HTTP) y queda fuera del alcance de esta sesión.</p>
+<h3 id="35-probar-la-propagacion-de-punta-a-punta">3.5 Probar la propagación de punta a punta<a class="headerlink" href="#35-probar-la-propagacion-de-punta-a-punta" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> evidencia real de un mismo <code>traceId</code> apareciendo en los logs de <code>pagatu-orden-ms</code> <strong>y</strong> <code>pagatu-catalogo-ms</code>, para la misma petición.</p>
+<p>Reinicia <code>pagatu-orden-ms</code> (para que tome el <em>bean</em> nuevo) y crea una orden con el token de <code>CLIENTE</code> (S7, 3.19):</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Post</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18080/api/v1/ordenes"</span> <span class="p">`</span>
+  <span class="n">-Headers</span> <span class="p">@{</span> <span class="n">Authorization</span> <span class="p">=</span> <span class="s2">"Bearer $tokenCliente"</span> <span class="p">}</span> <span class="p">`</span>
+  <span class="n">-ContentType</span> <span class="s2">"application/json"</span> <span class="p">`</span>
+  <span class="n">-Body</span> <span class="s1">'{"metodoPago": "YAPE_PLIN", "detalles": [{"idProducto": 1, "cantidad": 1}]}'</span>
+</code></pre></div>
+<p>Busca, en <code>logs/orden.log</code> y en <code>logs/catalogo.log</code> (de sus respectivas carpetas <code>services/</code>), la línea de esa petición. Antes de 3.4, cada archivo mostraba un <code>[traceId]</code> distinto entre corchetes al inicio de cada línea (el patrón de <code>logback-spring.xml</code>, 2.4); ahora, el mismo <code>traceId</code> debe aparecer en ambos — confirma copiando el valor de una línea de <code>orden.log</code> y buscándolo con <code>findstr</code>/<code>grep</code> directo en <code>catalogo.log</code>.</p>
+<p><strong>Error frecuente</strong>: seguir viendo <code>traceId</code> distintos después de 3.4. Confirma que reiniciaste <code>pagatu-orden-ms</code> (los <em>beans</em> de Spring no se recargan solos), y que <code>FeignTraceConfig</code> está en un paquete que el <code>@SpringBootApplication</code> de <code>pagatu-orden-ms</code> sí escanea (dentro de <code>pe.edu.upeu.orden</code>, no fuera de ese árbol de paquetes).</p>
+<h3 id="36-armar-el-tablero-de-grafana">3.6 Armar el tablero de Grafana<a class="headerlink" href="#36-armar-el-tablero-de-grafana" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> un tablero con los cuatro paneles de la Tabla 4, con datos reales de los cuatro microservicios.</p>
+<p>Abre <code>http://localhost:13000</code> (<code>admin</code>/<code>admin</code>). Mismo flujo que ya conoces de cualquier <em>dashboard</em> de Grafana (<strong>Dashboards → New → New dashboard → + Add visualization</strong>, un panel a la vez):</p>
+<p><strong>Tabla 5. Paneles del tablero, con su consulta</strong></p>
+<table>
+<thead>
+<tr>
+<th>Panel</th>
+<th><em>Datasource</em></th>
+<th>Consulta</th>
+<th>Visualización</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Servicios arriba</td>
+<td>Prometheus</td>
+<td><code>up{job="pagatu-microservicios"}</code></td>
+<td>Table</td>
+</tr>
+<tr>
+<td>Tasa de peticiones</td>
+<td>Prometheus</td>
+<td><code>sum by (application) (rate(http_server_requests_seconds_count[1m]))</code></td>
+<td>Time series</td>
+</tr>
+<tr>
+<td>Tasa de errores</td>
+<td>Prometheus</td>
+<td><code>sum by (application) (rate(http_server_requests_seconds_count{status=~"5.."}[1m]))</code></td>
+<td>Time series</td>
+</tr>
+<tr>
+<td>Logs recientes</td>
+<td>Loki</td>
+<td><code>{application=~"pagatu-.*"}</code></td>
+<td>Logs</td>
+</tr>
+</tbody>
+</table>
+<p>Para el panel de <strong>Logs</strong>, elige explícitamente el <em>datasource</em> <strong>Loki</strong> (no Prometheus) al crearlo — es el único panel de los cuatro que no viene de una métrica. Guarda el <em>dashboard</em> como <code>S10 - Diagnóstico de pagatu</code>.</p>
+<h3 id="37-simular-una-falla-y-diagnosticarla-con-el-tablero">3.7 Simular una falla y diagnosticarla con el tablero<a class="headerlink" href="#37-simular-una-falla-y-diagnosticarla-con-el-tablero" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> un fallo real, detectado y diagnosticado de punta a punta usando solo el tablero — sin leer ningún log a mano desde la terminal.</p>
+<p>Detén <code>pagatu-pago-ms</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="c"># Ctrl+C en la terminal donde corre pagatu-pago-ms</span>
+</code></pre></div>
+<p>En el tablero: el panel <strong>Servicios arriba</strong> debe mostrar a <code>pagatu-pago-ms</code> ausente (o su <code>up</code> en <code>0</code>, según el momento del <em>scrape</em>) en menos de <code>scrape_interval</code> (15s). Crea una orden nueva (3.5) — el evento <code>orden.creada</code> queda publicado en Kafka, pero nadie lo consume (S8, 2.2): el panel <strong>Tasa de peticiones</strong> de <code>pagatu-pago-ms</code> se queda plano en <code>0</code>, mientras el de <code>pagatu-orden-ms</code> sigue mostrando actividad.</p>
+<p>Levanta <code>pagatu-pago-ms</code> de nuevo. Usa el panel de <strong>Logs</strong>, filtrando por el <code>traceId</code> de la orden que acabas de crear (3.5), para confirmar en qué momento el evento finalmente se consumió — el mismo patrón de diagnóstico de S8 (2.6), ahora sin salir de Grafana.</p>
+<p><strong>Tabla 6. Qué mostró cada panel durante la falla simulada</strong></p>
+<table>
+<thead>
+<tr>
+<th>Panel</th>
+<th>Durante la falla</th>
+<th>Después de levantar <code>pagatu-pago-ms</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Servicios arriba</td>
+<td><code>pagatu-pago-ms</code> ausente/<code>0</code></td>
+<td>Vuelve a aparecer</td>
+</tr>
+<tr>
+<td>Tasa de peticiones</td>
+<td>Plana en <code>pagatu-pago-ms</code></td>
+<td>Sube cuando procesa el evento pendiente</td>
+</tr>
+<tr>
+<td>Tasa de errores</td>
+<td>Sin cambio (nadie llamó a <code>pagatu-pago-ms</code> por HTTP, el fallo fue async)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Logs</td>
+<td>Sin líneas nuevas de <code>pagatu-pago-ms</code></td>
+<td>Línea de consumo del evento, con el <code>traceId</code> de la orden</td>
+</tr>
+</tbody>
+</table>
+<h3 id="38-relacionar-con-ads-y-bd2">3.8 Relacionar con ADS y BD2<a class="headerlink" href="#38-relacionar-con-ads-y-bd2" title="Permanent link">&para;</a></h3>
+<p>Sesión equivalente en los otros dos cursos, misma semana (BD2, S9 de esa guía — administración del almacenamiento y seguridad): la auditoría de Oracle (<code>UNIFIED_AUDIT_TRAIL</code>) responde "quién hizo qué, y cuándo" dentro de una sola base de datos; el tablero de hoy responde la misma pregunta, pero a través de <strong>cuatro</strong> procesos distintos que no comparten memoria ni base de datos — el mismo problema de fondo (reconstruir una historia completa a partir de evidencia parcial), resuelto con herramientas distintas porque el alcance es distinto. ADS no tiene sesión de observabilidad propia en el sílabo — la arquitectura que ADS diseña (Figura 6 de cada sesión) es exactamente lo que el tablero de hoy termina verificando en producción: que los módulos se comunican como el diseño dijo que lo harían.</p>
+<p><strong>Evidencia de aprendizaje:</strong></p>
+<ul>
+<li><em>Health groups</em> de <em>liveness</em>/<em>readiness</em> respondiendo en los cuatro microservicios.</li>
+<li><code>pagatu-auth-ms</code> y <code>pagatu-pago-ms</code> cableados a Promtail, junto a los dos que ya estaban.</li>
+<li><code>RequestInterceptor</code> de Feign propagando <code>X-Trace-ID</code>, con evidencia real del mismo <code>traceId</code> en dos servicios distintos.</li>
+<li>Tablero de Grafana con los cuatro paneles de la Tabla 5, con datos reales.</li>
+<li>Diagnóstico de una falla simulada usando solo el tablero, con la Tabla 6 completada con valores reales.</li>
+</ul>
+<h2 id="4-crea-actividad-autonoma">4. Crea: actividad autónoma<a class="headerlink" href="#4-crea-actividad-autonoma" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 2h fuera del aula.</p>
+<h3 id="41-actividad">4.1 Actividad<a class="headerlink" href="#41-actividad" title="Permanent link">&para;</a></h3>
+<p>Extensión de la observabilidad del Proyecto Sello propio del equipo, documentada en evidencia individual.</p>
+<p>Completa y evidencia estas tareas:</p>
+<ol>
+<li>Configura <em>health groups</em> de <em>liveness</em>/<em>readiness</em> en al menos un servicio de tu propio proyecto, con al menos una dependencia externa real (base de datos, broker de mensajería) incluida en el grupo <code>readiness</code>.</li>
+<li>Si tu proyecto tiene más de un servicio comunicándose por HTTP, propaga un identificador de correlación entre ellos (el mismo patrón de 3.4, u otro mecanismo equivalente si tu <em>stack</em> no usa Feign).</li>
+<li>Construye un tablero de Grafana propio con al menos tres paneles: uno de disponibilidad, uno de tasa de peticiones o errores, y uno de logs.</li>
+<li>Simula una falla real en tu propio sistema y documenta, con capturas del tablero, cómo la detectaste y diagnosticaste.</li>
+</ol>
+<h3 id="42-proposito">4.2 Propósito<a class="headerlink" href="#42-proposito" title="Permanent link">&para;</a></h3>
+<p>Que cada estudiante demuestre, de forma individual y fuera del aula, que puede instrumentar un sistema distribuido propio con <em>health checks</em>, correlación entre servicios y un tablero de diagnóstico real, y usarlo para diagnosticar una falla sin depender de leer código.</p>
+<h3 id="43-indicaciones">4.3 Indicaciones<a class="headerlink" href="#43-indicaciones" title="Permanent link">&para;</a></h3>
+<p>Entrega un PDF con el siguiente nombre:</p>
+<div class="highlight"><pre><span></span><code>S10_Equipo##_ApellidoNombre.pdf
+</code></pre></div>
+<p>Cada captura de pantalla del informe debe mostrar, sin recortar, el reloj del sistema (fecha y hora) y tu usuario o foto de perfil (Windows, VS Code o navegador) visibles en pantalla — es lo que permite verificar que la evidencia es tuya y que corresponde al momento real de tu trabajo.</p>
+<h4 id="431-estructura-del-informe">4.3.1 Estructura del informe<a class="headerlink" href="#431-estructura-del-informe" title="Permanent link">&para;</a></h4>
+<p><strong>Datos del estudiante</strong></p>
+<ul>
+<li>Nombre:</li>
+<li>Equipo:</li>
+<li>Sesión: S10 - Observabilidad y diagnóstico de sistemas distribuidos</li>
+<li>Rol o aporte realizado:</li>
+<li>Link de GitHub:</li>
+</ul>
+<p><strong>Evidencia técnica</strong></p>
+<p>Incluye capturas con una breve explicación debajo de cada una, organizadas en los mismos 4 bloques de la rúbrica (4.6):</p>
+<ol>
+<li><em>Health groups</em><ul>
+<li><code>/actuator/health/liveness</code> y <code>/actuator/health/readiness</code> respondiendo, con al menos una dependencia real en el grupo <code>readiness</code>.</li>
+</ul>
+</li>
+<li><em>Logs centralizados y correlación</em><ul>
+<li>Los cuatro servicios (o todos los de tu propio proyecto) visibles en Loki/Grafana, y evidencia del mismo <code>traceId</code> en dos servicios distintos.</li>
+</ul>
+</li>
+<li><em>Tablero de Grafana</em><ul>
+<li>Los paneles del tablero (Tabla 5), con datos reales.</li>
+</ul>
+</li>
+<li><em>Diagnóstico de una falla</em><ul>
+<li>La Tabla 6 completada con tus propios valores, de tu propia prueba.</li>
+</ul>
+</li>
+</ol>
+<p><strong>Error o hallazgo</strong></p>
+<p>Describe un error real: un <code>job_name</code> de Promtail sin su volumen correspondiente, un <code>traceId</code> que seguía sin propagarse por un paquete fuera del escaneo de Spring, o un panel de Grafana que mostraba "No data" por un <em>datasource</em> equivocado.</p>
+<p><strong>Reflexión técnica breve</strong></p>
+<p>Responde en 5 a 8 líneas:</p>
+<div class="highlight"><pre><span></span><code>¿Por qué un sistema puede estar "arriba" (liveness) y aun así no
+poder atender una petición correctamente? Relaciona tu respuesta
+con el caso de Knight Capital (1.6) y con tu propia prueba de falla
+simulada (3.7 o 4.1.4).
+</code></pre></div>
+<p><strong>Anexo: Feedback de la sesión</strong></p>
+<p>Pega esta página como la última hoja del PDF, con tus respuestas.</p>
+<ol>
+<li>¿Cuál es el aprendizaje más importante que te llevas de la clase de hoy?</li>
+<li>¿Qué punto de la clase te resultó más confuso o te dejó con dudas?</li>
+<li>¿Tienes alguna pregunta que te gustaría que sea respondida la siguiente clase?</li>
+<li>Sobre tu nivel de comprensión de la clase de hoy, marca una opción:<ul>
+<li>¡Entendido! - Lo domino y podría explicarlo.</li>
+<li>Más o menos. - Entendí la idea general, pero tengo dudas.</li>
+<li>Necesito ayuda. - Me siento perdido/a con este tema.</li>
+</ul>
+</li>
+<li>¿Cómo puedo ayudarte a comprender mejor el tema?</li>
+<li>Pensando en tu participación y esfuerzo en la clase de hoy, ¿cómo te autoevaluarías? Marca una opción:<ul>
+<li>Muy Comprometido/a: Me esforcé al máximo.</li>
+<li>Comprometido/a: Sé que podría haberme esforzado un poco más.</li>
+<li>Poco Comprometido/a: Hoy no di mi mejor esfuerzo.</li>
+</ul>
+</li>
+<li>Mi satisfacción con la clase fue... (califica del 1 al 10, donde 1 es insatisfecho y 10 es muy satisfecho).</li>
+</ol>
+<h3 id="44-criterios-minimos-de-aceptacion">4.4 Criterios mínimos de aceptación<a class="headerlink" href="#44-criterios-minimos-de-aceptacion" title="Permanent link">&para;</a></h3>
+<ul>
+<li>El archivo respeta el nombre solicitado.</li>
+<li><em>Health groups</em> de <em>liveness</em>/<em>readiness</em> configurados y verificados, con al menos una dependencia real en <code>readiness</code>.</li>
+<li>Logs centralizados de todos los servicios relevantes del proyecto propio, en Loki/Grafana.</li>
+<li>Evidencia real de un identificador de correlación propagado entre al menos dos servicios.</li>
+<li>Tablero de Grafana con al menos tres paneles, con datos reales.</li>
+<li>Una falla real simulada y diagnosticada usando el tablero, documentada con capturas.</li>
+<li>Cada captura de la evidencia técnica muestra el reloj del sistema y el usuario/perfil visible, sin recortar.</li>
+<li>Las fechas y horas de las capturas son coherentes con el historial de commits de su repositorio en GitHub.</li>
+<li>Incluye un error o hallazgo técnico diagnosticado.</li>
+<li>Incluye la reflexión técnica breve solicitada.</li>
+<li>Incluye el Anexo de feedback de la sesión respondido, como última página del PDF.</li>
+</ul>
+<h3 id="45-preguntas-de-defensa">4.5 Preguntas de defensa<a class="headerlink" href="#45-preguntas-de-defensa" title="Permanent link">&para;</a></h3>
+<ol>
+<li>¿Por qué un orquestador necesita distinguir <em>liveness</em> de <em>readiness</em>, en vez de un solo <em>health check</em>?</li>
+<li>¿Por qué <code>MDC</code> no propaga el <code>traceId</code> solo, y qué mecanismo hizo falta agregar para que sí viajara entre servicios?</li>
+<li>¿Por qué el <code>RequestInterceptor</code> de 3.4 no sirve para correlacionar eventos de Kafka, y qué cambiaría si quisieras lograrlo?</li>
+<li>¿Qué diferencia de fondo hay entre el panel "Servicios arriba" (Prometheus) y el panel de "Logs" (Loki) — qué pregunta responde cada uno que el otro no puede?</li>
+<li>En tu prueba de falla simulada, ¿qué panel mostró el problema primero, y por qué ese y no otro?</li>
+</ol>
+<h3 id="46-rubrica-de-evaluacion">4.6 Rúbrica de evaluación<a class="headerlink" href="#46-rubrica-de-evaluacion" title="Permanent link">&para;</a></h3>
+<p><strong>Tabla 7. Rúbrica de evaluación</strong></p>
+<table>
+<thead>
+<tr>
+<th>Criterio</th>
+<th style="text-align: right;">Peso (%)</th>
+<th>A (20 pts)</th>
+<th>B (15 pts)</th>
+<th>C (10 pts)</th>
+<th>D (5 pts)</th>
+<th style="text-align: right;">Nivel obtenido</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. <em>Health groups</em>*</td>
+<td style="text-align: right;">25</td>
+<td><em>Liveness</em>/<em>readiness</em> configurados y verificados, con dependencia real en <code>readiness</code>.</td>
+<td>Configurados, con alguna verificación incompleta.</td>
+<td>Solo uno de los dos grupos configurado.</td>
+<td>No presenta <em>health groups</em>.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>2. Logs y correlación*</td>
+<td style="text-align: right;">25</td>
+<td>Todos los servicios relevantes en Loki, con evidencia real de <code>traceId</code> propagado entre al menos dos.</td>
+<td>Logs centralizados, con la propagación de <code>traceId</code> incompleta o sin evidencia clara.</td>
+<td>Solo logs centralizados, sin correlación.</td>
+<td>No presenta ninguno de los dos.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>3. Tablero de Grafana*</td>
+<td style="text-align: right;">25</td>
+<td>Al menos tres paneles con datos reales, incluido uno de logs.</td>
+<td>Tablero funcional, con algún panel sin datos reales.</td>
+<td>Tablero parcial (uno o dos paneles).</td>
+<td>No presenta tablero.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>4. Diagnóstico de falla*</td>
+<td style="text-align: right;">25</td>
+<td>Falla real simulada y diagnosticada con el tablero, con evidencia clara de causa y efecto.</td>
+<td>Falla simulada, con el diagnóstico incompleto.</td>
+<td>Falla simulada sin usar el tablero para diagnosticarla.</td>
+<td>No presenta falla simulada.</td>
+<td style="text-align: right;"></td>
+</tr>
+</tbody>
+</table>
+<p>* Agregado manual.</p>
+<p>Nota final = suma de (<code>Peso</code> / 100 × <code>Puntos del nivel obtenido</code>) = ____ / 20.</p>
+<p>Para usar la rúbrica con IA (inteligencia artificial), solicita:</p>
+<div class="highlight"><pre><span></span><code>Evalúa el PDF usando la rúbrica de la sesión.
+Para cada criterio selecciona el nivel obtenido usando la escala A=20, B=15, C=10, D=5 puntos.
+Justifica brevemente cada nivel asignado.
+Verifica que cada captura muestre reloj del sistema y usuario/perfil visible, y que las fechas sean coherentes con el historial de commits de GitHub. Si falta esta evidencia o hay inconsistencias, indícalo explícitamente antes de calificar.
+Calcula la nota final con la fórmula: suma de (Peso/100 × Puntos del nivel obtenido), directamente sobre 20.
+Indica 2 fortalezas y 2 recomendaciones.
+</code></pre></div>
+<h2 id="5-cierre">5. Cierre<a class="headerlink" href="#5-cierre" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 5 min.</p>
+<p><strong>Resumen breve:</strong> hoy <code>pagatu</code> dejó de depender de leer código o de revisar cuatro terminales distintas para saber si el sistema está sano. Los cuatro microservicios ganaron <em>health groups</em> explícitos (<em>liveness</em> distinto de <em>readiness</em>), los dos que faltaban (<code>pagatu-auth-ms</code>, <code>pagatu-pago-ms</code>) se cablearon a Loki, y el <code>traceId</code> que ya existía desde S7 por fin viaja entre servicios gracias a un interceptor de Feign — cerrando una brecha documentada desde antes de esta sesión. El resultado es un tablero de Grafana que combina métricas, logs y estado de salud en un solo lugar, probado contra una falla real simulada, no solo contra el caso feliz.</p>
+<p><strong>Dinámica participativa:</strong> en una ronda rápida, cada estudiante comparte en una frase qué panel del tablero mostró primero su falla simulada, y por qué cree que fue ese.</p>
+<p><strong>Metacognición:</strong> ¿qué te costó más entender hoy: por qué <code>MDC</code> es por hilo y no se propaga solo entre servicios, o por qué <em>liveness</em> y <em>readiness</em> necesitan ser preguntas separadas?</p>
+<p><strong>Proyección:</strong> S11 conecta el cliente frontend al sistema a través del Gateway — con la observabilidad de hoy ya en pie, cualquier fallo que la integración frontend-backend introduzca va a ser visible en el mismo tablero, sin tener que construir nada nuevo para verlo.</p>
+<h2 id="bibliografia">Bibliografía<a class="headerlink" href="#bibliografia" title="Permanent link">&para;</a></h2>
+<ol>
+<li>U.S. Securities and Exchange Commission. (2013). <em>In the Matter of Knight Capital Americas LLC</em> (Release No. 34-70694). <a href="https://www.sec.gov/litigation/admin/2013/34-70694.pdf">https://www.sec.gov/litigation/admin/2013/34-70694.pdf</a></li>
+<li>Spring Boot. (2026). <em>Kubernetes Probes</em>. Actuator Reference. <a href="https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.kubernetes-probes">https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.kubernetes-probes</a></li>
+<li>Micrometer. (2026). <em>Micrometer Documentation</em>. <a href="https://docs.micrometer.io/micrometer/reference/">https://docs.micrometer.io/micrometer/reference/</a></li>
+<li>OpenFeign. (2026). <em>Customization: RequestInterceptor</em>. <a href="https://docs.spring.io/spring-cloud-openfeign/reference/spring-cloud-openfeign.html">https://docs.spring.io/spring-cloud-openfeign/reference/spring-cloud-openfeign.html</a></li>
+<li>Grafana Labs. (2026). <em>Loki Query Language (LogQL)</em>. <a href="https://grafana.com/docs/loki/latest/query/">https://grafana.com/docs/loki/latest/query/</a></li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

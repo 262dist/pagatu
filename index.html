@@ -1185,6 +1185,34 @@
   
   
     <li class="md-nav__item">
+      <a href="sesiones/S10_Observabilidad_Diagnostico_Sistemas_Distribuidos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S10 - Observabilidad y diagnóstico de sistemas distribuidos
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="sesiones/S12_Evaluacion_Unidad_2/" class="md-nav__link">
         
   
@@ -1566,8 +1594,8 @@ técnicamente.
 <tr>
 <td>S11</td>
 <td>Integración con cliente frontend.</td>
-<td>Angular 22</td>
-<td>Cliente consumiendo por Gateway: catálogo, crear orden, ver pago.</td>
+<td>Angular 22, Keycloak (reemplaza <code>auth-ms</code>)</td>
+<td>Cliente consumiendo por Gateway (catálogo, crear orden, ver pago) con login real <code>Authorization Code</code> + PKCE contra Keycloak; "Mis pedidos" refleja la consistencia eventual real (<code>PENDIENTE_PAGO</code> → <code>PAGADA</code>/<code>CANCELADA</code>) con <em>polling</em>, sin recargar la página.</td>
 </tr>
 <tr>
 <td>S12</td>
