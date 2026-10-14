@@ -8,7 +8,7 @@ Tiempo: 20 min.
 
 ### 1.1 Presentación de la sesión
 
-`obs/` (Prometheus, Loki, Promtail, Grafana) existe desde S3-S4, y Prometheus ya descubre solo, por Eureka, a cualquier microservicio que exponga `/actuator/prometheus` — ningún microservicio nuevo de S6-S9 tuvo que tocar ese archivo para aparecer. Pero la observabilidad de `pagatu` quedó con dos huecos reales, documentados en `obs/README.md` desde antes de esta sesión: Promtail solo tiene cableados `pagatu-catalogo-ms` y `pagatu-orden-ms` — `pagatu-auth-ms` (S7) y `pagatu-pago-ms` (S8) nunca llegaron a Loki ni a Grafana. Y el `X-Trace-ID` que `CorrelationIdFilter` genera desde S7 (cada servicio, al recibir una petición HTTP) nunca se propaga hacia adelante: cuando `pagatu-orden-ms` llama por Feign a `pagatu-catalogo-ms`, el segundo genera su **propio** `traceId` nuevo — seguir una venta de punta a punta por los logs de los dos servicios, hoy, es imposible. Esta sesión cierra los dos huecos, agrega *health groups* explícitos (*liveness*/*readiness*), y construye el primer tablero de Grafana con paneles de diagnóstico reales — la pieza que faltaba para responder "¿está sano el sistema, ahora mismo?" sin tener que leer el código de ningún servicio.
+`obs/` (Prometheus, Loki, Promtail, Grafana) existe desde S3-S4, y Prometheus ya descubre solo, por Eureka, a cualquier microservicio que exponga `/actuator/prometheus` — ningún microservicio nuevo de S6-S9 tuvo que tocar ese archivo para aparecer. Pero la observabilidad de `pagatu` quedó con huecos reales, documentados en `obs/README.md` desde antes de esta sesión: Promtail solo tiene cableados `pagatu-catalogo-ms` y `pagatu-orden-ms` — `pagatu-pago-ms` (S8) nunca llegó a Loki ni a Grafana, y Keycloak (S07b), que desde esa guía es la única pieza que emite y valida identidad en todo el sistema, nunca llegó a ninguno de los dos: ni a Loki, ni a Prometheus, porque —a diferencia de los microservicios propios— no es cliente de Eureka, así que el *service discovery* automático nunca lo va a encontrar solo. Y el `X-Trace-ID` que `CorrelationIdFilter` genera desde S7 (cada servicio, al recibir una petición HTTP) nunca se propaga hacia adelante: cuando `pagatu-orden-ms` llama por Feign a `pagatu-catalogo-ms`, el segundo genera su **propio** `traceId` nuevo — seguir una venta de punta a punta por los logs de los dos servicios, hoy, es imposible. Esta sesión cierra esos huecos, agrega *health groups* explícitos (*liveness*/*readiness*), y construye el primer tablero de Grafana con paneles de diagnóstico reales — la pieza que faltaba para responder "¿está sano el sistema, ahora mismo?" sin tener que leer el código de ningún servicio.
 
 ### 1.2 Índice
 
@@ -25,7 +25,7 @@ Al concluir la clase, estarás en condiciones de:
 
 ### 1.4 Producto de sesión
 
-`management.endpoint.health.group.liveness`/`.readiness` configurados en los cuatro microservicios; `obs/promtail` cableado también para `pagatu-auth-ms` y `pagatu-pago-ms` (los cuatro servicios, en Loki); un `RequestInterceptor` en `pagatu-orden-ms` que propaga `X-Trace-ID` hacia `pagatu-catalogo-ms`, verificado con el mismo `traceId` apareciendo en los logs de ambos; y un tablero de Grafana con paneles reales de salud, tasa de peticiones, tasa de errores y logs filtrados por `traceId` — probado de punta a punta simulando la caída de un servicio.
+`management.endpoint.health.group.liveness`/`.readiness` configurados en los tres microservicios; `obs/prometheus` con un *target* estático nuevo para Keycloak (su métricas no pasan por Eureka); `obs/promtail` cableado también para Keycloak y `pagatu-pago-ms` (las cuatro piezas, en Loki); un `RequestInterceptor` en `pagatu-orden-ms` que propaga `X-Trace-ID` hacia `pagatu-catalogo-ms`, verificado con el mismo `traceId` apareciendo en los logs de ambos; y un tablero de Grafana con paneles reales de salud, tasa de peticiones, tasa de errores y logs filtrados por `traceId` — probado de punta a punta simulando la caída de un servicio.
 
 ### 1.5 Metodología
 
@@ -33,9 +33,9 @@ Al concluir la clase, estarás en condiciones de:
 
 | Actividades a Realizar en el Periodo | Orientaciones generales (Orientaciones Metodológicas) | Material de estudio recomendado |
 |---|---|---|
-| Revisión previa individual | Repasar `CorrelationIdFilter` (S7) y `obs/README.md` (estado actual de Promtail). Confirmar que `obs/` y los cuatro microservicios siguen arrancando. Trabajo individual, antes de clase. | S7 (3.9), `obs/README.md`. |
-| Clase presencial | Configuración guiada de *health groups*, cierre de la brecha de Promtail, propagación de `X-Trace-ID` por Feign, y construcción del tablero de Grafana. Trabajo individual en la propia laptop, siguiendo al docente paso a paso. | Contenedor `obs/` y los cuatro microservicios corriendo, Pasos 3.1 a 3.8 de esta guía. |
-| Evaluación formativa | Revisión en clase del tablero de Grafana con datos reales de los cuatro servicios, y de la prueba de propagación de `traceId`. La evidencia se completa y sustenta de forma individual, fuera del aula, según los criterios mínimos de la sección 4.4. | Indicaciones de entrega (4.3), rúbrica de evaluación (4.6). |
+| Revisión previa individual | Repasar `CorrelationIdFilter` (S7), `obs/README.md` (estado actual de Promtail) y S07b (Keycloak ya reemplazó a `pagatu-auth-ms`). Confirmar que `obs/`, los tres microservicios y Keycloak siguen arrancando. Trabajo individual, antes de clase. | S7 (3.9), S07b, `obs/README.md`. |
+| Clase presencial | Configuración guiada de *health groups*, cierre de la brecha de Promtail y Prometheus (incluido Keycloak), propagación de `X-Trace-ID` por Feign, y construcción del tablero de Grafana. Trabajo individual en la propia laptop, siguiendo al docente paso a paso. | Contenedor `obs/`, los tres microservicios y Keycloak corriendo, Pasos 3.1 a 3.8 de esta guía. |
+| Evaluación formativa | Revisión en clase del tablero de Grafana con datos reales de las cuatro piezas, y de la prueba de propagación de `traceId`. La evidencia se completa y sustenta de forma individual, fuera del aula, según los criterios mínimos de la sección 4.4. | Indicaciones de entrega (4.3), rúbrica de evaluación (4.6). |
 
 ### 1.6 Motivación de la sesión
 
@@ -61,7 +61,7 @@ Fuente: U.S. Securities and Exchange Commission. (2013). *In the Matter of Knigh
 - Unidad: U2 - Sistema distribuido robusto.
 - Producto del curso: sistema distribuido de microservicios end-to-end, configurable, escalable, seguro, resiliente, consistente, observable, integrado con frontend y defendido técnicamente.
 - Producto de unidad: sistema distribuido seguro, resiliente, consistente, observable e integrado con cliente frontend.
-- Avance del producto en esta sesión: *health groups*, logs centralizados de los cuatro microservicios, propagación de `traceId` entre servicios, y el primer tablero de Grafana con paneles de diagnóstico.
+- Avance del producto en esta sesión: *health groups*, logs y métricas centralizados de los tres microservicios y Keycloak, propagación de `traceId` entre servicios, y el primer tablero de Grafana con paneles de diagnóstico.
 
 **Figura 1. Roadmap del producto de la unidad**
 
@@ -91,7 +91,7 @@ Tiempo: 30 min.
 
 ```mermaid
 flowchart TB
-    Auth["pagatu-auth-ms"]
+    KC["Keycloak<br/>(S07b, no es cliente de Eureka)"]
     Cat["pagatu-catalogo-ms"]
     Ord["pagatu-orden-ms"]
     Pago["pagatu-pago-ms"]
@@ -100,14 +100,14 @@ flowchart TB
     Loki[("Loki")]
     Graf["Grafana"]
 
-    Auth -->|"/actuator/prometheus<br/>(Eureka SD, ya funciona)"| Prom
-    Cat -->|"/actuator/prometheus"| Prom
-    Ord -->|"/actuator/prometheus"| Prom
-    Pago -->|"/actuator/prometheus"| Prom
+    Cat -->|"/actuator/prometheus<br/>(Eureka SD, ya funciona)"| Prom
+    Ord -->|"/actuator/prometheus<br/>(Eureka SD, ya funciona)"| Prom
+    Pago -->|"/actuator/prometheus<br/>(Eureka SD, ya funciona)"| Prom
+    KC -.->|"/metrics, puerto 9000<br/>(target estatico, falta, 3.2)"| Prom
 
     Cat -->|"logs/catalogo.log<br/>(Promtail, ya funciona)"| Loki
     Ord -->|"logs/orden.log<br/>(Promtail, ya funciona)"| Loki
-    Auth -.->|"logs/auth.log<br/>(falta cablear, 3.2)"| Loki
+    KC -.->|"keycloak.log<br/>(falta cablear, 3.2)"| Loki
     Pago -.->|"logs/pago.log<br/>(falta cablear, 3.2)"| Loki
 
     Ord -.->|"Feign: X-Trace-ID<br/>(falta propagar, 3.4)"| Cat
@@ -116,11 +116,11 @@ flowchart TB
     Loki --> Graf
 ```
 
-Lectura del diagrama: el camino de **métricas** (línea sólida hacia Prometheus) ya funciona para los cuatro servicios, por *service discovery* de Eureka (S3-S4) — nada que arreglar ahí. El camino de **logs** (hacia Loki) solo funciona para dos de los cuatro — las líneas punteadas son exactamente lo que 3.2 cierra. Y la flecha entre `pagatu-orden-ms` y `pagatu-catalogo-ms` (`X-Trace-ID`) todavía no existe — 3.4 la agrega. Cada apartado siguiente desarrolla una pieza, en el mismo orden del Índice (1.2).
+Lectura del diagrama: el camino de **métricas** (línea sólida hacia Prometheus) ya funciona para los tres microservicios, por *service discovery* de Eureka (S3-S4) — nada que arreglar ahí. Keycloak es distinto: nunca se registra en Eureka (no es un cliente de Spring Cloud, es un contenedor aparte, S07b), así que el *service discovery* automático nunca lo va a encontrar — necesita un *target* estático, el mismo mecanismo que `pagatu-config`/`pagatu-eureka` ya usan desde S3 por la misma razón. El camino de **logs** (hacia Loki) solo funciona para dos de las cuatro piezas — las líneas punteadas son exactamente lo que 3.2 cierra. Y la flecha entre `pagatu-orden-ms` y `pagatu-catalogo-ms` (`X-Trace-ID`) todavía no existe — 3.4 la agrega. Cada apartado siguiente desarrolla una pieza, en el mismo orden del Índice (1.2).
 
 ### 2.2 *Health checks*: *liveness* y *readiness*
 
-Spring Boot Actuator expone `/actuator/health` desde que `spring-boot-starter-actuator` está en el classpath (ya lo está en los cuatro servicios, desde su creación) — pero por defecto responde una sola cosa: `UP` o `DOWN`, sin distinguir **por qué**. Los grupos de *health* de Kubernetes que Actuator ya trae listos (Spring Boot, 2026) responden dos preguntas distintas, no una:
+Spring Boot Actuator expone `/actuator/health` desde que `spring-boot-starter-actuator` está en el classpath (ya lo está en los tres microservicios, desde su creación) — pero por defecto responde una sola cosa: `UP` o `DOWN`, sin distinguir **por qué**. Los grupos de *health* de Kubernetes que Actuator ya trae listos (Spring Boot, 2026) responden dos preguntas distintas, no una:
 
 **Tabla 2. *Liveness* frente a *readiness***
 
@@ -133,9 +133,11 @@ Spring Boot Actuator expone `/actuator/health` desde que `spring-boot-starter-ac
 
 La diferencia importa porque la respuesta correcta es distinta: si Postgres está caído, reiniciar `pagatu-pago-ms` (acción de *liveness*) no soluciona nada — el problema no es el proceso, es su dependencia. Sacarlo de la rotación de tráfico (acción de *readiness*) sí es correcto: evita que seseen peticiones a un servicio que sabe que va a fallar.
 
+**Keycloak ya trae lo mismo, sin que nadie lo configure.** `/health/live` y `/health/ready` (puerto 9000, S07b) son la misma distinción de esta tabla, ya resuelta por el producto — la diferencia es que aquí (3.3) se construye a mano, en código propio, y en Keycloak viene lista de fábrica, detrás de una variable de entorno (`KC_HEALTH_ENABLED`).
+
 ### 2.3 Métricas con Micrometer y Prometheus (ya construido, S3-S4)
 
-Los cuatro microservicios ya exponen `/actuator/prometheus` (`micrometer-registry-prometheus`, en el `pom.xml` de cada uno desde su creación), y `obs/prometheus/prometheus-dev.yml` ya los descubre por Eureka (`eureka_sd_configs`) — esta sesión no construye el mecanismo, lo **usa** para diagnosticar.
+Los tres microservicios ya exponen `/actuator/prometheus` (`micrometer-registry-prometheus`, en el `pom.xml` de cada uno desde su creación), y `obs/prometheus/prometheus-dev.yml` ya los descubre por Eureka (`eureka_sd_configs`) — esta sesión no construye el mecanismo, lo **usa** para diagnosticar (y lo extiende a Keycloak, 3.2, que no pasa por Eureka).
 
 **Tabla 3. Métricas de Micrometer más útiles para diagnóstico (Micrometer, 2026)**
 
@@ -150,7 +152,7 @@ Los cuatro microservicios ya exponen `/actuator/prometheus` (`micrometer-registr
 
 ### 2.4 Logs centralizados y correlación entre servicios
 
-Cada microservicio ya escribe a `logs/<nombre>.log` (`logback-spring.xml`, con el patrón `%X{traceId}`) y Promtail ya sube esos archivos a Loki — para dos de los cuatro servicios (2.1). `CorrelationIdFilter` (S7, 3.9) pone ese `traceId` en el MDC (*Mapped Diagnostic Context*) de SLF4J al recibir cada petición HTTP: si ya trae el header `X-Trace-ID`, lo reutiliza; si no, genera uno nuevo con `UUID.randomUUID()`.
+Cada microservicio ya escribe a `logs/<nombre>.log` (`logback-spring.xml`, con el patrón `%X{traceId}`) y Promtail ya sube esos archivos a Loki — para dos de las cuatro piezas (2.1). Keycloak no tiene `logback-spring.xml` ni `traceId` propio (no es una aplicación Spring Boot): S07b ya lo dejó escribiendo también a archivo (`KC_LOG=console,file`), así que el cableado de 3.2 es el mismo mecanismo de Promtail que los microservicios, aunque el formato de cada línea de log sea el de Keycloak, no el de `logback`. `CorrelationIdFilter` (S7, 3.9) pone ese `traceId` en el MDC (*Mapped Diagnostic Context*) de SLF4J al recibir cada petición HTTP: si ya trae el header `X-Trace-ID`, lo reutiliza; si no, genera uno nuevo con `UUID.randomUUID()`.
 
 **El hueco real**: `CorrelationIdFilter` **recibe** el header, pero ningún cliente HTTP de `pagatu` lo **envía** hacia adelante. Cuando `pagatu-orden-ms` llama a `pagatu-catalogo-ms` por Feign (S6, 3.13), esa llamada sale sin el header `X-Trace-ID` — `pagatu-catalogo-ms` nunca lo recibe, así que `CorrelationIdFilter` de ese lado genera un `traceId` **completamente nuevo**, sin relación con el de `pagatu-orden-ms`. El resultado: una sola venta, en los logs, aparece con dos `traceId` distintos según en qué servicio la busques — seguirla de punta a punta por Loki es imposible hoy. 3.4 cierra esto con un `RequestInterceptor` de Feign (OpenFeign, 2026), el mismo mecanismo con el que Spring propaga cualquier *header* saliente.
 
@@ -162,7 +164,7 @@ Un panel de diagnóstico útil combina más de una fuente — ninguna métrica s
 
 | Panel | Fuente | Qué responde |
 |---|---|---|
-| Servicios arriba | Prometheus, `up{job="pagatu-microservicios"}` | ¿Cuáles de los cuatro responden ahora mismo? |
+| Servicios arriba | Prometheus, `up{job=~"pagatu-microservicios\|pagatu-keycloak"}` | ¿Cuáles de las cuatro piezas responden ahora mismo? |
 | Tasa de peticiones | Prometheus, `rate(http_server_requests_seconds_count[1m])` | ¿Cuánto tráfico recibe cada servicio? |
 | Tasa de errores | Prometheus, `rate(http_server_requests_seconds_count{status=~"5.."}[1m])` | ¿Está fallando algo, y en cuál servicio? |
 | Logs por `traceId` | Loki, `{application=~"pagatu-.*"} \| json \| traceId="..."` | Dado un error, ¿qué pasó en cada servicio, en orden? |
@@ -173,7 +175,7 @@ Los primeros tres paneles dicen **que** algo está mal; el cuarto dice **por qu�
 
 Tiempo: 3h.
 
-**Actividad:** configuración de *health groups*, cierre de la brecha de Promtail para los cuatro microservicios, propagación de `X-Trace-ID` por Feign, y construcción de un tablero de Grafana con paneles de diagnóstico, probado simulando una falla real (Producto de la sesión en 1.4).
+**Actividad:** configuración de *health groups*, cierre de la brecha de Promtail y Prometheus para las cuatro piezas (tres microservicios y Keycloak), propagación de `X-Trace-ID` por Feign, y construcción de un tablero de Grafana con paneles de diagnóstico, probado simulando una falla real (Producto de la sesión en 1.4).
 
 **Propósito de la actividad:** que cada estudiante deje el sistema en condiciones de diagnosticarse solo — con métricas, logs correlacionados y estado de salud combinados en un único lugar, no repartidos entre cuatro terminales distintas.
 
@@ -182,7 +184,7 @@ Tiempo: 3h.
 **Actividades para realizar:**
 
 - **3.1** Verificar el punto de partida.
-- **3.2** Cablear `pagatu-auth-ms` y `pagatu-pago-ms` a Promtail.
+- **3.2** Agregar Keycloak a Prometheus y cablear Keycloak/`pagatu-pago-ms` a Promtail.
 - **3.3** Configurar *health groups* de *liveness*/*readiness*.
 - **3.4** Propagar `X-Trace-ID` en las llamadas Feign de `pagatu-orden-ms`.
 - **3.5** Probar la propagación de punta a punta.
@@ -192,43 +194,56 @@ Tiempo: 3h.
 
 ### 3.1 Verificar el punto de partida
 
-**Producto del paso:** confirmación de que los cuatro microservicios y `obs/` siguen corriendo.
+**Producto del paso:** confirmación de que los tres microservicios, Keycloak y `obs/` siguen corriendo.
 
-Todo el equipo debe comenzar exactamente desde donde quedó S9 (consistencia distribuida), no desde su propio avance individual. Clona la rama `s09-consistencia-distribuida`:
+Todo el equipo debe comenzar exactamente desde donde quedó S07b (Keycloak reemplazando a `pagatu-auth-ms`), no desde donde quedó S9 por sí sola. Clona la rama `s07b-keycloak` si tu equipo la congeló (o `s09-consistencia-distribuida` y completa S07b tú mismo antes de seguir):
 
 ```bash
-git clone --branch s09-consistencia-distribuida https://github.com/262dist/pagatu.git
+git clone --branch s07b-keycloak https://github.com/262dist/pagatu.git
 ```
 
-Levanta, si no están arriba, `pagatu-config`, `pagatu-eureka`, `pagatu-auth-ms`, `pagatu-catalogo-ms`, `pagatu-orden-ms` y `pagatu-pago-ms` (S1-S9), y luego `obs/`:
+Levanta, si no están arriba, `pagatu-config`, `pagatu-eureka`, `pagatu-catalogo-ms`, `pagatu-orden-ms` y `pagatu-pago-ms` (S1-S9) — `pagatu-auth-ms` ya no existe, S07b lo retiró —, Keycloak (`keycloak/`, S07b), y luego `obs/`:
 
 ```powershell
 cd obs
 docker compose -f compose-dev.yml up -d
 ```
 
-Confirma en Prometheus (`http://localhost:19090/targets`) que los cuatro microservicios aparecen `UP` bajo el *job* `pagatu-microservicios` — esto ya funcionaba antes de hoy (2.3), solo lo estás verificando.
+Confirma en Prometheus (`http://localhost:19090/targets`) que los tres microservicios aparecen `UP` bajo el *job* `pagatu-microservicios` — esto ya funcionaba antes de hoy (2.3), solo lo estás verificando. Keycloak **no** aparece todavía en ningún *job* — 3.2 lo agrega.
 
-### 3.2 Cablear `pagatu-auth-ms` y `pagatu-pago-ms` a Promtail
+### 3.2 Agregar Keycloak a Prometheus y cablear Keycloak/`pagatu-pago-ms` a Promtail
 
-**Producto del paso:** los cuatro microservicios, no solo dos, con sus logs llegando a Loki.
+**Producto del paso:** las cuatro piezas (tres microservicios y Keycloak), no solo dos, con sus métricas y sus logs llegando a Prometheus y Loki.
 
-**`obs/compose-dev.yml`** — agrega los dos volúmenes que faltan, junto a los que ya existen en `pagatu-promtail`:
+**Prometheus — Keycloak necesita un *target* estático**, porque no es cliente de Eureka (2.1): el mismo mecanismo que `pagatu-config`/`pagatu-eureka` ya usan desde S3. **`obs/prometheus/prometheus-dev.yml`** — agrega el *job* nuevo, junto a los que ya existen:
 
 ```yaml
-      - ../services/pagatu-auth-ms/logs:/var/log/pagatu-auth-ms:ro
+  - job_name: "pagatu-keycloak"
+    metrics_path: "/metrics"
+    static_configs:
+      - targets: ["host.docker.internal:19000"]
+        labels:
+          application: pagatu-keycloak
+```
+
+`metrics_path: "/metrics"` (no `/actuator/prometheus`) y el puerto `19000` (no el `18180` de autenticación) son las dos diferencias reales frente a cualquier otro *target*: Keycloak no es una aplicación Spring Boot, así que ni el formato por defecto de su endpoint de métricas ni el puerto donde vive coinciden con los de los microservicios — ambos ya quedaron fijados en S07b (`KC_METRICS_ENABLED`, `KC_HTTP_MANAGEMENT_PORT`), esta sesión solo le dice a Prometheus dónde buscarlos.
+
+**Promtail — logs de Keycloak y `pagatu-pago-ms`.** **`obs/compose-dev.yml`** — agrega los dos volúmenes que faltan, junto a los que ya existen en `pagatu-promtail`:
+
+```yaml
+      - ../keycloak/logs:/var/log/pagatu-keycloak:ro
       - ../services/pagatu-pago-ms/logs:/var/log/pagatu-pago-ms:ro
 ```
 
 **`obs/promtail/promtail-config-dev.yml`** — agrega los dos *jobs* que faltan, con el mismo patrón que los dos que ya existen:
 
 ```yaml
-  - job_name: pagatu-auth-ms
+  - job_name: pagatu-keycloak
     static_configs:
       - targets: [localhost]
         labels:
-          application: pagatu-auth-ms
-          __path__: /var/log/pagatu-auth-ms/*.log
+          application: pagatu-keycloak
+          __path__: /var/log/pagatu-keycloak/*.log
   - job_name: pagatu-pago-ms
     static_configs:
       - targets: [localhost]
@@ -237,22 +252,24 @@ Confirma en Prometheus (`http://localhost:19090/targets`) que los cuatro microse
           __path__: /var/log/pagatu-pago-ms/*.log
 ```
 
-Repite el mismo cambio en **`obs/compose.yml`** y **`obs/promtail/promtail-config.yml`** (PROD local) — son los mismos dos archivos, con el prefijo de puertos `2xxxx` en vez de `1xxxx` (`obs/README.md`), no una configuración distinta.
+Repite el mismo cambio en **`obs/compose.yml`**, **`obs/promtail/promtail-config.yml`** y **`obs/prometheus/prometheus.yml`** (PROD local) — son los mismos tres archivos, con el prefijo de puertos `2xxxx` en vez de `1xxxx` (`obs/README.md`), no una configuración distinta.
 
-Sube de nuevo Promtail para que tome los archivos nuevos:
+Sube de nuevo Prometheus y Promtail para que tomen la configuración nueva:
 
 ```powershell
 cd obs
-docker compose -f compose-dev.yml up -d promtail
+docker compose -f compose-dev.yml up -d prometheus promtail
 ```
 
-**Error frecuente**: agregar el `job_name` en `promtail-config-dev.yml` pero olvidar el volumen en `compose-dev.yml` (o al revés). Promtail necesita las dos cosas: el volumen monta el archivo real dentro del contenedor, y el `job_name` le dice dónde buscarlo (`__path__`) — sin el volumen, el `__path__` apunta a una carpeta vacía dentro del contenedor, y Promtail no encuentra nada que subir, sin ningún error visible.
+Confirma en `http://localhost:19090/targets` que `pagatu-keycloak` aparece como un *job* nuevo, `UP`.
+
+**Error frecuente**: agregar el `job_name` en `promtail-config-dev.yml` pero olvidar el volumen en `compose-dev.yml` (o al revés). Promtail necesita las dos cosas: el volumen monta el archivo real dentro del contenedor, y el `job_name` le dice dónde buscarlo (`__path__`) — sin el volumen, el `__path__` apunta a una carpeta vacía dentro del contenedor, y Promtail no encuentra nada que subir, sin ningún error visible. Para Keycloak hay un segundo error posible: que `KC_LOG` no incluyera `file` en S07b — sin eso, Keycloak nunca escribe `keycloak.log`, y el volumen monta una carpeta que se queda vacía para siempre, no solo hasta el primer log.
 
 ### 3.3 Configurar *health groups* de *liveness*/*readiness*
 
-**Producto del paso:** `/actuator/health/liveness` y `/actuator/health/readiness` respondiendo, en los cuatro microservicios.
+**Producto del paso:** `/actuator/health/liveness` y `/actuator/health/readiness` respondiendo, en los tres microservicios — Keycloak ya trae los suyos, sin que nadie los configure (2.2).
 
-En `application-dev.yml` de cada uno de los cuatro servicios (`infra/pagatu-config/config-repo/pagatu-<servicio>-dev.yml`, S2), agrega:
+En `application-dev.yml` de cada uno de los tres servicios (`infra/pagatu-config/config-repo/pagatu-<servicio>-dev.yml`, S2), agrega:
 
 ```yaml
 management:
@@ -276,7 +293,14 @@ Invoke-RestMethod -Method Get -Uri "http://localhost:8085/actuator/health/livene
 Invoke-RestMethod -Method Get -Uri "http://localhost:8085/actuator/health/readiness"
 ```
 
-Resultado esperado: `{"status": "UP"}` en ambos, para los cuatro puertos de servicio.
+Resultado esperado: `{"status": "UP"}` en ambos, para los tres puertos de servicio. Confirma también los de Keycloak, ya listos desde S07b, sin configurar nada aquí:
+
+```powershell
+Invoke-RestMethod -Method Get -Uri "http://localhost:19000/health/live"
+Invoke-RestMethod -Method Get -Uri "http://localhost:19000/health/ready"
+```
+
+Mismo resultado esperado (`status: UP`), en el puerto de *management* (`19000`, S07b) en vez del de autenticación (`18180`) — la misma separación entre tráfico de negocio y tráfico de diagnóstico que Keycloak aplica por diseño.
 
 ### 3.4 Propagar `X-Trace-ID` en las llamadas Feign de `pagatu-orden-ms`
 
@@ -331,7 +355,7 @@ Busca, en `logs/orden.log` y en `logs/catalogo.log` (de sus respectivas carpetas
 
 ### 3.6 Armar el tablero de Grafana
 
-**Producto del paso:** un tablero con los cuatro paneles de la Tabla 4, con datos reales de los cuatro microservicios.
+**Producto del paso:** un tablero con los cuatro paneles de la Tabla 4, con datos reales de las cuatro piezas.
 
 Abre `http://localhost:13000` (`admin`/`admin`). Mismo flujo que ya conoces de cualquier *dashboard* de Grafana (**Dashboards → New → New dashboard → + Add visualization**, un panel a la vez):
 
@@ -339,7 +363,7 @@ Abre `http://localhost:13000` (`admin`/`admin`). Mismo flujo que ya conoces de c
 
 | Panel | *Datasource* | Consulta | Visualización |
 |---|---|---|---|
-| Servicios arriba | Prometheus | `up{job="pagatu-microservicios"}` | Table |
+| Servicios arriba | Prometheus | `up{job=~"pagatu-microservicios\|pagatu-keycloak"}` | Table |
 | Tasa de peticiones | Prometheus | `sum by (application) (rate(http_server_requests_seconds_count[1m]))` | Time series |
 | Tasa de errores | Prometheus | `sum by (application) (rate(http_server_requests_seconds_count{status=~"5.."}[1m]))` | Time series |
 | Logs recientes | Loki | `{application=~"pagatu-.*"}` | Logs |
@@ -375,8 +399,8 @@ Sesión equivalente en los otros dos cursos, misma semana (BD2, S9 de esa guía 
 
 **Evidencia de aprendizaje:**
 
-- *Health groups* de *liveness*/*readiness* respondiendo en los cuatro microservicios.
-- `pagatu-auth-ms` y `pagatu-pago-ms` cableados a Promtail, junto a los dos que ya estaban.
+- *Health groups* de *liveness*/*readiness* respondiendo en los tres microservicios, y los de Keycloak confirmados sin configurar nada.
+- Keycloak agregado como *target* estático de Prometheus; Keycloak y `pagatu-pago-ms` cableados a Promtail, junto a los dos que ya estaban.
 - `RequestInterceptor` de Feign propagando `X-Trace-ID`, con evidencia real del mismo `traceId` en dos servicios distintos.
 - Tablero de Grafana con los cuatro paneles de la Tabla 5, con datos reales.
 - Diagnóstico de una falla simulada usando solo el tablero, con la Tabla 6 completada con valores reales.
@@ -427,7 +451,7 @@ Incluye capturas con una breve explicación debajo de cada una, organizadas en l
 1. *Health groups*
     - `/actuator/health/liveness` y `/actuator/health/readiness` respondiendo, con al menos una dependencia real en el grupo `readiness`.
 2. *Logs centralizados y correlación*
-    - Los cuatro servicios (o todos los de tu propio proyecto) visibles en Loki/Grafana, y evidencia del mismo `traceId` en dos servicios distintos.
+    - Las cuatro piezas (o todas las de tu propio proyecto) visibles en Loki/Grafana, y evidencia del mismo `traceId` en dos servicios distintos.
 3. *Tablero de Grafana*
     - Los paneles del tablero (Tabla 5), con datos reales.
 4. *Diagnóstico de una falla*
@@ -518,7 +542,7 @@ Indica 2 fortalezas y 2 recomendaciones.
 
 Tiempo: 5 min.
 
-**Resumen breve:** hoy `pagatu` dejó de depender de leer código o de revisar cuatro terminales distintas para saber si el sistema está sano. Los cuatro microservicios ganaron *health groups* explícitos (*liveness* distinto de *readiness*), los dos que faltaban (`pagatu-auth-ms`, `pagatu-pago-ms`) se cablearon a Loki, y el `traceId` que ya existía desde S7 por fin viaja entre servicios gracias a un interceptor de Feign — cerrando una brecha documentada desde antes de esta sesión. El resultado es un tablero de Grafana que combina métricas, logs y estado de salud en un solo lugar, probado contra una falla real simulada, no solo contra el caso feliz.
+**Resumen breve:** hoy `pagatu` dejó de depender de leer código o de revisar varias terminales distintas para saber si el sistema está sano. Los tres microservicios ganaron *health groups* explícitos (*liveness* distinto de *readiness*), Keycloak confirmó que ya traía los suyos desde S07b, los dos que faltaban en Loki (Keycloak, `pagatu-pago-ms`) se cablearon, Keycloak también se agregó a Prometheus como *target* estático (no es cliente de Eureka), y el `traceId` que ya existía desde S7 por fin viaja entre servicios gracias a un interceptor de Feign — cerrando una brecha documentada desde antes de esta sesión. El resultado es un tablero de Grafana que combina métricas, logs y estado de salud de las cuatro piezas en un solo lugar, probado contra una falla real simulada, no solo contra el caso feliz.
 
 **Dinámica participativa:** en una ronda rápida, cada estudiante comparte en una frase qué panel del tablero mostró primero su falla simulada, y por qué cree que fue ese.
 
