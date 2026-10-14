@@ -2452,7 +2452,7 @@ Microservicios: puerto fijo por instancia (8080, 8081, ...)
 <li><strong><em>Client-side discovery</em></strong> (lo que construye esta sesión): el propio cliente consulta a Eureka, recibe la lista de direcciones y elige una — el cliente necesita saber que Eureka existe y contiene la lógica de elegir.</li>
 <li><strong><em>Server-side discovery</em></strong> (adelanto de S4): el cliente ni siquiera sabe que Eureka existe — llama siempre a un punto único (el Gateway), y es el Gateway quien consulta a Eureka y reenvía la petición a una instancia concreta.</li>
 </ul>
-<p><strong>Figura 4. <em>Client-side<em> vs. </em>server-side discovery</em></strong></p>
+<p><strong>Figura 4. <em>Client-side</em> vs. <em>server-side discovery</em></strong></p>
 <pre class="mermaid"><code>flowchart TB
     subgraph Hoy["Client-side discovery (esta sesión)"]
         C1["Cliente"] --&gt;|"1. pregunta a Eureka"| E1["Eureka"]

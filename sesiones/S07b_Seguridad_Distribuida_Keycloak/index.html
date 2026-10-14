@@ -1,0 +1,1789 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://262dist.github.io/pagatu/sesiones/S07b_Seguridad_Distribuida_Keycloak/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+  
+    <title>Pagatu - S07 - Reemplazo de pagatu-auth-ms por Keycloak (guía de referencia)</title>
+  
+
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#s07-reemplazo-de-pagatu-auth-ms-por-keycloak-guia-de-referencia" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Pagatu" class="md-header__button md-logo" aria-label="Pagatu" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Pagatu
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              S07 - Reemplazo de pagatu-auth-ms por Keycloak (guía de referencia)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/262dist/pagatu" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    262dist/pagatu
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Pagatu" class="md-nav__button md-logo" aria-label="Pagatu" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Pagatu
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/262dist/pagatu" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    262dist/pagatu
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía de Proyecto Sello
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guía de Proyecto Sello
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía del proyecto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief técnico (plantilla)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/u1-producto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Producto U1 (plantilla-ejemplo)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/u2-producto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Producto U2 (plantilla-ejemplo)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/u3-producto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Producto U3 / Producto Final (plantilla-ejemplo)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/matriz-competencias/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Matriz de competencias (ICACIT)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/alcance-microservicios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Alcance por microservicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/acad/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sistema académico (referencia)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/produccion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sistema de producción y comercialización (referencia)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabos
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Silabos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabo 2026-1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabo 2026-2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I. Sistema distribuido base orientado a producción
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    I. Sistema distribuido base orientado a producción
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S01_Construccion_Servicio_Base/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S1 - Construcción de un servicio base para un sistema distribuido
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S02_Configuracion_Centralizada_Ambientes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S2 - Gestión centralizada de configuración y ambientes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S03_Registro_Descubrimiento_Ejecucion_Concurrente/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S3 - Registro, descubrimiento y ejecución concurrente de servicios
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S04_Punto_Unico_Acceso_Distribucion_Trafico/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S4 - Punto único de acceso y distribución de tráfico
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S05_Evaluacion_Unidad_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S5 - Evaluación de la Unidad I
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    II. Sistema distribuido robusto
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    II. Sistema distribuido robusto
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S06_Comunicacion_Sincrona_Resiliente/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S6 - Comunicación síncrona resiliente entre servicios
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S07_Seguridad_Distribuida_Control_Acceso/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S7 - Seguridad distribuida y control de acceso
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S08_Mensajeria_Asincrona_Entre_Servicios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S8 - Mensajería asíncrona entre servicios
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S09_Consistencia_Distribuida_Procesos_Negocio/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S9 - Consistencia distribuida en procesos de negocio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S10_Observabilidad_Diagnostico_Sistemas_Distribuidos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S10 - Observabilidad y diagnóstico de sistemas distribuidos
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S12_Evaluacion_Unidad_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S12 - Evaluación de la Unidad II
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    III. Validación y consolidación del producto del curso
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    III. Validación y consolidación del producto del curso
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S15_Evaluacion_Unidad_3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S15 - Evaluación de la Unidad III
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-que-es-esta-guia-y-que-no-es" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Qué es esta guía y qué no es
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-que-cambia-y-que-no" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Qué cambia y qué no
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parte-a-keycloak-sin-tocar-el-gateway-ni-pagatu-orden-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte A — Keycloak, sin tocar el Gateway ni pagatu-orden-ms
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-levantar-keycloak" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Levantar Keycloak
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-configurar-el-realm-pagatu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Configurar el realm pagatu
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-crear-el-cliente-pagatu-frontend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Crear el cliente pagatu-frontend
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-crear-los-usuarios-semilla" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Crear los usuarios semilla
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-verificar-un-token-real-antes-de-tocar-el-gateway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Verificar un token real antes de tocar el Gateway
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parte-b-integrar-el-gateway-y-pagatu-orden-ms-con-keycloak" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte B — Integrar el Gateway y pagatu-orden-ms con Keycloak
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-migrar-el-gateway-y-pagatu-orden-ms-a-keycloak" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Migrar el Gateway y pagatu-orden-ms a Keycloak
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Migrar el Gateway y pagatu-orden-ms a Keycloak">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-cambiar-la-propiedad-de-validacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Cambiar la propiedad de validación
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-migrar-idcliente-a-sub-codigo-de-pagatu-orden-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Migrar idCliente a sub: código de pagatu-orden-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-migrar-la-columna-id_cliente-en-postgres" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 Migrar la columna id_cliente en Postgres
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parte-c-profundizar-retirar-pagatu-auth-ms-y-probar-de-punta-a-punta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte C — Profundizar: retirar pagatu-auth-ms y probar de punta a punta
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-retirar-pagatu-auth-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Retirar pagatu-auth-ms
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-probar-de-punta-a-punta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Probar de punta a punta
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-que-queda-pendiente" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Qué queda pendiente
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="s07-reemplazo-de-pagatu-auth-ms-por-keycloak-guia-de-referencia">S07 - Reemplazo de <code>pagatu-auth-ms</code> por Keycloak (guía de referencia)<a class="headerlink" href="#s07-reemplazo-de-pagatu-auth-ms-por-keycloak-guia-de-referencia" title="Permanent link">&para;</a></h1>
+<p><em>Por: Angel Sullon Macalupu @asullom - 2026</em></p>
+<h2 id="0-que-es-esta-guia-y-que-no-es">0. Qué es esta guía y qué no es<a class="headerlink" href="#0-que-es-esta-guia-y-que-no-es" title="Permanent link">&para;</a></h2>
+<p>Esta guía <strong>no</strong> es una sesión aparte del sílabo: no tiene metodología, caso de motivación, actividad autónoma ni rúbrica propia, y no se evalúa por sí sola. Es la continuación directa de <a href="../S07_Seguridad_Distribuida_Control_Acceso/">S07_Seguridad_Distribuida_Control_Acceso.md</a> — la sesión real y evaluada —, que construyó <code>pagatu-auth-ms</code> deliberadamente temporal y diseñado, desde su primera línea, "para que el reemplazo posterior por Keycloak cambie una propiedad de configuración, no el código del Gateway ni de los microservicios de negocio" (S07, 1.1, Tabla 6). A diferencia de una guía puramente optativa, esta <strong>sí</strong> es prerrequisito de <a href="../S11_Integracion_Cliente_Frontend_Angular_Keycloak/">S11_Integracion_Cliente_Frontend_Angular_Keycloak.md</a>: S07 ya citó a S11 más de diez veces (Tabla 3, Tabla 4, Tabla 5, Figura 6, 2.4, 3.27) dando por hecho que el cliente Angular de esa sesión hablaría con Keycloak, no con <code>pagatu-auth-ms</code> — esta guía es el paso intermedio que hace cierta esa expectativa.</p>
+<p><strong>Una divergencia real frente a S07, no solo una ejecución de su Tabla 6</strong>: S07 (3.13) diseñó <code>idCliente</code> a propósito como "un dato de negocio que este servicio guarda por comodidad, no un dato de identidad" — distinto del <code>sub</code> del token, y por eso exigía un <em>user attribute</em> + <em>protocol mapper</em> del lado de Keycloak. Esta guía se aparta de eso: <code>idCliente</code> pasa a ser literalmente <code>sub</code>, igual que <code>vendedorId</code> en LP2 (BomERP). La razón es práctica, no cosmética — se explica en la sección 7, donde se construye. Esto <strong>sí</strong> toca código real de <code>pagatu-orden-ms</code> (no solo configuración de Keycloak), a diferencia de lo que la Tabla 6 original de S07 prometía.</p>
+<p>Constrúyela entre S07 y S11, con tiempo antes de esa clase — no es un trabajo de diez minutos: Parte B (7.2-7.3) recompila <code>pagatu-orden-ms</code> y migra una columna real de Postgres, no solo cambia una propiedad. Nunca antes de haber completado S07 por tu cuenta, porque da por hecho que <code>pagatu-auth-ms</code>, el Gateway y <code>pagatu-orden-ms</code> ya quedaron funcionando con JWT propio exactamente como esa sesión los dejó.</p>
+<p><strong>Requisito:</strong> haber completado S07 (<code>pagatu-auth-ms</code> funcional, con usuarios/roles propios, Gateway y <code>pagatu-orden-ms</code> validando por <code>jwk-set-uri</code>) — esta guía parte de ese estado y lo reemplaza.</p>
+<p>La guía está dividida en tres partes, en el orden en que de verdad hace falta tocar cada pieza:</p>
+<ul>
+<li><strong>Parte A</strong> (secciones 2-6) construye y prueba Keycloak solo — realm, cliente, usuarios, y un token real inspeccionado. <strong>Nada de esto toca el Gateway ni <code>pagatu-orden-ms</code></strong> — ni un archivo, ni un reinicio.</li>
+<li><strong>Parte B</strong> (sección 7) es el mínimo que deja al Gateway y a <code>pagatu-orden-ms</code> validando tokens de Keycloak, con <code>idCliente</code> migrado a <code>sub</code>. <strong>Con esto ya alcanza para la sesión.</strong></li>
+<li><strong>Parte C</strong> (secciones 8-9) profundiza: retira <code>pagatu-auth-ms</code> (ya sin ningún lector) y prueba con la matriz completa, usando tokens reales de Keycloak, que los roles siguen separando lo que cada uno puede hacer.</li>
+</ul>
+<h2 id="1-que-cambia-y-que-no">1. Qué cambia y qué no<a class="headerlink" href="#1-que-cambia-y-que-no" title="Permanent link">&para;</a></h2>
+<p><strong>Figura 1. Antes y después del reemplazo</strong></p>
+<pre class="mermaid"><code>flowchart TB
+    subgraph Antes["Hoy (S07)"]
+        direction TB
+        ClienteA["Cliente&lt;br/&gt;(PowerShell / curl)"]
+        AuthA["pagatu-auth-ms&lt;br/&gt;emite el JWT"]
+        SCA["Gateway / orden-ms&lt;br/&gt;jwk-set-uri -&gt; localhost:8085"]
+        ClienteA --&gt; AuthA
+        SCA -.-&gt; AuthA
+    end
+
+    subgraph Despues["Despues (esta guia)"]
+        direction TB
+        ClienteD["Cliente&lt;br/&gt;(PowerShell / curl / navegador)"]
+        KC["Keycloak&lt;br/&gt;realm pagatu&lt;br/&gt;emite el JWT"]
+        SCD["Gateway / orden-ms&lt;br/&gt;issuer-uri -&gt; Keycloak"]
+        ClienteD --&gt; KC
+        SCD -.-&gt; KC
+    end
+
+    Antes --&gt; Despues</code></pre>
+<p><strong>Tabla 1. Qué cambia exactamente frente a la Tabla 6 de S07</strong></p>
+<table>
+<thead>
+<tr>
+<th>Pieza</th>
+<th>Cambia</th>
+<th>Nota</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>jwk-set-uri</code> → <code>issuer-uri</code> (Gateway y <code>pagatu-orden-ms</code>)</td>
+<td>Sí — una propiedad YAML en cada uno (7.1)</td>
+<td>Igual que la Tabla 6 de S07 ya prometía.</td>
+</tr>
+<tr>
+<td><code>JwtAuthenticationConverter</code> (lee <code>realm_access.roles</code>)</td>
+<td><strong>No</strong></td>
+<td>Igual que la Tabla 6.</td>
+</tr>
+<tr>
+<td>Reglas <code>hasRole</code>/<code>hasAnyRole</code> del Gateway</td>
+<td><strong>No</strong></td>
+<td>Igual que la Tabla 6.</td>
+</tr>
+<tr>
+<td>Cómo <code>pagatu-orden-ms</code> lee <code>idCliente</code> del JWT</td>
+<td><strong>Sí</strong> — pasa de <code>jwt.getClaim("idCliente")</code> (<code>Long</code>) a <code>jwt.getSubject()</code> (<code>String</code>) (7.2)</td>
+<td><strong>Diverge</strong> de la Tabla 6 de S07, que no exigía esto — ver la sección 0.</td>
+</tr>
+<tr>
+<td>Columna <code>id_cliente</code> de <code>ordenes</code></td>
+<td>Sí — de <code>BIGINT</code> a <code>VARCHAR(36)</code> (7.3)</td>
+<td><strong>Diverge</strong> de la Tabla 6, por la misma razón.</td>
+</tr>
+<tr>
+<td>Servicio <code>pagatu-auth-ms</code></td>
+<td>Se retira (sección 8)</td>
+<td>Igual que la Tabla 6.</td>
+</tr>
+<tr>
+<td>Postgres de <code>pagatu-auth-ms</code> (<code>pagatu-postgres-auth-dev</code>)</td>
+<td>Se retira junto con el servicio</td>
+<td>Igual que la Tabla 6.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="parte-a-keycloak-sin-tocar-el-gateway-ni-pagatu-orden-ms">Parte A — Keycloak, sin tocar el Gateway ni <code>pagatu-orden-ms</code><a class="headerlink" href="#parte-a-keycloak-sin-tocar-el-gateway-ni-pagatu-orden-ms" title="Permanent link">&para;</a></h2>
+<p>Las secciones 2 a 6 levantan, configuran y prueban Keycloak de punta a punta. En ningún momento se edita, reinicia ni recompila el Gateway ni <code>pagatu-orden-ms</code> — todo lo que sigue hasta el final de la sección 6 se verifica contra Keycloak directamente, con el navegador y PowerShell/<code>curl</code>.</p>
+<h2 id="2-levantar-keycloak">2. Levantar Keycloak<a class="headerlink" href="#2-levantar-keycloak" title="Permanent link">&para;</a></h2>
+<p><strong>Producto del paso:</strong> Keycloak corriendo en modo desarrollo, con su propio Postgres, y consola de administración accesible.</p>
+<p><strong><code>keycloak/compose-dev.yml</code></strong> (archivo nuevo — hermano de <code>kafka/</code>/<code>obs/</code>, no dentro de <code>infra/</code>: igual que ellos, es una imagen de Docker que se consume tal cual, no un servicio propio con su <code>Dockerfile</code>, como sí lo son <code>pagatu-config</code>/<code>pagatu-eureka</code>/<code>pagatu-gateway</code> dentro de <code>infra/</code>):</p>
+<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-keycloak-dev</span>
+
+<span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">keycloak-db</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres:17-alpine</span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-keycloak-db</span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">POSTGRES_DB</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu_keycloak</span>
+<span class="w">      </span><span class="nt">POSTGRES_USER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu_keycloak</span>
+<span class="w">      </span><span class="nt">POSTGRES_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"15436:5432"</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu_keycloak_dev_data:/var/lib/postgresql/data</span>
+<span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"CMD-SHELL"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"pg_isready</span><span class="nv"> </span><span class="s">-U</span><span class="nv"> </span><span class="s">pagatu_keycloak</span><span class="nv"> </span><span class="s">-d</span><span class="nv"> </span><span class="s">pagatu_keycloak"</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10s</span>
+<span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5s</span>
+<span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">      </span><span class="nt">start_period</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">15s</span>
+
+<span class="w">  </span><span class="nt">keycloak</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">quay.io/keycloak/keycloak:26.8.0</span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-keycloak</span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
+<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">start-dev</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">KC_BOOTSTRAP_ADMIN_USERNAME</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">admin</span>
+<span class="w">      </span><span class="nt">KC_BOOTSTRAP_ADMIN_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">admin123</span>
+<span class="w">      </span><span class="nt">KC_DB</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres</span>
+<span class="w">      </span><span class="nt">KC_DB_URL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jdbc:postgresql://keycloak-db:5432/pagatu_keycloak</span>
+<span class="w">      </span><span class="nt">KC_DB_USERNAME</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu_keycloak</span>
+<span class="w">      </span><span class="nt">KC_DB_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu</span>
+<span class="w">      </span><span class="nt">KC_METRICS_ENABLED</span><span class="p">:</span><span class="w"> </span><span class="s">"true"</span>
+<span class="w">      </span><span class="nt">KC_HEALTH_ENABLED</span><span class="p">:</span><span class="w"> </span><span class="s">"true"</span>
+<span class="w">      </span><span class="nt">KC_LOG</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">console,file</span>
+<span class="w">      </span><span class="nt">KC_LOG_FILE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/opt/keycloak/data/log/keycloak.log</span>
+<span class="w">      </span><span class="nt">KC_HTTP_MANAGEMENT_PORT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9000</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"18180:8080"</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"19000:9000"</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./logs:/opt/keycloak/data/log</span>
+<span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">keycloak-db</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span>
+
+<span class="nt">volumes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pagatu_keycloak_dev_data</span><span class="p">:</span>
+</code></pre></div>
+<p>El puerto externo <code>18180</code> sigue el mismo criterio de prefijo <code>1</code>=DEV que ya usan <code>pagatu-eureka</code> (<code>18761</code>) y <code>pagatu-gateway</code> (<code>18080</code>) — <code>18085</code> queda ocupado por la UI de Kafka (S8), así que Keycloak toma el siguiente libre; <code>15436</code> continúa la secuencia de puertos Postgres de los cuatro microservicios (<code>15431</code>-<code>15435</code>). <code>start-dev</code> es el modo rápido de desarrollo — sin TLS ni <em>hostname</em> explícito, no apto para producción real (fuera del alcance de esta guía, igual que lo documentó LP2 al construir el mismo contenedor para BomERP).</p>
+<p>Las cinco variables nuevas (<code>KC_METRICS_ENABLED</code>, <code>KC_HEALTH_ENABLED</code>, <code>KC_LOG</code>, <code>KC_LOG_FILE</code>, <code>KC_HTTP_MANAGEMENT_PORT</code>) no hacen falta para nada de lo que esta guía construye — existen para que S10 (Observabilidad) pueda monitorear Keycloak con el mismo criterio que los demás servicios, sin que nadie tenga que volver a tocar este archivo más adelante. Por defecto, Keycloak no expone métricas ni log a archivo — ambos vienen desactivados hasta que se piden explícitamente (verificado contra la documentación oficial de Keycloak 26). <code>KC_HTTP_MANAGEMENT_PORT: 9000</code> mueve <code>/metrics</code> y <code>/health</code> a un puerto separado del tráfico de autenticación (<code>18180</code>), publicado hacia el host en <code>19000</code> — el mismo criterio de prefijo <code>1</code>=DEV. <code>./logs:/opt/keycloak/data/log</code> es un <em>bind mount</em> a una carpeta nueva dentro de <code>keycloak/</code>, igual en espíritu a <code>../services/pagatu-auth-ms/logs:/var/log/pagatu-auth-ms:ro</code> que ya usan los microservicios — S10 monta esa misma carpeta, de solo lectura, en Promtail.</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>keycloak
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-dev.yml<span class="w"> </span>up<span class="w"> </span>-d
+</code></pre></div>
+<p>Confirma que levantó accediendo a <code>http://localhost:18180</code> — debe aparecer la pantalla de bienvenida de Keycloak. Entra a la consola de administración con <code>admin</code>/<code>admin123</code>.</p>
+<p><strong>Error frecuente</strong>: arrancar el Gateway o <code>pagatu-orden-ms</code> (sección 7) antes de que Keycloak termine de iniciar. El <em>healthcheck</em> de <code>keycloak-db</code> tarda unos segundos; confirma con <code>docker ps</code> que diga <code>healthy</code>, no solo <code>Up</code>, antes de seguir.</p>
+<h2 id="3-configurar-el-realm-pagatu">3. Configurar el realm <code>pagatu</code><a class="headerlink" href="#3-configurar-el-realm-pagatu" title="Permanent link">&para;</a></h2>
+<p><strong>Producto del paso:</strong> un realm propio (no <code>master</code>, reservado para administrar Keycloak mismo), con los dos roles que el Gateway ya usa.</p>
+<ol>
+<li><strong>Manage realms</strong> → <strong>Create realm</strong> → <em>Realm name</em>: <code>pagatu</code>. Crear.</li>
+<li>Con <code>pagatu</code> como realm activo (lo confirmas en la esquina superior izquierda): <strong>Realm roles</strong> → <strong>Create role</strong>, crea <code>CLIENTE</code> y <code>ADMIN</code>, uno por uno.</li>
+</ol>
+<p>Estos son <strong>realm roles</strong> (no <em>client roles</em>) a propósito: Keycloak los agrega al token bajo el claim <code>realm_access.roles</code> — el mismo nombre de claim que <code>pagatu-auth-ms</code> ya usaba (S07, 3.17) y que <code>JwtAuthenticationConverter</code> ya sabe leer. Es el primer punto donde se confirma la Tabla 1: cero cambios en ese conversor.</p>
+<h2 id="4-crear-el-cliente-pagatu-frontend">4. Crear el cliente <code>pagatu-frontend</code><a class="headerlink" href="#4-crear-el-cliente-pagatu-frontend" title="Permanent link">&para;</a></h2>
+<p><strong>Producto del paso:</strong> un <em>client</em> en el realm <code>pagatu</code>, configurado <strong>directamente</strong> para el flujo final — a diferencia de LP2/BomERP, esta guía no pasa por una fase temporal de prueba con <em>Direct access grants</em>: S07 (3.27) ya verificó a mano, con datos reales, que el cálculo de PKCE (<em>Proof Key for Code Exchange</em>) es correcto, así que no hace falta un atajo adicional antes de configurar el cliente bien desde el principio.</p>
+<ol>
+<li><strong>Clients</strong> → <strong>Create client</strong>. <em>Client type</em>: <code>OpenID Connect</code>. <em>Client ID</em>: <code>pagatu-frontend</code>. Siguiente.</li>
+<li><strong>Capability config</strong>:<ul>
+<li><strong>Client authentication</strong>: <strong>desactivado</strong> — es un <em>public client</em> (una SPA no puede guardar un secreto, S07, 2.4).</li>
+<li><strong>Authorization</strong>: desactivado — no aplica a esta guía.</li>
+<li><strong>Authentication flow</strong>: deja <strong>Standard flow</strong> activado (viene por defecto). Deja <strong>Direct access grants</strong> <strong>desactivado</strong>.</li>
+<li><strong>Require PKCE</strong>: cámbialo a <strong>S256</strong> — a diferencia de dejarlo en su valor por defecto, esto hace que Keycloak <strong>rechace</strong> cualquier intercambio de código sin <code>code_verifier</code> válido, sin importar lo que un cliente mal configurado intente.</li>
+<li>Siguiente.</li>
+</ul>
+</li>
+<li><strong>Login settings</strong>:<ul>
+<li><strong>Valid redirect URIs</strong>: <code>http://localhost:4200/*</code>.</li>
+<li><strong>Valid post logout redirect URIs</strong>: <code>http://localhost:4200/*</code>.</li>
+<li><strong>Web origins</strong>: <code>http://localhost:4200</code>.</li>
+<li>Guardar.</li>
+</ul>
+</li>
+</ol>
+<p><code>4200</code> es el puerto por defecto del servidor de desarrollo de Angular (<code>ng serve</code>) — el mismo que S11 usa para <code>pagatu-frontend</code>. Si tu equipo decide correrlo en otro puerto, ajusta las tres URLs antes de seguir.</p>
+<h2 id="5-crear-los-usuarios-semilla">5. Crear los usuarios semilla<a class="headerlink" href="#5-crear-los-usuarios-semilla" title="Permanent link">&para;</a></h2>
+<p><strong>Producto del paso:</strong> los mismos dos usuarios de <code>pagatu-auth-ms</code> (S07, 3.13), ahora en Keycloak.</p>
+<p>A diferencia de lo que un primer vistazo a S07 (3.13) sugeriría, <strong>no hace falta ningún atributo de usuario</strong>: <code>idCliente</code> pasa a ser <code>sub</code> (7.2), y <code>sub</code> es el UUID (<em>Universally Unique Identifier</em>) que Keycloak asigna solo a cada usuario, sin que nadie lo configure — exactamente la misma razón por la que LP2 nunca necesitó nada extra para <code>vendedorId</code>.</p>
+<ol>
+<li><strong>Users</strong> → <strong>Add user</strong>.<ul>
+<li><code>cliente@pagatu.com</code>: <strong>Email verified</strong>: activado. Crear usuario, luego <strong>Credentials</strong> → <strong>Set password</strong>: <code>cliente123</code>, <em>Temporary</em>: <strong>desactivado</strong>. <strong>Role mapping</strong> → <strong>Assign role</strong> → <code>CLIENTE</code>.</li>
+<li><code>admin@pagatu.com</code>: <strong>Credentials</strong>: <code>admin123</code>, <em>Temporary</em>: <strong>desactivado</strong>. <strong>Role mapping</strong>: <code>ADMIN</code>.</li>
+</ul>
+</li>
+</ol>
+<p><strong>Required user actions</strong>: déjalo vacío en los dos — si marcas algo (ej. <em>Update Password</em>), Keycloak lo exige en el primer login y la verificación de la sección 6 falla a mitad de camino.</p>
+<h2 id="6-verificar-un-token-real-antes-de-tocar-el-gateway">6. Verificar un token real antes de tocar el Gateway<a class="headerlink" href="#6-verificar-un-token-real-antes-de-tocar-el-gateway" title="Permanent link">&para;</a></h2>
+<p><strong>Producto del paso:</strong> confirmación, con un token real y sin construir todavía ningún cliente Angular, de que <code>realm_access.roles</code> y <code>sub</code> llegan con el formato esperado.</p>
+<p>Sin <em>Direct access grants</em> (sección 4), no hay forma de pedir un token con un solo <code>curl</code>/<code>Invoke-RestMethod</code> — el flujo exige, de verdad, pasar por la pantalla de login de Keycloak en un navegador. Eso es, de hecho, lo que esta sección verifica: el mismo recorrido que el cliente Angular de S11 va a automatizar.</p>
+<ol>
+<li>Calcula un <code>code_verifier</code> y su <code>code_challenge</code> con el mismo script de S07 (3.27) — o reutiliza directamente los valores que ya calculaste ahí.</li>
+<li>Pega esta URL en el navegador, reemplazando <code>&lt;code_challenge&gt;</code> por el valor calculado:</li>
+</ol>
+<div class="highlight"><pre><span></span><code>http://localhost:18180/realms/pagatu/protocol/openid-connect/auth?client_id=pagatu-frontend&amp;response_type=code&amp;redirect_uri=http://localhost:4200/auth/callback&amp;scope=openid+profile&amp;code_challenge=&lt;code_challenge&gt;&amp;code_challenge_method=S256
+</code></pre></div>
+<ol>
+<li>Inicia sesión con <code>cliente@pagatu.com</code> / <code>cliente123</code>. El navegador redirige a <code>http://localhost:4200/auth/callback?code=...</code> — como <code>pagatu-frontend</code> todavía no existe (llega en S11), la página mostrará un error de conexión; <strong>eso no importa</strong>: el dato que necesitas está en la barra de direcciones. Copia el valor de <code>code</code>.</li>
+<li>Canjea el código por un token, con el mismo <code>code_verifier</code> del paso 1:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="nv">$body</span> <span class="p">=</span> <span class="p">@{</span>
+  <span class="n">grant_type</span>    <span class="p">=</span> <span class="s2">"authorization_code"</span>
+  <span class="n">client_id</span>     <span class="p">=</span> <span class="s2">"pagatu-frontend"</span>
+  <span class="n">redirect_uri</span>  <span class="p">=</span> <span class="s2">"http://localhost:4200/auth/callback"</span>
+  <span class="n">code</span>          <span class="p">=</span> <span class="s2">"&lt;code copiado del navegador&gt;"</span>
+  <span class="n">code_verifier</span> <span class="p">=</span> <span class="s2">"&lt;code_verifier del paso 1&gt;"</span>
+<span class="p">}</span>
+<span class="nv">$token</span> <span class="p">=</span> <span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Post</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18180/realms/pagatu/protocol/openid-connect/token"</span> <span class="n">-Body</span> <span class="nv">$body</span>
+<span class="nv">$token</span><span class="p">.</span><span class="n">access_token</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:18180/realms/pagatu/protocol/openid-connect/token<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="nv">grant_type</span><span class="o">=</span>authorization_code<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="nv">client_id</span><span class="o">=</span>pagatu-frontend<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="nv">redirect_uri</span><span class="o">=</span>http://localhost:4200/auth/callback<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="nv">code</span><span class="o">=</span>&lt;code<span class="w"> </span>copiado<span class="w"> </span>del<span class="w"> </span>navegador&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="nv">code_verifier</span><span class="o">=</span>&lt;code_verifier<span class="w"> </span>del<span class="w"> </span>paso<span class="w"> </span><span class="m">1</span>&gt;
+</code></pre></div>
+<ol>
+<li>Pega el <code>access_token</code> recibido en <a href="https://jwt.io">jwt.io</a> (inspección visual, sin verificar firma) y confirma: <code>realm_access.roles</code> trae <code>["CLIENTE"]</code>, y anota el valor de <code>sub</code> (un UUID, ej. <code>516ef047-ffbc-470f-b397-6d4a3fe8fbfa</code>) — es el valor que 7.2 va a usar como <code>idCliente</code> desde ahora.</li>
+</ol>
+<p><strong>Error frecuente</strong>: pegar un <code>code</code> que ya expiró (son de un solo uso y de vida muy corta, segundos) o reusar un <code>code</code> ya canjeado una vez. Si el canje falla con <code>invalid_grant</code>, repite desde el paso 2 con una URL nueva — nunca reintentes el mismo <code>code</code>.</p>
+<h2 id="parte-b-integrar-el-gateway-y-pagatu-orden-ms-con-keycloak">Parte B — Integrar el Gateway y <code>pagatu-orden-ms</code> con Keycloak<a class="headerlink" href="#parte-b-integrar-el-gateway-y-pagatu-orden-ms-con-keycloak" title="Permanent link">&para;</a></h2>
+<p>A partir de aquí sí se edita, recompila y reinicia el Gateway y <code>pagatu-orden-ms</code> — todo sobre el Keycloak que la Parte A ya dejó funcionando y verificado.</p>
+<h2 id="7-migrar-el-gateway-y-pagatu-orden-ms-a-keycloak">7. Migrar el Gateway y <code>pagatu-orden-ms</code> a Keycloak<a class="headerlink" href="#7-migrar-el-gateway-y-pagatu-orden-ms-a-keycloak" title="Permanent link">&para;</a></h2>
+<p><strong>Producto del paso:</strong> Gateway y <code>pagatu-orden-ms</code> validando tokens de Keycloak; <code>idCliente</code> migrado de <code>Long</code> (claim propio) a <code>String</code> (<code>sub</code>).</p>
+<h3 id="71-cambiar-la-propiedad-de-validacion">7.1 Cambiar la propiedad de validación<a class="headerlink" href="#71-cambiar-la-propiedad-de-validacion" title="Permanent link">&para;</a></h3>
+<p><strong><code>infra/pagatu-config/config-repo/pagatu-gateway-dev.yml</code></strong> y <strong><code>infra/pagatu-config/config-repo/pagatu-orden-ms-dev.yml</code></strong> — reemplaza la propiedad de validación:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">spring</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">security</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">oauth2</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">resourceserver</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">jwt</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">issuer-uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://localhost:18180/realms/pagatu</span>
+<span class="w">          </span><span class="c1"># jwk-set-uri: http://localhost:8085/.well-known/jwks.json</span>
+</code></pre></div>
+<p>Con <code>issuer-uri</code>, Spring descubre la ubicación de las claves a partir del documento de descubrimiento OIDC (<em>OpenID Connect</em>) que Keycloak publica, y además valida que el claim <code>iss</code> del token coincida con ese emisor (S07, 2.4) — algo que <code>jwk-set-uri</code> nunca verificaba, porque <code>pagatu-auth-ms</code> no implementa ese documento. El <code>JwtAuthenticationConverter</code> (S07, 3.17) sigue leyendo exactamente el mismo claim <code>realm_access.roles</code>, con el mismo formato — esa pieza <strong>no</strong> cambia.</p>
+<h3 id="72-migrar-idcliente-a-sub-codigo-de-pagatu-orden-ms">7.2 Migrar <code>idCliente</code> a <code>sub</code>: código de <code>pagatu-orden-ms</code><a class="headerlink" href="#72-migrar-idcliente-a-sub-codigo-de-pagatu-orden-ms" title="Permanent link">&para;</a></h3>
+<p><strong>Por qué cambiar esto, si S07 (Tabla 6) nunca lo pidió</strong>: un <em>user attribute</em> manual (lo que S07, 3.13, y la primera versión de esta guía usaban) exige que alguien asigne a mano un <code>idCliente</code> único por cada usuario nuevo que se cree en Keycloak — sin automatizarlo, dos administradores podrían asignar el mismo valor a dos clientes distintos sin que Keycloak lo impida, porque un <em>user attribute</em> no tiene ninguna restricción de unicidad. <code>sub</code> sí la tiene: Keycloak lo genera él mismo, siempre distinto, para cualquier usuario que exista. Usarlo es exactamente lo que LP2 (BomERP) ya hace con <code>vendedorId</code> — y la razón de fondo por la que <code>vendedorId</code> <strong>sí</strong> pudo ser simplemente <code>sub</code> desde el diseño de S10 de esa guía.</p>
+<p><strong><code>services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/entity/Orden.java</code></strong> — cambia el tipo del campo:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Column</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"id_cliente"</span><span class="p">,</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">36</span><span class="p">)</span>
+<span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">idCliente</span><span class="p">;</span>
+</code></pre></div>
+<p><strong><code>services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/dto/OrdenResponse.java</code></strong> — mismo cambio:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">idCliente</span><span class="p">;</span>
+</code></pre></div>
+<p><strong><code>services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/controller/OrdenController.java</code></strong> — reemplaza cómo se lee el claim en <code>crear</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@PostMapping</span>
+<span class="nd">@ResponseStatus</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">CREATED</span><span class="p">)</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">OrdenResponse</span><span class="w"> </span><span class="nf">crear</span><span class="p">(</span><span class="nd">@Valid</span><span class="w"> </span><span class="nd">@RequestBody</span><span class="w"> </span><span class="n">OrdenRequest</span><span class="w"> </span><span class="n">request</span><span class="p">,</span>
+<span class="w">                            </span><span class="nd">@AuthenticationPrincipal</span><span class="w"> </span><span class="n">Jwt</span><span class="w"> </span><span class="n">jwt</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">idCliente</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">jwt</span><span class="p">.</span><span class="na">getSubject</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ordenService</span><span class="p">.</span><span class="na">crear</span><span class="p">(</span><span class="n">request</span><span class="p">,</span><span class="w"> </span><span class="n">idCliente</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Ya no hace falta el chequeo manual de <code>claimIdCliente == null</code> ni el <code>IllegalArgumentException</code> que S07 (3.22) agregó para ese caso — <code>jwt.getSubject()</code> siempre trae un valor mientras el token sea válido, Spring Security ya lo garantizó antes de que este método se ejecute.</p>
+<p><strong><code>OrdenService.java</code></strong> y <strong><code>OrdenServiceImpl.java</code></strong> — actualiza la firma de <code>crear</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="n">OrdenResponse</span><span class="w"> </span><span class="nf">crear</span><span class="p">(</span><span class="n">OrdenRequest</span><span class="w"> </span><span class="n">request</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">idCliente</span><span class="p">);</span>
+</code></pre></div>
+<p>El resto de <code>OrdenServiceImpl.crear</code> (validar stock, calcular el total) no tiene ninguna relación con el tipo de <code>idCliente</code> y queda intacto — el campo solo se asigna, nunca se interpreta como número en ningún punto del servicio. La única pieza que sí exige otro cambio es el evento que <code>crear</code> publica:</p>
+<p><strong><code>services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/event/OrdenCreadaEvento.java</code></strong> — mismo cambio de tipo:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">idCliente</span><span class="p">;</span>
+</code></pre></div>
+<p>Sin este cambio, <code>OrdenServiceImpl.crear</code> ni compila: <code>OrdenCreadaEvento.builder().idCliente(guardada.getIdCliente())</code> pasa un <code>String</code> a un <em>builder</em> que todavía espera un <code>Long</code>.</p>
+<p><strong><code>services/pagatu-pago-ms/src/main/java/pe/edu/upeu/pago/event/OrdenCreadaEvento.java</code></strong> — el mismo cambio, en la copia local que vive en <code>pagatu-pago-ms</code> (cada servicio tiene la suya propia, sin librería compartida entre los dos, S8):</p>
+<div class="highlight"><pre><span></span><code><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">idCliente</span><span class="p">;</span>
+</code></pre></div>
+<p><code>PagoServiceImpl.procesar</code> nunca lee <code>idCliente</code> (solo usa <code>ordenId</code>, <code>monto</code>, <code>metodoPago</code>) — pero igual hay que cambiarlo: Kafka transporta el evento como JSON, y si <code>pagatu-orden-ms</code> empieza a enviar <code>"idCliente": "516ef047-..."</code> mientras <code>pagatu-pago-ms</code> todavía espera un número en ese campo, la deserialización falla y el consumidor se cae, aunque el valor nunca se use.</p>
+<h3 id="73-migrar-la-columna-id_cliente-en-postgres">7.3 Migrar la columna <code>id_cliente</code> en Postgres<a class="headerlink" href="#73-migrar-la-columna-id_cliente-en-postgres" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">ordenes</span><span class="w"> </span><span class="k">ALTER</span><span class="w"> </span><span class="k">COLUMN</span><span class="w"> </span><span class="n">id_cliente</span><span class="w"> </span><span class="k">TYPE</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">36</span><span class="p">)</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">id_cliente</span><span class="p">::</span><span class="nb">text</span><span class="p">;</span>
+</code></pre></div>
+<p>A diferencia de Oracle (que LP2 tuvo que resolver con una columna temporal, por el error <code>ORA-01439</code> al cambiar el tipo de una columna con datos), Postgres permite este cambio en una sola instrucción, incluso con filas existentes — <code>USING id_cliente::text</code> le dice exactamente cómo convertir cada valor numérico ya guardado a su representación en texto.</p>
+<p>Conéctate al Postgres de <code>pagatu-orden-ms</code> (el mismo de siempre, S02) y corre la migración:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-i<span class="w"> </span>pagatu-postgres-orden-dev<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_orden_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">"ALTER TABLE ordenes ALTER COLUMN id_cliente TYPE VARCHAR(36) USING id_cliente::text;"</span>
+</code></pre></div>
+<p><strong>Nota honesta sobre los datos viejos</strong>: las órdenes creadas bajo <code>pagatu-auth-ms</code> quedan con <code>id_cliente</code> igual al <code>id</code> numérico-como-texto que ese módulo usaba (ej. <code>"1"</code>) — no al <code>sub</code> nuevo de Keycloak (un UUID). Hoy eso no rompe nada: <code>OrdenServiceImpl.listar()</code> nunca filtra por <code>idCliente</code> (es un hueco ya documentado en S11, 2.7, resuelto solo del lado de la interfaz, no del servidor) — si en el futuro ese filtrado se construye del lado del servidor, esas órdenes viejas van a necesitar la misma migración de datos que LP2 hizo en su S10b (7.5): buscar el <code>id</code> viejo, cruzarlo con el <code>sub</code> nuevo del mismo usuario en <code>keycloak-db</code>, y actualizar cada fila.</p>
+<p>Recompila <code>pagatu-orden-ms</code> <strong>y</strong> <code>pagatu-pago-ms</code> desde cero (<code>.\mvnw.cmd spring-boot:run</code> en cada uno — los dos tienen su propia copia de <code>OrdenCreadaEvento.java</code>, 7.2), y reinicia el Gateway, que solo necesita la propiedad de 7.1. Repite la prueba de la sección 6, pero esta vez contra el Gateway:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18080/api/v1/ordenes"</span> <span class="n">-Headers</span> <span class="p">@{</span> <span class="n">Authorization</span> <span class="p">=</span> <span class="s2">"Bearer </span><span class="p">$(</span><span class="nv">$token</span><span class="p">.</span><span class="n">access_token</span><span class="p">)</span><span class="s2">"</span> <span class="p">}</span>
+</code></pre></div>
+<p>Resultado esperado: <code>200</code>, con la lista de órdenes (vacía si todavía no creaste ninguna) — confirma que el Gateway y <code>pagatu-orden-ms</code> ya validan tokens de Keycloak, no de <code>pagatu-auth-ms</code>.</p>
+<p><strong>Error frecuente</strong>: reiniciar el Gateway o <code>pagatu-orden-ms</code> antes de confirmar que Keycloak ya respondió al menos una vez en <code>http://localhost:18180/realms/pagatu/.well-known/openid-configuration</code>. Si el documento de descubrimiento todavía no existe cuando el <em>resource server</em> arranca, falla al iniciar con un error de conexión, no con un <code>401</code> silencioso.</p>
+<h2 id="parte-c-profundizar-retirar-pagatu-auth-ms-y-probar-de-punta-a-punta">Parte C — Profundizar: retirar <code>pagatu-auth-ms</code> y probar de punta a punta<a class="headerlink" href="#parte-c-profundizar-retirar-pagatu-auth-ms-y-probar-de-punta-a-punta" title="Permanent link">&para;</a></h2>
+<p>Lo construido hasta la sección 7 ya deja al Gateway y a <code>pagatu-orden-ms</code> funcionando contra Keycloak, con <code>idCliente</code> migrado — esta parte no es indispensable para que el reemplazo funcione, pero es donde se retira lo que ya sobra y donde se confirma, con tokens reales, que los roles de Keycloak siguen separando lo que cada uno puede hacer, exactamente como lo hacían los de <code>pagatu-auth-ms</code>.</p>
+<h2 id="8-retirar-pagatu-auth-ms">8. Retirar <code>pagatu-auth-ms</code><a class="headerlink" href="#8-retirar-pagatu-auth-ms" title="Permanent link">&para;</a></h2>
+<p><strong>Producto del paso:</strong> <code>pagatu-auth-ms</code> y su Postgres fuera de servicio — ya nadie los necesita.</p>
+<div class="highlight"><pre><span></span><code><span class="c"># Ctrl+C en la terminal donde corre pagatu-auth-ms</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>services/pagatu-auth-ms
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-dev.yml<span class="w"> </span>down<span class="w"> </span>-v
+</code></pre></div>
+<p>El paquete <code>pagatu-auth-ms</code> en sí (el código fuente del servicio) <strong>no</strong> se borra — queda en el repositorio como referencia de cómo se construye un servidor de autorización mínimo desde cero (S07), simplemente deja de arrancar en el día a día. <code>down -v</code> también borra el volumen de su Postgres (<code>pagatu_auth_dev_data</code>) — ya no hay ningún dato ahí que valga la pena conservar, los usuarios reales ahora viven en Keycloak.</p>
+<h2 id="9-probar-de-punta-a-punta">9. Probar de punta a punta<a class="headerlink" href="#9-probar-de-punta-a-punta" title="Permanent link">&para;</a></h2>
+<p><strong>Producto del paso:</strong> la misma separación de roles que S07 verificó con <code>pagatu-auth-ms</code> (3.19, 3.24), ahora con tokens de Keycloak — con <code>pagatu-auth-ms</code> ya retirado (sección 8), esta prueba confirma que el reemplazo es real, no solo que Keycloak "también funciona" en paralelo.</p>
+<ol>
+<li>Repite el procedimiento de la sección 6 (navegador + canje por <code>curl</code>/PowerShell) dos veces — una por cada usuario — y guarda cada <code>access_token</code> en una variable distinta: <code>$tokenCliente</code> para <code>cliente@pagatu.com</code>, <code>$tokenAdmin</code> para <code>admin@pagatu.com</code> (en bash, <code>tokenCliente=...</code>/<code>tokenAdmin=...</code>).</li>
+<li>Con el token de <code>cliente@pagatu.com</code>, crea una orden real a través del Gateway:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Post</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18080/api/v1/ordenes"</span> <span class="p">`</span>
+  <span class="n">-Headers</span> <span class="p">@{</span> <span class="n">Authorization</span> <span class="p">=</span> <span class="s2">"Bearer $tokenCliente"</span> <span class="p">}</span> <span class="p">`</span>
+  <span class="n">-ContentType</span> <span class="s2">"application/json"</span> <span class="p">`</span>
+  <span class="n">-Body</span> <span class="s1">'{"metodoPago": "YAPE_PLIN", "detalles": [{"idProducto": 1, "cantidad": 1}]}'</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:18080/api/v1/ordenes<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$tokenCliente</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"metodoPago": "YAPE_PLIN", "detalles": [{"idProducto": 1, "cantidad": 1}]}'</span>
+</code></pre></div>
+<p>Resultado esperado: <code>201</code>, con <code>idCliente</code> en la respuesta igual al <code>sub</code> que anotaste en la sección 6 (un UUID, no <code>1</code>) — la prueba directa de que 7.2 funcionó.</p>
+<ol>
+<li>Con el mismo token de <code>cliente@pagatu.com</code>, intenta crear un producto — una ruta que el Gateway (S07, 3.18) restringe a <code>ADMIN</code>:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="k">try</span> <span class="p">{</span>
+  <span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Post</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18080/api/v1/productos"</span> <span class="p">`</span>
+    <span class="n">-Headers</span> <span class="p">@{</span> <span class="n">Authorization</span> <span class="p">=</span> <span class="s2">"Bearer $tokenCliente"</span> <span class="p">}</span> <span class="p">`</span>
+    <span class="n">-ContentType</span> <span class="s2">"application/json"</span> <span class="p">`</span>
+    <span class="n">-Body</span> <span class="s1">'{"nombre": "Prueba", "precio": 10}'</span>
+<span class="p">}</span> <span class="k">catch</span> <span class="p">{</span>
+  <span class="nv">$_</span><span class="p">.</span><span class="n">Exception</span><span class="p">.</span><span class="n">Response</span><span class="p">.</span><span class="n">StatusCode</span><span class="p">.</span><span class="n">value__</span>
+<span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-s<span class="w"> </span>-o<span class="w"> </span>/dev/null<span class="w"> </span>-w<span class="w"> </span><span class="s2">"%{http_code}\n"</span><span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:18080/api/v1/productos<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$tokenCliente</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"nombre": "Prueba", "precio": 10}'</span>
+</code></pre></div>
+<p>Resultado esperado: <code>403</code> — el token es válido (pasó la firma de Keycloak), pero el rol <code>CLIENTE</code> no alcanza para <code>hasRole("ADMIN")</code>. Repite la misma petición con <code>$tokenAdmin</code> en vez de <code>$tokenCliente</code>: <code>201</code>.</p>
+<ol>
+<li>Sin ningún header <code>Authorization</code>, cualquiera de las rutas anteriores responde <code>401</code> — Keycloak nunca llegó a confirmar quién eres.</li>
+</ol>
+<p><strong>Error frecuente</strong>: <code>401</code> donde esperabas <code>403</code>, o viceversa. <code>401</code> significa que el token no se validó (expiró, el <code>issuer-uri</code> apunta mal, o no se mandó ninguno); <code>403</code> significa que sí se validó, pero el rol no alcanza (S07, 2.3) — confundir los dos síntomas suele llevar a revisar la configuración equivocada.</p>
+<h2 id="10-que-queda-pendiente">10. Qué queda pendiente<a class="headerlink" href="#10-que-queda-pendiente" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>S11</strong> construye el cliente Angular real: el mismo flujo <em>Authorization Code</em> + PKCE que la sección 6 acaba de verificar a mano, ahora automatizado en TypeScript, con el token en memoria (nunca en <code>localStorage</code>, S07, 2.4) y el refresco automático antes de que expire.</li>
+<li><strong>CORS en el Gateway</strong> no se configuró aquí — esta guía solo reemplaza quién emite y quién valida el token; S11 (3.2 de esa guía) agrega la política de CORS, porque es una necesidad del cliente Angular, no del cambio de proveedor de identidad.</li>
+<li><strong>Migrar las órdenes viejas al <code>sub</code> nuevo</strong>: documentado como nota honesta en 7.3 — no es indispensable hoy (nada filtra por <code>idCliente</code> del lado del servidor todavía), pero queda pendiente si esa validación se construye más adelante.</li>
+<li><strong>Producción real</strong>: el motor de base de datos de Keycloak ya queda resuelto (Postgres, sección 2). Lo que falta es <code>start-dev</code> en sí — no es apto para producción, exige modo <code>start</code> y TLS (<em>Transport Layer Security</em>), ninguno de los dos configurado aquí.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

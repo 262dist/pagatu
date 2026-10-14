@@ -1588,8 +1588,8 @@ técnicamente.
 <tr>
 <td>S10</td>
 <td>Observabilidad y diagnóstico de sistemas distribuidos.</td>
-<td>todos</td>
-<td>Extiende Prometheus/Loki/Grafana (ya en pie desde S3-S4) a <code>auth-ms</code>, <code>cliente-ms</code>, <code>orden-ms</code> y <code>pago-ms</code>; agrega paneles de diagnóstico y alertas sobre todo el sistema, no solo <code>catalogo-ms</code>.</td>
+<td>todos, Keycloak</td>
+<td>Extiende Prometheus/Loki/Grafana (ya en pie desde S3-S4) a <code>orden-ms</code>, <code>pago-ms</code> y Keycloak (<code>auth-ms</code> ya fue retirado en S07b — Keycloak necesita un <em>target</em> estático de Prometheus, no se registra en Eureka); agrega paneles de diagnóstico y alertas sobre todo el sistema, no solo <code>catalogo-ms</code>.</td>
 </tr>
 <tr>
 <td>S11</td>

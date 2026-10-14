@@ -1286,10 +1286,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#32-cablear-pagatu-auth-ms-y-pagatu-pago-ms-a-promtail" class="md-nav__link">
+  <a href="#32-agregar-keycloak-a-prometheus-y-cablear-keycloakpagatu-pago-ms-a-promtail" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.2 Cablear pagatu-auth-ms y pagatu-pago-ms a Promtail
+        3.2 Agregar Keycloak a Prometheus y cablear Keycloak/pagatu-pago-ms a Promtail
       
     </span>
   </a>
@@ -1848,10 +1848,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#32-cablear-pagatu-auth-ms-y-pagatu-pago-ms-a-promtail" class="md-nav__link">
+  <a href="#32-agregar-keycloak-a-prometheus-y-cablear-keycloakpagatu-pago-ms-a-promtail" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.2 Cablear pagatu-auth-ms y pagatu-pago-ms a Promtail
+        3.2 Agregar Keycloak a Prometheus y cablear Keycloak/pagatu-pago-ms a Promtail
       
     </span>
   </a>
@@ -2076,7 +2076,7 @@
 <h2 id="1-introduccion">1. Introducción<a class="headerlink" href="#1-introduccion" title="Permanent link">&para;</a></h2>
 <p>Tiempo: 20 min.</p>
 <h3 id="11-presentacion-de-la-sesion">1.1 Presentación de la sesión<a class="headerlink" href="#11-presentacion-de-la-sesion" title="Permanent link">&para;</a></h3>
-<p><code>obs/</code> (Prometheus, Loki, Promtail, Grafana) existe desde S3-S4, y Prometheus ya descubre solo, por Eureka, a cualquier microservicio que exponga <code>/actuator/prometheus</code> — ningún microservicio nuevo de S6-S9 tuvo que tocar ese archivo para aparecer. Pero la observabilidad de <code>pagatu</code> quedó con dos huecos reales, documentados en <code>obs/README.md</code> desde antes de esta sesión: Promtail solo tiene cableados <code>pagatu-catalogo-ms</code> y <code>pagatu-orden-ms</code> — <code>pagatu-auth-ms</code> (S7) y <code>pagatu-pago-ms</code> (S8) nunca llegaron a Loki ni a Grafana. Y el <code>X-Trace-ID</code> que <code>CorrelationIdFilter</code> genera desde S7 (cada servicio, al recibir una petición HTTP) nunca se propaga hacia adelante: cuando <code>pagatu-orden-ms</code> llama por Feign a <code>pagatu-catalogo-ms</code>, el segundo genera su <strong>propio</strong> <code>traceId</code> nuevo — seguir una venta de punta a punta por los logs de los dos servicios, hoy, es imposible. Esta sesión cierra los dos huecos, agrega <em>health groups</em> explícitos (<em>liveness</em>/<em>readiness</em>), y construye el primer tablero de Grafana con paneles de diagnóstico reales — la pieza que faltaba para responder "¿está sano el sistema, ahora mismo?" sin tener que leer el código de ningún servicio.</p>
+<p><code>obs/</code> (Prometheus, Loki, Promtail, Grafana) existe desde S3-S4, y Prometheus ya descubre solo, por Eureka, a cualquier microservicio que exponga <code>/actuator/prometheus</code> — ningún microservicio nuevo de S6-S9 tuvo que tocar ese archivo para aparecer. Pero la observabilidad de <code>pagatu</code> quedó con huecos reales, documentados en <code>obs/README.md</code> desde antes de esta sesión: Promtail solo tiene cableados <code>pagatu-catalogo-ms</code> y <code>pagatu-orden-ms</code> — <code>pagatu-pago-ms</code> (S8) nunca llegó a Loki ni a Grafana, y Keycloak (S07b), que desde esa guía es la única pieza que emite y valida identidad en todo el sistema, nunca llegó a ninguno de los dos: ni a Loki, ni a Prometheus, porque —a diferencia de los microservicios propios— no es cliente de Eureka, así que el <em>service discovery</em> automático nunca lo va a encontrar solo. Y el <code>X-Trace-ID</code> que <code>CorrelationIdFilter</code> genera desde S7 (cada servicio, al recibir una petición HTTP) nunca se propaga hacia adelante: cuando <code>pagatu-orden-ms</code> llama por Feign a <code>pagatu-catalogo-ms</code>, el segundo genera su <strong>propio</strong> <code>traceId</code> nuevo — seguir una venta de punta a punta por los logs de los dos servicios, hoy, es imposible. Esta sesión cierra esos huecos, agrega <em>health groups</em> explícitos (<em>liveness</em>/<em>readiness</em>), y construye el primer tablero de Grafana con paneles de diagnóstico reales — la pieza que faltaba para responder "¿está sano el sistema, ahora mismo?" sin tener que leer el código de ningún servicio.</p>
 <h3 id="12-indice">1.2 Índice<a class="headerlink" href="#12-indice" title="Permanent link">&para;</a></h3>
 <ol>
 <li><em>Health checks</em>: <em>liveness</em> y <em>readiness</em>.</li>
@@ -2090,7 +2090,7 @@
 <li><strong>Configurar</strong> <em>health groups</em> de <em>liveness</em>/<em>readiness</em>, <strong>cerrar</strong> la brecha de centralización de logs y de propagación de <em>trace ID</em> entre servicios, y <strong>construir</strong> un tablero de Grafana que combine métricas, logs y estado de salud para diagnosticar un fallo real sin leer código.</li>
 </ul>
 <h3 id="14-producto-de-sesion">1.4 Producto de sesión<a class="headerlink" href="#14-producto-de-sesion" title="Permanent link">&para;</a></h3>
-<p><code>management.endpoint.health.group.liveness</code>/<code>.readiness</code> configurados en los cuatro microservicios; <code>obs/promtail</code> cableado también para <code>pagatu-auth-ms</code> y <code>pagatu-pago-ms</code> (los cuatro servicios, en Loki); un <code>RequestInterceptor</code> en <code>pagatu-orden-ms</code> que propaga <code>X-Trace-ID</code> hacia <code>pagatu-catalogo-ms</code>, verificado con el mismo <code>traceId</code> apareciendo en los logs de ambos; y un tablero de Grafana con paneles reales de salud, tasa de peticiones, tasa de errores y logs filtrados por <code>traceId</code> — probado de punta a punta simulando la caída de un servicio.</p>
+<p><code>management.endpoint.health.group.liveness</code>/<code>.readiness</code> configurados en los tres microservicios; <code>obs/prometheus</code> con un <em>target</em> estático nuevo para Keycloak (su métricas no pasan por Eureka); <code>obs/promtail</code> cableado también para Keycloak y <code>pagatu-pago-ms</code> (las cuatro piezas, en Loki); un <code>RequestInterceptor</code> en <code>pagatu-orden-ms</code> que propaga <code>X-Trace-ID</code> hacia <code>pagatu-catalogo-ms</code>, verificado con el mismo <code>traceId</code> apareciendo en los logs de ambos; y un tablero de Grafana con paneles reales de salud, tasa de peticiones, tasa de errores y logs filtrados por <code>traceId</code> — probado de punta a punta simulando la caída de un servicio.</p>
 <h3 id="15-metodologia">1.5 Metodología<a class="headerlink" href="#15-metodologia" title="Permanent link">&para;</a></h3>
 <p><strong>Tabla 1. Metodología de la sesión</strong></p>
 <table>
@@ -2104,17 +2104,17 @@
 <tbody>
 <tr>
 <td>Revisión previa individual</td>
-<td>Repasar <code>CorrelationIdFilter</code> (S7) y <code>obs/README.md</code> (estado actual de Promtail). Confirmar que <code>obs/</code> y los cuatro microservicios siguen arrancando. Trabajo individual, antes de clase.</td>
-<td>S7 (3.9), <code>obs/README.md</code>.</td>
+<td>Repasar <code>CorrelationIdFilter</code> (S7), <code>obs/README.md</code> (estado actual de Promtail) y S07b (Keycloak ya reemplazó a <code>pagatu-auth-ms</code>). Confirmar que <code>obs/</code>, los tres microservicios y Keycloak siguen arrancando. Trabajo individual, antes de clase.</td>
+<td>S7 (3.9), S07b, <code>obs/README.md</code>.</td>
 </tr>
 <tr>
 <td>Clase presencial</td>
-<td>Configuración guiada de <em>health groups</em>, cierre de la brecha de Promtail, propagación de <code>X-Trace-ID</code> por Feign, y construcción del tablero de Grafana. Trabajo individual en la propia laptop, siguiendo al docente paso a paso.</td>
-<td>Contenedor <code>obs/</code> y los cuatro microservicios corriendo, Pasos 3.1 a 3.8 de esta guía.</td>
+<td>Configuración guiada de <em>health groups</em>, cierre de la brecha de Promtail y Prometheus (incluido Keycloak), propagación de <code>X-Trace-ID</code> por Feign, y construcción del tablero de Grafana. Trabajo individual en la propia laptop, siguiendo al docente paso a paso.</td>
+<td>Contenedor <code>obs/</code>, los tres microservicios y Keycloak corriendo, Pasos 3.1 a 3.8 de esta guía.</td>
 </tr>
 <tr>
 <td>Evaluación formativa</td>
-<td>Revisión en clase del tablero de Grafana con datos reales de los cuatro servicios, y de la prueba de propagación de <code>traceId</code>. La evidencia se completa y sustenta de forma individual, fuera del aula, según los criterios mínimos de la sección 4.4.</td>
+<td>Revisión en clase del tablero de Grafana con datos reales de las cuatro piezas, y de la prueba de propagación de <code>traceId</code>. La evidencia se completa y sustenta de forma individual, fuera del aula, según los criterios mínimos de la sección 4.4.</td>
 <td>Indicaciones de entrega (4.3), rúbrica de evaluación (4.6).</td>
 </tr>
 </tbody>
@@ -2138,7 +2138,7 @@
 <li>Unidad: U2 - Sistema distribuido robusto.</li>
 <li>Producto del curso: sistema distribuido de microservicios end-to-end, configurable, escalable, seguro, resiliente, consistente, observable, integrado con frontend y defendido técnicamente.</li>
 <li>Producto de unidad: sistema distribuido seguro, resiliente, consistente, observable e integrado con cliente frontend.</li>
-<li>Avance del producto en esta sesión: <em>health groups</em>, logs centralizados de los cuatro microservicios, propagación de <code>traceId</code> entre servicios, y el primer tablero de Grafana con paneles de diagnóstico.</li>
+<li>Avance del producto en esta sesión: <em>health groups</em>, logs y métricas centralizados de los tres microservicios y Keycloak, propagación de <code>traceId</code> entre servicios, y el primer tablero de Grafana con paneles de diagnóstico.</li>
 </ul>
 <p><strong>Figura 1. Roadmap del producto de la unidad</strong></p>
 <pre class="mermaid"><code>flowchart TB
@@ -2159,7 +2159,7 @@
 <h3 id="21-arquitectura-de-la-sesion">2.1 Arquitectura de la sesión<a class="headerlink" href="#21-arquitectura-de-la-sesion" title="Permanent link">&para;</a></h3>
 <p><strong>Figura 2. Dos caminos hacia Grafana, y el hueco que cierra esta sesión</strong></p>
 <pre class="mermaid"><code>flowchart TB
-    Auth["pagatu-auth-ms"]
+    KC["Keycloak&lt;br/&gt;(S07b, no es cliente de Eureka)"]
     Cat["pagatu-catalogo-ms"]
     Ord["pagatu-orden-ms"]
     Pago["pagatu-pago-ms"]
@@ -2168,24 +2168,24 @@
     Loki[("Loki")]
     Graf["Grafana"]
 
-    Auth --&gt;|"/actuator/prometheus&lt;br/&gt;(Eureka SD, ya funciona)"| Prom
-    Cat --&gt;|"/actuator/prometheus"| Prom
-    Ord --&gt;|"/actuator/prometheus"| Prom
-    Pago --&gt;|"/actuator/prometheus"| Prom
+    Cat --&gt;|"/actuator/prometheus&lt;br/&gt;(Eureka SD, ya funciona)"| Prom
+    Ord --&gt;|"/actuator/prometheus&lt;br/&gt;(Eureka SD, ya funciona)"| Prom
+    Pago --&gt;|"/actuator/prometheus&lt;br/&gt;(Eureka SD, ya funciona)"| Prom
+    KC -.-&gt;|"/metrics, puerto 9000&lt;br/&gt;(target estatico, falta, 3.2)"| Prom
 
     Cat --&gt;|"logs/catalogo.log&lt;br/&gt;(Promtail, ya funciona)"| Loki
     Ord --&gt;|"logs/orden.log&lt;br/&gt;(Promtail, ya funciona)"| Loki
-    Auth -.-&gt;|"logs/auth.log&lt;br/&gt;(falta cablear, 3.2)"| Loki
+    KC -.-&gt;|"keycloak.log&lt;br/&gt;(falta cablear, 3.2)"| Loki
     Pago -.-&gt;|"logs/pago.log&lt;br/&gt;(falta cablear, 3.2)"| Loki
 
     Ord -.-&gt;|"Feign: X-Trace-ID&lt;br/&gt;(falta propagar, 3.4)"| Cat
 
     Prom --&gt; Graf
     Loki --&gt; Graf</code></pre>
-<p>Lectura del diagrama: el camino de <strong>métricas</strong> (línea sólida hacia Prometheus) ya funciona para los cuatro servicios, por <em>service discovery</em> de Eureka (S3-S4) — nada que arreglar ahí. El camino de <strong>logs</strong> (hacia Loki) solo funciona para dos de los cuatro — las líneas punteadas son exactamente lo que 3.2 cierra. Y la flecha entre <code>pagatu-orden-ms</code> y <code>pagatu-catalogo-ms</code> (<code>X-Trace-ID</code>) todavía no existe — 3.4 la agrega. Cada apartado siguiente desarrolla una pieza, en el mismo orden del Índice (1.2).</p>
+<p>Lectura del diagrama: el camino de <strong>métricas</strong> (línea sólida hacia Prometheus) ya funciona para los tres microservicios, por <em>service discovery</em> de Eureka (S3-S4) — nada que arreglar ahí. Keycloak es distinto: nunca se registra en Eureka (no es un cliente de Spring Cloud, es un contenedor aparte, S07b), así que el <em>service discovery</em> automático nunca lo va a encontrar — necesita un <em>target</em> estático, el mismo mecanismo que <code>pagatu-config</code>/<code>pagatu-eureka</code> ya usan desde S3 por la misma razón. El camino de <strong>logs</strong> (hacia Loki) solo funciona para dos de las cuatro piezas — las líneas punteadas son exactamente lo que 3.2 cierra. Y la flecha entre <code>pagatu-orden-ms</code> y <code>pagatu-catalogo-ms</code> (<code>X-Trace-ID</code>) todavía no existe — 3.4 la agrega. Cada apartado siguiente desarrolla una pieza, en el mismo orden del Índice (1.2).</p>
 <h3 id="22-health-checks-liveness-y-readiness">2.2 <em>Health checks</em>: <em>liveness</em> y <em>readiness</em><a class="headerlink" href="#22-health-checks-liveness-y-readiness" title="Permanent link">&para;</a></h3>
-<p>Spring Boot Actuator expone <code>/actuator/health</code> desde que <code>spring-boot-starter-actuator</code> está en el classpath (ya lo está en los cuatro servicios, desde su creación) — pero por defecto responde una sola cosa: <code>UP</code> o <code>DOWN</code>, sin distinguir <strong>por qué</strong>. Los grupos de <em>health</em> de Kubernetes que Actuator ya trae listos (Spring Boot, 2026) responden dos preguntas distintas, no una:</p>
-<p><strong>Tabla 2. <em>Liveness<em> frente a </em>readiness</em></strong></p>
+<p>Spring Boot Actuator expone <code>/actuator/health</code> desde que <code>spring-boot-starter-actuator</code> está en el classpath (ya lo está en los tres microservicios, desde su creación) — pero por defecto responde una sola cosa: <code>UP</code> o <code>DOWN</code>, sin distinguir <strong>por qué</strong>. Los grupos de <em>health</em> de Kubernetes que Actuator ya trae listos (Spring Boot, 2026) responden dos preguntas distintas, no una:</p>
+<p><strong>Tabla 2. <em>Liveness</em> frente a <em>readiness</em></strong></p>
 <table>
 <thead>
 <tr>
@@ -2218,8 +2218,9 @@
 </tbody>
 </table>
 <p>La diferencia importa porque la respuesta correcta es distinta: si Postgres está caído, reiniciar <code>pagatu-pago-ms</code> (acción de <em>liveness</em>) no soluciona nada — el problema no es el proceso, es su dependencia. Sacarlo de la rotación de tráfico (acción de <em>readiness</em>) sí es correcto: evita que seseen peticiones a un servicio que sabe que va a fallar.</p>
+<p><strong>Keycloak ya trae lo mismo, sin que nadie lo configure.</strong> <code>/health/live</code> y <code>/health/ready</code> (puerto 9000, S07b) son la misma distinción de esta tabla, ya resuelta por el producto — la diferencia es que aquí (3.3) se construye a mano, en código propio, y en Keycloak viene lista de fábrica, detrás de una variable de entorno (<code>KC_HEALTH_ENABLED</code>).</p>
 <h3 id="23-metricas-con-micrometer-y-prometheus-ya-construido-s3-s4">2.3 Métricas con Micrometer y Prometheus (ya construido, S3-S4)<a class="headerlink" href="#23-metricas-con-micrometer-y-prometheus-ya-construido-s3-s4" title="Permanent link">&para;</a></h3>
-<p>Los cuatro microservicios ya exponen <code>/actuator/prometheus</code> (<code>micrometer-registry-prometheus</code>, en el <code>pom.xml</code> de cada uno desde su creación), y <code>obs/prometheus/prometheus-dev.yml</code> ya los descubre por Eureka (<code>eureka_sd_configs</code>) — esta sesión no construye el mecanismo, lo <strong>usa</strong> para diagnosticar.</p>
+<p>Los tres microservicios ya exponen <code>/actuator/prometheus</code> (<code>micrometer-registry-prometheus</code>, en el <code>pom.xml</code> de cada uno desde su creación), y <code>obs/prometheus/prometheus-dev.yml</code> ya los descubre por Eureka (<code>eureka_sd_configs</code>) — esta sesión no construye el mecanismo, lo <strong>usa</strong> para diagnosticar (y lo extiende a Keycloak, 3.2, que no pasa por Eureka).</p>
 <p><strong>Tabla 3. Métricas de Micrometer más útiles para diagnóstico (Micrometer, 2026)</strong></p>
 <table>
 <thead>
@@ -2254,7 +2255,7 @@
 </table>
 <p><code>up</code> es la misma métrica que lambda26 (BigData) usa para <code>kafka-exporter</code> — Prometheus la genera para <strong>cualquier</strong> <em>target</em>, sin importar qué exponga: es la señal más básica y más confiable de todas, porque no depende de que el propio servicio reporte bien su estado.</p>
 <h3 id="24-logs-centralizados-y-correlacion-entre-servicios">2.4 Logs centralizados y correlación entre servicios<a class="headerlink" href="#24-logs-centralizados-y-correlacion-entre-servicios" title="Permanent link">&para;</a></h3>
-<p>Cada microservicio ya escribe a <code>logs/&lt;nombre&gt;.log</code> (<code>logback-spring.xml</code>, con el patrón <code>%X{traceId}</code>) y Promtail ya sube esos archivos a Loki — para dos de los cuatro servicios (2.1). <code>CorrelationIdFilter</code> (S7, 3.9) pone ese <code>traceId</code> en el MDC (<em>Mapped Diagnostic Context</em>) de SLF4J al recibir cada petición HTTP: si ya trae el header <code>X-Trace-ID</code>, lo reutiliza; si no, genera uno nuevo con <code>UUID.randomUUID()</code>.</p>
+<p>Cada microservicio ya escribe a <code>logs/&lt;nombre&gt;.log</code> (<code>logback-spring.xml</code>, con el patrón <code>%X{traceId}</code>) y Promtail ya sube esos archivos a Loki — para dos de las cuatro piezas (2.1). Keycloak no tiene <code>logback-spring.xml</code> ni <code>traceId</code> propio (no es una aplicación Spring Boot): S07b ya lo dejó escribiendo también a archivo (<code>KC_LOG=console,file</code>), así que el cableado de 3.2 es el mismo mecanismo de Promtail que los microservicios, aunque el formato de cada línea de log sea el de Keycloak, no el de <code>logback</code>. <code>CorrelationIdFilter</code> (S7, 3.9) pone ese <code>traceId</code> en el MDC (<em>Mapped Diagnostic Context</em>) de SLF4J al recibir cada petición HTTP: si ya trae el header <code>X-Trace-ID</code>, lo reutiliza; si no, genera uno nuevo con <code>UUID.randomUUID()</code>.</p>
 <p><strong>El hueco real</strong>: <code>CorrelationIdFilter</code> <strong>recibe</strong> el header, pero ningún cliente HTTP de <code>pagatu</code> lo <strong>envía</strong> hacia adelante. Cuando <code>pagatu-orden-ms</code> llama a <code>pagatu-catalogo-ms</code> por Feign (S6, 3.13), esa llamada sale sin el header <code>X-Trace-ID</code> — <code>pagatu-catalogo-ms</code> nunca lo recibe, así que <code>CorrelationIdFilter</code> de ese lado genera un <code>traceId</code> <strong>completamente nuevo</strong>, sin relación con el de <code>pagatu-orden-ms</code>. El resultado: una sola venta, en los logs, aparece con dos <code>traceId</code> distintos según en qué servicio la busques — seguirla de punta a punta por Loki es imposible hoy. 3.4 cierra esto con un <code>RequestInterceptor</code> de Feign (OpenFeign, 2026), el mismo mecanismo con el que Spring propaga cualquier <em>header</em> saliente.</p>
 <h3 id="25-paneles-de-diagnostico-en-grafana">2.5 Paneles de diagnóstico en Grafana<a class="headerlink" href="#25-paneles-de-diagnostico-en-grafana" title="Permanent link">&para;</a></h3>
 <p>Un panel de diagnóstico útil combina más de una fuente — ninguna métrica sola cuenta la historia completa (el mismo principio que lambda26 S09, 2.2, aplicado aquí a microservicios en vez de a un pipeline de streaming):</p>
@@ -2270,8 +2271,8 @@
 <tbody>
 <tr>
 <td>Servicios arriba</td>
-<td>Prometheus, <code>up{job="pagatu-microservicios"}</code></td>
-<td>¿Cuáles de los cuatro responden ahora mismo?</td>
+<td>Prometheus, <code>up{job=~"pagatu-microservicios\|pagatu-keycloak"}</code></td>
+<td>¿Cuáles de las cuatro piezas responden ahora mismo?</td>
 </tr>
 <tr>
 <td>Tasa de peticiones</td>
@@ -2293,13 +2294,13 @@
 <p>Los primeros tres paneles dicen <strong>que</strong> algo está mal; el cuarto dice <strong>por qué</strong> — es la razón por la que esta sesión no se conforma con un tablero de solo métricas: sin el panel de logs correlacionados, confirmar una hipótesis exige volver a la terminal a buscar archivo por archivo.</p>
 <h2 id="3-aplica-actividad-practica-guiada">3. Aplica: actividad práctica guiada<a class="headerlink" href="#3-aplica-actividad-practica-guiada" title="Permanent link">&para;</a></h2>
 <p>Tiempo: 3h.</p>
-<p><strong>Actividad:</strong> configuración de <em>health groups</em>, cierre de la brecha de Promtail para los cuatro microservicios, propagación de <code>X-Trace-ID</code> por Feign, y construcción de un tablero de Grafana con paneles de diagnóstico, probado simulando una falla real (Producto de la sesión en 1.4).</p>
+<p><strong>Actividad:</strong> configuración de <em>health groups</em>, cierre de la brecha de Promtail y Prometheus para las cuatro piezas (tres microservicios y Keycloak), propagación de <code>X-Trace-ID</code> por Feign, y construcción de un tablero de Grafana con paneles de diagnóstico, probado simulando una falla real (Producto de la sesión en 1.4).</p>
 <p><strong>Propósito de la actividad:</strong> que cada estudiante deje el sistema en condiciones de diagnosticarse solo — con métricas, logs correlacionados y estado de salud combinados en un único lugar, no repartidos entre cuatro terminales distintas.</p>
 <p><strong>Orientaciones metodológicas:</strong> el docente cierra primero la brecha de Promtail y la propagación de <code>traceId</code> frente a la clase, después construye el tablero; los estudiantes replican cada paso en su propio entorno y provocan ellos mismos la falla simulada de 3.7 para ver el diagnóstico completo en su propia consola.</p>
 <p><strong>Actividades para realizar:</strong></p>
 <ul>
 <li><strong>3.1</strong> Verificar el punto de partida.</li>
-<li><strong>3.2</strong> Cablear <code>pagatu-auth-ms</code> y <code>pagatu-pago-ms</code> a Promtail.</li>
+<li><strong>3.2</strong> Agregar Keycloak a Prometheus y cablear Keycloak/<code>pagatu-pago-ms</code> a Promtail.</li>
 <li><strong>3.3</strong> Configurar <em>health groups</em> de <em>liveness</em>/<em>readiness</em>.</li>
 <li><strong>3.4</strong> Propagar <code>X-Trace-ID</code> en las llamadas Feign de <code>pagatu-orden-ms</code>.</li>
 <li><strong>3.5</strong> Probar la propagación de punta a punta.</li>
@@ -2308,28 +2309,37 @@
 <li><strong>3.8</strong> Relacionar con ADS y BD2.</li>
 </ul>
 <h3 id="31-verificar-el-punto-de-partida">3.1 Verificar el punto de partida<a class="headerlink" href="#31-verificar-el-punto-de-partida" title="Permanent link">&para;</a></h3>
-<p><strong>Producto del paso:</strong> confirmación de que los cuatro microservicios y <code>obs/</code> siguen corriendo.</p>
-<p>Todo el equipo debe comenzar exactamente desde donde quedó S9 (consistencia distribuida), no desde su propio avance individual. Clona la rama <code>s09-consistencia-distribuida</code>:</p>
-<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>--branch<span class="w"> </span>s09-consistencia-distribuida<span class="w"> </span>https://github.com/262dist/pagatu.git
+<p><strong>Producto del paso:</strong> confirmación de que los tres microservicios, Keycloak y <code>obs/</code> siguen corriendo.</p>
+<p>Todo el equipo debe comenzar exactamente desde donde quedó S07b (Keycloak reemplazando a <code>pagatu-auth-ms</code>), no desde donde quedó S9 por sí sola. Clona la rama <code>s07b-keycloak</code> si tu equipo la congeló (o <code>s09-consistencia-distribuida</code> y completa S07b tú mismo antes de seguir):</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>--branch<span class="w"> </span>s07b-keycloak<span class="w"> </span>https://github.com/262dist/pagatu.git
 </code></pre></div>
-<p>Levanta, si no están arriba, <code>pagatu-config</code>, <code>pagatu-eureka</code>, <code>pagatu-auth-ms</code>, <code>pagatu-catalogo-ms</code>, <code>pagatu-orden-ms</code> y <code>pagatu-pago-ms</code> (S1-S9), y luego <code>obs/</code>:</p>
+<p>Levanta, si no están arriba, <code>pagatu-config</code>, <code>pagatu-eureka</code>, <code>pagatu-catalogo-ms</code>, <code>pagatu-orden-ms</code> y <code>pagatu-pago-ms</code> (S1-S9) — <code>pagatu-auth-ms</code> ya no existe, S07b lo retiró —, Keycloak (<code>keycloak/</code>, S07b), y luego <code>obs/</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd </span><span class="n">obs</span>
 <span class="n">docker</span> <span class="n">compose</span> <span class="o">-f</span> <span class="n">compose-dev</span><span class="p">.</span><span class="n">yml</span> <span class="n">up</span> <span class="n">-d</span>
 </code></pre></div>
-<p>Confirma en Prometheus (<code>http://localhost:19090/targets</code>) que los cuatro microservicios aparecen <code>UP</code> bajo el <em>job</em> <code>pagatu-microservicios</code> — esto ya funcionaba antes de hoy (2.3), solo lo estás verificando.</p>
-<h3 id="32-cablear-pagatu-auth-ms-y-pagatu-pago-ms-a-promtail">3.2 Cablear <code>pagatu-auth-ms</code> y <code>pagatu-pago-ms</code> a Promtail<a class="headerlink" href="#32-cablear-pagatu-auth-ms-y-pagatu-pago-ms-a-promtail" title="Permanent link">&para;</a></h3>
-<p><strong>Producto del paso:</strong> los cuatro microservicios, no solo dos, con sus logs llegando a Loki.</p>
-<p><strong><code>obs/compose-dev.yml</code></strong> — agrega los dos volúmenes que faltan, junto a los que ya existen en <code>pagatu-promtail</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">../services/pagatu-auth-ms/logs:/var/log/pagatu-auth-ms:ro</span>
+<p>Confirma en Prometheus (<code>http://localhost:19090/targets</code>) que los tres microservicios aparecen <code>UP</code> bajo el <em>job</em> <code>pagatu-microservicios</code> — esto ya funcionaba antes de hoy (2.3), solo lo estás verificando. Keycloak <strong>no</strong> aparece todavía en ningún <em>job</em> — 3.2 lo agrega.</p>
+<h3 id="32-agregar-keycloak-a-prometheus-y-cablear-keycloakpagatu-pago-ms-a-promtail">3.2 Agregar Keycloak a Prometheus y cablear Keycloak/<code>pagatu-pago-ms</code> a Promtail<a class="headerlink" href="#32-agregar-keycloak-a-prometheus-y-cablear-keycloakpagatu-pago-ms-a-promtail" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> las cuatro piezas (tres microservicios y Keycloak), no solo dos, con sus métricas y sus logs llegando a Prometheus y Loki.</p>
+<p><strong>Prometheus — Keycloak necesita un <em>target</em> estático</strong>, porque no es cliente de Eureka (2.1): el mismo mecanismo que <code>pagatu-config</code>/<code>pagatu-eureka</code> ya usan desde S3. <strong><code>obs/prometheus/prometheus-dev.yml</code></strong> — agrega el <em>job</em> nuevo, junto a los que ya existen:</p>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="s">"pagatu-keycloak"</span>
+<span class="w">    </span><span class="nt">metrics_path</span><span class="p">:</span><span class="w"> </span><span class="s">"/metrics"</span>
+<span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"host.docker.internal:19000"</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">application</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-keycloak</span>
+</code></pre></div>
+<p><code>metrics_path: "/metrics"</code> (no <code>/actuator/prometheus</code>) y el puerto <code>19000</code> (no el <code>18180</code> de autenticación) son las dos diferencias reales frente a cualquier otro <em>target</em>: Keycloak no es una aplicación Spring Boot, así que ni el formato por defecto de su endpoint de métricas ni el puerto donde vive coinciden con los de los microservicios — ambos ya quedaron fijados en S07b (<code>KC_METRICS_ENABLED</code>, <code>KC_HTTP_MANAGEMENT_PORT</code>), esta sesión solo le dice a Prometheus dónde buscarlos.</p>
+<p><strong>Promtail — logs de Keycloak y <code>pagatu-pago-ms</code>.</strong> <strong><code>obs/compose-dev.yml</code></strong> — agrega los dos volúmenes que faltan, junto a los que ya existen en <code>pagatu-promtail</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">../keycloak/logs:/var/log/pagatu-keycloak:ro</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">../services/pagatu-pago-ms/logs:/var/log/pagatu-pago-ms:ro</span>
 </code></pre></div>
 <p><strong><code>obs/promtail/promtail-config-dev.yml</code></strong> — agrega los dos <em>jobs</em> que faltan, con el mismo patrón que los dos que ya existen:</p>
-<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-auth-ms</span>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-keycloak</span>
 <span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">localhost</span><span class="p p-Indicator">]</span>
 <span class="w">        </span><span class="nt">labels</span><span class="p">:</span>
-<span class="w">          </span><span class="nt">application</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-auth-ms</span>
-<span class="w">          </span><span class="nt">__path__</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/log/pagatu-auth-ms/*.log</span>
+<span class="w">          </span><span class="nt">application</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-keycloak</span>
+<span class="w">          </span><span class="nt">__path__</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/log/pagatu-keycloak/*.log</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-pago-ms</span>
 <span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">localhost</span><span class="p p-Indicator">]</span>
@@ -2337,15 +2347,16 @@
 <span class="w">          </span><span class="nt">application</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-pago-ms</span>
 <span class="w">          </span><span class="nt">__path__</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/log/pagatu-pago-ms/*.log</span>
 </code></pre></div>
-<p>Repite el mismo cambio en <strong><code>obs/compose.yml</code></strong> y <strong><code>obs/promtail/promtail-config.yml</code></strong> (PROD local) — son los mismos dos archivos, con el prefijo de puertos <code>2xxxx</code> en vez de <code>1xxxx</code> (<code>obs/README.md</code>), no una configuración distinta.</p>
-<p>Sube de nuevo Promtail para que tome los archivos nuevos:</p>
+<p>Repite el mismo cambio en <strong><code>obs/compose.yml</code></strong>, <strong><code>obs/promtail/promtail-config.yml</code></strong> y <strong><code>obs/prometheus/prometheus.yml</code></strong> (PROD local) — son los mismos tres archivos, con el prefijo de puertos <code>2xxxx</code> en vez de <code>1xxxx</code> (<code>obs/README.md</code>), no una configuración distinta.</p>
+<p>Sube de nuevo Prometheus y Promtail para que tomen la configuración nueva:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd </span><span class="n">obs</span>
-<span class="n">docker</span> <span class="n">compose</span> <span class="o">-f</span> <span class="n">compose-dev</span><span class="p">.</span><span class="n">yml</span> <span class="n">up</span> <span class="n">-d</span> <span class="n">promtail</span>
+<span class="n">docker</span> <span class="n">compose</span> <span class="o">-f</span> <span class="n">compose-dev</span><span class="p">.</span><span class="n">yml</span> <span class="n">up</span> <span class="n">-d</span> <span class="n">prometheus</span> <span class="n">promtail</span>
 </code></pre></div>
-<p><strong>Error frecuente</strong>: agregar el <code>job_name</code> en <code>promtail-config-dev.yml</code> pero olvidar el volumen en <code>compose-dev.yml</code> (o al revés). Promtail necesita las dos cosas: el volumen monta el archivo real dentro del contenedor, y el <code>job_name</code> le dice dónde buscarlo (<code>__path__</code>) — sin el volumen, el <code>__path__</code> apunta a una carpeta vacía dentro del contenedor, y Promtail no encuentra nada que subir, sin ningún error visible.</p>
+<p>Confirma en <code>http://localhost:19090/targets</code> que <code>pagatu-keycloak</code> aparece como un <em>job</em> nuevo, <code>UP</code>.</p>
+<p><strong>Error frecuente</strong>: agregar el <code>job_name</code> en <code>promtail-config-dev.yml</code> pero olvidar el volumen en <code>compose-dev.yml</code> (o al revés). Promtail necesita las dos cosas: el volumen monta el archivo real dentro del contenedor, y el <code>job_name</code> le dice dónde buscarlo (<code>__path__</code>) — sin el volumen, el <code>__path__</code> apunta a una carpeta vacía dentro del contenedor, y Promtail no encuentra nada que subir, sin ningún error visible. Para Keycloak hay un segundo error posible: que <code>KC_LOG</code> no incluyera <code>file</code> en S07b — sin eso, Keycloak nunca escribe <code>keycloak.log</code>, y el volumen monta una carpeta que se queda vacía para siempre, no solo hasta el primer log.</p>
 <h3 id="33-configurar-health-groups-de-livenessreadiness">3.3 Configurar <em>health groups</em> de <em>liveness</em>/<em>readiness</em><a class="headerlink" href="#33-configurar-health-groups-de-livenessreadiness" title="Permanent link">&para;</a></h3>
-<p><strong>Producto del paso:</strong> <code>/actuator/health/liveness</code> y <code>/actuator/health/readiness</code> respondiendo, en los cuatro microservicios.</p>
-<p>En <code>application-dev.yml</code> de cada uno de los cuatro servicios (<code>infra/pagatu-config/config-repo/pagatu-&lt;servicio&gt;-dev.yml</code>, S2), agrega:</p>
+<p><strong>Producto del paso:</strong> <code>/actuator/health/liveness</code> y <code>/actuator/health/readiness</code> respondiendo, en los tres microservicios — Keycloak ya trae los suyos, sin que nadie los configure (2.2).</p>
+<p>En <code>application-dev.yml</code> de cada uno de los tres servicios (<code>infra/pagatu-config/config-repo/pagatu-&lt;servicio&gt;-dev.yml</code>, S2), agrega:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">management</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">endpoint</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">health</span><span class="p">:</span>
@@ -2362,7 +2373,11 @@
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:8085/actuator/health/liveness"</span>
 <span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:8085/actuator/health/readiness"</span>
 </code></pre></div>
-<p>Resultado esperado: <code>{"status": "UP"}</code> en ambos, para los cuatro puertos de servicio.</p>
+<p>Resultado esperado: <code>{"status": "UP"}</code> en ambos, para los tres puertos de servicio. Confirma también los de Keycloak, ya listos desde S07b, sin configurar nada aquí:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:19000/health/live"</span>
+<span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:19000/health/ready"</span>
+</code></pre></div>
+<p>Mismo resultado esperado (<code>status: UP</code>), en el puerto de <em>management</em> (<code>19000</code>, S07b) en vez del de autenticación (<code>18180</code>) — la misma separación entre tráfico de negocio y tráfico de diagnóstico que Keycloak aplica por diseño.</p>
 <h3 id="34-propagar-x-trace-id-en-las-llamadas-feign-de-pagatu-orden-ms">3.4 Propagar <code>X-Trace-ID</code> en las llamadas Feign de <code>pagatu-orden-ms</code><a class="headerlink" href="#34-propagar-x-trace-id-en-las-llamadas-feign-de-pagatu-orden-ms" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> cada llamada de <code>pagatu-orden-ms</code> a <code>pagatu-catalogo-ms</code> (vía Feign, S6) sale con el mismo <code>X-Trace-ID</code> que <code>CorrelationIdFilter</code> ya puso en el MDC de la petición entrante.</p>
 <p><strong><code>services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/config/FeignTraceConfig.java</code></strong> (nuevo):</p>
@@ -2401,7 +2416,7 @@
 <p>Busca, en <code>logs/orden.log</code> y en <code>logs/catalogo.log</code> (de sus respectivas carpetas <code>services/</code>), la línea de esa petición. Antes de 3.4, cada archivo mostraba un <code>[traceId]</code> distinto entre corchetes al inicio de cada línea (el patrón de <code>logback-spring.xml</code>, 2.4); ahora, el mismo <code>traceId</code> debe aparecer en ambos — confirma copiando el valor de una línea de <code>orden.log</code> y buscándolo con <code>findstr</code>/<code>grep</code> directo en <code>catalogo.log</code>.</p>
 <p><strong>Error frecuente</strong>: seguir viendo <code>traceId</code> distintos después de 3.4. Confirma que reiniciaste <code>pagatu-orden-ms</code> (los <em>beans</em> de Spring no se recargan solos), y que <code>FeignTraceConfig</code> está en un paquete que el <code>@SpringBootApplication</code> de <code>pagatu-orden-ms</code> sí escanea (dentro de <code>pe.edu.upeu.orden</code>, no fuera de ese árbol de paquetes).</p>
 <h3 id="36-armar-el-tablero-de-grafana">3.6 Armar el tablero de Grafana<a class="headerlink" href="#36-armar-el-tablero-de-grafana" title="Permanent link">&para;</a></h3>
-<p><strong>Producto del paso:</strong> un tablero con los cuatro paneles de la Tabla 4, con datos reales de los cuatro microservicios.</p>
+<p><strong>Producto del paso:</strong> un tablero con los cuatro paneles de la Tabla 4, con datos reales de las cuatro piezas.</p>
 <p>Abre <code>http://localhost:13000</code> (<code>admin</code>/<code>admin</code>). Mismo flujo que ya conoces de cualquier <em>dashboard</em> de Grafana (<strong>Dashboards → New → New dashboard → + Add visualization</strong>, un panel a la vez):</p>
 <p><strong>Tabla 5. Paneles del tablero, con su consulta</strong></p>
 <table>
@@ -2417,7 +2432,7 @@
 <tr>
 <td>Servicios arriba</td>
 <td>Prometheus</td>
-<td><code>up{job="pagatu-microservicios"}</code></td>
+<td><code>up{job=~"pagatu-microservicios\|pagatu-keycloak"}</code></td>
 <td>Table</td>
 </tr>
 <tr>
@@ -2484,8 +2499,8 @@
 <p>Sesión equivalente en los otros dos cursos, misma semana (BD2, S9 de esa guía — administración del almacenamiento y seguridad): la auditoría de Oracle (<code>UNIFIED_AUDIT_TRAIL</code>) responde "quién hizo qué, y cuándo" dentro de una sola base de datos; el tablero de hoy responde la misma pregunta, pero a través de <strong>cuatro</strong> procesos distintos que no comparten memoria ni base de datos — el mismo problema de fondo (reconstruir una historia completa a partir de evidencia parcial), resuelto con herramientas distintas porque el alcance es distinto. ADS no tiene sesión de observabilidad propia en el sílabo — la arquitectura que ADS diseña (Figura 6 de cada sesión) es exactamente lo que el tablero de hoy termina verificando en producción: que los módulos se comunican como el diseño dijo que lo harían.</p>
 <p><strong>Evidencia de aprendizaje:</strong></p>
 <ul>
-<li><em>Health groups</em> de <em>liveness</em>/<em>readiness</em> respondiendo en los cuatro microservicios.</li>
-<li><code>pagatu-auth-ms</code> y <code>pagatu-pago-ms</code> cableados a Promtail, junto a los dos que ya estaban.</li>
+<li><em>Health groups</em> de <em>liveness</em>/<em>readiness</em> respondiendo en los tres microservicios, y los de Keycloak confirmados sin configurar nada.</li>
+<li>Keycloak agregado como <em>target</em> estático de Prometheus; Keycloak y <code>pagatu-pago-ms</code> cableados a Promtail, junto a los dos que ya estaban.</li>
 <li><code>RequestInterceptor</code> de Feign propagando <code>X-Trace-ID</code>, con evidencia real del mismo <code>traceId</code> en dos servicios distintos.</li>
 <li>Tablero de Grafana con los cuatro paneles de la Tabla 5, con datos reales.</li>
 <li>Diagnóstico de una falla simulada usando solo el tablero, con la Tabla 6 completada con valores reales.</li>
@@ -2525,7 +2540,7 @@
 </ul>
 </li>
 <li><em>Logs centralizados y correlación</em><ul>
-<li>Los cuatro servicios (o todos los de tu propio proyecto) visibles en Loki/Grafana, y evidencia del mismo <code>traceId</code> en dos servicios distintos.</li>
+<li>Las cuatro piezas (o todas las de tu propio proyecto) visibles en Loki/Grafana, y evidencia del mismo <code>traceId</code> en dos servicios distintos.</li>
 </ul>
 </li>
 <li><em>Tablero de Grafana</em><ul>
@@ -2654,7 +2669,7 @@ Indica 2 fortalezas y 2 recomendaciones.
 </code></pre></div>
 <h2 id="5-cierre">5. Cierre<a class="headerlink" href="#5-cierre" title="Permanent link">&para;</a></h2>
 <p>Tiempo: 5 min.</p>
-<p><strong>Resumen breve:</strong> hoy <code>pagatu</code> dejó de depender de leer código o de revisar cuatro terminales distintas para saber si el sistema está sano. Los cuatro microservicios ganaron <em>health groups</em> explícitos (<em>liveness</em> distinto de <em>readiness</em>), los dos que faltaban (<code>pagatu-auth-ms</code>, <code>pagatu-pago-ms</code>) se cablearon a Loki, y el <code>traceId</code> que ya existía desde S7 por fin viaja entre servicios gracias a un interceptor de Feign — cerrando una brecha documentada desde antes de esta sesión. El resultado es un tablero de Grafana que combina métricas, logs y estado de salud en un solo lugar, probado contra una falla real simulada, no solo contra el caso feliz.</p>
+<p><strong>Resumen breve:</strong> hoy <code>pagatu</code> dejó de depender de leer código o de revisar varias terminales distintas para saber si el sistema está sano. Los tres microservicios ganaron <em>health groups</em> explícitos (<em>liveness</em> distinto de <em>readiness</em>), Keycloak confirmó que ya traía los suyos desde S07b, los dos que faltaban en Loki (Keycloak, <code>pagatu-pago-ms</code>) se cablearon, Keycloak también se agregó a Prometheus como <em>target</em> estático (no es cliente de Eureka), y el <code>traceId</code> que ya existía desde S7 por fin viaja entre servicios gracias a un interceptor de Feign — cerrando una brecha documentada desde antes de esta sesión. El resultado es un tablero de Grafana que combina métricas, logs y estado de salud de las cuatro piezas en un solo lugar, probado contra una falla real simulada, no solo contra el caso feliz.</p>
 <p><strong>Dinámica participativa:</strong> en una ronda rápida, cada estudiante comparte en una frase qué panel del tablero mostró primero su falla simulada, y por qué cree que fue ese.</p>
 <p><strong>Metacognición:</strong> ¿qué te costó más entender hoy: por qué <code>MDC</code> es por hilo y no se propaga solo entre servicios, o por qué <em>liveness</em> y <em>readiness</em> necesitan ser preguntas separadas?</p>
 <p><strong>Proyección:</strong> S11 conecta el cliente frontend al sistema a través del Gateway — con la observabilidad de hoy ya en pie, cualquier fallo que la integración frontend-backend introduzca va a ser visible en el mismo tablero, sin tener que construir nada nuevo para verlo.</p>
