@@ -32,3 +32,22 @@ scrape_configs:
         labels:
           application: pagatu-pago-ms
           __path__: /var/log/pagatu-pago-ms/*.log
+
+  - job_name: pagatu-keycloak
+    static_configs:
+      - targets: [localhost]
+        labels:
+          application: pagatu-keycloak
+          __path__: /var/log/pagatu-keycloak/*.log
+  - job_name: pagatu-pago-ms
+    static_configs:
+      - targets: [localhost]
+        labels:
+          application: pagatu-pago-ms
+          __path__: /var/log/pagatu-pago-ms/*.log
+  - job_name: pagatu-gateway
+    static_configs:
+      - targets: [localhost]
+        labels:
+          application: pagatu-gateway
+          __path__: /var/log/pagatu-gateway/*.log

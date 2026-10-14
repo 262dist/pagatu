@@ -294,13 +294,50 @@ Confirma en Prometheus (`http://localhost:19090/targets`) que los tres microserv
           __path__: /var/log/pagatu-gateway/*.log
 ```
 
-Repite el mismo cambio en **`obs/compose.yml`**, **`obs/promtail/promtail-config.yml`** y **`obs/prometheus/prometheus.yml`** (PROD local) — son los mismos tres archivos, con el prefijo de puertos `2xxxx` en vez de `1xxxx` (`obs/README.md`), no una configuración distinta.
+**PROD local** son los mismos tres archivos — `obs/compose.yml` ya tenía el volumen de `pagatu-pago-ms` (quedó resuelto antes que el de DEV); solo faltan Keycloak y el Gateway:
+
+**`obs/compose.yml`** — agrega, junto a los tres volúmenes que ya existen en `pagatu-promtail`:
+
+```yaml
+      - ../keycloak/logs:/var/log/pagatu-keycloak:ro
+      - ../infra/pagatu-gateway/logs:/var/log/pagatu-gateway:ro
+```
+
+**`obs/promtail/promtail-config.yml`** — mismo patrón, `pagatu-pago-ms` ya estaba; agrega los dos *jobs* que faltan:
+
+```yaml
+  - job_name: pagatu-keycloak
+    static_configs:
+      - targets: [localhost]
+        labels:
+          application: pagatu-keycloak
+          __path__: /var/log/pagatu-keycloak/*.log
+  - job_name: pagatu-gateway
+    static_configs:
+      - targets: [localhost]
+        labels:
+          application: pagatu-gateway
+          __path__: /var/log/pagatu-gateway/*.log
+```
+
+**`obs/prometheus/prometheus.yml`** — agrega el *job* nuevo, junto a los que ya existen (`pagatu-config`/`pagatu-eureka`):
+
+```yaml
+  - job_name: "pagatu-keycloak"
+    metrics_path: "/metrics"
+    static_configs:
+      - targets: ["pagatu-keycloak:9000"]
+        labels:
+          application: pagatu-keycloak
+```
+
+`pagatu-keycloak:9000` (el nombre del servicio Docker y su puerto **interno** de *management*, no `host.docker.internal:29000`) — PROD local resuelve por nombre de servicio dentro de la misma red de Docker, el mismo criterio que ya usan `pagatu-config:8888`/`pagatu-eureka:8761` arriba, y que S07b (7.1) ya aplicó al `issuer-uri` del Gateway y `pagatu-orden-ms`. El Gateway no necesita ningún *job* de Prometheus nuevo aquí tampoco — sigue llegando por `eureka_sd_configs`, igual que en DEV.
 
 Sube de nuevo Prometheus y Promtail para que tomen la configuración nueva:
 
 ```powershell
 cd obs
-docker compose -f compose-dev.yml up -d prometheus promtail
+docker compose -f compose-dev.yml up -d pagatu-prometheus pagatu-promtail
 ```
 
 Confirma en `http://localhost:19090/targets` que `pagatu-keycloak` aparece como un *job* nuevo, `UP`.

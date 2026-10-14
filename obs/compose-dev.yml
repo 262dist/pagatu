@@ -29,6 +29,11 @@ services:
       - ../services/pagatu-orden-ms/logs:/var/log/pagatu-orden-ms:ro
       - ../services/pagatu-auth-ms/logs:/var/log/pagatu-auth-ms:ro
       - ../services/pagatu-pago-ms/logs:/var/log/pagatu-pago-ms:ro
+
+      - ../keycloak/logs:/var/log/pagatu-keycloak:ro
+      - ../services/pagatu-pago-ms/logs:/var/log/pagatu-pago-ms:ro
+      - ../infra/pagatu-gateway/logs:/var/log/pagatu-gateway:ro
+      
     command: -config.file=/etc/promtail/config.yml
     depends_on:
       - pagatu-loki

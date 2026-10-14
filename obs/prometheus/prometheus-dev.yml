@@ -27,3 +27,10 @@ scrape_configs:
       - targets: ["host.docker.internal:18761"]
         labels:
           application: pagatu-eureka
+          
+  - job_name: "pagatu-keycloak"
+    metrics_path: "/metrics"
+    static_configs:
+      - targets: ["host.docker.internal:19000"]
+        labels:
+          application: pagatu-keycloak
