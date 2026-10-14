@@ -1216,6 +1216,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#bibliografia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bibliografía
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1673,6 +1684,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#bibliografia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bibliografía
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1823,6 +1845,7 @@
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"18180:8080"</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"19000:9000"</span>
 <span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">keycloak-data:/opt/keycloak/data</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./logs:/opt/keycloak/data/log</span>
 <span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">keycloak-db</span><span class="p">:</span>
@@ -1830,9 +1853,11 @@
 
 <span class="nt">volumes</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">pagatu_keycloak_dev_data</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">keycloak-data</span><span class="p">:</span>
 </code></pre></div>
 <p>El puerto externo <code>18180</code> sigue el mismo criterio de prefijo <code>1</code>=DEV que ya usan <code>pagatu-eureka</code> (<code>18761</code>) y <code>pagatu-gateway</code> (<code>18080</code>) — <code>18085</code> queda ocupado por la UI de Kafka (S8), así que Keycloak toma el siguiente libre; <code>15436</code> continúa la secuencia de puertos Postgres de los cuatro microservicios (<code>15431</code>-<code>15435</code>). <code>start-dev</code> es el modo rápido de desarrollo — sin TLS ni <em>hostname</em> explícito, no apto para producción real (fuera del alcance de esta guía, igual que lo documentó LP2 al construir el mismo contenedor para BomERP).</p>
-<p>Las cinco variables nuevas (<code>KC_METRICS_ENABLED</code>, <code>KC_HEALTH_ENABLED</code>, <code>KC_LOG</code>, <code>KC_LOG_FILE</code>, <code>KC_HTTP_MANAGEMENT_PORT</code>) no hacen falta para nada de lo que esta guía construye — existen para que S10 (Observabilidad) pueda monitorear Keycloak con el mismo criterio que los demás servicios, sin que nadie tenga que volver a tocar este archivo más adelante. Por defecto, Keycloak no expone métricas ni log a archivo — ambos vienen desactivados hasta que se piden explícitamente (verificado contra la documentación oficial de Keycloak 26). <code>KC_HTTP_MANAGEMENT_PORT: 9000</code> mueve <code>/metrics</code> y <code>/health</code> a un puerto separado del tráfico de autenticación (<code>18180</code>), publicado hacia el host en <code>19000</code> — el mismo criterio de prefijo <code>1</code>=DEV. <code>./logs:/opt/keycloak/data/log</code> es un <em>bind mount</em> a una carpeta nueva dentro de <code>keycloak/</code>, igual en espíritu a <code>../services/pagatu-auth-ms/logs:/var/log/pagatu-auth-ms:ro</code> que ya usan los microservicios — S10 monta esa misma carpeta, de solo lectura, en Promtail.</p>
+<p>Las cinco variables nuevas (<code>KC_METRICS_ENABLED</code>, <code>KC_HEALTH_ENABLED</code>, <code>KC_LOG</code>, <code>KC_LOG_FILE</code>, <code>KC_HTTP_MANAGEMENT_PORT</code>) no hacen falta para nada de lo que esta guía construye — existen para que S10 (Observabilidad) pueda monitorear Keycloak con el mismo criterio que los demás servicios, sin que nadie tenga que volver a tocar este archivo más adelante. Por defecto, Keycloak no expone métricas ni log a archivo — ambos vienen desactivados hasta que se piden explícitamente (verificado contra la documentación oficial de Keycloak 26). <code>KC_HTTP_MANAGEMENT_PORT: 9000</code> mueve <code>/metrics</code> y <code>/health</code> a un servidor HTTP separado del tráfico de autenticación (<code>18180</code>), publicado hacia el host en <code>19000</code> — el mismo criterio de prefijo <code>1</code>=DEV. Exponer estos dos endpoints junto con el tráfico real no es recomendable por seguridad; separarlos en su propio puerto permite que, en un entorno real, el de management quede sin publicar hacia afuera mientras sigue siendo alcanzable para quien sí necesita monitorear (Keycloak, 2026).</p>
+<p>Dos volúmenes distintos, para dos cosas distintas — el mismo patrón que ya usó LP2 al construir este mismo contenedor para BomERP. <code>keycloak-data:/opt/keycloak/data</code> es un volumen con nombre que persiste <strong>todo</strong> lo que Keycloak guarda ahí por su cuenta (el <code>h2</code> embebido que ya no importa porque <code>KC_DB</code> apunta a Postgres, <code>transaction-logs</code>, caché de <em>providers</em>) — sin él, cualquier recreación del contenedor (<code>docker compose up</code> tras un <code>down</code>, no solo un <code>restart</code>) perdería esos archivos, aunque el realm y los usuarios sigan a salvo en <code>keycloak-db-data</code> (Postgres). <code>./logs:/opt/keycloak/data/log</code> es, además, un <em>bind mount</em> a una carpeta nueva dentro de <code>keycloak/</code>, anidado <strong>dentro</strong> del volumen anterior — igual en espíritu a <code>../services/pagatu-auth-ms/logs:/var/log/pagatu-auth-ms:ro</code> que ya usan los microservicios — S10 monta esa misma carpeta, de solo lectura, en Promtail. Verificado contra la imagen real (<code>quay.io/keycloak/keycloak:26.8.0</code>): anidar un <em>bind mount</em> dentro de un volumen con nombre funciona sin problema — Keycloak escribe <code>keycloak.log</code> ahí y el archivo aparece también en el host, en <code>keycloak/logs/</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>keycloak
 docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose-dev.yml<span class="w"> </span>up<span class="w"> </span>-d
 </code></pre></div>
@@ -2026,6 +2051,10 @@ docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> 
 <li><strong>Migrar las órdenes viejas al <code>sub</code> nuevo</strong>: documentado como nota honesta en 7.3 — no es indispensable hoy (nada filtra por <code>idCliente</code> del lado del servidor todavía), pero queda pendiente si esa validación se construye más adelante.</li>
 <li><strong>Producción real</strong>: el motor de base de datos de Keycloak ya queda resuelto (Postgres, sección 2). Lo que falta es <code>start-dev</code> en sí — no es apto para producción, exige modo <code>start</code> y TLS (<em>Transport Layer Security</em>), ninguno de los dos configurado aquí.</li>
 </ul>
+<h2 id="bibliografia">Bibliografía<a class="headerlink" href="#bibliografia" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Keycloak. (2026). <em>Configuring the Management Interface</em>. <a href="https://www.keycloak.org/server/management-interface">https://www.keycloak.org/server/management-interface</a></li>
+</ol>
 
 
 
