@@ -11,6 +11,10 @@
         <link rel="canonical" href="https://262dist.github.io/pagatu/sesiones/S07b_Seguridad_Distribuida_Keycloak/">
       
       
+        <link rel="prev" href="../S07_Seguridad_Distribuida_Control_Acceso/">
+      
+      
+        <link rel="next" href="../S08_Mensajeria_Asincrona_Entre_Servicios/">
       
       
         
@@ -21,7 +25,7 @@
     
     
   
-    <title>Pagatu - S07 - Reemplazo de pagatu-auth-ms por Keycloak (guía de referencia)</title>
+    <title>Pagatu - S7b - Seguridad distribuida con Keycloak</title>
   
 
     
@@ -98,7 +102,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              S07 - Reemplazo de pagatu-auth-ms por Keycloak (guía de referencia)
+              S7b - Seguridad distribuida con Keycloak
             
           </span>
         </div>
@@ -852,18 +856,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -884,7 +890,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -946,6 +952,274 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S7b - Seguridad distribuida con Keycloak
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S7b - Seguridad distribuida con Keycloak
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-que-es-esta-guia-y-que-no-es" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Qué es esta guía y qué no es
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-que-cambia-y-que-no" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Qué cambia y qué no
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parte-a-keycloak-sin-tocar-el-gateway-ni-pagatu-orden-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte A — Keycloak, sin tocar el Gateway ni pagatu-orden-ms
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-levantar-keycloak" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Levantar Keycloak
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-configurar-el-realm-pagatu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Configurar el realm pagatu
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-crear-el-cliente-pagatu-frontend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Crear el cliente pagatu-frontend
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-crear-los-usuarios-semilla" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Crear los usuarios semilla
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-verificar-un-token-real-antes-de-tocar-el-gateway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Verificar un token real antes de tocar el Gateway
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parte-b-integrar-el-gateway-y-pagatu-orden-ms-con-keycloak" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte B — Integrar el Gateway y pagatu-orden-ms con Keycloak
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-migrar-el-gateway-y-pagatu-orden-ms-a-keycloak" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Migrar el Gateway y pagatu-orden-ms a Keycloak
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Migrar el Gateway y pagatu-orden-ms a Keycloak">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-cambiar-la-propiedad-de-validacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Cambiar la propiedad de validación
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-migrar-idcliente-a-sub-codigo-de-pagatu-orden-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Migrar idCliente a sub: código de pagatu-orden-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-migrar-la-columna-id_cliente-en-postgres" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 Migrar la columna id_cliente en Postgres
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parte-c-profundizar-retirar-pagatu-auth-ms-y-probar-de-punta-a-punta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte C — Profundizar: retirar pagatu-auth-ms y probar de punta a punta
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-retirar-pagatu-auth-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Retirar pagatu-auth-ms
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-probar-de-punta-a-punta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Probar de punta a punta
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-que-queda-pendiente" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Qué queda pendiente
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1022,6 +1296,34 @@
     
   
     S10 - Observabilidad y diagnóstico de sistemas distribuidos
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S11_Integracion_Cliente_Frontend_Angular_Keycloak/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S11 - Integración del cliente (frontend Angular con Keycloak)
   
 
     
