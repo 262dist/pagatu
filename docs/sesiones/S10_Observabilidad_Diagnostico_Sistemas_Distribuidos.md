@@ -348,9 +348,9 @@ Reinicia el Gateway (`.\mvnw.cmd spring-boot:run`) para que tome el `logback-spr
 
 ### 3.3 Configurar *health groups* de *liveness*/*readiness*
 
-**Producto del paso:** `/actuator/health/liveness` y `/actuator/health/readiness` respondiendo, en los tres microservicios — Keycloak ya trae los suyos, sin que nadie los configure (2.2).
+**Producto del paso:** `/actuator/health/liveness` y `/actuator/health/readiness` respondiendo en `pagatu-catalogo-ms`, `pagatu-orden-ms` y `pagatu-pago-ms` — los tres microservicios de negocio que siguen corriendo (`pagatu-auth-ms` ya está retirado, S07b, sección 8) — Keycloak ya trae los suyos, sin que nadie los configure (2.2).
 
-En `application-dev.yml` de cada uno de los tres servicios (`infra/pagatu-config/config-repo/pagatu-<servicio>-dev.yml`, S2), agrega:
+En `infra/pagatu-config/config-repo/pagatu-catalogo-ms-dev.yml`, `pagatu-orden-ms-dev.yml` y `pagatu-pago-ms-dev.yml` (los tres archivos, uno por uno — **no** `pagatu-auth-ms-dev.yml`, ese servicio ya no arranca), agrega el mismo bloque en cada uno:
 
 ```yaml
 management:
@@ -367,14 +367,20 @@ management:
 
 `probes.enabled: true` habilita los dos grupos (Spring Boot los trae listos desde que detecta que corre en un entorno que los soporta, pero no los expone por defecto en todos los casos — esta propiedad lo fuerza siempre). El grupo `readiness` de cada servicio con base de datos agrega `db` al chequeo: si la conexión a Postgres (o a Oracle, para los que persisten ahí) falla, `/actuator/health/readiness` responde `DOWN` aunque el proceso (*liveness*) siga perfectamente vivo.
 
-Confirma, con cada servicio corriendo:
+Confirma, con los tres servicios corriendo — `8080` (`pagatu-catalogo-ms`), `8082` (`pagatu-orden-ms`), `8086` (`pagatu-pago-ms`), no `8085` (el puerto de `pagatu-auth-ms`, ya retirado):
 
 ```powershell
-Invoke-RestMethod -Method Get -Uri "http://localhost:8085/actuator/health/liveness"
-Invoke-RestMethod -Method Get -Uri "http://localhost:8085/actuator/health/readiness"
+Invoke-RestMethod -Method Get -Uri "http://localhost:8080/actuator/health/liveness"
+Invoke-RestMethod -Method Get -Uri "http://localhost:8080/actuator/health/readiness"
+
+Invoke-RestMethod -Method Get -Uri "http://localhost:8082/actuator/health/liveness"
+Invoke-RestMethod -Method Get -Uri "http://localhost:8082/actuator/health/readiness"
+
+Invoke-RestMethod -Method Get -Uri "http://localhost:8086/actuator/health/liveness"
+Invoke-RestMethod -Method Get -Uri "http://localhost:8086/actuator/health/readiness"
 ```
 
-Resultado esperado: `{"status": "UP"}` en ambos, para los tres puertos de servicio. Confirma también los de Keycloak, ya listos desde S07b, sin configurar nada aquí:
+Resultado esperado: `{"status": "UP"}` en los dos, en cada uno de los tres puertos. Confirma también los de Keycloak, ya listos desde S07b, sin configurar nada aquí:
 
 ```powershell
 Invoke-RestMethod -Method Get -Uri "http://localhost:19000/health/live"
