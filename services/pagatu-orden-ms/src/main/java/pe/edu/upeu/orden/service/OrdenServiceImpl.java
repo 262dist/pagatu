@@ -28,7 +28,7 @@ public class OrdenServiceImpl implements OrdenService {
 
     @Override
     @Transactional
-    public OrdenResponse crear(OrdenRequest request, Long idCliente) {
+    public OrdenResponse crear(OrdenRequest request, String idCliente) {
         Orden orden = Orden.builder()
                 .idCliente(idCliente)
                 .metodoPago(request.getMetodoPago())

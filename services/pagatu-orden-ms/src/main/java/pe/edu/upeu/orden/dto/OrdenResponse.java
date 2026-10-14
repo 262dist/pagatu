@@ -12,7 +12,8 @@ import java.util.List;
 @AllArgsConstructor
 public class OrdenResponse {
     private Long id;
-    private Long idCliente;
+    private String idCliente;
+
     private LocalDateTime fechaCreacion;
     private String estado;
     private BigDecimal total;

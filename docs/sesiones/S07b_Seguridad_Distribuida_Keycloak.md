@@ -52,8 +52,8 @@ flowchart TB
 | `jwk-set-uri` → `issuer-uri` (Gateway y `pagatu-orden-ms`) | Sí — una propiedad YAML en cada uno (7.1) | Igual que la Tabla 6 de S07 ya prometía. |
 | `JwtAuthenticationConverter` (lee `realm_access.roles`) | **No** | Igual que la Tabla 6. |
 | Reglas `hasRole`/`hasAnyRole` del Gateway | **No** | Igual que la Tabla 6. |
-| Cómo `pagatu-orden-ms` lee `idCliente` del JWT | **Sí** — pasa de `jwt.getClaim("idCliente")` (`Long`) a `jwt.getSubject()` (`String`) (7.3) | **Diverge** de la Tabla 6 de S07, que no exigía esto — ver la sección 0. |
-| Columna `id_cliente` de `ordenes` | Sí — de `BIGINT` a `VARCHAR(36)` (7.4) | **Diverge** de la Tabla 6, por la misma razón. |
+| Cómo `pagatu-orden-ms` lee `idCliente` del JWT | **Sí** — pasa de `jwt.getClaim("idCliente")` (`Long`) a `jwt.getSubject()` (`String`) (7.4) | **Diverge** de la Tabla 6 de S07, que no exigía esto — ver la sección 0. |
+| Columna `id_cliente` de `ordenes` | Sí — de `BIGINT` a `VARCHAR(36)` (7.3) | **Diverge** de la Tabla 6, por la misma razón. |
 | Servicio `pagatu-auth-ms` | Se retira (sección 8) | Igual que la Tabla 6. |
 | Postgres de `pagatu-auth-ms` (`pagatu-postgres-auth-dev`) | Se retira junto con el servicio | Igual que la Tabla 6. |
 
@@ -169,7 +169,7 @@ Estos son **realm roles** (no *client roles*) a propósito: Keycloak los agrega 
 
 **Producto del paso:** los mismos dos usuarios de `pagatu-auth-ms` (S07, 3.13), ahora en Keycloak.
 
-A diferencia de lo que un primer vistazo a S07 (3.13) sugeriría, **no hace falta ningún atributo de usuario**: `idCliente` pasa a ser `sub` (7.3), y `sub` es el UUID (*Universally Unique Identifier*) que Keycloak asigna solo a cada usuario, sin que nadie lo configure — exactamente la misma razón por la que LP2 nunca necesitó nada extra para `vendedorId`.
+A diferencia de lo que un primer vistazo a S07 (3.13) sugeriría, **no hace falta ningún atributo de usuario**: `idCliente` pasa a ser `sub` (7.4), y `sub` es el UUID (*Universally Unique Identifier*) que Keycloak asigna solo a cada usuario, sin que nadie lo configure — exactamente la misma razón por la que LP2 nunca necesitó nada extra para `vendedorId`.
 
 1. **Users** → **Add user**. En los dos, **Username** (*Nombre de usuario*) es el nombre corto, sin dominio (ej. `cliente1`) — distinto de **Email** (*Correo electrónico*), el email completo (ej. `cliente1@pagatu.com`); Keycloak no completa uno a partir del otro, hay que escribir ambos campos.
     - **Username**: `cliente1`. **Email**: `cliente1@pagatu.com`, **Email verified**: activado. Crear usuario, luego **Credentials** → **Set password**: `cliente123`, *Temporary*: **desactivado**. **Role mapping** → **Assign role** → `CLIENTE`.
@@ -279,7 +279,7 @@ echo "$tokenCliente"
 
 `-s` silencia la barra de progreso de `curl` (sin ella, se mezcla con el JSON de la respuesta); `jq` (requerido, S07, 3.19) separa `access_token` del resto de la respuesta (`token_type`, `expires_in`, `refresh_token`) — en PowerShell, `.access_token` hace lo mismo sobre el objeto que `Invoke-RestMethod` ya deserializó solo.
 
-5. Pega el `access_token` recibido en [jwt.io](https://jwt.io) (inspección visual, sin verificar firma) y confirma: `realm_access.roles` trae `["CLIENTE"]`, y anota el valor de `sub` (un UUID, ej. `516ef047-ffbc-470f-b397-6d4a3fe8fbfa`) — es el valor que 7.3 va a usar como `idCliente` desde ahora.
+5. Pega el `access_token` recibido en [jwt.io](https://jwt.io) (inspección visual, sin verificar firma) y confirma: `realm_access.roles` trae `["CLIENTE"]`, y anota el valor de `sub` (un UUID, ej. `516ef047-ffbc-470f-b397-6d4a3fe8fbfa`) — es el valor que 7.4 va a usar como `idCliente` desde ahora.
 
 **Error frecuente**: pegar un `code` que ya expiró (son de un solo uso y de vida muy corta, segundos) o reusar un `code` ya canjeado una vez. Si el canje falla con `invalid_grant`, repite desde el paso 2 con una URL nueva — nunca reintentes el mismo `code`.
 
@@ -329,7 +329,7 @@ spring:
 
 ### 7.2 Confirmar que los endpoints siguen protegidos por rol
 
-**Producto del paso:** evidencia, con tokens reales de Keycloak y **sin tocar una sola línea de `pagatu-orden-ms`**, de que la separación de roles que el Gateway (S07, 3.18) ya tenía construida sigue intacta después del cambio de 7.1 — antes de meterse con la migración de `idCliente` (7.3), que es un cambio de un tipo de dato completamente distinto.
+**Producto del paso:** evidencia, con tokens reales de Keycloak y **sin tocar una sola línea de `pagatu-orden-ms`**, de que la separación de roles que el Gateway (S07, 3.18) ya tenía construida sigue intacta después del cambio de 7.1 — antes de meterse con la migración de `idCliente` (7.3-7.4), que es un cambio de un tipo de dato completamente distinto.
 
 Reinicia el Gateway y `pagatu-orden-ms` para que tomen la propiedad nueva de 7.1. Ya tienes `$tokenCliente` y `$tokenAdmin` de la sección 6 (pasos 1-6) — si expiraron (Keycloak los emite con una vida corta por defecto), repítela antes de seguir. Con el token de `cliente1@pagatu.com`, intenta crear un producto — una ruta que el Gateway (S07, 3.18) restringe a `ADMIN`:
 
@@ -355,17 +355,62 @@ Resultado esperado: `403` — el token es válido (pasó la firma de Keycloak), 
 
 **Error frecuente**: `401` donde esperabas `403`, o viceversa. `401` significa que el token no se validó (expiró, el `issuer-uri` apunta mal, o no se mandó ninguno); `403` significa que sí se validó, pero el rol no alcanza (S07, 2.3) — confundir los dos síntomas suele llevar a revisar la configuración equivocada.
 
-Con `403`/`201`/`401` confirmados, Parte B queda cerrada: el Gateway y `pagatu-orden-ms` ya validan por Keycloak, y los mismos roles de siempre siguen protegiendo las mismas rutas de siempre, sin haber tocado ni una línea de Java todavía.
+`/api/v1/productos` prueba `pagatu-catalogo-ms` a través del Gateway — pero el servicio que de verdad importa migrar hoy es `pagatu-orden-ms` (7.1 cambió su propiedad también). La regla del Gateway para `/api/v1/ordenes/**` es `hasAnyRole("CLIENTE", "ADMIN")` (S07, 3.18) — los dos únicos roles que existen en este realm — así que aquí **no hay ningún token que dé `403`**; lo que sí hay que confirmar es que la ruta sigue exigiendo *alguno* de los dos:
+
+```powershell
+Invoke-RestMethod -Method Get -Uri "http://localhost:18080/api/v1/ordenes" -Headers @{ Authorization = "Bearer $tokenCliente" }
+
+try {
+  Invoke-RestMethod -Method Get -Uri "http://localhost:18080/api/v1/ordenes"
+} catch {
+  $_.Exception.Response.StatusCode.value__
+}
+```
+
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" http://localhost:18080/api/v1/ordenes -H "Authorization: Bearer $tokenCliente"
+curl -s -o /dev/null -w "%{http_code}\n" http://localhost:18080/api/v1/ordenes
+```
+
+Resultado esperado: `200` con `$tokenCliente` (o `$tokenAdmin`, cualquiera de los dos pasa), y `401` sin ningún header — confirma que `pagatu-orden-ms`, no solo `pagatu-catalogo-ms`, ya valida tokens de Keycloak a través del Gateway. Repite con `$tokenAdmin`: también `200` — ambos roles están permitidos aquí a propósito, así que ver `200` dos veces seguidas no es un error, es la regla funcionando como se diseñó.
+
+Con `403`/`201`/`401`/`200` confirmados en las dos rutas, Parte B queda cerrada: el Gateway, `pagatu-catalogo-ms` y `pagatu-orden-ms` ya validan por Keycloak, y los mismos roles de siempre siguen protegiendo las mismas rutas de siempre, sin haber tocado ni una línea de Java todavía.
 
 ## Parte C — Profundizar: migrar `idCliente` a `sub`, retirar `pagatu-auth-ms` y probar de punta a punta
 
-Lo construido hasta 7.2 deja al Gateway y a `pagatu-orden-ms` validando tokens de Keycloak, con la separación de roles ya confirmada — pero `pagatu-orden-ms` todavía espera un claim `idCliente` que ya no existe en el token (S07, 3.13 lo diseñó como *user attribute*; esta guía decidió no construirlo, sección 0). **7.3 sí es indispensable**: sin ella, `OrdenController.crear` falla con `IllegalArgumentException` en cuanto alguien intente crear una orden real. De la sección 8 en adelante, en cambio, es la profundización que retira lo que ya sobra y prueba con la matriz completa.
+Lo construido hasta 7.2 deja al Gateway y a `pagatu-orden-ms` validando tokens de Keycloak, con la separación de roles ya confirmada — pero `pagatu-orden-ms` todavía espera un claim `idCliente` que ya no existe en el token (S07, 3.13 lo diseñó como *user attribute*; esta guía decidió no construirlo, sección 0). **7.3 y 7.4 son indispensables juntas**: sin la migración de la columna (7.3), el código nuevo de 7.4 no tiene dónde guardar un `String`; sin el código de 7.4, `OrdenController.crear` sigue leyendo un claim que ya no existe y falla con `IllegalArgumentException` en cuanto alguien intente crear una orden real. De la sección 8 en adelante, en cambio, es la profundización que retira lo que ya sobra y prueba con la matriz completa.
 
-### 7.3 Migrar `idCliente` a `sub`: código de `pagatu-orden-ms`
+### 7.3 Migrar la columna `id_cliente` en Postgres
+
+**Por qué la base de datos primero, y no el código**: si recompilas `pagatu-orden-ms` con `idCliente` ya como `String` mientras la columna real sigue siendo `BIGINT`, Hibernate intenta mapear un campo de texto contra una columna numérica desde el primer `SELECT` — falla en caliente, no al arrancar. Migrar el esquema primero deja la base de datos lista para el tipo nuevo antes de que exista ningún código que lo espere.
+
+`pagatu-orden-ms` ya usa Flyway (S02) para versionar su esquema — `V1__create_orden_tables.sql` es la única migración hasta ahora. Este cambio sigue el mismo patrón, en vez de un `ALTER TABLE` suelto por fuera del control de versiones.
+
+**Detén `pagatu-orden-ms` (`Ctrl+C`) antes de crear el archivo — no lo dejes corriendo con DevTools activo.** Flyway corre al arrancar, no al guardar un archivo — pero *Spring Boot DevTools* reinicia la aplicación solo con que cree un archivo nuevo dentro de `src/`, incluso vacío. Si creas `V2__....sql` primero y le pegas el contenido real después, DevTools puede disparar un reinicio justo en el medio: Flyway ve un archivo `.sql` vacío, lo aplica (no hace nada, pero lo registra como éxito, con el *checksum* de un archivo vacío), y cuando el archivo ya tiene el `ALTER TABLE` real, el siguiente arranque falla con `Migration checksum mismatch` — el *checksum* que Flyway ya guardó no coincide con el del archivo que ahora sí tiene contenido. Escribe el archivo completo **con el servidor detenido**, y recién ahí vuelve a arrancarlo.
+
+**`services/pagatu-orden-ms/src/main/resources/db/migration/V2__alter_id_cliente_varchar.sql`** (archivo nuevo):
+
+```sql
+ALTER TABLE ordenes ALTER COLUMN id_cliente TYPE VARCHAR(36) USING id_cliente::text;
+```
+
+A diferencia de Oracle (que LP2 tuvo que resolver con una columna temporal, por el error `ORA-01439` al cambiar el tipo de una columna con datos), Postgres permite este cambio en una sola instrucción, incluso con filas existentes — `USING id_cliente::text` le dice exactamente cómo convertir cada valor numérico ya guardado a su representación en texto. Flyway la aplica sola, en orden, la próxima vez que `pagatu-orden-ms` arranque (verás `Current version of schema: 2` en su log, donde hoy dice `1`) — no hace falta correr nada a mano contra el contenedor de Postgres.
+
+**Verificar el esquema, antes y después** — el equivalente en Postgres de `DESC` en Oracle es `\d` (o `\d+` para más detalle), dentro de `psql`:
+
+```bash
+docker exec -i pagatu-postgres-orden-dev psql -U pagatu -d pagatu_orden_db -c "\d ordenes"
+```
+
+Antes de que `pagatu-orden-ms` reinicie con esta migración, `id_cliente` aparece como `bigint`. Después de reiniciar (al final de 7.4, junto con el código), repite el mismo comando y confirma `character varying(36)`.
+
+**Nota honesta sobre los datos viejos**: las órdenes creadas bajo `pagatu-auth-ms` quedan con `id_cliente` igual al `id` numérico-como-texto que ese módulo usaba (ej. `"1"`) — no al `sub` nuevo de Keycloak (un UUID). Hoy eso no rompe nada: `OrdenServiceImpl.listar()` nunca filtra por `idCliente` (es un hueco ya documentado en S11, 2.7, resuelto solo del lado de la interfaz, no del servidor) — si en el futuro ese filtrado se construye del lado del servidor, esas órdenes viejas van a necesitar la misma migración de datos que LP2 hizo en su S10b (7.5): buscar el `id` viejo, cruzarlo con el `sub` nuevo del mismo usuario en `keycloak-db`, y actualizar cada fila.
+
+### 7.4 Migrar `idCliente` a `sub`: código de `pagatu-orden-ms`
 
 **Por qué cambiar esto, si S07 (Tabla 6) nunca lo pidió**: un *user attribute* manual (lo que S07, 3.13, y la primera versión de esta guía usaban) exige que alguien asigne a mano un `idCliente` único por cada usuario nuevo que se cree en Keycloak — sin automatizarlo, dos administradores podrían asignar el mismo valor a dos clientes distintos sin que Keycloak lo impida, porque un *user attribute* no tiene ninguna restricción de unicidad. `sub` sí la tiene: Keycloak lo genera él mismo, siempre distinto, para cualquier usuario que exista. Usarlo es exactamente lo que LP2 (BomERP) ya hace con `vendedorId` — y la razón de fondo por la que `vendedorId` **sí** pudo ser simplemente `sub` desde el diseño de S10 de esa guía.
 
-**`services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/entity/Orden.java`** — cambia el tipo del campo:
+**`services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/entity/Orden.java`** — cambia el tipo del campo (ya coincide con la columna que 7.3 deja lista):
 
 ```java
 @Column(name = "id_cliente", length = 36)
@@ -416,23 +461,7 @@ private String idCliente;
 
 `PagoServiceImpl.procesar` nunca lee `idCliente` (solo usa `ordenId`, `monto`, `metodoPago`) — pero igual hay que cambiarlo: Kafka transporta el evento como JSON, y si `pagatu-orden-ms` empieza a enviar `"idCliente": "516ef047-..."` mientras `pagatu-pago-ms` todavía espera un número en ese campo, la deserialización falla y el consumidor se cae, aunque el valor nunca se use.
 
-### 7.4 Migrar la columna `id_cliente` en Postgres
-
-```sql
-ALTER TABLE ordenes ALTER COLUMN id_cliente TYPE VARCHAR(36) USING id_cliente::text;
-```
-
-A diferencia de Oracle (que LP2 tuvo que resolver con una columna temporal, por el error `ORA-01439` al cambiar el tipo de una columna con datos), Postgres permite este cambio en una sola instrucción, incluso con filas existentes — `USING id_cliente::text` le dice exactamente cómo convertir cada valor numérico ya guardado a su representación en texto.
-
-Conéctate al Postgres de `pagatu-orden-ms` (el mismo de siempre, S02) y corre la migración:
-
-```bash
-docker exec -i pagatu-postgres-orden-dev psql -U pagatu -d pagatu_orden_db -c "ALTER TABLE ordenes ALTER COLUMN id_cliente TYPE VARCHAR(36) USING id_cliente::text;"
-```
-
-**Nota honesta sobre los datos viejos**: las órdenes creadas bajo `pagatu-auth-ms` quedan con `id_cliente` igual al `id` numérico-como-texto que ese módulo usaba (ej. `"1"`) — no al `sub` nuevo de Keycloak (un UUID). Hoy eso no rompe nada: `OrdenServiceImpl.listar()` nunca filtra por `idCliente` (es un hueco ya documentado en S11, 2.7, resuelto solo del lado de la interfaz, no del servidor) — si en el futuro ese filtrado se construye del lado del servidor, esas órdenes viejas van a necesitar la misma migración de datos que LP2 hizo en su S10b (7.5): buscar el `id` viejo, cruzarlo con el `sub` nuevo del mismo usuario en `keycloak-db`, y actualizar cada fila.
-
-Recompila `pagatu-orden-ms` **y** `pagatu-pago-ms` desde cero (`.\mvnw.cmd spring-boot:run` en cada uno — los dos tienen su propia copia de `OrdenCreadaEvento.java`, 7.3), y reinicia el Gateway, que solo necesita la propiedad de 7.1. Con el `$tokenCliente` de la sección 6 (repítela si ya expiró), prueba contra el Gateway:
+Recompila `pagatu-orden-ms` **y** `pagatu-pago-ms` desde cero (`.\mvnw.cmd spring-boot:run` en cada uno — los dos tienen su propia copia de `OrdenCreadaEvento.java`). Al arrancar, `pagatu-orden-ms` aplica la migración de 7.3 sola (confírmalo en su log: `Successfully applied 1 migration`, `Current version of schema: 2`) y, con el código ya leyendo `jwt.getSubject()`, los dos quedan sincronizados en el mismo reinicio — nunca hay una ventana donde uno espera el tipo viejo y el otro ya mandó el nuevo. Reinicia también el Gateway, que solo necesita la propiedad de 7.1. Con el `$tokenCliente` de la sección 6 (repítela si ya expiró), prueba contra el Gateway:
 
 ```powershell
 Invoke-RestMethod -Method Get -Uri "http://localhost:18080/api/v1/ordenes" -Headers @{ Authorization = "Bearer $tokenCliente" }
@@ -480,7 +509,7 @@ curl -s -X POST http://localhost:18080/api/v1/ordenes \
   -d '{"metodoPago": "YAPE_PLIN", "detalles": [{"idProducto": 1, "cantidad": 1}]}'
 ```
 
-Resultado esperado: `201`, con `idCliente` en la respuesta igual al `sub` que anotaste en la sección 6 (un UUID, no `1`) — la prueba directa de que 7.3 funcionó, con `pagatu-auth-ms` ya fuera de servicio.
+Resultado esperado: `201`, con `idCliente` en la respuesta igual al `sub` que anotaste en la sección 6 (un UUID, no `1`) — la prueba directa de que 7.4 funcionó, con `pagatu-auth-ms` ya fuera de servicio.
 
 **Error frecuente**: `401` en vez de `201`. `pagatu-auth-ms` ya no corre (sección 8) — si tu token viene de un `$tokenCliente` guardado de antes, probablemente expiró; repite el paso 1 con un token recién emitido.
 
@@ -488,7 +517,7 @@ Resultado esperado: `201`, con `idCliente` en la respuesta igual al `sub` que an
 
 - **S11** construye el cliente Angular real: el mismo flujo *Authorization Code* + PKCE que la sección 6 acaba de verificar a mano, ahora automatizado en TypeScript, con el token en memoria (nunca en `localStorage`, S07, 2.4) y el refresco automático antes de que expire.
 - **CORS en el Gateway** no se configuró aquí — esta guía solo reemplaza quién emite y quién valida el token; S11 (3.2 de esa guía) agrega la política de CORS, porque es una necesidad del cliente Angular, no del cambio de proveedor de identidad.
-- **Migrar las órdenes viejas al `sub` nuevo**: documentado como nota honesta en 7.4 — no es indispensable hoy (nada filtra por `idCliente` del lado del servidor todavía), pero queda pendiente si esa validación se construye más adelante.
+- **Migrar las órdenes viejas al `sub` nuevo**: documentado como nota honesta en 7.3 — no es indispensable hoy (nada filtra por `idCliente` del lado del servidor todavía), pero queda pendiente si esa validación se construye más adelante.
 - **Producción real**: el motor de base de datos de Keycloak ya queda resuelto (Postgres, sección 2). Lo que falta es `start-dev` en sí — no es apto para producción, exige modo `start` y TLS (*Transport Layer Security*), ninguno de los dos configurado aquí.
 
 ## Bibliografía

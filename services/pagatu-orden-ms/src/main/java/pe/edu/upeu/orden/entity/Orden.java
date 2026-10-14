@@ -20,8 +20,8 @@ public class Orden {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "id_cliente")
-    private Long idCliente;
+    @Column(name = "id_cliente", length = 36)
+    private String idCliente;
 
     @Column(name = "nombre_cliente", length = 150)
     private String nombreCliente;

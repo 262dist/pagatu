@@ -18,16 +18,14 @@ public class OrdenController {
 
     private final OrdenService ordenService;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public OrdenResponse crear(@Valid @RequestBody OrdenRequest request,
-                                @AuthenticationPrincipal Jwt jwt) {
-        Number claimIdCliente = jwt.getClaim("idCliente");
-        if (claimIdCliente == null) {
-            throw new IllegalArgumentException("Token sin idCliente: solo un CLIENTE autenticado puede crear ordenes");
-        }
-        return ordenService.crear(request, claimIdCliente.longValue());
-    }
+@PostMapping
+@ResponseStatus(HttpStatus.CREATED)
+public OrdenResponse crear(@Valid @RequestBody OrdenRequest request,
+                            @AuthenticationPrincipal Jwt jwt) {
+    String idCliente = jwt.getSubject();
+    return ordenService.crear(request, idCliente);
+}
+
 
     @GetMapping
     public List<OrdenResponse> listar() {

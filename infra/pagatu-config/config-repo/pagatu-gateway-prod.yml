@@ -6,7 +6,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://pagatu-auth-ms:8080/.well-known/jwks.json
+          issuer-uri: http://pagatu-keycloak:8080/realms/pagatu
+          # jwk-set-uri: http://pagatu-auth-ms:8080/.well-known/jwks.json
   cloud:
     gateway:
       server:

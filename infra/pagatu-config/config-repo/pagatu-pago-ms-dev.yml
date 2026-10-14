@@ -6,7 +6,9 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://localhost:8085/.well-known/jwks.json
+          issuer-uri: http://localhost:18180/realms/pagatu
+          # jwk-set-uri: http://localhost:8085/.well-known/jwks.json
+  
   datasource:
     url: jdbc:postgresql://localhost:15435/pagatu_pago_db
     username: pagatu
