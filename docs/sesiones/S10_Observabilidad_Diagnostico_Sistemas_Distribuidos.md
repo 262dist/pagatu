@@ -263,15 +263,16 @@ Confirma en Prometheus (`http://localhost:19090/targets`) que los tres microserv
 
 `metrics_path: "/metrics"` (no `/actuator/prometheus`) y el puerto `19000` (no el `18180` de autenticación) son las dos diferencias reales frente a cualquier otro *target*: Keycloak no es una aplicación Spring Boot, así que ni el formato por defecto de su endpoint de métricas ni el puerto donde vive coinciden con los de los microservicios — ambos ya quedaron fijados en S07b (`KC_METRICS_ENABLED`, `KC_HTTP_MANAGEMENT_PORT`), esta sesión solo le dice a Prometheus dónde buscarlos.
 
-**Promtail — logs de Keycloak, `pagatu-pago-ms` y el Gateway.** **`obs/compose-dev.yml`** — agrega los tres volúmenes que faltan, junto a los que ya existen en `pagatu-promtail`:
+**Promtail — logs de Keycloak y del Gateway.** `pagatu-pago-ms` ya estaba cableado en DEV desde antes de esta sesión (mismo commit que agregó los *health groups* de 3.3) — confírmalo antes de agregar nada: si ya ves `pagatu-pago-ms` en `obs/compose-dev.yml` y en `obs/promtail/promtail-config-dev.yml`, no lo repitas, solo agrega lo que de verdad falta.
+
+**`obs/compose-dev.yml`** — agrega los dos volúmenes que faltan, junto a los que ya existen en `pagatu-promtail`:
 
 ```yaml
       - ../keycloak/logs:/var/log/pagatu-keycloak:ro
-      - ../services/pagatu-pago-ms/logs:/var/log/pagatu-pago-ms:ro
       - ../infra/pagatu-gateway/logs:/var/log/pagatu-gateway:ro
 ```
 
-**`obs/promtail/promtail-config-dev.yml`** — agrega los tres *jobs* que faltan, con el mismo patrón que los dos que ya existen:
+**`obs/promtail/promtail-config-dev.yml`** — agrega los dos *jobs* que faltan, con el mismo patrón que los que ya existen:
 
 ```yaml
   - job_name: pagatu-keycloak
@@ -280,12 +281,6 @@ Confirma en Prometheus (`http://localhost:19090/targets`) que los tres microserv
         labels:
           application: pagatu-keycloak
           __path__: /var/log/pagatu-keycloak/*.log
-  - job_name: pagatu-pago-ms
-    static_configs:
-      - targets: [localhost]
-        labels:
-          application: pagatu-pago-ms
-          __path__: /var/log/pagatu-pago-ms/*.log
   - job_name: pagatu-gateway
     static_configs:
       - targets: [localhost]
