@@ -114,7 +114,7 @@ docker compose -f compose-dev.yml up -d
 Invoke-RestMethod -Method Get -Uri "http://localhost:18080/api/v1/categorias"
 ```
 
-**6. Observabilidad (opcional)** (detalle en [`obs/README.md`](obs/README.md))
+**6. Observabilidad (opcional)** (detalle en [`obs/README.md`](obs/README.md)) — solo hace falta para S3-S4, S6 y S10 (la sesión dedicada a observabilidad); para el resto, incluida S11 (cliente Angular), no necesitas tenerlo corriendo. Si Docker ya te va lento, es el primer stack que puedes dejar abajo:
 
 ```powershell
 cd obs
