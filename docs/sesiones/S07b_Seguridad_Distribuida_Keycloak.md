@@ -8,15 +8,15 @@ Esta guía **no** es una sesión aparte del sílabo: no tiene metodología, caso
 
 **Una divergencia real frente a S07, no solo una ejecución de su Tabla 6**: S07 (3.13) diseñó `idCliente` a propósito como "un dato de negocio que este servicio guarda por comodidad, no un dato de identidad" — distinto del `sub` del token, y por eso exigía un *user attribute* + *protocol mapper* del lado de Keycloak. Esta guía se aparta de eso: `idCliente` pasa a ser literalmente `sub`, igual que `vendedorId` en LP2 (BomERP). La razón es práctica, no cosmética — se explica en la sección 7, donde se construye. Esto **sí** toca código real de `pagatu-orden-ms` (no solo configuración de Keycloak), a diferencia de lo que la Tabla 6 original de S07 prometía.
 
-Constrúyela entre S07 y S11, con tiempo antes de esa clase — no es un trabajo de diez minutos: Parte B (7.2-7.3) recompila `pagatu-orden-ms` y migra una columna real de Postgres, no solo cambia una propiedad. Nunca antes de haber completado S07 por tu cuenta, porque da por hecho que `pagatu-auth-ms`, el Gateway y `pagatu-orden-ms` ya quedaron funcionando con JWT propio exactamente como esa sesión los dejó.
+Constrúyela entre S07 y S11, con tiempo antes de esa clase — no es un trabajo de diez minutos: Parte C (7.3-7.4) recompila `pagatu-orden-ms` y migra una columna real de Postgres, no solo cambia una propiedad. Nunca antes de haber completado S07 por tu cuenta, porque da por hecho que `pagatu-auth-ms`, el Gateway y `pagatu-orden-ms` ya quedaron funcionando con JWT propio exactamente como esa sesión los dejó.
 
 **Requisito:** haber completado S07 (`pagatu-auth-ms` funcional, con usuarios/roles propios, Gateway y `pagatu-orden-ms` validando por `jwk-set-uri`) — esta guía parte de ese estado y lo reemplaza.
 
 La guía está dividida en tres partes, en el orden en que de verdad hace falta tocar cada pieza:
 
 - **Parte A** (secciones 2-6) construye y prueba Keycloak solo — realm, cliente, usuarios, y un token real inspeccionado. **Nada de esto toca el Gateway ni `pagatu-orden-ms`** — ni un archivo, ni un reinicio.
-- **Parte B** (sección 7) es el mínimo que deja al Gateway y a `pagatu-orden-ms` validando tokens de Keycloak, con `idCliente` migrado a `sub`. **Con esto ya alcanza para la sesión.**
-- **Parte C** (secciones 8-9) profundiza: retira `pagatu-auth-ms` (ya sin ningún lector) y prueba con la matriz completa, usando tokens reales de Keycloak, que los roles siguen separando lo que cada uno puede hacer.
+- **Parte B** (7.1-7.2) es el mínimo que deja al Gateway y a `pagatu-orden-ms` **validando** tokens de Keycloak, con los mismos roles de siempre protegiendo las mismas rutas de siempre — una propiedad YAML por archivo, sin tocar ninguna línea de Java, confirmado con tokens reales antes de seguir.
+- **Parte C** (7.3-7.4, indispensable; 8-9, profundización) migra `idCliente` a `sub` en el código y en Postgres — sin esto, `pagatu-orden-ms` ni compila —, y después retira `pagatu-auth-ms` y prueba con la matriz completa de roles, usando tokens reales de Keycloak.
 
 ## 1. Qué cambia y qué no
 
@@ -52,8 +52,8 @@ flowchart TB
 | `jwk-set-uri` → `issuer-uri` (Gateway y `pagatu-orden-ms`) | Sí — una propiedad YAML en cada uno (7.1) | Igual que la Tabla 6 de S07 ya prometía. |
 | `JwtAuthenticationConverter` (lee `realm_access.roles`) | **No** | Igual que la Tabla 6. |
 | Reglas `hasRole`/`hasAnyRole` del Gateway | **No** | Igual que la Tabla 6. |
-| Cómo `pagatu-orden-ms` lee `idCliente` del JWT | **Sí** — pasa de `jwt.getClaim("idCliente")` (`Long`) a `jwt.getSubject()` (`String`) (7.2) | **Diverge** de la Tabla 6 de S07, que no exigía esto — ver la sección 0. |
-| Columna `id_cliente` de `ordenes` | Sí — de `BIGINT` a `VARCHAR(36)` (7.3) | **Diverge** de la Tabla 6, por la misma razón. |
+| Cómo `pagatu-orden-ms` lee `idCliente` del JWT | **Sí** — pasa de `jwt.getClaim("idCliente")` (`Long`) a `jwt.getSubject()` (`String`) (7.3) | **Diverge** de la Tabla 6 de S07, que no exigía esto — ver la sección 0. |
+| Columna `id_cliente` de `ordenes` | Sí — de `BIGINT` a `VARCHAR(36)` (7.4) | **Diverge** de la Tabla 6, por la misma razón. |
 | Servicio `pagatu-auth-ms` | Se retira (sección 8) | Igual que la Tabla 6. |
 | Postgres de `pagatu-auth-ms` (`pagatu-postgres-auth-dev`) | Se retira junto con el servicio | Igual que la Tabla 6. |
 
@@ -82,7 +82,7 @@ services:
     ports:
       - "15436:5432"
     volumes:
-      - pagatu_keycloak_dev_data:/var/lib/postgresql/data
+      - pagatu_keycloak_db_dev_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U pagatu_keycloak -d pagatu_keycloak"]
       interval: 10s
@@ -111,22 +111,22 @@ services:
       - "18180:8080"
       - "19000:9000"
     volumes:
-      - keycloak-data:/opt/keycloak/data
+      - pagatu_keycloak_dev_data:/opt/keycloak/data
       - ./logs:/opt/keycloak/data/log
     depends_on:
       keycloak-db:
         condition: service_healthy
 
 volumes:
+  pagatu_keycloak_db_dev_data:
   pagatu_keycloak_dev_data:
-  keycloak-data:
 ```
 
 El puerto externo `18180` sigue el mismo criterio de prefijo `1`=DEV que ya usan `pagatu-eureka` (`18761`) y `pagatu-gateway` (`18080`) — `18085` queda ocupado por la UI de Kafka (S8), así que Keycloak toma el siguiente libre; `15436` continúa la secuencia de puertos Postgres de los cuatro microservicios (`15431`-`15435`). `start-dev` es el modo rápido de desarrollo — sin TLS ni *hostname* explícito, no apto para producción real (fuera del alcance de esta guía, igual que lo documentó LP2 al construir el mismo contenedor para BomERP).
 
 Las cinco variables nuevas (`KC_METRICS_ENABLED`, `KC_HEALTH_ENABLED`, `KC_LOG`, `KC_LOG_FILE`, `KC_HTTP_MANAGEMENT_PORT`) no hacen falta para nada de lo que esta guía construye — existen para que S10 (Observabilidad) pueda monitorear Keycloak con el mismo criterio que los demás servicios, sin que nadie tenga que volver a tocar este archivo más adelante. Por defecto, Keycloak no expone métricas ni log a archivo — ambos vienen desactivados hasta que se piden explícitamente (verificado contra la documentación oficial de Keycloak 26). `KC_HTTP_MANAGEMENT_PORT: 9000` mueve `/metrics` y `/health` a un servidor HTTP separado del tráfico de autenticación (`18180`), publicado hacia el host en `19000` — el mismo criterio de prefijo `1`=DEV. Exponer estos dos endpoints junto con el tráfico real no es recomendable por seguridad; separarlos en su propio puerto permite que, en un entorno real, el de management quede sin publicar hacia afuera mientras sigue siendo alcanzable para quien sí necesita monitorear (Keycloak, 2026).
 
-Dos volúmenes distintos, para dos cosas distintas — el mismo patrón que ya usó LP2 al construir este mismo contenedor para BomERP. `keycloak-data:/opt/keycloak/data` es un volumen con nombre que persiste **todo** lo que Keycloak guarda ahí por su cuenta (el `h2` embebido que ya no importa porque `KC_DB` apunta a Postgres, `transaction-logs`, caché de *providers*) — sin él, cualquier recreación del contenedor (`docker compose up` tras un `down`, no solo un `restart`) perdería esos archivos, aunque el realm y los usuarios sigan a salvo en `keycloak-db-data` (Postgres). `./logs:/opt/keycloak/data/log` es, además, un *bind mount* a una carpeta nueva dentro de `keycloak/`, anidado **dentro** del volumen anterior — igual en espíritu a `../services/pagatu-auth-ms/logs:/var/log/pagatu-auth-ms:ro` que ya usan los microservicios — S10 monta esa misma carpeta, de solo lectura, en Promtail. Verificado contra la imagen real (`quay.io/keycloak/keycloak:26.8.0`): anidar un *bind mount* dentro de un volumen con nombre funciona sin problema — Keycloak escribe `keycloak.log` ahí y el archivo aparece también en el host, en `keycloak/logs/`.
+Dos volúmenes distintos, para dos cosas distintas — el mismo patrón que ya usó LP2 al construir este mismo contenedor para BomERP (ahí, `keycloak-data`/`keycloak-db-data`; aquí, con el prefijo `pagatu_..._dev_data` que ya usan los cuatro microservicios, `pagatu_keycloak_dev_data`/`pagatu_keycloak_db_dev_data`). `pagatu_keycloak_dev_data:/opt/keycloak/data` es el volumen de Keycloak mismo: persiste **todo** lo que guarda ahí por su cuenta (el `h2` embebido que ya no importa porque `KC_DB` apunta a Postgres, `transaction-logs`, caché de *providers*) — sin él, cualquier recreación del contenedor (`docker compose up` tras un `down`, no solo un `restart`) perdería esos archivos, aunque el realm y los usuarios sigan a salvo en `pagatu_keycloak_db_dev_data` (el volumen de Postgres, sección de arriba). `./logs:/opt/keycloak/data/log` es, además, un *bind mount* a una carpeta nueva dentro de `keycloak/`, anidado **dentro** del volumen de Keycloak — igual en espíritu a `../services/pagatu-auth-ms/logs:/var/log/pagatu-auth-ms:ro` que ya usan los microservicios — S10 monta esa misma carpeta, de solo lectura, en Promtail. Verificado contra la imagen real (`quay.io/keycloak/keycloak:26.8.0`): anidar un *bind mount* dentro de un volumen con nombre funciona sin problema — Keycloak escribe `keycloak.log` ahí y el archivo aparece también en el host, en `keycloak/logs/`.
 
 ```bash
 cd keycloak
@@ -158,9 +158,9 @@ Estos son **realm roles** (no *client roles*) a propósito: Keycloak los agrega 
     - **Require PKCE**: cámbialo a **S256** — a diferencia de dejarlo en su valor por defecto, esto hace que Keycloak **rechace** cualquier intercambio de código sin `code_verifier` válido, sin importar lo que un cliente mal configurado intente.
     - Siguiente.
 3. **Login settings**:
-    - **Valid redirect URIs**: `http://localhost:4200/*`.
-    - **Valid post logout redirect URIs**: `http://localhost:4200/*`.
-    - **Web origins**: `http://localhost:4200`.
+    - **Valid redirect URIs**: `http://localhost:4200/*`
+    - **Valid post logout redirect URIs**: `http://localhost:4200/*`
+    - **Web origins**: `http://localhost:4200`
     - Guardar.
 
 `4200` es el puerto por defecto del servidor de desarrollo de Angular (`ng serve`) — el mismo que S11 usa para `pagatu-frontend`. Si tu equipo decide correrlo en otro puerto, ajusta las tres URLs antes de seguir.
@@ -169,54 +169,121 @@ Estos son **realm roles** (no *client roles*) a propósito: Keycloak los agrega 
 
 **Producto del paso:** los mismos dos usuarios de `pagatu-auth-ms` (S07, 3.13), ahora en Keycloak.
 
-A diferencia de lo que un primer vistazo a S07 (3.13) sugeriría, **no hace falta ningún atributo de usuario**: `idCliente` pasa a ser `sub` (7.2), y `sub` es el UUID (*Universally Unique Identifier*) que Keycloak asigna solo a cada usuario, sin que nadie lo configure — exactamente la misma razón por la que LP2 nunca necesitó nada extra para `vendedorId`.
+A diferencia de lo que un primer vistazo a S07 (3.13) sugeriría, **no hace falta ningún atributo de usuario**: `idCliente` pasa a ser `sub` (7.3), y `sub` es el UUID (*Universally Unique Identifier*) que Keycloak asigna solo a cada usuario, sin que nadie lo configure — exactamente la misma razón por la que LP2 nunca necesitó nada extra para `vendedorId`.
 
-1. **Users** → **Add user**.
-    - `cliente@pagatu.com`: **Email verified**: activado. Crear usuario, luego **Credentials** → **Set password**: `cliente123`, *Temporary*: **desactivado**. **Role mapping** → **Assign role** → `CLIENTE`.
-    - `admin@pagatu.com`: **Credentials**: `admin123`, *Temporary*: **desactivado**. **Role mapping**: `ADMIN`.
+1. **Users** → **Add user**. En los dos, **Username** (*Nombre de usuario*) es el nombre corto, sin dominio (ej. `cliente1`) — distinto de **Email** (*Correo electrónico*), el email completo (ej. `cliente1@pagatu.com`); Keycloak no completa uno a partir del otro, hay que escribir ambos campos.
+    - **Username**: `cliente1`. **Email**: `cliente1@pagatu.com`, **Email verified**: activado. Crear usuario, luego **Credentials** → **Set password**: `cliente123`, *Temporary*: **desactivado**. **Role mapping** → **Assign role** → `CLIENTE`.
+    - **Username**: `admin`. **Email**: `admin@pagatu.com`. **Credentials**: `admin123`, *Temporary*: **desactivado**. **Role mapping**: `ADMIN`.
 
 **Required user actions**: déjalo vacío en los dos — si marcas algo (ej. *Update Password*), Keycloak lo exige en el primer login y la verificación de la sección 6 falla a mitad de camino.
 
 ## 6. Verificar un token real antes de tocar el Gateway
 
-**Producto del paso:** confirmación, con un token real y sin construir todavía ningún cliente Angular, de que `realm_access.roles` y `sub` llegan con el formato esperado.
+**Producto del paso:** confirmación, con un token real y sin construir todavía ningún cliente Angular, de que `realm_access.roles` y `sub` llegan con el formato esperado — y, repitiendo el mismo procedimiento con el segundo usuario (paso 6), `$tokenCliente`/`$tokenAdmin` ya guardados, listos para 7.2 y para la sección 9.
 
 Sin *Direct access grants* (sección 4), no hay forma de pedir un token con un solo `curl`/`Invoke-RestMethod` — el flujo exige, de verdad, pasar por la pantalla de login de Keycloak en un navegador. Eso es, de hecho, lo que esta sección verifica: el mismo recorrido que el cliente Angular de S11 va a automatizar.
 
-1. Calcula un `code_verifier` y su `code_challenge` con el mismo script de S07 (3.27) — o reutiliza directamente los valores que ya calculaste ahí.
-2. Pega esta URL en el navegador, reemplazando `<code_challenge>` por el valor calculado:
-
-```text
-http://localhost:18180/realms/pagatu/protocol/openid-connect/auth?client_id=pagatu-frontend&response_type=code&redirect_uri=http://localhost:4200/auth/callback&scope=openid+profile&code_challenge=<code_challenge>&code_challenge_method=S256
-```
-
-3. Inicia sesión con `cliente@pagatu.com` / `cliente123`. El navegador redirige a `http://localhost:4200/auth/callback?code=...` — como `pagatu-frontend` todavía no existe (llega en S11), la página mostrará un error de conexión; **eso no importa**: el dato que necesitas está en la barra de direcciones. Copia el valor de `code`.
-4. Canjea el código por un token, con el mismo `code_verifier` del paso 1:
+**(Opcional) Confirmar que el rechazo es por ese interruptor, y no por otra causa.** Con `pagatu-frontend` tal como quedó en la sección 4, intenta el mismo atajo que sí funciona en LP2:
 
 ```powershell
+$login = Invoke-RestMethod -Method Post -Uri "http://localhost:18180/realms/pagatu/protocol/openid-connect/token" `
+  -ContentType "application/x-www-form-urlencoded" `
+  -Body "grant_type=password&client_id=pagatu-frontend&username=cliente1&password=cliente123"
+```
+
+Resultado esperado: `unauthorized_client` / `"Client not allowed for direct access grants"` — Keycloak rechaza la petición **antes** de mirar siquiera si el usuario y la contraseña son correctos. Ahora actívalo temporalmente para ver el contraste: **Clients → `pagatu-frontend` → Capability config → Authentication flow → Direct access grants → Save**. Repite exactamente el mismo `Invoke-RestMethod` de arriba, y revisa el resultado:
+
+```powershell
+$login.access_token
+```
+
+Verificado contra `pagatu-keycloak`: con el interruptor activado, el mismo comando devuelve un `access_token` real, con `realm_access.roles` incluyendo `CLIENTE` y `sub` como UUID — la prueba directa de que el único cambio entre el rechazo y el éxito fue ese interruptor, nada más.
+
+**Vuelve a desactivarlo antes de seguir** (mismo lugar: **Capability config → Authentication flow → Direct access grants → Save**, ahora desmarcado) — dejarlo activado contradice la decisión de 1.6/sección 4 y le abre a `pagatu-frontend` un camino para pedir tokens que la sección 7 nunca más vuelve a revisar.
+
+1. Calcula un `code_verifier` y su `code_challenge` — el mismo cálculo de S07 (3.27), reproducido aquí para no tener que ir a buscarlo:
+
+PowerShell:
+
+```powershell
+function Get-Pkce([string]$verifier) {
+    $hash = [System.Security.Cryptography.SHA256]::Create().ComputeHash([System.Text.Encoding]::ASCII.GetBytes($verifier))
+    [Convert]::ToBase64String($hash).TrimEnd('=').Replace('+','-').Replace('/','_')
+}
+
+$bytes = New-Object byte[] 48
+[System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($bytes)
+$codeVerifier = [Convert]::ToBase64String($bytes).TrimEnd('=').Replace('+','-').Replace('/','_')
+$codeChallenge = Get-Pkce $codeVerifier
+
+"code_verifier:  $codeVerifier"
+"code_challenge: $codeChallenge"
+```
+
+bash macOS/Linux:
+
+```bash
+pkce() { printf '%s' "$1" | openssl dgst -sha256 -binary | openssl base64 -A | tr '+/' '-_' | tr -d '='; echo; }
+
+CODE_VERIFIER=$(openssl rand -base64 48 | tr -d '=+/\n' | cut -c1-64)
+CODE_CHALLENGE=$(pkce "$CODE_VERIFIER")
+
+echo "code_verifier:  $CODE_VERIFIER"
+echo "code_challenge: $CODE_CHALLENGE"
+```
+
+`$codeVerifier`/`$CODE_VERIFIER` lo vuelves a necesitar en el paso 4; `$codeChallenge`/`$CODE_CHALLENGE` en el paso 2 — ambos quedan en variables, no hace falta copiar ningún valor a mano.
+
+2. Arma la URL con `$codeChallenge`/`$CODE_CHALLENGE` y ábrela en el navegador:
+
+```powershell
+"http://localhost:18180/realms/pagatu/protocol/openid-connect/auth?client_id=pagatu-frontend&response_type=code&redirect_uri=http://localhost:4200/auth/callback&scope=openid+profile&code_challenge=$codeChallenge&code_challenge_method=S256"
+```
+
+```bash
+echo "http://localhost:18180/realms/pagatu/protocol/openid-connect/auth?client_id=pagatu-frontend&response_type=code&redirect_uri=http://localhost:4200/auth/callback&scope=openid+profile&code_challenge=$CODE_CHALLENGE&code_challenge_method=S256"
+```
+
+Copia la URL completa que imprime (ya con el `code_challenge` real, no un *placeholder*) y pégala en el navegador.
+
+3. Inicia sesión con `cliente1@pagatu.com` / `cliente123`. El navegador redirige a `http://localhost:4200/auth/callback?code=...` — como `pagatu-frontend` todavía no existe (llega en S11), la página mostrará un error de conexión; **eso no importa**: el dato que necesitas está en la barra de direcciones. Copia el valor de `code`.
+4. Canjea el código por un token — `$codeVerifier`/`$CODE_VERIFIER` siguen en la misma sesión de terminal del paso 1, así que no hace falta volver a copiarlos a mano; solo pega el `code` del paso 3:
+
+```powershell
+$code = "<code copiado del navegador>"
+
 $body = @{
   grant_type    = "authorization_code"
   client_id     = "pagatu-frontend"
   redirect_uri  = "http://localhost:4200/auth/callback"
-  code          = "<code copiado del navegador>"
-  code_verifier = "<code_verifier del paso 1>"
+  code          = $code
+  code_verifier = $codeVerifier
 }
-$token = Invoke-RestMethod -Method Post -Uri "http://localhost:18180/realms/pagatu/protocol/openid-connect/token" -Body $body
-$token.access_token
+$tokenCliente = (Invoke-RestMethod -Method Post -Uri "http://localhost:18180/realms/pagatu/protocol/openid-connect/token" -Body $body).access_token
+$tokenCliente
 ```
 
 ```bash
-curl -X POST http://localhost:18180/realms/pagatu/protocol/openid-connect/token \
+CODE="<code copiado del navegador>"
+
+tokenCliente=$(curl -s -X POST http://localhost:18180/realms/pagatu/protocol/openid-connect/token \
   -d grant_type=authorization_code \
   -d client_id=pagatu-frontend \
   -d redirect_uri=http://localhost:4200/auth/callback \
-  -d code=<code copiado del navegador> \
-  -d code_verifier=<code_verifier del paso 1>
+  -d code="$CODE" \
+  -d code_verifier="$CODE_VERIFIER" \
+  | jq -r '.access_token')
+
+echo "$tokenCliente"
 ```
 
-5. Pega el `access_token` recibido en [jwt.io](https://jwt.io) (inspección visual, sin verificar firma) y confirma: `realm_access.roles` trae `["CLIENTE"]`, y anota el valor de `sub` (un UUID, ej. `516ef047-ffbc-470f-b397-6d4a3fe8fbfa`) — es el valor que 7.2 va a usar como `idCliente` desde ahora.
+`-s` silencia la barra de progreso de `curl` (sin ella, se mezcla con el JSON de la respuesta); `jq` (requerido, S07, 3.19) separa `access_token` del resto de la respuesta (`token_type`, `expires_in`, `refresh_token`) — en PowerShell, `.access_token` hace lo mismo sobre el objeto que `Invoke-RestMethod` ya deserializó solo.
+
+5. Pega el `access_token` recibido en [jwt.io](https://jwt.io) (inspección visual, sin verificar firma) y confirma: `realm_access.roles` trae `["CLIENTE"]`, y anota el valor de `sub` (un UUID, ej. `516ef047-ffbc-470f-b397-6d4a3fe8fbfa`) — es el valor que 7.3 va a usar como `idCliente` desde ahora.
 
 **Error frecuente**: pegar un `code` que ya expiró (son de un solo uso y de vida muy corta, segundos) o reusar un `code` ya canjeado una vez. Si el canje falla con `invalid_grant`, repite desde el paso 2 con una URL nueva — nunca reintentes el mismo `code`.
+
+6. Repite los pasos 1 a 5 completos con `admin@pagatu.com` / `admin123`, guardando el resultado en `$tokenAdmin` (bash: `tokenAdmin=...`) en vez de `$tokenCliente` — necesitas los dos tokens, de dos usuarios con roles distintos, para la prueba de 7.2 y de la sección 9.
 
 ## Parte B — Integrar el Gateway y `pagatu-orden-ms` con Keycloak
 
@@ -224,7 +291,7 @@ A partir de aquí sí se edita, recompila y reinicia el Gateway y `pagatu-orden-
 
 ## 7. Migrar el Gateway y `pagatu-orden-ms` a Keycloak
 
-**Producto del paso:** Gateway y `pagatu-orden-ms` validando tokens de Keycloak; `idCliente` migrado de `Long` (claim propio) a `String` (`sub`).
+**Producto del paso:** Gateway y `pagatu-orden-ms` validando tokens de Keycloak, con la misma separación de roles confirmada con tokens reales (Parte B, 7.1-7.2); `idCliente` migrado de `Long` (claim propio) a `String` (`sub`), en código y en Postgres (Parte C, 7.3-7.4).
 
 ### 7.1 Cambiar la propiedad de validación
 
@@ -242,7 +309,59 @@ spring:
 
 Con `issuer-uri`, Spring descubre la ubicación de las claves a partir del documento de descubrimiento OIDC (*OpenID Connect*) que Keycloak publica, y además valida que el claim `iss` del token coincida con ese emisor (S07, 2.4) — algo que `jwk-set-uri` nunca verificaba, porque `pagatu-auth-ms` no implementa ese documento. El `JwtAuthenticationConverter` (S07, 3.17) sigue leyendo exactamente el mismo claim `realm_access.roles`, con el mismo formato — esa pieza **no** cambia.
 
-### 7.2 Migrar `idCliente` a `sub`: código de `pagatu-orden-ms`
+**Falta la mitad si solo tocas los archivos `-dev.yml`.** `infra/pagatu-config/config-repo/` también tiene un `-prod.yml` por servicio (PROD local, contenedores en la misma red Docker, S8) — y ahí la propiedad apunta igual a `pagatu-auth-ms`, por su nombre de servicio Docker, no por `localhost`:
+
+**`pagatu-gateway-prod.yml`** y **`pagatu-orden-ms-prod.yml`**:
+
+```yaml
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://pagatu-keycloak:8080/realms/pagatu
+          # jwk-set-uri: http://pagatu-auth-ms:8080/.well-known/jwks.json
+```
+
+`pagatu-keycloak:8080` es el nombre del servicio Docker y su puerto **interno** (el mismo contenedor que hacia afuera expone `18180`, sección 2) — PROD local resuelve por nombre de servicio dentro de la red de Docker, igual que ya lo hacía con `pagatu-auth-ms:8080`, nunca por `localhost` (el mismo criterio de direcciones `INTERNAL` frente a `EXTERNAL` que S08, 3.3, ya estableció para Kafka).
+
+**`pagatu-pago-ms-dev.yml`/`pagatu-pago-ms-prod.yml`** también traen esta misma propiedad, aunque por una razón distinta: su `SecurityConfig.java` real usa `authorizeHttpRequests(auth -> auth.anyRequest().permitAll())` — ningún endpoint de `pagatu-pago-ms` exige realmente un token válido todavía, así que el valor de esta propiedad no cambia ningún comportamiento observable hoy. Aun así, actualízala igual: dejarla apuntando a un `pagatu-auth-ms` ya retirado (sección 8) es la clase de detalle que confunde a quien lea este archivo más adelante, sin que nada en el día a día lo delate.
+
+### 7.2 Confirmar que los endpoints siguen protegidos por rol
+
+**Producto del paso:** evidencia, con tokens reales de Keycloak y **sin tocar una sola línea de `pagatu-orden-ms`**, de que la separación de roles que el Gateway (S07, 3.18) ya tenía construida sigue intacta después del cambio de 7.1 — antes de meterse con la migración de `idCliente` (7.3), que es un cambio de un tipo de dato completamente distinto.
+
+Reinicia el Gateway y `pagatu-orden-ms` para que tomen la propiedad nueva de 7.1. Ya tienes `$tokenCliente` y `$tokenAdmin` de la sección 6 (pasos 1-6) — si expiraron (Keycloak los emite con una vida corta por defecto), repítela antes de seguir. Con el token de `cliente1@pagatu.com`, intenta crear un producto — una ruta que el Gateway (S07, 3.18) restringe a `ADMIN`:
+
+```powershell
+try {
+  Invoke-RestMethod -Method Post -Uri "http://localhost:18080/api/v1/productos" `
+    -Headers @{ Authorization = "Bearer $tokenCliente" } `
+    -ContentType "application/json" `
+    -Body '{"nombre": "Prueba", "precio": 10}'
+} catch {
+  $_.Exception.Response.StatusCode.value__
+}
+```
+
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" -X POST http://localhost:18080/api/v1/productos \
+  -H "Authorization: Bearer $tokenCliente" \
+  -H "Content-Type: application/json" \
+  -d '{"nombre": "Prueba", "precio": 10}'
+```
+
+Resultado esperado: `403` — el token es válido (pasó la firma de Keycloak), pero el rol `CLIENTE` no alcanza para `hasRole("ADMIN")`. Repite la misma petición con `$tokenAdmin` en vez de `$tokenCliente`: `201`. Sin ningún header `Authorization`, la misma ruta responde `401` — Keycloak nunca llegó a confirmar quién eres.
+
+**Error frecuente**: `401` donde esperabas `403`, o viceversa. `401` significa que el token no se validó (expiró, el `issuer-uri` apunta mal, o no se mandó ninguno); `403` significa que sí se validó, pero el rol no alcanza (S07, 2.3) — confundir los dos síntomas suele llevar a revisar la configuración equivocada.
+
+Con `403`/`201`/`401` confirmados, Parte B queda cerrada: el Gateway y `pagatu-orden-ms` ya validan por Keycloak, y los mismos roles de siempre siguen protegiendo las mismas rutas de siempre, sin haber tocado ni una línea de Java todavía.
+
+## Parte C — Profundizar: migrar `idCliente` a `sub`, retirar `pagatu-auth-ms` y probar de punta a punta
+
+Lo construido hasta 7.2 deja al Gateway y a `pagatu-orden-ms` validando tokens de Keycloak, con la separación de roles ya confirmada — pero `pagatu-orden-ms` todavía espera un claim `idCliente` que ya no existe en el token (S07, 3.13 lo diseñó como *user attribute*; esta guía decidió no construirlo, sección 0). **7.3 sí es indispensable**: sin ella, `OrdenController.crear` falla con `IllegalArgumentException` en cuanto alguien intente crear una orden real. De la sección 8 en adelante, en cambio, es la profundización que retira lo que ya sobra y prueba con la matriz completa.
+
+### 7.3 Migrar `idCliente` a `sub`: código de `pagatu-orden-ms`
 
 **Por qué cambiar esto, si S07 (Tabla 6) nunca lo pidió**: un *user attribute* manual (lo que S07, 3.13, y la primera versión de esta guía usaban) exige que alguien asigne a mano un `idCliente` único por cada usuario nuevo que se cree en Keycloak — sin automatizarlo, dos administradores podrían asignar el mismo valor a dos clientes distintos sin que Keycloak lo impida, porque un *user attribute* no tiene ninguna restricción de unicidad. `sub` sí la tiene: Keycloak lo genera él mismo, siempre distinto, para cualquier usuario que exista. Usarlo es exactamente lo que LP2 (BomERP) ya hace con `vendedorId` — y la razón de fondo por la que `vendedorId` **sí** pudo ser simplemente `sub` desde el diseño de S10 de esa guía.
 
@@ -297,7 +416,7 @@ private String idCliente;
 
 `PagoServiceImpl.procesar` nunca lee `idCliente` (solo usa `ordenId`, `monto`, `metodoPago`) — pero igual hay que cambiarlo: Kafka transporta el evento como JSON, y si `pagatu-orden-ms` empieza a enviar `"idCliente": "516ef047-..."` mientras `pagatu-pago-ms` todavía espera un número en ese campo, la deserialización falla y el consumidor se cae, aunque el valor nunca se use.
 
-### 7.3 Migrar la columna `id_cliente` en Postgres
+### 7.4 Migrar la columna `id_cliente` en Postgres
 
 ```sql
 ALTER TABLE ordenes ALTER COLUMN id_cliente TYPE VARCHAR(36) USING id_cliente::text;
@@ -313,19 +432,17 @@ docker exec -i pagatu-postgres-orden-dev psql -U pagatu -d pagatu_orden_db -c "A
 
 **Nota honesta sobre los datos viejos**: las órdenes creadas bajo `pagatu-auth-ms` quedan con `id_cliente` igual al `id` numérico-como-texto que ese módulo usaba (ej. `"1"`) — no al `sub` nuevo de Keycloak (un UUID). Hoy eso no rompe nada: `OrdenServiceImpl.listar()` nunca filtra por `idCliente` (es un hueco ya documentado en S11, 2.7, resuelto solo del lado de la interfaz, no del servidor) — si en el futuro ese filtrado se construye del lado del servidor, esas órdenes viejas van a necesitar la misma migración de datos que LP2 hizo en su S10b (7.5): buscar el `id` viejo, cruzarlo con el `sub` nuevo del mismo usuario en `keycloak-db`, y actualizar cada fila.
 
-Recompila `pagatu-orden-ms` **y** `pagatu-pago-ms` desde cero (`.\mvnw.cmd spring-boot:run` en cada uno — los dos tienen su propia copia de `OrdenCreadaEvento.java`, 7.2), y reinicia el Gateway, que solo necesita la propiedad de 7.1. Repite la prueba de la sección 6, pero esta vez contra el Gateway:
+Recompila `pagatu-orden-ms` **y** `pagatu-pago-ms` desde cero (`.\mvnw.cmd spring-boot:run` en cada uno — los dos tienen su propia copia de `OrdenCreadaEvento.java`, 7.3), y reinicia el Gateway, que solo necesita la propiedad de 7.1. Con el `$tokenCliente` de la sección 6 (repítela si ya expiró), prueba contra el Gateway:
 
 ```powershell
-Invoke-RestMethod -Method Get -Uri "http://localhost:18080/api/v1/ordenes" -Headers @{ Authorization = "Bearer $($token.access_token)" }
+Invoke-RestMethod -Method Get -Uri "http://localhost:18080/api/v1/ordenes" -Headers @{ Authorization = "Bearer $tokenCliente" }
 ```
 
 Resultado esperado: `200`, con la lista de órdenes (vacía si todavía no creaste ninguna) — confirma que el Gateway y `pagatu-orden-ms` ya validan tokens de Keycloak, no de `pagatu-auth-ms`.
 
 **Error frecuente**: reiniciar el Gateway o `pagatu-orden-ms` antes de confirmar que Keycloak ya respondió al menos una vez en `http://localhost:18180/realms/pagatu/.well-known/openid-configuration`. Si el documento de descubrimiento todavía no existe cuando el *resource server* arranca, falla al iniciar con un error de conexión, no con un `401` silencioso.
 
-## Parte C — Profundizar: retirar `pagatu-auth-ms` y probar de punta a punta
-
-Lo construido hasta la sección 7 ya deja al Gateway y a `pagatu-orden-ms` funcionando contra Keycloak, con `idCliente` migrado — esta parte no es indispensable para que el reemplazo funcione, pero es donde se retira lo que ya sobra y donde se confirma, con tokens reales, que los roles de Keycloak siguen separando lo que cada uno puede hacer, exactamente como lo hacían los de `pagatu-auth-ms`.
+Con 7.3 y 7.4 ya aplicados, el Gateway y `pagatu-orden-ms` funcionan contra Keycloak de punta a punta, con `idCliente` migrado. De aquí en adelante, la profundización: retirar lo que ya sobra (`pagatu-auth-ms`) y confirmar, con tokens reales, que los roles de Keycloak siguen separando lo que cada uno puede hacer, exactamente como lo hacían los de `pagatu-auth-ms`.
 
 ## 8. Retirar `pagatu-auth-ms`
 
@@ -344,10 +461,10 @@ El paquete `pagatu-auth-ms` en sí (el código fuente del servicio) **no** se bo
 
 ## 9. Probar de punta a punta
 
-**Producto del paso:** la misma separación de roles que S07 verificó con `pagatu-auth-ms` (3.19, 3.24), ahora con tokens de Keycloak — con `pagatu-auth-ms` ya retirado (sección 8), esta prueba confirma que el reemplazo es real, no solo que Keycloak "también funciona" en paralelo.
+**Producto del paso:** confirmación, con `pagatu-auth-ms` ya retirado (sección 8) y un token nuevo de Keycloak, de que `idCliente` llega como `sub` en una orden real — lo único que faltaba verificar; la separación de roles ya quedó confirmada en 7.2, antes de retirar nada.
 
-1. Repite el procedimiento de la sección 6 (navegador + canje por `curl`/PowerShell) dos veces — una por cada usuario — y guarda cada `access_token` en una variable distinta: `$tokenCliente` para `cliente@pagatu.com`, `$tokenAdmin` para `admin@pagatu.com` (en bash, `tokenCliente=...`/`tokenAdmin=...`).
-2. Con el token de `cliente@pagatu.com`, crea una orden real a través del Gateway:
+1. Los `$tokenCliente`/`$tokenAdmin` de la sección 6 (y de 7.2) ya expiraron a esta altura (Keycloak los emite con una vida corta por defecto) — repite los pasos 1-5 de la sección 6 con `cliente1@pagatu.com` para conseguir un `$tokenCliente` nuevo.
+2. Crea una orden real a través del Gateway:
 
 ```powershell
 Invoke-RestMethod -Method Post -Uri "http://localhost:18080/api/v1/ordenes" `
@@ -363,39 +480,15 @@ curl -s -X POST http://localhost:18080/api/v1/ordenes \
   -d '{"metodoPago": "YAPE_PLIN", "detalles": [{"idProducto": 1, "cantidad": 1}]}'
 ```
 
-Resultado esperado: `201`, con `idCliente` en la respuesta igual al `sub` que anotaste en la sección 6 (un UUID, no `1`) — la prueba directa de que 7.2 funcionó.
+Resultado esperado: `201`, con `idCliente` en la respuesta igual al `sub` que anotaste en la sección 6 (un UUID, no `1`) — la prueba directa de que 7.3 funcionó, con `pagatu-auth-ms` ya fuera de servicio.
 
-3. Con el mismo token de `cliente@pagatu.com`, intenta crear un producto — una ruta que el Gateway (S07, 3.18) restringe a `ADMIN`:
-
-```powershell
-try {
-  Invoke-RestMethod -Method Post -Uri "http://localhost:18080/api/v1/productos" `
-    -Headers @{ Authorization = "Bearer $tokenCliente" } `
-    -ContentType "application/json" `
-    -Body '{"nombre": "Prueba", "precio": 10}'
-} catch {
-  $_.Exception.Response.StatusCode.value__
-}
-```
-
-```bash
-curl -s -o /dev/null -w "%{http_code}\n" -X POST http://localhost:18080/api/v1/productos \
-  -H "Authorization: Bearer $tokenCliente" \
-  -H "Content-Type: application/json" \
-  -d '{"nombre": "Prueba", "precio": 10}'
-```
-
-Resultado esperado: `403` — el token es válido (pasó la firma de Keycloak), pero el rol `CLIENTE` no alcanza para `hasRole("ADMIN")`. Repite la misma petición con `$tokenAdmin` en vez de `$tokenCliente`: `201`.
-
-4. Sin ningún header `Authorization`, cualquiera de las rutas anteriores responde `401` — Keycloak nunca llegó a confirmar quién eres.
-
-**Error frecuente**: `401` donde esperabas `403`, o viceversa. `401` significa que el token no se validó (expiró, el `issuer-uri` apunta mal, o no se mandó ninguno); `403` significa que sí se validó, pero el rol no alcanza (S07, 2.3) — confundir los dos síntomas suele llevar a revisar la configuración equivocada.
+**Error frecuente**: `401` en vez de `201`. `pagatu-auth-ms` ya no corre (sección 8) — si tu token viene de un `$tokenCliente` guardado de antes, probablemente expiró; repite el paso 1 con un token recién emitido.
 
 ## 10. Qué queda pendiente
 
 - **S11** construye el cliente Angular real: el mismo flujo *Authorization Code* + PKCE que la sección 6 acaba de verificar a mano, ahora automatizado en TypeScript, con el token en memoria (nunca en `localStorage`, S07, 2.4) y el refresco automático antes de que expire.
 - **CORS en el Gateway** no se configuró aquí — esta guía solo reemplaza quién emite y quién valida el token; S11 (3.2 de esa guía) agrega la política de CORS, porque es una necesidad del cliente Angular, no del cambio de proveedor de identidad.
-- **Migrar las órdenes viejas al `sub` nuevo**: documentado como nota honesta en 7.3 — no es indispensable hoy (nada filtra por `idCliente` del lado del servidor todavía), pero queda pendiente si esa validación se construye más adelante.
+- **Migrar las órdenes viejas al `sub` nuevo**: documentado como nota honesta en 7.4 — no es indispensable hoy (nada filtra por `idCliente` del lado del servidor todavía), pero queda pendiente si esa validación se construye más adelante.
 - **Producción real**: el motor de base de datos de Keycloak ya queda resuelto (Postgres, sección 2). Lo que falta es `start-dev` en sí — no es apto para producción, exige modo `start` y TLS (*Transport Layer Security*), ninguno de los dos configurado aquí.
 
 ## Bibliografía

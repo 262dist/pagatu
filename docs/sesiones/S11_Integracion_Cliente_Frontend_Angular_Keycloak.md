@@ -10,7 +10,7 @@ Tiempo: 20 min.
 
 S7 construyó `pagatu-auth-ms` **a propósito como una pieza temporal** — la Tabla 6 de esa sesión ya dejó escrito, celda por celda, qué reemplaza Keycloak y qué no cambia en el Gateway ni en `pagatu-orden-ms`; la Figura 6 de esa misma sesión ya dibujó el flujo *Authorization Code* + PKCE (*Proof Key for Code Exchange*) "del cliente Angular con Keycloak (S11)"; y 3.27 ya hizo, a mano, el cálculo de `code_challenge` que "reproduce el cálculo que hará el cliente Angular en S11". Ninguna de esas tres cosas era retórica: [S07b](S07b_Seguridad_Distribuida_Keycloak.md) ya ejecutó ese reemplazo —`pagatu-auth-ms` retirado, Keycloak con el realm `pagatu` validado por el Gateway y `pagatu-orden-ms` mediante `issuer-uri`— como paso intermedio entre S7 y esta sesión. Hoy se construye lo que faltaba: el **primer y único cliente frontend del curso** — hasta ahora, `pagatu` solo se probó desde PowerShell, `curl` y Swagger.
 
-**Requisito:** haber completado [S07b](S07b_Seguridad_Distribuida_Keycloak.md) **completa, incluida la sección 7** (Keycloak corriendo, realm `pagatu`, `pagatu-auth-ms` retirado, Gateway/`pagatu-orden-ms` validando por `issuer-uri`, y `idCliente` ya migrado a `sub` — código de `pagatu-orden-ms` y columna de Postgres, 7.2-7.3) — esta sesión parte de ese estado. Sin la migración de 7.2-7.3, `OrdenController.crear` espera un claim `idCliente` que ya no existe (S07b retiró el *protocol mapper* que lo generaba) y falla con `IllegalArgumentException` en cualquier intento de crear una orden.
+**Requisito:** haber completado [S07b](S07b_Seguridad_Distribuida_Keycloak.md) **completa, incluida la sección 7** (Keycloak corriendo, realm `pagatu`, `pagatu-auth-ms` retirado, Gateway/`pagatu-orden-ms` validando por `issuer-uri`, y `idCliente` ya migrado a `sub` — código de `pagatu-orden-ms` y columna de Postgres, 7.3-7.4) — esta sesión parte de ese estado. Sin la migración de 7.3-7.4, `OrdenController.crear` espera un claim `idCliente` que ya no existe (S07b retiró el *protocol mapper* que lo generaba) y falla con `IllegalArgumentException` en cualquier intento de crear una orden.
 
 El reto real no es solo "hacer un login y mostrar una tabla": `pagatu-orden-ms` y `pagatu-pago-ms` se comunican de forma **asíncrona** desde S8 (mensajería con Kafka) y S9 (consistencia distribuida con el patrón Saga) — crear una orden no deja pagada la orden en la misma respuesta HTTP. El cliente Angular tiene que mostrarle a un usuario real una orden que queda `PENDIENTE_PAGO` al crearse, y que **en algún momento posterior**, sin que nadie recargue la página a mano, pasa a `PAGADA` o a `CANCELADA` — la consistencia eventual que S9 resolvió del lado del backend ahora tiene que resolverse también del lado de la interfaz.
 
@@ -124,7 +124,7 @@ Lectura del diagrama: hay un instante —entre la respuesta `201` y el momento e
 
 ### 2.2 Punto de partida: qué dejó S07b, y qué le toca a esta sesión
 
-[S07b](S07b_Seguridad_Distribuida_Keycloak.md) ya ejecutó, fila por fila, la Tabla 1 de esa guía: `pagatu-auth-ms` retirado, Keycloak con el realm `pagatu`, los roles `CLIENTE`/`ADMIN`, y `idCliente` migrado a `sub` — a diferencia de lo que S7 (3.13) diseñó originalmente (un *user attribute* + *protocol mapper* propios, porque ahí `idCliente` todavía era "un dato de negocio que no coincide por definición con quién inició sesión"), S07b (7.2) cambió de criterio: `idCliente` pasó a ser literalmente `sub`, el mismo patrón que `vendedorId` ya usaba en LP2 (BomERP), evitando que alguien tenga que asignar a mano un identificador único por cada cliente nuevo. El Gateway y `pagatu-orden-ms` ya validan por `issuer-uri`, sin que el conversor de roles ni ninguna regla `hasRole` hayan cambiado una línea.
+[S07b](S07b_Seguridad_Distribuida_Keycloak.md) ya ejecutó, fila por fila, la Tabla 1 de esa guía: `pagatu-auth-ms` retirado, Keycloak con el realm `pagatu`, los roles `CLIENTE`/`ADMIN`, y `idCliente` migrado a `sub` — a diferencia de lo que S7 (3.13) diseñó originalmente (un *user attribute* + *protocol mapper* propios, porque ahí `idCliente` todavía era "un dato de negocio que no coincide por definición con quién inició sesión"), S07b (7.3) cambió de criterio: `idCliente` pasó a ser literalmente `sub`, el mismo patrón que `vendedorId` ya usaba en LP2 (BomERP), evitando que alguien tenga que asignar a mano un identificador único por cada cliente nuevo. El Gateway y `pagatu-orden-ms` ya validan por `issuer-uri`, sin que el conversor de roles ni ninguna regla `hasRole` hayan cambiado una línea.
 
 Lo que **no** dejó resuelto S07b, a propósito —porque es una necesidad del cliente de hoy, no del cambio de proveedor de identidad—, es CORS (2.3) y, por supuesto, el cliente Angular en sí (2.4 en adelante).
 
@@ -192,7 +192,7 @@ Tiempo: 100 min.
 git clone --branch s07b-keycloak https://github.com/262dist/pagatu.git
 ```
 
-Si tu equipo no congeló esa rama, clona `s07-seguridad-jwt` y completa [S07b](S07b_Seguridad_Distribuida_Keycloak.md) tú mismo antes de seguir — no continúes con `pagatu-auth-ms` todavía corriendo, ni con `Orden.idCliente` todavía como `Long` (S07b, 7.2-7.3). Levanta `pagatu-config`, `pagatu-eureka`, `pagatu-gateway`, Keycloak (`keycloak/`), los tres microservicios que quedan activos (`pagatu-catalogo-ms`, `pagatu-orden-ms`, `pagatu-pago-ms` — `pagatu-auth-ms` ya está retirado, S07b, sección 8), `kafka/` y `obs/`. Confirma en `http://localhost:19090/targets` que los tres microservicios, Keycloak y el Gateway aparecen `UP`, y que una petición con un token de Keycloak (el mismo procedimiento de S07b, 7.3) sigue devolviendo `200` contra `http://localhost:18080/api/v1/ordenes`.
+Si tu equipo no congeló esa rama, clona `s07-seguridad-jwt` y completa [S07b](S07b_Seguridad_Distribuida_Keycloak.md) tú mismo antes de seguir — no continúes con `pagatu-auth-ms` todavía corriendo, ni con `Orden.idCliente` todavía como `Long` (S07b, 7.3-7.4). Levanta `pagatu-config`, `pagatu-eureka`, `pagatu-gateway`, Keycloak (`keycloak/`), los tres microservicios que quedan activos (`pagatu-catalogo-ms`, `pagatu-orden-ms`, `pagatu-pago-ms` — `pagatu-auth-ms` ya está retirado, S07b, sección 8), `kafka/` y `obs/`. Confirma en `http://localhost:19090/targets` que los tres microservicios, Keycloak y el Gateway aparecen `UP`, y que una petición con un token de Keycloak (el mismo procedimiento de S07b, 7.4) sigue devolviendo `200` contra `http://localhost:18080/api/v1/ordenes`.
 
 ### 3.2 Habilitar CORS en el Gateway
 
@@ -388,7 +388,7 @@ export class AuthService {
 
 A diferencia de un cliente que solo valida PKCE, este `AuthService` también genera y verifica `state` (Tabla 2) — el segundo "error de diseño común" que S7 (2.4) ya advirtió. `completarLogin` revisa `state` **antes** de confiar en el `code_verifier`: si no coinciden, lanza un error en vez de intentar el intercambio, sin importar si el `code_verifier` guardado era correcto.
 
-`idCliente` lee el claim `sub`, no uno propio (S07b, 7.2 — `idCliente` ya **es** `sub`, el mismo patrón que `vendedorId` en LP2): por eso no hace falta ningún campo extra en `JwtPayload`, ni ninguna configuración adicional de Keycloak para que viaje en el token.
+`idCliente` lee el claim `sub`, no uno propio (S07b, 7.3 — `idCliente` ya **es** `sub`, el mismo patrón que `vendedorId` en LP2): por eso no hace falta ningún campo extra en `JwtPayload`, ni ninguna configuración adicional de Keycloak para que viaje en el token.
 
 **`src/app/core/auth/jwt.ts`** (decodificación, sin validar firma — igual que LP2 S11 y S7, 3.27):
 
@@ -586,7 +586,7 @@ En la plantilla, muestra el estado con una etiqueta clara por cada valor (`PENDI
 
 **Producto del paso:** evidencia real de los dos desenlaces posibles — una orden que termina `PAGADA` y una que termina `CANCELADA` — ambas vistas cambiar en pantalla sin recargar la página a mano.
 
-1. Inicia sesión como `cliente@pagatu.com`.
+1. Inicia sesión como `cliente1@pagatu.com`.
 2. Crea una orden con cualquier `metodoPago` normal (ej. `YAPE_PLIN`). Confirma que aparece de inmediato en "Mis pedidos" como `PENDIENTE_PAGO`, y que en pocos segundos (sin tocar nada) cambia a `PAGADA`.
 3. Crea una segunda orden con `metodoPago: "TARJETA_RECHAZADA"` (S8, el valor que `PagoServiceImpl` rechaza a propósito). Confirma que esta sí cambia, también sola, a `CANCELADA`.
 4. Verifica en el tablero de Grafana (S10) que ambas transiciones generaron actividad real en `pagatu-pago-ms` y `pagatu-orden-ms` — el mismo tablero de diagnóstico de la sesión anterior, ahora observando tráfico real generado por un cliente de verdad, no por `curl`.
@@ -611,7 +611,7 @@ Extensión del cliente frontend del Proyecto Sello propio del equipo, documentad
 Completa y evidencia estas tareas, sobre tu propio proyecto:
 
 1. Si tu proyecto todavía no reemplazó su propio servidor de autorización por Keycloak, hazlo siguiendo el mismo criterio de la Tabla 6 de S7 — o, si ya lo hiciste en una sesión anterior, confirma que el cliente de tu propia SPA usa *Authorization Code* + PKCE, sin *Direct access grants*.
-2. Decide, para al menos un dato de negocio de tu propio dominio, si de verdad es distinto de "quién inició sesión" o si —como terminó siendo `idCliente` aquí (S07b, 7.2)— puede ser literalmente `sub`. Si es genuinamente distinto, configura un *user attribute* + *protocol mapper* propios en tu realm (el patrón que S07, 3.13, diseñó originalmente para `idCliente`, antes de que S07b decidiera que no hacía falta) para que viaje en el token.
+2. Decide, para al menos un dato de negocio de tu propio dominio, si de verdad es distinto de "quién inició sesión" o si —como terminó siendo `idCliente` aquí (S07b, 7.3)— puede ser literalmente `sub`. Si es genuinamente distinto, configura un *user attribute* + *protocol mapper* propios en tu realm (el patrón que S07, 3.13, diseñó originalmente para `idCliente`, antes de que S07b decidiera que no hacía falta) para que viaje en el token.
 3. Construye al menos una pantalla de tu propio proyecto que dependa de un proceso asíncrono (una cola, un *webhook*, un *batch*) y decida explícitamente cómo reflejar el estado "todavía no se sabe" — *polling*, otra estrategia de la Tabla 3, o una justificación documentada de por qué tu caso no lo necesita.
 4. Prueba, con datos reales, el camino feliz y al menos un camino de rechazo/fallo, y documenta ambos con capturas.
 

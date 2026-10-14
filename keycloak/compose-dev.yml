@@ -12,7 +12,7 @@ services:
     ports:
       - "15436:5432"
     volumes:
-      - pagatu_keycloak_dev_data:/var/lib/postgresql/data
+      - pagatu_keycloak_db_dev_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U pagatu_keycloak -d pagatu_keycloak"]
       interval: 10s
@@ -41,10 +41,12 @@ services:
       - "18180:8080"
       - "19000:9000"
     volumes:
+      - pagatu_keycloak_dev_data:/opt/keycloak/data
       - ./logs:/opt/keycloak/data/log
     depends_on:
       keycloak-db:
         condition: service_healthy
 
 volumes:
+  pagatu_keycloak_db_dev_data:
   pagatu_keycloak_dev_data:
