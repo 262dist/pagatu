@@ -1174,10 +1174,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#73-migrar-idcliente-a-sub-codigo-de-pagatu-orden-ms" class="md-nav__link">
+  <a href="#73-migrar-la-columna-id_cliente-en-postgres" class="md-nav__link">
     <span class="md-ellipsis">
       
-        7.3 Migrar idCliente a sub: código de pagatu-orden-ms
+        7.3 Migrar la columna id_cliente en Postgres
       
     </span>
   </a>
@@ -1185,10 +1185,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#74-migrar-la-columna-id_cliente-en-postgres" class="md-nav__link">
+  <a href="#74-migrar-idcliente-a-sub-codigo-de-pagatu-orden-ms" class="md-nav__link">
     <span class="md-ellipsis">
       
-        7.4 Migrar la columna id_cliente en Postgres
+        7.4 Migrar idCliente a sub: código de pagatu-orden-ms
       
     </span>
   </a>
@@ -1659,10 +1659,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#73-migrar-idcliente-a-sub-codigo-de-pagatu-orden-ms" class="md-nav__link">
+  <a href="#73-migrar-la-columna-id_cliente-en-postgres" class="md-nav__link">
     <span class="md-ellipsis">
       
-        7.3 Migrar idCliente a sub: código de pagatu-orden-ms
+        7.3 Migrar la columna id_cliente en Postgres
       
     </span>
   </a>
@@ -1670,10 +1670,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#74-migrar-la-columna-id_cliente-en-postgres" class="md-nav__link">
+  <a href="#74-migrar-idcliente-a-sub-codigo-de-pagatu-orden-ms" class="md-nav__link">
     <span class="md-ellipsis">
       
-        7.4 Migrar la columna id_cliente en Postgres
+        7.4 Migrar idCliente a sub: código de pagatu-orden-ms
       
     </span>
   </a>
@@ -1811,12 +1811,12 @@
 </tr>
 <tr>
 <td>Cómo <code>pagatu-orden-ms</code> lee <code>idCliente</code> del JWT</td>
-<td><strong>Sí</strong> — pasa de <code>jwt.getClaim("idCliente")</code> (<code>Long</code>) a <code>jwt.getSubject()</code> (<code>String</code>) (7.3)</td>
+<td><strong>Sí</strong> — pasa de <code>jwt.getClaim("idCliente")</code> (<code>Long</code>) a <code>jwt.getSubject()</code> (<code>String</code>) (7.4)</td>
 <td><strong>Diverge</strong> de la Tabla 6 de S07, que no exigía esto — ver la sección 0.</td>
 </tr>
 <tr>
 <td>Columna <code>id_cliente</code> de <code>ordenes</code></td>
-<td>Sí — de <code>BIGINT</code> a <code>VARCHAR(36)</code> (7.4)</td>
+<td>Sí — de <code>BIGINT</code> a <code>VARCHAR(36)</code> (7.3)</td>
 <td><strong>Diverge</strong> de la Tabla 6, por la misma razón.</td>
 </tr>
 <tr>
@@ -1927,7 +1927,7 @@ docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> 
 <p><code>4200</code> es el puerto por defecto del servidor de desarrollo de Angular (<code>ng serve</code>) — el mismo que S11 usa para <code>pagatu-frontend</code>. Si tu equipo decide correrlo en otro puerto, ajusta las tres URLs antes de seguir.</p>
 <h2 id="5-crear-los-usuarios-semilla">5. Crear los usuarios semilla<a class="headerlink" href="#5-crear-los-usuarios-semilla" title="Permanent link">&para;</a></h2>
 <p><strong>Producto del paso:</strong> los mismos dos usuarios de <code>pagatu-auth-ms</code> (S07, 3.13), ahora en Keycloak.</p>
-<p>A diferencia de lo que un primer vistazo a S07 (3.13) sugeriría, <strong>no hace falta ningún atributo de usuario</strong>: <code>idCliente</code> pasa a ser <code>sub</code> (7.3), y <code>sub</code> es el UUID (<em>Universally Unique Identifier</em>) que Keycloak asigna solo a cada usuario, sin que nadie lo configure — exactamente la misma razón por la que LP2 nunca necesitó nada extra para <code>vendedorId</code>.</p>
+<p>A diferencia de lo que un primer vistazo a S07 (3.13) sugeriría, <strong>no hace falta ningún atributo de usuario</strong>: <code>idCliente</code> pasa a ser <code>sub</code> (7.4), y <code>sub</code> es el UUID (<em>Universally Unique Identifier</em>) que Keycloak asigna solo a cada usuario, sin que nadie lo configure — exactamente la misma razón por la que LP2 nunca necesitó nada extra para <code>vendedorId</code>.</p>
 <ol>
 <li><strong>Users</strong> → <strong>Add user</strong>. En los dos, <strong>Username</strong> (<em>Nombre de usuario</em>) es el nombre corto, sin dominio (ej. <code>cliente1</code>) — distinto de <strong>Email</strong> (<em>Correo electrónico</em>), el email completo (ej. <code>cliente1@pagatu.com</code>); Keycloak no completa uno a partir del otro, hay que escribir ambos campos.<ul>
 <li><strong>Username</strong>: <code>cliente1</code>. <strong>Email</strong>: <code>cliente1@pagatu.com</code>, <strong>Email verified</strong>: activado. Crear usuario, luego <strong>Credentials</strong> → <strong>Set password</strong>: <code>cliente123</code>, <em>Temporary</em>: <strong>desactivado</strong>. <strong>Role mapping</strong> → <strong>Assign role</strong> → <code>CLIENTE</code>.</li>
@@ -2014,7 +2014,7 @@ docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> 
 </code></pre></div>
 <p><code>-s</code> silencia la barra de progreso de <code>curl</code> (sin ella, se mezcla con el JSON de la respuesta); <code>jq</code> (requerido, S07, 3.19) separa <code>access_token</code> del resto de la respuesta (<code>token_type</code>, <code>expires_in</code>, <code>refresh_token</code>) — en PowerShell, <code>.access_token</code> hace lo mismo sobre el objeto que <code>Invoke-RestMethod</code> ya deserializó solo.</p>
 <ol>
-<li>Pega el <code>access_token</code> recibido en <a href="https://jwt.io">jwt.io</a> (inspección visual, sin verificar firma) y confirma: <code>realm_access.roles</code> trae <code>["CLIENTE"]</code>, y anota el valor de <code>sub</code> (un UUID, ej. <code>516ef047-ffbc-470f-b397-6d4a3fe8fbfa</code>) — es el valor que 7.3 va a usar como <code>idCliente</code> desde ahora.</li>
+<li>Pega el <code>access_token</code> recibido en <a href="https://jwt.io">jwt.io</a> (inspección visual, sin verificar firma) y confirma: <code>realm_access.roles</code> trae <code>["CLIENTE"]</code>, y anota el valor de <code>sub</code> (un UUID, ej. <code>516ef047-ffbc-470f-b397-6d4a3fe8fbfa</code>) — es el valor que 7.4 va a usar como <code>idCliente</code> desde ahora.</li>
 </ol>
 <p><strong>Error frecuente</strong>: pegar un <code>code</code> que ya expiró (son de un solo uso y de vida muy corta, segundos) o reusar un <code>code</code> ya canjeado una vez. Si el canje falla con <code>invalid_grant</code>, repite desde el paso 2 con una URL nueva — nunca reintentes el mismo <code>code</code>.</p>
 <ol>
@@ -2048,7 +2048,7 @@ docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> 
 <p><code>pagatu-keycloak:8080</code> es el nombre del servicio Docker y su puerto <strong>interno</strong> (el mismo contenedor que hacia afuera expone <code>18180</code>, sección 2) — PROD local resuelve por nombre de servicio dentro de la red de Docker, igual que ya lo hacía con <code>pagatu-auth-ms:8080</code>, nunca por <code>localhost</code> (el mismo criterio de direcciones <code>INTERNAL</code> frente a <code>EXTERNAL</code> que S08, 3.3, ya estableció para Kafka).</p>
 <p><strong><code>pagatu-pago-ms-dev.yml</code>/<code>pagatu-pago-ms-prod.yml</code></strong> también traen esta misma propiedad, aunque por una razón distinta: su <code>SecurityConfig.java</code> real usa <code>authorizeHttpRequests(auth -&gt; auth.anyRequest().permitAll())</code> — ningún endpoint de <code>pagatu-pago-ms</code> exige realmente un token válido todavía, así que el valor de esta propiedad no cambia ningún comportamiento observable hoy. Aun así, actualízala igual: dejarla apuntando a un <code>pagatu-auth-ms</code> ya retirado (sección 8) es la clase de detalle que confunde a quien lea este archivo más adelante, sin que nada en el día a día lo delate.</p>
 <h3 id="72-confirmar-que-los-endpoints-siguen-protegidos-por-rol">7.2 Confirmar que los endpoints siguen protegidos por rol<a class="headerlink" href="#72-confirmar-que-los-endpoints-siguen-protegidos-por-rol" title="Permanent link">&para;</a></h3>
-<p><strong>Producto del paso:</strong> evidencia, con tokens reales de Keycloak y <strong>sin tocar una sola línea de <code>pagatu-orden-ms</code></strong>, de que la separación de roles que el Gateway (S07, 3.18) ya tenía construida sigue intacta después del cambio de 7.1 — antes de meterse con la migración de <code>idCliente</code> (7.3), que es un cambio de un tipo de dato completamente distinto.</p>
+<p><strong>Producto del paso:</strong> evidencia, con tokens reales de Keycloak y <strong>sin tocar una sola línea de <code>pagatu-orden-ms</code></strong>, de que la separación de roles que el Gateway (S07, 3.18) ya tenía construida sigue intacta después del cambio de 7.1 — antes de meterse con la migración de <code>idCliente</code> (7.3-7.4), que es un cambio de un tipo de dato completamente distinto.</p>
 <p>Reinicia el Gateway y <code>pagatu-orden-ms</code> para que tomen la propiedad nueva de 7.1. Ya tienes <code>$tokenCliente</code> y <code>$tokenAdmin</code> de la sección 6 (pasos 1-6) — si expiraron (Keycloak los emite con una vida corta por defecto), repítela antes de seguir. Con el token de <code>cliente1@pagatu.com</code>, intenta crear un producto — una ruta que el Gateway (S07, 3.18) restringe a <code>ADMIN</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="k">try</span> <span class="p">{</span>
   <span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Post</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18080/api/v1/productos"</span> <span class="p">`</span>
@@ -2066,12 +2066,38 @@ docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> 
 </code></pre></div>
 <p>Resultado esperado: <code>403</code> — el token es válido (pasó la firma de Keycloak), pero el rol <code>CLIENTE</code> no alcanza para <code>hasRole("ADMIN")</code>. Repite la misma petición con <code>$tokenAdmin</code> en vez de <code>$tokenCliente</code>: <code>201</code>. Sin ningún header <code>Authorization</code>, la misma ruta responde <code>401</code> — Keycloak nunca llegó a confirmar quién eres.</p>
 <p><strong>Error frecuente</strong>: <code>401</code> donde esperabas <code>403</code>, o viceversa. <code>401</code> significa que el token no se validó (expiró, el <code>issuer-uri</code> apunta mal, o no se mandó ninguno); <code>403</code> significa que sí se validó, pero el rol no alcanza (S07, 2.3) — confundir los dos síntomas suele llevar a revisar la configuración equivocada.</p>
-<p>Con <code>403</code>/<code>201</code>/<code>401</code> confirmados, Parte B queda cerrada: el Gateway y <code>pagatu-orden-ms</code> ya validan por Keycloak, y los mismos roles de siempre siguen protegiendo las mismas rutas de siempre, sin haber tocado ni una línea de Java todavía.</p>
+<p><code>/api/v1/productos</code> prueba <code>pagatu-catalogo-ms</code> a través del Gateway — pero el servicio que de verdad importa migrar hoy es <code>pagatu-orden-ms</code> (7.1 cambió su propiedad también). La regla del Gateway para <code>/api/v1/ordenes/**</code> es <code>hasAnyRole("CLIENTE", "ADMIN")</code> (S07, 3.18) — los dos únicos roles que existen en este realm — así que aquí <strong>no hay ningún token que dé <code>403</code></strong>; lo que sí hay que confirmar es que la ruta sigue exigiendo <em>alguno</em> de los dos:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18080/api/v1/ordenes"</span> <span class="n">-Headers</span> <span class="p">@{</span> <span class="n">Authorization</span> <span class="p">=</span> <span class="s2">"Bearer $tokenCliente"</span> <span class="p">}</span>
+
+<span class="k">try</span> <span class="p">{</span>
+  <span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18080/api/v1/ordenes"</span>
+<span class="p">}</span> <span class="k">catch</span> <span class="p">{</span>
+  <span class="nv">$_</span><span class="p">.</span><span class="n">Exception</span><span class="p">.</span><span class="n">Response</span><span class="p">.</span><span class="n">StatusCode</span><span class="p">.</span><span class="n">value__</span>
+<span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-s<span class="w"> </span>-o<span class="w"> </span>/dev/null<span class="w"> </span>-w<span class="w"> </span><span class="s2">"%{http_code}\n"</span><span class="w"> </span>http://localhost:18080/api/v1/ordenes<span class="w"> </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer </span><span class="nv">$tokenCliente</span><span class="s2">"</span>
+curl<span class="w"> </span>-s<span class="w"> </span>-o<span class="w"> </span>/dev/null<span class="w"> </span>-w<span class="w"> </span><span class="s2">"%{http_code}\n"</span><span class="w"> </span>http://localhost:18080/api/v1/ordenes
+</code></pre></div>
+<p>Resultado esperado: <code>200</code> con <code>$tokenCliente</code> (o <code>$tokenAdmin</code>, cualquiera de los dos pasa), y <code>401</code> sin ningún header — confirma que <code>pagatu-orden-ms</code>, no solo <code>pagatu-catalogo-ms</code>, ya valida tokens de Keycloak a través del Gateway. Repite con <code>$tokenAdmin</code>: también <code>200</code> — ambos roles están permitidos aquí a propósito, así que ver <code>200</code> dos veces seguidas no es un error, es la regla funcionando como se diseñó.</p>
+<p>Con <code>403</code>/<code>201</code>/<code>401</code>/<code>200</code> confirmados en las dos rutas, Parte B queda cerrada: el Gateway, <code>pagatu-catalogo-ms</code> y <code>pagatu-orden-ms</code> ya validan por Keycloak, y los mismos roles de siempre siguen protegiendo las mismas rutas de siempre, sin haber tocado ni una línea de Java todavía.</p>
 <h2 id="parte-c-profundizar-migrar-idcliente-a-sub-retirar-pagatu-auth-ms-y-probar-de-punta-a-punta">Parte C — Profundizar: migrar <code>idCliente</code> a <code>sub</code>, retirar <code>pagatu-auth-ms</code> y probar de punta a punta<a class="headerlink" href="#parte-c-profundizar-migrar-idcliente-a-sub-retirar-pagatu-auth-ms-y-probar-de-punta-a-punta" title="Permanent link">&para;</a></h2>
-<p>Lo construido hasta 7.2 deja al Gateway y a <code>pagatu-orden-ms</code> validando tokens de Keycloak, con la separación de roles ya confirmada — pero <code>pagatu-orden-ms</code> todavía espera un claim <code>idCliente</code> que ya no existe en el token (S07, 3.13 lo diseñó como <em>user attribute</em>; esta guía decidió no construirlo, sección 0). <strong>7.3 sí es indispensable</strong>: sin ella, <code>OrdenController.crear</code> falla con <code>IllegalArgumentException</code> en cuanto alguien intente crear una orden real. De la sección 8 en adelante, en cambio, es la profundización que retira lo que ya sobra y prueba con la matriz completa.</p>
-<h3 id="73-migrar-idcliente-a-sub-codigo-de-pagatu-orden-ms">7.3 Migrar <code>idCliente</code> a <code>sub</code>: código de <code>pagatu-orden-ms</code><a class="headerlink" href="#73-migrar-idcliente-a-sub-codigo-de-pagatu-orden-ms" title="Permanent link">&para;</a></h3>
+<p>Lo construido hasta 7.2 deja al Gateway y a <code>pagatu-orden-ms</code> validando tokens de Keycloak, con la separación de roles ya confirmada — pero <code>pagatu-orden-ms</code> todavía espera un claim <code>idCliente</code> que ya no existe en el token (S07, 3.13 lo diseñó como <em>user attribute</em>; esta guía decidió no construirlo, sección 0). <strong>7.3 y 7.4 son indispensables juntas</strong>: sin la migración de la columna (7.3), el código nuevo de 7.4 no tiene dónde guardar un <code>String</code>; sin el código de 7.4, <code>OrdenController.crear</code> sigue leyendo un claim que ya no existe y falla con <code>IllegalArgumentException</code> en cuanto alguien intente crear una orden real. De la sección 8 en adelante, en cambio, es la profundización que retira lo que ya sobra y prueba con la matriz completa.</p>
+<h3 id="73-migrar-la-columna-id_cliente-en-postgres">7.3 Migrar la columna <code>id_cliente</code> en Postgres<a class="headerlink" href="#73-migrar-la-columna-id_cliente-en-postgres" title="Permanent link">&para;</a></h3>
+<p><strong>Por qué la base de datos primero, y no el código</strong>: si recompilas <code>pagatu-orden-ms</code> con <code>idCliente</code> ya como <code>String</code> mientras la columna real sigue siendo <code>BIGINT</code>, Hibernate intenta mapear un campo de texto contra una columna numérica desde el primer <code>SELECT</code> — falla en caliente, no al arrancar. Migrar el esquema primero deja la base de datos lista para el tipo nuevo antes de que exista ningún código que lo espere.</p>
+<p><code>pagatu-orden-ms</code> ya usa Flyway (S02) para versionar su esquema — <code>V1__create_orden_tables.sql</code> es la única migración hasta ahora. Este cambio sigue el mismo patrón, en vez de un <code>ALTER TABLE</code> suelto por fuera del control de versiones.</p>
+<p><strong>Detén <code>pagatu-orden-ms</code> (<code>Ctrl+C</code>) antes de crear el archivo — no lo dejes corriendo con DevTools activo.</strong> Flyway corre al arrancar, no al guardar un archivo — pero <em>Spring Boot DevTools</em> reinicia la aplicación solo con que cree un archivo nuevo dentro de <code>src/</code>, incluso vacío. Si creas <code>V2__....sql</code> primero y le pegas el contenido real después, DevTools puede disparar un reinicio justo en el medio: Flyway ve un archivo <code>.sql</code> vacío, lo aplica (no hace nada, pero lo registra como éxito, con el <em>checksum</em> de un archivo vacío), y cuando el archivo ya tiene el <code>ALTER TABLE</code> real, el siguiente arranque falla con <code>Migration checksum mismatch</code> — el <em>checksum</em> que Flyway ya guardó no coincide con el del archivo que ahora sí tiene contenido. Escribe el archivo completo <strong>con el servidor detenido</strong>, y recién ahí vuelve a arrancarlo.</p>
+<p><strong><code>services/pagatu-orden-ms/src/main/resources/db/migration/V2__alter_id_cliente_varchar.sql</code></strong> (archivo nuevo):</p>
+<div class="highlight"><pre><span></span><code><span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">ordenes</span><span class="w"> </span><span class="k">ALTER</span><span class="w"> </span><span class="k">COLUMN</span><span class="w"> </span><span class="n">id_cliente</span><span class="w"> </span><span class="k">TYPE</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">36</span><span class="p">)</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">id_cliente</span><span class="p">::</span><span class="nb">text</span><span class="p">;</span>
+</code></pre></div>
+<p>A diferencia de Oracle (que LP2 tuvo que resolver con una columna temporal, por el error <code>ORA-01439</code> al cambiar el tipo de una columna con datos), Postgres permite este cambio en una sola instrucción, incluso con filas existentes — <code>USING id_cliente::text</code> le dice exactamente cómo convertir cada valor numérico ya guardado a su representación en texto. Flyway la aplica sola, en orden, la próxima vez que <code>pagatu-orden-ms</code> arranque (verás <code>Current version of schema: 2</code> en su log, donde hoy dice <code>1</code>) — no hace falta correr nada a mano contra el contenedor de Postgres.</p>
+<p><strong>Verificar el esquema, antes y después</strong> — el equivalente en Postgres de <code>DESC</code> en Oracle es <code>\d</code> (o <code>\d+</code> para más detalle), dentro de <code>psql</code>:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-i<span class="w"> </span>pagatu-postgres-orden-dev<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_orden_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">"\d ordenes"</span>
+</code></pre></div>
+<p>Antes de que <code>pagatu-orden-ms</code> reinicie con esta migración, <code>id_cliente</code> aparece como <code>bigint</code>. Después de reiniciar (al final de 7.4, junto con el código), repite el mismo comando y confirma <code>character varying(36)</code>.</p>
+<p><strong>Nota honesta sobre los datos viejos</strong>: las órdenes creadas bajo <code>pagatu-auth-ms</code> quedan con <code>id_cliente</code> igual al <code>id</code> numérico-como-texto que ese módulo usaba (ej. <code>"1"</code>) — no al <code>sub</code> nuevo de Keycloak (un UUID). Hoy eso no rompe nada: <code>OrdenServiceImpl.listar()</code> nunca filtra por <code>idCliente</code> (es un hueco ya documentado en S11, 2.7, resuelto solo del lado de la interfaz, no del servidor) — si en el futuro ese filtrado se construye del lado del servidor, esas órdenes viejas van a necesitar la misma migración de datos que LP2 hizo en su S10b (7.5): buscar el <code>id</code> viejo, cruzarlo con el <code>sub</code> nuevo del mismo usuario en <code>keycloak-db</code>, y actualizar cada fila.</p>
+<h3 id="74-migrar-idcliente-a-sub-codigo-de-pagatu-orden-ms">7.4 Migrar <code>idCliente</code> a <code>sub</code>: código de <code>pagatu-orden-ms</code><a class="headerlink" href="#74-migrar-idcliente-a-sub-codigo-de-pagatu-orden-ms" title="Permanent link">&para;</a></h3>
 <p><strong>Por qué cambiar esto, si S07 (Tabla 6) nunca lo pidió</strong>: un <em>user attribute</em> manual (lo que S07, 3.13, y la primera versión de esta guía usaban) exige que alguien asigne a mano un <code>idCliente</code> único por cada usuario nuevo que se cree en Keycloak — sin automatizarlo, dos administradores podrían asignar el mismo valor a dos clientes distintos sin que Keycloak lo impida, porque un <em>user attribute</em> no tiene ninguna restricción de unicidad. <code>sub</code> sí la tiene: Keycloak lo genera él mismo, siempre distinto, para cualquier usuario que exista. Usarlo es exactamente lo que LP2 (BomERP) ya hace con <code>vendedorId</code> — y la razón de fondo por la que <code>vendedorId</code> <strong>sí</strong> pudo ser simplemente <code>sub</code> desde el diseño de S10 de esa guía.</p>
-<p><strong><code>services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/entity/Orden.java</code></strong> — cambia el tipo del campo:</p>
+<p><strong><code>services/pagatu-orden-ms/src/main/java/pe/edu/upeu/orden/entity/Orden.java</code></strong> — cambia el tipo del campo (ya coincide con la columna que 7.3 deja lista):</p>
 <div class="highlight"><pre><span></span><code><span class="nd">@Column</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"id_cliente"</span><span class="p">,</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">36</span><span class="p">)</span>
 <span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">idCliente</span><span class="p">;</span>
 </code></pre></div>
@@ -2100,15 +2126,7 @@ docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> 
 <div class="highlight"><pre><span></span><code><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">idCliente</span><span class="p">;</span>
 </code></pre></div>
 <p><code>PagoServiceImpl.procesar</code> nunca lee <code>idCliente</code> (solo usa <code>ordenId</code>, <code>monto</code>, <code>metodoPago</code>) — pero igual hay que cambiarlo: Kafka transporta el evento como JSON, y si <code>pagatu-orden-ms</code> empieza a enviar <code>"idCliente": "516ef047-..."</code> mientras <code>pagatu-pago-ms</code> todavía espera un número en ese campo, la deserialización falla y el consumidor se cae, aunque el valor nunca se use.</p>
-<h3 id="74-migrar-la-columna-id_cliente-en-postgres">7.4 Migrar la columna <code>id_cliente</code> en Postgres<a class="headerlink" href="#74-migrar-la-columna-id_cliente-en-postgres" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">ordenes</span><span class="w"> </span><span class="k">ALTER</span><span class="w"> </span><span class="k">COLUMN</span><span class="w"> </span><span class="n">id_cliente</span><span class="w"> </span><span class="k">TYPE</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">36</span><span class="p">)</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">id_cliente</span><span class="p">::</span><span class="nb">text</span><span class="p">;</span>
-</code></pre></div>
-<p>A diferencia de Oracle (que LP2 tuvo que resolver con una columna temporal, por el error <code>ORA-01439</code> al cambiar el tipo de una columna con datos), Postgres permite este cambio en una sola instrucción, incluso con filas existentes — <code>USING id_cliente::text</code> le dice exactamente cómo convertir cada valor numérico ya guardado a su representación en texto.</p>
-<p>Conéctate al Postgres de <code>pagatu-orden-ms</code> (el mismo de siempre, S02) y corre la migración:</p>
-<div class="highlight"><pre><span></span><code>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-i<span class="w"> </span>pagatu-postgres-orden-dev<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>pagatu<span class="w"> </span>-d<span class="w"> </span>pagatu_orden_db<span class="w"> </span>-c<span class="w"> </span><span class="s2">"ALTER TABLE ordenes ALTER COLUMN id_cliente TYPE VARCHAR(36) USING id_cliente::text;"</span>
-</code></pre></div>
-<p><strong>Nota honesta sobre los datos viejos</strong>: las órdenes creadas bajo <code>pagatu-auth-ms</code> quedan con <code>id_cliente</code> igual al <code>id</code> numérico-como-texto que ese módulo usaba (ej. <code>"1"</code>) — no al <code>sub</code> nuevo de Keycloak (un UUID). Hoy eso no rompe nada: <code>OrdenServiceImpl.listar()</code> nunca filtra por <code>idCliente</code> (es un hueco ya documentado en S11, 2.7, resuelto solo del lado de la interfaz, no del servidor) — si en el futuro ese filtrado se construye del lado del servidor, esas órdenes viejas van a necesitar la misma migración de datos que LP2 hizo en su S10b (7.5): buscar el <code>id</code> viejo, cruzarlo con el <code>sub</code> nuevo del mismo usuario en <code>keycloak-db</code>, y actualizar cada fila.</p>
-<p>Recompila <code>pagatu-orden-ms</code> <strong>y</strong> <code>pagatu-pago-ms</code> desde cero (<code>.\mvnw.cmd spring-boot:run</code> en cada uno — los dos tienen su propia copia de <code>OrdenCreadaEvento.java</code>, 7.3), y reinicia el Gateway, que solo necesita la propiedad de 7.1. Con el <code>$tokenCliente</code> de la sección 6 (repítela si ya expiró), prueba contra el Gateway:</p>
+<p>Recompila <code>pagatu-orden-ms</code> <strong>y</strong> <code>pagatu-pago-ms</code> desde cero (<code>.\mvnw.cmd spring-boot:run</code> en cada uno — los dos tienen su propia copia de <code>OrdenCreadaEvento.java</code>). Al arrancar, <code>pagatu-orden-ms</code> aplica la migración de 7.3 sola (confírmalo en su log: <code>Successfully applied 1 migration</code>, <code>Current version of schema: 2</code>) y, con el código ya leyendo <code>jwt.getSubject()</code>, los dos quedan sincronizados en el mismo reinicio — nunca hay una ventana donde uno espera el tipo viejo y el otro ya mandó el nuevo. Reinicia también el Gateway, que solo necesita la propiedad de 7.1. Con el <code>$tokenCliente</code> de la sección 6 (repítela si ya expiró), prueba contra el Gateway:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Get</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18080/api/v1/ordenes"</span> <span class="n">-Headers</span> <span class="p">@{</span> <span class="n">Authorization</span> <span class="p">=</span> <span class="s2">"Bearer $tokenCliente"</span> <span class="p">}</span>
 </code></pre></div>
 <p>Resultado esperado: <code>200</code>, con la lista de órdenes (vacía si todavía no creaste ninguna) — confirma que el Gateway y <code>pagatu-orden-ms</code> ya validan tokens de Keycloak, no de <code>pagatu-auth-ms</code>.</p>
@@ -2138,13 +2156,13 @@ docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> 
 <span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"metodoPago": "YAPE_PLIN", "detalles": [{"idProducto": 1, "cantidad": 1}]}'</span>
 </code></pre></div>
-<p>Resultado esperado: <code>201</code>, con <code>idCliente</code> en la respuesta igual al <code>sub</code> que anotaste en la sección 6 (un UUID, no <code>1</code>) — la prueba directa de que 7.3 funcionó, con <code>pagatu-auth-ms</code> ya fuera de servicio.</p>
+<p>Resultado esperado: <code>201</code>, con <code>idCliente</code> en la respuesta igual al <code>sub</code> que anotaste en la sección 6 (un UUID, no <code>1</code>) — la prueba directa de que 7.4 funcionó, con <code>pagatu-auth-ms</code> ya fuera de servicio.</p>
 <p><strong>Error frecuente</strong>: <code>401</code> en vez de <code>201</code>. <code>pagatu-auth-ms</code> ya no corre (sección 8) — si tu token viene de un <code>$tokenCliente</code> guardado de antes, probablemente expiró; repite el paso 1 con un token recién emitido.</p>
 <h2 id="10-que-queda-pendiente">10. Qué queda pendiente<a class="headerlink" href="#10-que-queda-pendiente" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>S11</strong> construye el cliente Angular real: el mismo flujo <em>Authorization Code</em> + PKCE que la sección 6 acaba de verificar a mano, ahora automatizado en TypeScript, con el token en memoria (nunca en <code>localStorage</code>, S07, 2.4) y el refresco automático antes de que expire.</li>
 <li><strong>CORS en el Gateway</strong> no se configuró aquí — esta guía solo reemplaza quién emite y quién valida el token; S11 (3.2 de esa guía) agrega la política de CORS, porque es una necesidad del cliente Angular, no del cambio de proveedor de identidad.</li>
-<li><strong>Migrar las órdenes viejas al <code>sub</code> nuevo</strong>: documentado como nota honesta en 7.4 — no es indispensable hoy (nada filtra por <code>idCliente</code> del lado del servidor todavía), pero queda pendiente si esa validación se construye más adelante.</li>
+<li><strong>Migrar las órdenes viejas al <code>sub</code> nuevo</strong>: documentado como nota honesta en 7.3 — no es indispensable hoy (nada filtra por <code>idCliente</code> del lado del servidor todavía), pero queda pendiente si esa validación se construye más adelante.</li>
 <li><strong>Producción real</strong>: el motor de base de datos de Keycloak ya queda resuelto (Postgres, sección 2). Lo que falta es <code>start-dev</code> en sí — no es apto para producción, exige modo <code>start</code> y TLS (<em>Transport Layer Security</em>), ninguno de los dos configurado aquí.</li>
 </ul>
 <h2 id="bibliografia">Bibliografía<a class="headerlink" href="#bibliografia" title="Permanent link">&para;</a></h2>
