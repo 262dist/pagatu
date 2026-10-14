@@ -2441,10 +2441,37 @@
 <span class="w">          </span><span class="nt">application</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-gateway</span>
 <span class="w">          </span><span class="nt">__path__</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/log/pagatu-gateway/*.log</span>
 </code></pre></div>
-<p>Repite el mismo cambio en <strong><code>obs/compose.yml</code></strong>, <strong><code>obs/promtail/promtail-config.yml</code></strong> y <strong><code>obs/prometheus/prometheus.yml</code></strong> (PROD local) — son los mismos tres archivos, con el prefijo de puertos <code>2xxxx</code> en vez de <code>1xxxx</code> (<code>obs/README.md</code>), no una configuración distinta.</p>
+<p><strong>PROD local</strong> son los mismos tres archivos — <code>obs/compose.yml</code> ya tenía el volumen de <code>pagatu-pago-ms</code> (quedó resuelto antes que el de DEV); solo faltan Keycloak y el Gateway:</p>
+<p><strong><code>obs/compose.yml</code></strong> — agrega, junto a los tres volúmenes que ya existen en <code>pagatu-promtail</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">../keycloak/logs:/var/log/pagatu-keycloak:ro</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">../infra/pagatu-gateway/logs:/var/log/pagatu-gateway:ro</span>
+</code></pre></div>
+<p><strong><code>obs/promtail/promtail-config.yml</code></strong> — mismo patrón, <code>pagatu-pago-ms</code> ya estaba; agrega los dos <em>jobs</em> que faltan:</p>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-keycloak</span>
+<span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">localhost</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">application</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-keycloak</span>
+<span class="w">          </span><span class="nt">__path__</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/log/pagatu-keycloak/*.log</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-gateway</span>
+<span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">localhost</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">application</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-gateway</span>
+<span class="w">          </span><span class="nt">__path__</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/log/pagatu-gateway/*.log</span>
+</code></pre></div>
+<p><strong><code>obs/prometheus/prometheus.yml</code></strong> — agrega el <em>job</em> nuevo, junto a los que ya existen (<code>pagatu-config</code>/<code>pagatu-eureka</code>):</p>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="s">"pagatu-keycloak"</span>
+<span class="w">    </span><span class="nt">metrics_path</span><span class="p">:</span><span class="w"> </span><span class="s">"/metrics"</span>
+<span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"pagatu-keycloak:9000"</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">application</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-keycloak</span>
+</code></pre></div>
+<p><code>pagatu-keycloak:9000</code> (el nombre del servicio Docker y su puerto <strong>interno</strong> de <em>management</em>, no <code>host.docker.internal:29000</code>) — PROD local resuelve por nombre de servicio dentro de la misma red de Docker, el mismo criterio que ya usan <code>pagatu-config:8888</code>/<code>pagatu-eureka:8761</code> arriba, y que S07b (7.1) ya aplicó al <code>issuer-uri</code> del Gateway y <code>pagatu-orden-ms</code>. El Gateway no necesita ningún <em>job</em> de Prometheus nuevo aquí tampoco — sigue llegando por <code>eureka_sd_configs</code>, igual que en DEV.</p>
 <p>Sube de nuevo Prometheus y Promtail para que tomen la configuración nueva:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd </span><span class="n">obs</span>
-<span class="n">docker</span> <span class="n">compose</span> <span class="o">-f</span> <span class="n">compose-dev</span><span class="p">.</span><span class="n">yml</span> <span class="n">up</span> <span class="n">-d</span> <span class="n">prometheus</span> <span class="n">promtail</span>
+<span class="n">docker</span> <span class="n">compose</span> <span class="o">-f</span> <span class="n">compose-dev</span><span class="p">.</span><span class="n">yml</span> <span class="n">up</span> <span class="n">-d</span> <span class="n">pagatu-prometheus</span> <span class="n">pagatu-promtail</span>
 </code></pre></div>
 <p>Confirma en <code>http://localhost:19090/targets</code> que <code>pagatu-keycloak</code> aparece como un <em>job</em> nuevo, <code>UP</code>.</p>
 <p>Reinicia el Gateway (<code>.\mvnw.cmd spring-boot:run</code>) para que tome el <code>logback-spring.xml</code> nuevo — a diferencia de Prometheus/Promtail, que recargan su configuración al reiniciar el contenedor, Logback se lee una sola vez, al arrancar la JVM.</p>
