@@ -1,0 +1,50 @@
+name: pagatu-keycloak-dev
+
+services:
+  keycloak-db:
+    image: postgres:17-alpine
+    container_name: pagatu-keycloak-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: pagatu_keycloak
+      POSTGRES_USER: pagatu_keycloak
+      POSTGRES_PASSWORD: pagatu
+    ports:
+      - "15436:5432"
+    volumes:
+      - pagatu_keycloak_dev_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pagatu_keycloak -d pagatu_keycloak"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.8.0
+    container_name: pagatu-keycloak
+    restart: unless-stopped
+    command: start-dev
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin123
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/pagatu_keycloak
+      KC_DB_USERNAME: pagatu_keycloak
+      KC_DB_PASSWORD: pagatu
+      KC_METRICS_ENABLED: "true"
+      KC_HEALTH_ENABLED: "true"
+      KC_LOG: console,file
+      KC_LOG_FILE: /opt/keycloak/data/log/keycloak.log
+      KC_HTTP_MANAGEMENT_PORT: 9000
+    ports:
+      - "18180:8080"
+      - "19000:9000"
+    volumes:
+      - ./logs:/opt/keycloak/data/log
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+
+volumes:
+  pagatu_keycloak_dev_data:

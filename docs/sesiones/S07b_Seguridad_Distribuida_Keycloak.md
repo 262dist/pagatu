@@ -111,6 +111,7 @@ services:
       - "18180:8080"
       - "19000:9000"
     volumes:
+      - keycloak-data:/opt/keycloak/data
       - ./logs:/opt/keycloak/data/log
     depends_on:
       keycloak-db:
@@ -118,11 +119,14 @@ services:
 
 volumes:
   pagatu_keycloak_dev_data:
+  keycloak-data:
 ```
 
 El puerto externo `18180` sigue el mismo criterio de prefijo `1`=DEV que ya usan `pagatu-eureka` (`18761`) y `pagatu-gateway` (`18080`) — `18085` queda ocupado por la UI de Kafka (S8), así que Keycloak toma el siguiente libre; `15436` continúa la secuencia de puertos Postgres de los cuatro microservicios (`15431`-`15435`). `start-dev` es el modo rápido de desarrollo — sin TLS ni *hostname* explícito, no apto para producción real (fuera del alcance de esta guía, igual que lo documentó LP2 al construir el mismo contenedor para BomERP).
 
-Las cinco variables nuevas (`KC_METRICS_ENABLED`, `KC_HEALTH_ENABLED`, `KC_LOG`, `KC_LOG_FILE`, `KC_HTTP_MANAGEMENT_PORT`) no hacen falta para nada de lo que esta guía construye — existen para que S10 (Observabilidad) pueda monitorear Keycloak con el mismo criterio que los demás servicios, sin que nadie tenga que volver a tocar este archivo más adelante. Por defecto, Keycloak no expone métricas ni log a archivo — ambos vienen desactivados hasta que se piden explícitamente (verificado contra la documentación oficial de Keycloak 26). `KC_HTTP_MANAGEMENT_PORT: 9000` mueve `/metrics` y `/health` a un puerto separado del tráfico de autenticación (`18180`), publicado hacia el host en `19000` — el mismo criterio de prefijo `1`=DEV. `./logs:/opt/keycloak/data/log` es un *bind mount* a una carpeta nueva dentro de `keycloak/`, igual en espíritu a `../services/pagatu-auth-ms/logs:/var/log/pagatu-auth-ms:ro` que ya usan los microservicios — S10 monta esa misma carpeta, de solo lectura, en Promtail.
+Las cinco variables nuevas (`KC_METRICS_ENABLED`, `KC_HEALTH_ENABLED`, `KC_LOG`, `KC_LOG_FILE`, `KC_HTTP_MANAGEMENT_PORT`) no hacen falta para nada de lo que esta guía construye — existen para que S10 (Observabilidad) pueda monitorear Keycloak con el mismo criterio que los demás servicios, sin que nadie tenga que volver a tocar este archivo más adelante. Por defecto, Keycloak no expone métricas ni log a archivo — ambos vienen desactivados hasta que se piden explícitamente (verificado contra la documentación oficial de Keycloak 26). `KC_HTTP_MANAGEMENT_PORT: 9000` mueve `/metrics` y `/health` a un servidor HTTP separado del tráfico de autenticación (`18180`), publicado hacia el host en `19000` — el mismo criterio de prefijo `1`=DEV. Exponer estos dos endpoints junto con el tráfico real no es recomendable por seguridad; separarlos en su propio puerto permite que, en un entorno real, el de management quede sin publicar hacia afuera mientras sigue siendo alcanzable para quien sí necesita monitorear (Keycloak, 2026).
+
+Dos volúmenes distintos, para dos cosas distintas — el mismo patrón que ya usó LP2 al construir este mismo contenedor para BomERP. `keycloak-data:/opt/keycloak/data` es un volumen con nombre que persiste **todo** lo que Keycloak guarda ahí por su cuenta (el `h2` embebido que ya no importa porque `KC_DB` apunta a Postgres, `transaction-logs`, caché de *providers*) — sin él, cualquier recreación del contenedor (`docker compose up` tras un `down`, no solo un `restart`) perdería esos archivos, aunque el realm y los usuarios sigan a salvo en `keycloak-db-data` (Postgres). `./logs:/opt/keycloak/data/log` es, además, un *bind mount* a una carpeta nueva dentro de `keycloak/`, anidado **dentro** del volumen anterior — igual en espíritu a `../services/pagatu-auth-ms/logs:/var/log/pagatu-auth-ms:ro` que ya usan los microservicios — S10 monta esa misma carpeta, de solo lectura, en Promtail. Verificado contra la imagen real (`quay.io/keycloak/keycloak:26.8.0`): anidar un *bind mount* dentro de un volumen con nombre funciona sin problema — Keycloak escribe `keycloak.log` ahí y el archivo aparece también en el host, en `keycloak/logs/`.
 
 ```bash
 cd keycloak
@@ -393,3 +397,7 @@ Resultado esperado: `403` — el token es válido (pasó la firma de Keycloak), 
 - **CORS en el Gateway** no se configuró aquí — esta guía solo reemplaza quién emite y quién valida el token; S11 (3.2 de esa guía) agrega la política de CORS, porque es una necesidad del cliente Angular, no del cambio de proveedor de identidad.
 - **Migrar las órdenes viejas al `sub` nuevo**: documentado como nota honesta en 7.3 — no es indispensable hoy (nada filtra por `idCliente` del lado del servidor todavía), pero queda pendiente si esa validación se construye más adelante.
 - **Producción real**: el motor de base de datos de Keycloak ya queda resuelto (Postgres, sección 2). Lo que falta es `start-dev` en sí — no es apto para producción, exige modo `start` y TLS (*Transport Layer Security*), ninguno de los dos configurado aquí.
+
+## Bibliografía
+
+1. Keycloak. (2026). *Configuring the Management Interface*. https://www.keycloak.org/server/management-interface
