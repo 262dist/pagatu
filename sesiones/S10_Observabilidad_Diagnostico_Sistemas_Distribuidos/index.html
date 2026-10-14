@@ -1314,10 +1314,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#32-agregar-keycloak-a-prometheus-y-cablear-keycloakpagatu-pago-ms-a-promtail" class="md-nav__link">
+  <a href="#32-agregar-keycloak-a-prometheus-y-cablear-keycloakpagatu-pago-msgateway-a-promtail" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.2 Agregar Keycloak a Prometheus y cablear Keycloak/pagatu-pago-ms a Promtail
+        3.2 Agregar Keycloak a Prometheus y cablear Keycloak/pagatu-pago-ms/Gateway a Promtail
       
     </span>
   </a>
@@ -1904,10 +1904,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#32-agregar-keycloak-a-prometheus-y-cablear-keycloakpagatu-pago-ms-a-promtail" class="md-nav__link">
+  <a href="#32-agregar-keycloak-a-prometheus-y-cablear-keycloakpagatu-pago-msgateway-a-promtail" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.2 Agregar Keycloak a Prometheus y cablear Keycloak/pagatu-pago-ms a Promtail
+        3.2 Agregar Keycloak a Prometheus y cablear Keycloak/pagatu-pago-ms/Gateway a Promtail
       
     </span>
   </a>
@@ -2374,8 +2374,39 @@
 <span class="n">docker</span> <span class="n">compose</span> <span class="o">-f</span> <span class="n">compose-dev</span><span class="p">.</span><span class="n">yml</span> <span class="n">up</span> <span class="n">-d</span>
 </code></pre></div>
 <p>Confirma en Prometheus (<code>http://localhost:19090/targets</code>) que los tres microservicios aparecen <code>UP</code> bajo el <em>job</em> <code>pagatu-microservicios</code> — esto ya funcionaba antes de hoy (2.3), solo lo estás verificando. Keycloak <strong>no</strong> aparece todavía en ningún <em>job</em> — 3.2 lo agrega.</p>
-<h3 id="32-agregar-keycloak-a-prometheus-y-cablear-keycloakpagatu-pago-ms-a-promtail">3.2 Agregar Keycloak a Prometheus y cablear Keycloak/<code>pagatu-pago-ms</code> a Promtail<a class="headerlink" href="#32-agregar-keycloak-a-prometheus-y-cablear-keycloakpagatu-pago-ms-a-promtail" title="Permanent link">&para;</a></h3>
-<p><strong>Producto del paso:</strong> las cuatro piezas (tres microservicios y Keycloak), no solo dos, con sus métricas y sus logs llegando a Prometheus y Loki.</p>
+<h3 id="32-agregar-keycloak-a-prometheus-y-cablear-keycloakpagatu-pago-msgateway-a-promtail">3.2 Agregar Keycloak a Prometheus y cablear Keycloak/<code>pagatu-pago-ms</code>/Gateway a Promtail<a class="headerlink" href="#32-agregar-keycloak-a-prometheus-y-cablear-keycloakpagatu-pago-msgateway-a-promtail" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> las cuatro piezas (tres microservicios y Keycloak) con sus métricas y sus logs llegando a Prometheus y Loki, y el Gateway —hasta hoy sin ningún log a archivo— sumado también a Loki.</p>
+<p><strong>El Gateway nunca tuvo <code>logback-spring.xml</code>.</strong> A diferencia de <code>pagatu-pago-ms</code> (que sí escribía a <code>logs/pago.log</code> desde que se creó en S8, y solo le faltaba el cableado de Promtail), el Gateway jamás tuvo un <em>appender</em> de archivo — todo su log se queda en la consola. Agrégalo ahora, con el mismo patrón que ya usan los demás, pero <strong>sin</strong> <code>%X{traceId}</code>: el Gateway corre sobre <em>WebFlux</em> (reactivo), y el <code>CorrelationIdFilter</code> que los microservicios ya tienen (S7, 3.9) es un <code>OncePerRequestFilter</code> — específico de Servlet, no se ejecuta en un <em>stack</em> reactivo. Agregar la propagación de <code>traceId</code> al Gateway exigiría un filtro reactivo propio (<code>GlobalFilter</code>), fuera del alcance de esta sesión — hoy el Gateway suma sus logs a Grafana, sin <em>traceId</em> correlacionado.</p>
+<p><strong><code>infra/pagatu-gateway/src/main/resources/logback-spring.xml</code></strong> (archivo nuevo):</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;configuration&gt;</span>
+<span class="w">    </span><span class="nt">&lt;include</span><span class="w"> </span><span class="na">resource=</span><span class="s">"org/springframework/boot/logging/logback/defaults.xml"</span><span class="nt">/&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"LOG_PATTERN"</span><span class="w"> </span><span class="na">value=</span><span class="s">"%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n"</span><span class="nt">/&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;appender</span><span class="w"> </span><span class="na">name=</span><span class="s">"CONSOLE"</span><span class="w"> </span><span class="na">class=</span><span class="s">"ch.qos.logback.core.ConsoleAppender"</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="nt">&lt;encoder&gt;</span>
+<span class="w">            </span><span class="nt">&lt;pattern&gt;</span>${LOG_PATTERN}<span class="nt">&lt;/pattern&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/encoder&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/appender&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;appender</span><span class="w"> </span><span class="na">name=</span><span class="s">"FILE"</span><span class="w"> </span><span class="na">class=</span><span class="s">"ch.qos.logback.core.rolling.RollingFileAppender"</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="nt">&lt;file&gt;</span>logs/gateway.log<span class="nt">&lt;/file&gt;</span>
+<span class="w">        </span><span class="nt">&lt;encoder&gt;</span>
+<span class="w">            </span><span class="nt">&lt;pattern&gt;</span>${LOG_PATTERN}<span class="nt">&lt;/pattern&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/encoder&gt;</span>
+<span class="w">        </span><span class="nt">&lt;rollingPolicy</span><span class="w"> </span><span class="na">class=</span><span class="s">"ch.qos.logback.core.rolling.TimeBasedRollingPolicy"</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="nt">&lt;fileNamePattern&gt;</span>logs/gateway-%d{yyyy-MM-dd}.log<span class="nt">&lt;/fileNamePattern&gt;</span>
+<span class="w">            </span><span class="nt">&lt;maxHistory&gt;</span>7<span class="nt">&lt;/maxHistory&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/rollingPolicy&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/appender&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;root</span><span class="w"> </span><span class="na">level=</span><span class="s">"INFO"</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="nt">&lt;appender-ref</span><span class="w"> </span><span class="na">ref=</span><span class="s">"CONSOLE"</span><span class="nt">/&gt;</span>
+<span class="w">        </span><span class="nt">&lt;appender-ref</span><span class="w"> </span><span class="na">ref=</span><span class="s">"FILE"</span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/root&gt;</span>
+<span class="nt">&lt;/configuration&gt;</span>
+</code></pre></div>
 <p><strong>Prometheus — Keycloak necesita un <em>target</em> estático</strong>, porque no es cliente de Eureka (2.1): el mismo mecanismo que <code>pagatu-config</code>/<code>pagatu-eureka</code> ya usan desde S3. <strong><code>obs/prometheus/prometheus-dev.yml</code></strong> — agrega el <em>job</em> nuevo, junto a los que ya existen:</p>
 <div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="s">"pagatu-keycloak"</span>
 <span class="w">    </span><span class="nt">metrics_path</span><span class="p">:</span><span class="w"> </span><span class="s">"/metrics"</span>
@@ -2385,11 +2416,12 @@
 <span class="w">          </span><span class="nt">application</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-keycloak</span>
 </code></pre></div>
 <p><code>metrics_path: "/metrics"</code> (no <code>/actuator/prometheus</code>) y el puerto <code>19000</code> (no el <code>18180</code> de autenticación) son las dos diferencias reales frente a cualquier otro <em>target</em>: Keycloak no es una aplicación Spring Boot, así que ni el formato por defecto de su endpoint de métricas ni el puerto donde vive coinciden con los de los microservicios — ambos ya quedaron fijados en S07b (<code>KC_METRICS_ENABLED</code>, <code>KC_HTTP_MANAGEMENT_PORT</code>), esta sesión solo le dice a Prometheus dónde buscarlos.</p>
-<p><strong>Promtail — logs de Keycloak y <code>pagatu-pago-ms</code>.</strong> <strong><code>obs/compose-dev.yml</code></strong> — agrega los dos volúmenes que faltan, junto a los que ya existen en <code>pagatu-promtail</code>:</p>
+<p><strong>Promtail — logs de Keycloak, <code>pagatu-pago-ms</code> y el Gateway.</strong> <strong><code>obs/compose-dev.yml</code></strong> — agrega los tres volúmenes que faltan, junto a los que ya existen en <code>pagatu-promtail</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">../keycloak/logs:/var/log/pagatu-keycloak:ro</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">../services/pagatu-pago-ms/logs:/var/log/pagatu-pago-ms:ro</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">../infra/pagatu-gateway/logs:/var/log/pagatu-gateway:ro</span>
 </code></pre></div>
-<p><strong><code>obs/promtail/promtail-config-dev.yml</code></strong> — agrega los dos <em>jobs</em> que faltan, con el mismo patrón que los dos que ya existen:</p>
+<p><strong><code>obs/promtail/promtail-config-dev.yml</code></strong> — agrega los tres <em>jobs</em> que faltan, con el mismo patrón que los dos que ya existen:</p>
 <div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-keycloak</span>
 <span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">localhost</span><span class="p p-Indicator">]</span>
@@ -2402,6 +2434,12 @@
 <span class="w">        </span><span class="nt">labels</span><span class="p">:</span>
 <span class="w">          </span><span class="nt">application</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-pago-ms</span>
 <span class="w">          </span><span class="nt">__path__</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/log/pagatu-pago-ms/*.log</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-gateway</span>
+<span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">localhost</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">labels</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">application</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-gateway</span>
+<span class="w">          </span><span class="nt">__path__</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/log/pagatu-gateway/*.log</span>
 </code></pre></div>
 <p>Repite el mismo cambio en <strong><code>obs/compose.yml</code></strong>, <strong><code>obs/promtail/promtail-config.yml</code></strong> y <strong><code>obs/prometheus/prometheus.yml</code></strong> (PROD local) — son los mismos tres archivos, con el prefijo de puertos <code>2xxxx</code> en vez de <code>1xxxx</code> (<code>obs/README.md</code>), no una configuración distinta.</p>
 <p>Sube de nuevo Prometheus y Promtail para que tomen la configuración nueva:</p>
@@ -2409,7 +2447,8 @@
 <span class="n">docker</span> <span class="n">compose</span> <span class="o">-f</span> <span class="n">compose-dev</span><span class="p">.</span><span class="n">yml</span> <span class="n">up</span> <span class="n">-d</span> <span class="n">prometheus</span> <span class="n">promtail</span>
 </code></pre></div>
 <p>Confirma en <code>http://localhost:19090/targets</code> que <code>pagatu-keycloak</code> aparece como un <em>job</em> nuevo, <code>UP</code>.</p>
-<p><strong>Error frecuente</strong>: agregar el <code>job_name</code> en <code>promtail-config-dev.yml</code> pero olvidar el volumen en <code>compose-dev.yml</code> (o al revés). Promtail necesita las dos cosas: el volumen monta el archivo real dentro del contenedor, y el <code>job_name</code> le dice dónde buscarlo (<code>__path__</code>) — sin el volumen, el <code>__path__</code> apunta a una carpeta vacía dentro del contenedor, y Promtail no encuentra nada que subir, sin ningún error visible. Para Keycloak hay un segundo error posible: que <code>KC_LOG</code> no incluyera <code>file</code> en S07b — sin eso, Keycloak nunca escribe <code>keycloak.log</code>, y el volumen monta una carpeta que se queda vacía para siempre, no solo hasta el primer log.</p>
+<p>Reinicia el Gateway (<code>.\mvnw.cmd spring-boot:run</code>) para que tome el <code>logback-spring.xml</code> nuevo — a diferencia de Prometheus/Promtail, que recargan su configuración al reiniciar el contenedor, Logback se lee una sola vez, al arrancar la JVM.</p>
+<p><strong>Error frecuente</strong>: agregar el <code>job_name</code> en <code>promtail-config-dev.yml</code> pero olvidar el volumen en <code>compose-dev.yml</code> (o al revés). Promtail necesita las dos cosas: el volumen monta el archivo real dentro del contenedor, y el <code>job_name</code> le dice dónde buscarlo (<code>__path__</code>) — sin el volumen, el <code>__path__</code> apunta a una carpeta vacía dentro del contenedor, y Promtail no encuentra nada que subir, sin ningún error visible. Para Keycloak hay un segundo error posible: que <code>KC_LOG</code> no incluyera <code>file</code> en S07b — sin eso, Keycloak nunca escribe <code>keycloak.log</code>, y el volumen monta una carpeta que se queda vacía para siempre, no solo hasta el primer log. Para el Gateway, el error equivalente es reiniciarlo <strong>antes</strong> de crear <code>logs/</code> o de que Promtail tenga el volumen listo — la carpeta <code>infra/pagatu-gateway/logs/</code> la crea Logback solo, al escribir el primer archivo; si Promtail arrancó antes, puede quedarse con un volumen vacío montado hasta su próximo reinicio.</p>
 <h3 id="33-configurar-health-groups-de-livenessreadiness">3.3 Configurar <em>health groups</em> de <em>liveness</em>/<em>readiness</em><a class="headerlink" href="#33-configurar-health-groups-de-livenessreadiness" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> <code>/actuator/health/liveness</code> y <code>/actuator/health/readiness</code> respondiendo, en los tres microservicios — Keycloak ya trae los suyos, sin que nadie los configure (2.2).</p>
 <p>En <code>application-dev.yml</code> de cada uno de los tres servicios (<code>infra/pagatu-config/config-repo/pagatu-&lt;servicio&gt;-dev.yml</code>, S2), agrega:</p>
