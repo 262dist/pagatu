@@ -23,11 +23,12 @@ pagatu/
 │   ├── pagatu-catalogo-ms/     # Categorías y productos (S1)
 │   ├── pagatu-orden-ms/        # Órdenes de compra (S2 base autónoma, S6 Feign + Circuit Breaker)
 │   ├── pagatu-cliente-ms/      # Perfil de cliente + RENIEC/SUNAT (S2, trabajo autónomo)
-│   ├── pagatu-auth-ms/         # Autenticación y emisión de JWT (S7, temporal: luego Keycloak)
+│   ├── pagatu-auth-ms/         # Autenticación y emisión de JWT (S7) — retirado en S07b, código conservado como referencia, ya no arranca en el día a día
 │   └── pagatu-pago-ms/         # Pagos; consume orden.creada y publica pago.validado (S8)
-├── obs/                       # Prometheus + Loki + Promtail + Grafana (S3-S4) — observa infra/ y services/ desde afuera, no es una dependencia de arranque
+├── obs/                       # Prometheus + Loki + Promtail + Grafana (S3-S4) — observa infra/, services/ y Keycloak desde afuera, no es una dependencia de arranque
 ├── kafka/                     # Kafka y Kafka UI (S8)
-└── clients/                   # (S11, pendiente) Frontend Angular
+├── keycloak/                  # (S07b, pendiente) Keycloak + su Postgres — sustituye a pagatu-auth-ms como servidor de autorización
+└── clients/                   # (S11, pendiente) Frontend Angular con login PKCE contra Keycloak
 ```
 
 ## Requisitos
@@ -67,7 +68,16 @@ docker compose -f compose-dev.yml up -d
 
 Verifica en `http://localhost:18085` (Kafka UI) que el clúster `pagatu-dev` aparece conectado.
 
-**3. Servicios** (detalle en [`services/README.md`](services/README.md)) — la base de datos primero, después la aplicación:
+**3. Keycloak** (detalle en [`docs/sesiones/S07b_Seguridad_Distribuida_Keycloak.md`](docs/sesiones/S07b_Seguridad_Distribuida_Keycloak.md)) — reemplaza a `pagatu-auth-ms` como servidor de autorización desde S07b:
+
+```powershell
+cd keycloak
+docker compose -f compose-dev.yml up -d
+```
+
+Verifica en `http://localhost:18180` que la consola de administración de Keycloak responde (`admin`/`admin123`).
+
+**4. Servicios** (detalle en [`services/README.md`](services/README.md)) — la base de datos primero, después la aplicación:
 
 ```powershell
 cd services/pagatu-catalogo-ms
@@ -88,20 +98,14 @@ docker compose -f compose-dev.yml up -d
 ```
 
 ```powershell
-cd services/pagatu-auth-ms
-docker compose -f compose-dev.yml up -d
-.\mvnw.cmd spring-boot:run
-```
-
-```powershell
 cd services/pagatu-pago-ms
 docker compose -f compose-dev.yml up -d
 .\mvnw.cmd spring-boot:run
 ```
 
-`pagatu-cliente-ms` es autónomo (S2) y no depende de ningún otro microservicio ni de Kafka — súbelo solo si lo vas a usar. `pagatu-pago-ms` sí necesita Kafka arriba (paso 2). Detalle de cada uno, con Swagger/health/endpoints, en [`services/README.md`](services/README.md).
+`pagatu-cliente-ms` es autónomo (S2) y no depende de ningún otro microservicio ni de Kafka — súbelo solo si lo vas a usar. `pagatu-pago-ms` sí necesita Kafka arriba (paso 2). `pagatu-auth-ms` ya no se levanta en el día a día (retirado en S07b, paso 3 de este arranque) — sigue en el repositorio solo como referencia. Detalle de cada uno, con Swagger/health/endpoints, en [`services/README.md`](services/README.md).
 
-**4. Verificar**
+**5. Verificar**
 
 - Dashboard de Eureka: `http://localhost:18761`. Deben aparecer los servicios registrados.
 - Una llamada a través del Gateway:
@@ -110,7 +114,7 @@ docker compose -f compose-dev.yml up -d
 Invoke-RestMethod -Method Get -Uri "http://localhost:18080/api/v1/categorias"
 ```
 
-**5. Observabilidad (opcional)** (detalle en [`obs/README.md`](obs/README.md))
+**6. Observabilidad (opcional)** (detalle en [`obs/README.md`](obs/README.md))
 
 ```powershell
 cd obs
@@ -120,8 +124,8 @@ docker compose -f compose-dev.yml up -d
 ## Detener
 
 `Ctrl+C` detiene cada microservicio en su propia terminal. Para los
-contenedores, cada carpeta con su propio `compose-dev.yml` (`kafka/`, cada
-`services/pagatu-*-ms/`, `obs/`) baja solo los suyos con
+contenedores, cada carpeta con su propio `compose-dev.yml` (`kafka/`,
+`keycloak/`, cada `services/pagatu-*-ms/`, `obs/`) baja solo los suyos con
 `docker compose -f compose-dev.yml down`.
 
 Todos los contenedores de `pagatu` se nombran con el prefijo `pagatu-`
@@ -162,9 +166,10 @@ vez, en vez de recrearlos desde cero con `compose up`.
 | `pagatu-catalogo-ms` | `8080` (2.ª instancia: `8081`) |
 | `pagatu-orden-ms` | `8082` (2.ª instancia: `8083`) |
 | `pagatu-cliente-ms` | `8084` |
-| `pagatu-auth-ms` | `8085` |
+| `pagatu-auth-ms` | `8085` (retirado en S07b, ya no arranca) |
 | `pagatu-pago-ms` | `8086` |
-| PostgreSQL: auth / catálogo / cliente / orden / pago | `15431` / `15432` / `15433` / `15434` / `15435` |
+| Keycloak HTTP / management (métricas, S07b) | `18180` / `19000` |
+| PostgreSQL: auth / catálogo / cliente / orden / pago / Keycloak | `15431` / `15432` / `15433` / `15434` / `15435` / `15436` |
 | Prometheus / Loki / Grafana | `19090` / `13100` / `13000` |
 | Kafka broker / Kafka UI (S8) | `19092` / `18085` (PROD local: `29092` / `28085`) |
 | Angular (S11) | `4200` |
@@ -179,9 +184,9 @@ Diagramas C4 (contexto y contenedores) en [`docs/index.md`](docs/index.md#arquit
 
 - Java 21, Spring Boot 4.x
 - Spring Cloud: Config, Eureka y Gateway; Feign y Resilience4j (S6)
-- Spring Security con JWT (S7)
+- Spring Security con JWT (S7) y con Keycloak/OIDC (S07b)
 - PostgreSQL, Flyway (migraciones versionadas), MapStruct
 - Kafka (S8)
-- Prometheus, Loki y Grafana
+- Prometheus, Loki, Grafana y Keycloak (S07b, S10)
 - Docker / Docker Compose
-- Angular 22 (S11)
+- Angular 22 con login PKCE contra Keycloak (S11)
