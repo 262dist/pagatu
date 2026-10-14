@@ -2327,7 +2327,7 @@
 <tbody>
 <tr>
 <td>Servicios arriba</td>
-<td>Prometheus, <code>up{job=~"pagatu-microservicios\|pagatu-keycloak"}</code></td>
+<td>Prometheus, <code>up{job=~"pagatu-.*"}</code></td>
 <td>¿Cuáles de las cuatro piezas responden ahora mismo?</td>
 </tr>
 <tr>
@@ -2463,9 +2463,9 @@
 <span class="w">          </span><span class="nt">application</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-keycloak</span>
 </code></pre></div>
 <p><code>pagatu-keycloak:9000</code> (el nombre del servicio Docker y su puerto <strong>interno</strong> de <em>management</em>, no <code>host.docker.internal:29000</code>) — PROD local resuelve por nombre de servicio dentro de la misma red de Docker, el mismo criterio que ya usan <code>pagatu-config:8888</code>/<code>pagatu-eureka:8761</code> arriba, y que S07b (7.1) ya aplicó al <code>issuer-uri</code> del Gateway y <code>pagatu-orden-ms</code>. El Gateway no necesita ningún <em>job</em> de Prometheus nuevo aquí tampoco — sigue llegando por <code>eureka_sd_configs</code>, igual que en DEV.</p>
-<p>Sube de nuevo Prometheus y Promtail para que tomen la configuración nueva:</p>
+<p>Reinicia Prometheus y Promtail para que relean la configuración nueva — <strong><code>restart</code>, no <code>up -d</code></strong>: los dos archivos (<code>prometheus-dev.yml</code>, <code>promtail-config-dev.yml</code>) llegan al contenedor por volumen montado, y Docker Compose no recrea ni reinicia un contenedor solo porque cambió el contenido de un archivo montado, únicamente si cambia la definición del servicio en el propio <code>compose-dev.yml</code>. Si ya corriste <code>up -d</code> antes y el <em>job</em> nuevo no aparece, es exactamente por esto — el contenedor sigue corriendo con la configuración de cuando arrancó:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd </span><span class="n">obs</span>
-<span class="n">docker</span> <span class="n">compose</span> <span class="o">-f</span> <span class="n">compose-dev</span><span class="p">.</span><span class="n">yml</span> <span class="n">up</span> <span class="n">-d</span> <span class="n">pagatu-prometheus</span> <span class="n">pagatu-promtail</span>
+<span class="n">docker</span> <span class="n">compose</span> <span class="o">-f</span> <span class="n">compose-dev</span><span class="p">.</span><span class="n">yml</span> <span class="n">restart</span> <span class="n">pagatu-prometheus</span> <span class="n">pagatu-promtail</span>
 </code></pre></div>
 <p>Confirma en <code>http://localhost:19090/targets</code> que <code>pagatu-keycloak</code> aparece como un <em>job</em> nuevo, <code>UP</code>.</p>
 <p>Reinicia el Gateway (<code>.\mvnw.cmd spring-boot:run</code>) para que tome el <code>logback-spring.xml</code> nuevo — a diferencia de Prometheus/Promtail, que recargan su configuración al reiniciar el contenedor, Logback se lee una sola vez, al arrancar la JVM.</p>
@@ -2554,7 +2554,7 @@
 <tr>
 <td>Servicios arriba</td>
 <td>Prometheus</td>
-<td><code>up{job=~"pagatu-microservicios\|pagatu-keycloak"}</code></td>
+<td><code>up{job=~"pagatu-.*"}</code></td>
 <td>Table</td>
 </tr>
 <tr>
@@ -2578,6 +2578,11 @@
 </tbody>
 </table>
 <p>Para el panel de <strong>Logs</strong>, elige explícitamente el <em>datasource</em> <strong>Loki</strong> (no Prometheus) al crearlo — es el único panel de los cuatro que no viene de una métrica. Guarda el <em>dashboard</em> como <code>S10 - Diagnóstico de pagatu</code>.</p>
+<p><strong>Buscar un texto concreto dentro del panel de Logs.</strong> <code>{application=~"pagatu-.*"}</code> trae todo — para encontrar un error específico, agrega un filtro de LogQL con <code>|=</code> ("la línea contiene este texto", sensible a mayúsculas/minúsculas), en la pestaña <strong>Code</strong> del editor de consultas:</p>
+<div class="highlight"><pre><span></span><code>{application=~"pagatu-.*"} |= "No se pudo descontar stock"
+</code></pre></div>
+<p><strong>Error frecuente</strong>: buscar el mensaje de una excepción directamente en el servicio que la <em>lanza</em>, y no encontrar nada. <code>StockInsuficienteException</code> ("Stock insuficiente para el producto: ...") la lanza <code>pagatu-catalogo-ms</code>, pero su <code>GlobalExceptionHandler</code> solo la devuelve en el cuerpo de la respuesta HTTP — <strong>nunca la loguea</strong>. El mensaje sí queda en un log real, pero en <code>pagatu-orden-ms</code>: su <em>fallback</em> de Feign (<code>ProductoConsultaService</code>, el <em>circuit breaker</em> de S6) sí lo registra con <code>log.warn("[CATALOGO] No se pudo descontar stock de {}. Motivo: {}", ...)</code> cuando la llamada a <code>pagatu-catalogo-ms</code> falla. Antes de asumir que el panel o la consulta están mal, confirma primero <strong>cuál servicio</strong> de verdad escribe la línea que buscas.</p>
+<p><strong>Otro error frecuente</strong>: el interruptor <strong>Table view</strong> (arriba del panel, al editarlo) muestra el log crudo en columnas (<code>labels</code>, <code>Time</code>, <code>Line</code>, <code>tsNs</code>, <code>id</code>) — la columna <code>Line</code> trunca la línea completa al ancho de la celda, dando la impresión de que el mensaje no llegó. Apágalo para ver la vista nativa de <strong>Logs</strong> de Grafana (línea completa, coloreada por nivel), o ensancha la columna <code>Line</code> si prefieres quedarte en la tabla.</p>
 <h3 id="37-simular-una-falla-y-diagnosticarla-con-el-tablero">3.7 Simular una falla y diagnosticarla con el tablero<a class="headerlink" href="#37-simular-una-falla-y-diagnosticarla-con-el-tablero" title="Permanent link">&para;</a></h3>
 <p><strong>Producto del paso:</strong> un fallo real, detectado y diagnosticado de punta a punta usando solo el tablero — sin leer ningún log a mano desde la terminal.</p>
 <p>Detén <code>pagatu-pago-ms</code>:</p>
