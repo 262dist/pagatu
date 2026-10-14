@@ -211,9 +211,44 @@ docker compose -f compose-dev.yml up -d
 
 Confirma en Prometheus (`http://localhost:19090/targets`) que los tres microservicios aparecen `UP` bajo el *job* `pagatu-microservicios` — esto ya funcionaba antes de hoy (2.3), solo lo estás verificando. Keycloak **no** aparece todavía en ningún *job* — 3.2 lo agrega.
 
-### 3.2 Agregar Keycloak a Prometheus y cablear Keycloak/`pagatu-pago-ms` a Promtail
+### 3.2 Agregar Keycloak a Prometheus y cablear Keycloak/`pagatu-pago-ms`/Gateway a Promtail
 
-**Producto del paso:** las cuatro piezas (tres microservicios y Keycloak), no solo dos, con sus métricas y sus logs llegando a Prometheus y Loki.
+**Producto del paso:** las cuatro piezas (tres microservicios y Keycloak) con sus métricas y sus logs llegando a Prometheus y Loki, y el Gateway —hasta hoy sin ningún log a archivo— sumado también a Loki.
+
+**El Gateway nunca tuvo `logback-spring.xml`.** A diferencia de `pagatu-pago-ms` (que sí escribía a `logs/pago.log` desde que se creó en S8, y solo le faltaba el cableado de Promtail), el Gateway jamás tuvo un *appender* de archivo — todo su log se queda en la consola. Agrégalo ahora, con el mismo patrón que ya usan los demás, pero **sin** `%X{traceId}`: el Gateway corre sobre *WebFlux* (reactivo), y el `CorrelationIdFilter` que los microservicios ya tienen (S7, 3.9) es un `OncePerRequestFilter` — específico de Servlet, no se ejecuta en un *stack* reactivo. Agregar la propagación de `traceId` al Gateway exigiría un filtro reactivo propio (`GlobalFilter`), fuera del alcance de esta sesión — hoy el Gateway suma sus logs a Grafana, sin *traceId* correlacionado.
+
+**`infra/pagatu-gateway/src/main/resources/logback-spring.xml`** (archivo nuevo):
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/gateway.log</file>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/gateway-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>
+```
 
 **Prometheus — Keycloak necesita un *target* estático**, porque no es cliente de Eureka (2.1): el mismo mecanismo que `pagatu-config`/`pagatu-eureka` ya usan desde S3. **`obs/prometheus/prometheus-dev.yml`** — agrega el *job* nuevo, junto a los que ya existen:
 
@@ -228,14 +263,15 @@ Confirma en Prometheus (`http://localhost:19090/targets`) que los tres microserv
 
 `metrics_path: "/metrics"` (no `/actuator/prometheus`) y el puerto `19000` (no el `18180` de autenticación) son las dos diferencias reales frente a cualquier otro *target*: Keycloak no es una aplicación Spring Boot, así que ni el formato por defecto de su endpoint de métricas ni el puerto donde vive coinciden con los de los microservicios — ambos ya quedaron fijados en S07b (`KC_METRICS_ENABLED`, `KC_HTTP_MANAGEMENT_PORT`), esta sesión solo le dice a Prometheus dónde buscarlos.
 
-**Promtail — logs de Keycloak y `pagatu-pago-ms`.** **`obs/compose-dev.yml`** — agrega los dos volúmenes que faltan, junto a los que ya existen en `pagatu-promtail`:
+**Promtail — logs de Keycloak, `pagatu-pago-ms` y el Gateway.** **`obs/compose-dev.yml`** — agrega los tres volúmenes que faltan, junto a los que ya existen en `pagatu-promtail`:
 
 ```yaml
       - ../keycloak/logs:/var/log/pagatu-keycloak:ro
       - ../services/pagatu-pago-ms/logs:/var/log/pagatu-pago-ms:ro
+      - ../infra/pagatu-gateway/logs:/var/log/pagatu-gateway:ro
 ```
 
-**`obs/promtail/promtail-config-dev.yml`** — agrega los dos *jobs* que faltan, con el mismo patrón que los dos que ya existen:
+**`obs/promtail/promtail-config-dev.yml`** — agrega los tres *jobs* que faltan, con el mismo patrón que los dos que ya existen:
 
 ```yaml
   - job_name: pagatu-keycloak
@@ -250,6 +286,12 @@ Confirma en Prometheus (`http://localhost:19090/targets`) que los tres microserv
         labels:
           application: pagatu-pago-ms
           __path__: /var/log/pagatu-pago-ms/*.log
+  - job_name: pagatu-gateway
+    static_configs:
+      - targets: [localhost]
+        labels:
+          application: pagatu-gateway
+          __path__: /var/log/pagatu-gateway/*.log
 ```
 
 Repite el mismo cambio en **`obs/compose.yml`**, **`obs/promtail/promtail-config.yml`** y **`obs/prometheus/prometheus.yml`** (PROD local) — son los mismos tres archivos, con el prefijo de puertos `2xxxx` en vez de `1xxxx` (`obs/README.md`), no una configuración distinta.
@@ -263,7 +305,9 @@ docker compose -f compose-dev.yml up -d prometheus promtail
 
 Confirma en `http://localhost:19090/targets` que `pagatu-keycloak` aparece como un *job* nuevo, `UP`.
 
-**Error frecuente**: agregar el `job_name` en `promtail-config-dev.yml` pero olvidar el volumen en `compose-dev.yml` (o al revés). Promtail necesita las dos cosas: el volumen monta el archivo real dentro del contenedor, y el `job_name` le dice dónde buscarlo (`__path__`) — sin el volumen, el `__path__` apunta a una carpeta vacía dentro del contenedor, y Promtail no encuentra nada que subir, sin ningún error visible. Para Keycloak hay un segundo error posible: que `KC_LOG` no incluyera `file` en S07b — sin eso, Keycloak nunca escribe `keycloak.log`, y el volumen monta una carpeta que se queda vacía para siempre, no solo hasta el primer log.
+Reinicia el Gateway (`.\mvnw.cmd spring-boot:run`) para que tome el `logback-spring.xml` nuevo — a diferencia de Prometheus/Promtail, que recargan su configuración al reiniciar el contenedor, Logback se lee una sola vez, al arrancar la JVM.
+
+**Error frecuente**: agregar el `job_name` en `promtail-config-dev.yml` pero olvidar el volumen en `compose-dev.yml` (o al revés). Promtail necesita las dos cosas: el volumen monta el archivo real dentro del contenedor, y el `job_name` le dice dónde buscarlo (`__path__`) — sin el volumen, el `__path__` apunta a una carpeta vacía dentro del contenedor, y Promtail no encuentra nada que subir, sin ningún error visible. Para Keycloak hay un segundo error posible: que `KC_LOG` no incluyera `file` en S07b — sin eso, Keycloak nunca escribe `keycloak.log`, y el volumen monta una carpeta que se queda vacía para siempre, no solo hasta el primer log. Para el Gateway, el error equivalente es reiniciarlo **antes** de crear `logs/` o de que Promtail tenga el volumen listo — la carpeta `infra/pagatu-gateway/logs/` la crea Logback solo, al escribir el primer archivo; si Promtail arrancó antes, puede quedarse con un volumen vacío montado hasta su próximo reinicio.
 
 ### 3.3 Configurar *health groups* de *liveness*/*readiness*
 
