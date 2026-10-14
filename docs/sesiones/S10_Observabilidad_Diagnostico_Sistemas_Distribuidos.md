@@ -164,7 +164,7 @@ Un panel de diagnóstico útil combina más de una fuente — ninguna métrica s
 
 | Panel | Fuente | Qué responde |
 |---|---|---|
-| Servicios arriba | Prometheus, `up{job=~"pagatu-microservicios\|pagatu-keycloak"}` | ¿Cuáles de las cuatro piezas responden ahora mismo? |
+| Servicios arriba | Prometheus, `up{job=~"pagatu-.*"}` | ¿Cuáles de las cuatro piezas responden ahora mismo? |
 | Tasa de peticiones | Prometheus, `rate(http_server_requests_seconds_count[1m])` | ¿Cuánto tráfico recibe cada servicio? |
 | Tasa de errores | Prometheus, `rate(http_server_requests_seconds_count{status=~"5.."}[1m])` | ¿Está fallando algo, y en cuál servicio? |
 | Logs por `traceId` | Loki, `{application=~"pagatu-.*"} \| json \| traceId="..."` | Dado un error, ¿qué pasó en cada servicio, en orden? |
@@ -328,11 +328,11 @@ Confirma en Prometheus (`http://localhost:19090/targets`) que los tres microserv
 
 `pagatu-keycloak:9000` (el nombre del servicio Docker y su puerto **interno** de *management*, no `host.docker.internal:29000`) — PROD local resuelve por nombre de servicio dentro de la misma red de Docker, el mismo criterio que ya usan `pagatu-config:8888`/`pagatu-eureka:8761` arriba, y que S07b (7.1) ya aplicó al `issuer-uri` del Gateway y `pagatu-orden-ms`. El Gateway no necesita ningún *job* de Prometheus nuevo aquí tampoco — sigue llegando por `eureka_sd_configs`, igual que en DEV.
 
-Sube de nuevo Prometheus y Promtail para que tomen la configuración nueva:
+Reinicia Prometheus y Promtail para que relean la configuración nueva — **`restart`, no `up -d`**: los dos archivos (`prometheus-dev.yml`, `promtail-config-dev.yml`) llegan al contenedor por volumen montado, y Docker Compose no recrea ni reinicia un contenedor solo porque cambió el contenido de un archivo montado, únicamente si cambia la definición del servicio en el propio `compose-dev.yml`. Si ya corriste `up -d` antes y el *job* nuevo no aparece, es exactamente por esto — el contenedor sigue corriendo con la configuración de cuando arrancó:
 
 ```powershell
 cd obs
-docker compose -f compose-dev.yml up -d pagatu-prometheus pagatu-promtail
+docker compose -f compose-dev.yml restart pagatu-prometheus pagatu-promtail
 ```
 
 Confirma en `http://localhost:19090/targets` que `pagatu-keycloak` aparece como un *job* nuevo, `UP`.
@@ -445,12 +445,22 @@ Abre `http://localhost:13000` (`admin`/`admin`). Mismo flujo que ya conoces de c
 
 | Panel | *Datasource* | Consulta | Visualización |
 |---|---|---|---|
-| Servicios arriba | Prometheus | `up{job=~"pagatu-microservicios\|pagatu-keycloak"}` | Table |
+| Servicios arriba | Prometheus | `up{job=~"pagatu-.*"}` | Table |
 | Tasa de peticiones | Prometheus | `sum by (application) (rate(http_server_requests_seconds_count[1m]))` | Time series |
 | Tasa de errores | Prometheus | `sum by (application) (rate(http_server_requests_seconds_count{status=~"5.."}[1m]))` | Time series |
 | Logs recientes | Loki | `{application=~"pagatu-.*"}` | Logs |
 
 Para el panel de **Logs**, elige explícitamente el *datasource* **Loki** (no Prometheus) al crearlo — es el único panel de los cuatro que no viene de una métrica. Guarda el *dashboard* como `S10 - Diagnóstico de pagatu`.
+
+**Buscar un texto concreto dentro del panel de Logs.** `{application=~"pagatu-.*"}` trae todo — para encontrar un error específico, agrega un filtro de LogQL con `|=` ("la línea contiene este texto", sensible a mayúsculas/minúsculas), en la pestaña **Code** del editor de consultas:
+
+```
+{application=~"pagatu-.*"} |= "No se pudo descontar stock"
+```
+
+**Error frecuente**: buscar el mensaje de una excepción directamente en el servicio que la *lanza*, y no encontrar nada. `StockInsuficienteException` ("Stock insuficiente para el producto: ...") la lanza `pagatu-catalogo-ms`, pero su `GlobalExceptionHandler` solo la devuelve en el cuerpo de la respuesta HTTP — **nunca la loguea**. El mensaje sí queda en un log real, pero en `pagatu-orden-ms`: su *fallback* de Feign (`ProductoConsultaService`, el *circuit breaker* de S6) sí lo registra con `log.warn("[CATALOGO] No se pudo descontar stock de {}. Motivo: {}", ...)` cuando la llamada a `pagatu-catalogo-ms` falla. Antes de asumir que el panel o la consulta están mal, confirma primero **cuál servicio** de verdad escribe la línea que buscas.
+
+**Otro error frecuente**: el interruptor **Table view** (arriba del panel, al editarlo) muestra el log crudo en columnas (`labels`, `Time`, `Line`, `tsNs`, `id`) — la columna `Line` trunca la línea completa al ancho de la celda, dando la impresión de que el mensaje no llegó. Apágalo para ver la vista nativa de **Logs** de Grafana (línea completa, coloreada por nivel), o ensancha la columna `Line` si prefieres quedarte en la tabla.
 
 ### 3.7 Simular una falla y diagnosticarla con el tablero
 
