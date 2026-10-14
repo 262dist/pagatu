@@ -2416,24 +2416,18 @@
 <span class="w">          </span><span class="nt">application</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-keycloak</span>
 </code></pre></div>
 <p><code>metrics_path: "/metrics"</code> (no <code>/actuator/prometheus</code>) y el puerto <code>19000</code> (no el <code>18180</code> de autenticación) son las dos diferencias reales frente a cualquier otro <em>target</em>: Keycloak no es una aplicación Spring Boot, así que ni el formato por defecto de su endpoint de métricas ni el puerto donde vive coinciden con los de los microservicios — ambos ya quedaron fijados en S07b (<code>KC_METRICS_ENABLED</code>, <code>KC_HTTP_MANAGEMENT_PORT</code>), esta sesión solo le dice a Prometheus dónde buscarlos.</p>
-<p><strong>Promtail — logs de Keycloak, <code>pagatu-pago-ms</code> y el Gateway.</strong> <strong><code>obs/compose-dev.yml</code></strong> — agrega los tres volúmenes que faltan, junto a los que ya existen en <code>pagatu-promtail</code>:</p>
+<p><strong>Promtail — logs de Keycloak y del Gateway.</strong> <code>pagatu-pago-ms</code> ya estaba cableado en DEV desde antes de esta sesión (mismo commit que agregó los <em>health groups</em> de 3.3) — confírmalo antes de agregar nada: si ya ves <code>pagatu-pago-ms</code> en <code>obs/compose-dev.yml</code> y en <code>obs/promtail/promtail-config-dev.yml</code>, no lo repitas, solo agrega lo que de verdad falta.</p>
+<p><strong><code>obs/compose-dev.yml</code></strong> — agrega los dos volúmenes que faltan, junto a los que ya existen en <code>pagatu-promtail</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">../keycloak/logs:/var/log/pagatu-keycloak:ro</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">../services/pagatu-pago-ms/logs:/var/log/pagatu-pago-ms:ro</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">../infra/pagatu-gateway/logs:/var/log/pagatu-gateway:ro</span>
 </code></pre></div>
-<p><strong><code>obs/promtail/promtail-config-dev.yml</code></strong> — agrega los tres <em>jobs</em> que faltan, con el mismo patrón que los dos que ya existen:</p>
+<p><strong><code>obs/promtail/promtail-config-dev.yml</code></strong> — agrega los dos <em>jobs</em> que faltan, con el mismo patrón que los que ya existen:</p>
 <div class="highlight"><pre><span></span><code><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-keycloak</span>
 <span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">localhost</span><span class="p p-Indicator">]</span>
 <span class="w">        </span><span class="nt">labels</span><span class="p">:</span>
 <span class="w">          </span><span class="nt">application</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-keycloak</span>
 <span class="w">          </span><span class="nt">__path__</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/log/pagatu-keycloak/*.log</span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-pago-ms</span>
-<span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">localhost</span><span class="p p-Indicator">]</span>
-<span class="w">        </span><span class="nt">labels</span><span class="p">:</span>
-<span class="w">          </span><span class="nt">application</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-pago-ms</span>
-<span class="w">          </span><span class="nt">__path__</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/var/log/pagatu-pago-ms/*.log</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pagatu-gateway</span>
 <span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">localhost</span><span class="p p-Indicator">]</span>
