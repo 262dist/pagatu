@@ -264,6 +264,8 @@ Guarda y mira `http://localhost:4200`: la página queda **en blanco**. Es lo esp
 
 **Crear el *layout*: encabezado y menú.** Esta pantalla ya no va a ser la única — en este mismo paso vas a tener `categorias`, `categorias/nueva` y `categorias/:id/editar`, y más adelante (3.5, 3.7) se suman las de órdenes — así que, a diferencia de un ejemplo de una sola pantalla, sí hace falta un lugar fijo para el menú que no se repita dentro de cada componente. En Angular, eso se resuelve con una **ruta padre**: un componente de *layout* con su propio `<router-outlet />`, y las pantallas de cada funcionalidad como rutas hijas que se renderizan ahí dentro (mismo patrón de LP2 S07, 2.4/3.5).
 
+De aquí hasta el final de este paso, todo es Angular puro — ningún archivo todavía llama al backend. La idea es ir viendo en el navegador, paso a paso, lo que cada pieza nueva agrega (el *router*, el *layout*, la navegación) antes de sumarle la comunicación con `pagatu-catalogo-ms`.
+
 **El comando de la CLI es opcional** — en esta guía (y en el resto de la sesión) cada paso ya muestra el contenido completo de cada archivo, así que crear `layout.ts`/`layout.html`/`layout.css` a mano, con ese mismo contenido, funciona exactamente igual. Si vienes de React, donde no es costumbre generar archivos por un comando, puedes saltarte esto y solo crear los tres archivos directamente en `src/app/core/layout/`. Si prefieres que la CLI cree el andamiaje (incluye un `layout.spec.ts` de pruebas que esta sesión no usa):
 
 ```bash
@@ -355,7 +357,56 @@ export class Layout {}
 }
 ```
 
-`routerLinkActive="active"` resalta el enlace de la pantalla activa — así quien usa la aplicación sabe en qué sección está sin leer la URL. `app.html`/`app.ts` no se tocan de nuevo: siguen siendo el `<router-outlet />` de arriba, y es ahí donde el *router* va a montar `Layout` como ruta raíz (más abajo). Por ahora, todo el código nuevo de categorías vive en `features/catalogo/`.
+`routerLinkActive="active"` resalta el enlace de la pantalla activa — así quien usa la aplicación sabe en qué sección está sin leer la URL. `app.html`/`app.ts` no se tocan: siguen siendo el `<router-outlet />` de arriba.
+
+**Montar `Layout` en el *router*, antes de seguir.** Todavía sin ninguna pantalla hija — la idea es confirmar que el *layout* en sí ya se ve, antes de sumarle nada más encima. Reemplaza **`src/app/app.routes.ts`** (hoy vacío):
+
+```typescript
+import { Routes } from '@angular/router';
+
+export const routes: Routes = [
+  {
+    path: '',
+    loadComponent: () => import('./core/layout/layout').then((m) => m.Layout),
+  },
+];
+```
+
+Guarda y mira `http://localhost:4200`: ya se ve el encabezado ("pagatu") y el menú con **Categorías** — aunque el área de contenido quede vacía. Es lo esperado, no un error: `Layout` todavía no tiene ninguna ruta hija que mostrar dentro de su propio `<router-outlet />` (eso llega en el siguiente paso). `loadComponent` (en vez de un `import` normal arriba del archivo) carga el componente de forma perezosa — recién cuando el *router* necesita mostrarlo, no antes.
+
+**Crear una página de inicio**, la primera ruta hija de `Layout` — sin lógica ni estilos propios: un *redirect* automático hacia `categorias` forzaría esa pantalla como si fuera la única posible, en vez de dejar que quien entra a la aplicación elija desde el menú (mismo criterio de LP2 S07, 3.6). De nuevo, la CLI es opcional — crear `inicio.ts`/`inicio.html` a mano en `src/app/core/inicio/` funciona igual:
+
+```bash
+ng generate component core/inicio
+```
+
+`core/inicio/inicio.ts` no necesita ningún cambio: la CLI ya genera una clase vacía (`export class Inicio {}`), y esta pantalla no tiene ningún estado propio — solo texto. Reemplaza **`src/app/core/inicio/inicio.html`**:
+
+```html
+<h2>Bienvenido a pagatu</h2>
+<p>Usa el menú de la izquierda para navegar entre las pantallas disponibles.</p>
+```
+
+Agrega `Inicio` como hija de `Layout`, en **`src/app/app.routes.ts`**:
+
+```typescript
+import { Routes } from '@angular/router';
+
+export const routes: Routes = [
+  {
+    path: '',
+    loadComponent: () => import('./core/layout/layout').then((m) => m.Layout),
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./core/inicio/inicio').then((m) => m.Inicio),
+      },
+    ],
+  },
+];
+```
+
+Guarda y vuelve a `http://localhost:4200`: ahora el área de contenido ya no está vacía — muestra el mensaje de bienvenida de `Inicio`, dentro del *layout*. Con el *router* y la navegación ya confirmados en el navegador, recién ahora tiene sentido sumarle a Angular la comunicación con el backend.
 
 **`src/environments/environment.ts`** — por ahora, apunta directo a `pagatu-catalogo-ms`, no al Gateway:
 
@@ -501,20 +552,7 @@ export class CategoriaList implements OnInit {
 }
 ```
 
-**Crear una página de inicio.** Antes de cablear las rutas, una pantalla de bienvenida mínima en `''` — sin lógica ni estilos propios: un *redirect* automático hacia `categorias` forzaría esa pantalla como si fuera la única posible, en vez de dejar que quien entra a la aplicación elija desde el menú (mismo criterio de LP2 S07, 3.6). De nuevo, la CLI es opcional — crear `inicio.ts`/`inicio.html` a mano en `src/app/core/inicio/` funciona igual:
-
-```bash
-ng generate component core/inicio
-```
-
-`core/inicio/inicio.ts` no necesita ningún cambio: la CLI ya genera una clase vacía (`export class Inicio {}`), y esta pantalla no tiene ningún estado propio — solo texto. Reemplaza **`src/app/core/inicio/inicio.html`**:
-
-```html
-<h2>Bienvenido a pagatu</h2>
-<p>Usa el menú de la izquierda para navegar entre las pantallas disponibles.</p>
-```
-
-Reemplaza **`src/app/app.routes.ts`** (hoy vacío) — `Layout` como ruta padre, con `Inicio` como su primera hija en `''` y la lista de categorías en `categorias`:
+Agrega `categorias` como segunda hija de `Layout`, junto a `Inicio`, en **`src/app/app.routes.ts`**:
 
 ```typescript
 import { Routes } from '@angular/router';
@@ -537,9 +575,7 @@ export const routes: Routes = [
 ];
 ```
 
-`loadComponent` (en vez de un `import` normal arriba del archivo) carga cada componente de forma perezosa — recién cuando el *router* necesita mostrarlo, no antes.
-
-Confirma en el navegador (`ng serve`, `http://localhost:4200`) que se ve el encabezado, el menú con el enlace **Categorías**, y el mensaje de bienvenida de `Inicio` en el área de contenido. Haz clic en **Categorías** y confirma que ahí sí aparece la lista — **sin ningún token, sin ningún login**. Si ves un error de CORS en la consola del navegador (no en la terminal de Angular), revisa que `CorsConfig.java` quedó creado y que `pagatu-catalogo-ms` se reinició para tomarlo.
+Confirma en el navegador: haz clic en **Categorías** (menú) y confirma que la lista aparece — **sin ningún token, sin ningún login**. Si ves un error de CORS en la consola del navegador (no en la terminal de Angular), revisa que `CorsConfig.java` quedó creado y que `pagatu-catalogo-ms` se reinició para tomarlo.
 
 **Completa el CRUD: crear, editar y eliminar.** Con la lista ya confirmada, agrega a `categoria-service.ts` los cuatro métodos que todavía faltan, junto a `listar()`:
 
