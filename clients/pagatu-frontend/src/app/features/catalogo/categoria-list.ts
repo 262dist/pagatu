@@ -44,10 +44,13 @@ export class CategoriaList implements OnInit {
       error: (err: HttpErrorResponse) => {
         if (err.status === 500) {
           this.errorAccion.set('No se puede eliminar: la categoría tiene productos asociados.');
+        } else if (err.status === 403) {
+          this.errorAccion.set('No tienes permiso para esta acción.');
         } else {
           this.errorAccion.set('No se pudo eliminar la categoría.');
         }
       },
+
     });
   }
 }

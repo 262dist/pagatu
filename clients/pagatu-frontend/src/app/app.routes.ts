@@ -17,7 +17,7 @@ export const routes: Routes = [
       },
       {
         path: 'categorias',
-        canActivate: [authGuard],
+        //canActivate: [authGuard],
         loadComponent: () => import('./features/catalogo/categoria-list').then((m) => m.CategoriaList),
       },
       {

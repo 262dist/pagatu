@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CategoriaService } from './categoria-service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-categoria-form',
@@ -53,8 +54,15 @@ export class CategoriaForm {
 
     peticion.subscribe({
       next: () => this.router.navigate(['/categorias']),
-      error: () => this.error.set('No se pudo guardar la categoría.'),
+      error: (err: HttpErrorResponse) => {
+        this.error.set(
+          err.status === 403
+            ? 'No tienes permiso para esta acción.'
+            : 'No se pudo guardar la categoría.',
+        );
+      },
     });
+
   }
 
   cancelar(): void {

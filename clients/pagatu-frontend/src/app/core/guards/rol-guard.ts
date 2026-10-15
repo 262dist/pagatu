@@ -9,6 +9,7 @@ export function rolGuard(...rolesPermitidos: string[]): CanActivateFn {
     if (auth.tieneRol(...rolesPermitidos)) {
       return true;
     }
+    alert('No tienes permiso para acceder a esa pantalla.');
     router.navigateByUrl('/');
     return false;
   };

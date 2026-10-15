@@ -1204,11 +1204,14 @@ export function rolGuard(...rolesPermitidos: string[]): CanActivateFn {
     if (auth.tieneRol(...rolesPermitidos)) {
       return true;
     }
+    alert('No tienes permiso para acceder a esa pantalla.');
     router.navigateByUrl('/');
     return false;
   };
 }
 ```
+
+`alert(...)` aquí es el mismo criterio que `confirm(...)` en `eliminar` (3.2): un diálogo nativo, sin agregar ninguna librería, alcanza para avisar algo puntual. Sin él, a alguien con rol `CLIENTE` que entra a `categorias/nueva` a mano (URL) el *guard* lo rebota a `Inicio` **en silencio** — funciona, pero parece que el enlace no hizo nada.
 
 **`src/app/core/interceptors/auth-interceptor.ts`** (archivo nuevo) — adjunta el token a cada petición saliente; si el servidor responde `401` (token inválido o vencido), reinicia el login — a diferencia de LP2, `AuthService` (3.4) no construyó un método para renovar el `refresh_token` en silencio, así que no hay nada que reintentar: la única salida honesta de un `401` aquí es volver a loguearse:
 
