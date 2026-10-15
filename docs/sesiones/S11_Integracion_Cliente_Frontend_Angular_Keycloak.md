@@ -260,7 +260,100 @@ Reemplaza `app.html` (todavía trae la página de bienvenida de la CLI, que nunc
 <router-outlet />
 ```
 
-Guarda y mira `http://localhost:4200`: la página queda **en blanco**. Es lo esperado, no un error — `app.routes.ts` todavía no tiene ninguna ruta, así que `<router-outlet />` no tiene nada que mostrar todavía. Con una sola pantalla todavía no hace falta un *layout* propio (menú, encabezado) — eso solo tendría sentido si hubiera más de una pantalla entre las que navegar, y hoy no la hay. Por ahora, todo el código nuevo vive en `features/catalogo/`.
+Guarda y mira `http://localhost:4200`: la página queda **en blanco**. Es lo esperado, no un error — `app.routes.ts` todavía no tiene ninguna ruta, así que `<router-outlet />` no tiene nada que mostrar todavía.
+
+**Crear el *layout*: encabezado y menú.** Esta pantalla ya no va a ser la única — en este mismo paso vas a tener `categorias`, `categorias/nueva` y `categorias/:id/editar`, y más adelante (3.5, 3.7) se suman las de órdenes — así que, a diferencia de un ejemplo de una sola pantalla, sí hace falta un lugar fijo para el menú que no se repita dentro de cada componente. En Angular, eso se resuelve con una **ruta padre**: un componente de *layout* con su propio `<router-outlet />`, y las pantallas de cada funcionalidad como rutas hijas que se renderizan ahí dentro (mismo patrón de LP2 S07, 2.4/3.5):
+
+```bash
+ng generate component core/layout
+```
+
+**`src/app/core/layout/layout.ts`**:
+
+```typescript
+import { Component } from '@angular/core';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+
+@Component({
+  selector: 'app-layout',
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  templateUrl: './layout.html',
+  styleUrl: './layout.css',
+})
+export class Layout {}
+```
+
+**`src/app/core/layout/layout.html`**:
+
+```html
+<header class="header">
+  <a routerLink="/" class="home-link">pagatu</a>
+</header>
+
+<div class="body">
+  <nav class="sidebar" aria-label="Menú principal">
+    <a routerLink="/categorias" routerLinkActive="active">Categorías</a>
+  </nav>
+
+  <main class="content">
+    <router-outlet />
+  </main>
+</div>
+```
+
+**`src/app/core/layout/layout.css`**:
+
+```css
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.header {
+  padding: 0.75rem 1rem;
+  background-color: #1f2937;
+  color: white;
+}
+
+.home-link {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 180px;
+  padding: 1rem;
+  border-right: 1px solid #e5e7eb;
+}
+
+.sidebar a {
+  padding: 0.5rem;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 0.25rem;
+}
+
+.sidebar a.active {
+  font-weight: bold;
+  background-color: #e5e7eb;
+}
+
+.content {
+  flex: 1;
+  padding: 1rem;
+}
+```
+
+`routerLinkActive="active"` resalta el enlace de la pantalla activa — así quien usa la aplicación sabe en qué sección está sin leer la URL. `app.html`/`app.ts` no se tocan de nuevo: siguen siendo el `<router-outlet />` de arriba, y es ahí donde el *router* va a montar `Layout` como ruta raíz (más abajo). Por ahora, todo el código nuevo de categorías vive en `features/catalogo/`.
 
 **`src/environments/environment.ts`** — por ahora, apunta directo a `pagatu-catalogo-ms`, no al Gateway:
 
@@ -404,7 +497,20 @@ export class CategoriaList implements OnInit {
 }
 ```
 
-`app.ts`/`app.html` no se tocan — ya quedaron listos con `<router-outlet />` (arriba, al recorrer la estructura generada). Lo único que falta es decirle al *router* qué mostrar en la ruta raíz. Reemplaza **`src/app/app.routes.ts`** (hoy vacío):
+**Crear una página de inicio.** Antes de cablear las rutas, una pantalla de bienvenida mínima en `''` — sin lógica ni estilos propios: un *redirect* automático hacia `categorias` forzaría esa pantalla como si fuera la única posible, en vez de dejar que quien entra a la aplicación elija desde el menú (mismo criterio de LP2 S07, 3.6):
+
+```bash
+ng generate component core/inicio
+```
+
+`core/inicio/inicio.ts` no necesita ningún cambio: la CLI ya genera una clase vacía (`export class Inicio {}`), y esta pantalla no tiene ningún estado propio — solo texto. Reemplaza **`src/app/core/inicio/inicio.html`**:
+
+```html
+<h2>Bienvenido a pagatu</h2>
+<p>Usa el menú de la izquierda para navegar entre las pantallas disponibles.</p>
+```
+
+Reemplaza **`src/app/app.routes.ts`** (hoy vacío) — `Layout` como ruta padre, con `Inicio` como su primera hija en `''` y la lista de categorías en `categorias`:
 
 ```typescript
 import { Routes } from '@angular/router';
@@ -412,14 +518,24 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./features/catalogo/categoria-list').then((m) => m.CategoriaList),
+    loadComponent: () => import('./core/layout/layout').then((m) => m.Layout),
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./core/inicio/inicio').then((m) => m.Inicio),
+      },
+      {
+        path: 'categorias',
+        loadComponent: () => import('./features/catalogo/categoria-list').then((m) => m.CategoriaList),
+      },
+    ],
   },
 ];
 ```
 
-`loadComponent` (en vez de un `import` normal arriba del archivo) carga `CategoriaList` de forma perezosa — recién cuando el *router* necesita mostrar la ruta `''`, no antes. Con un solo componente la diferencia no se nota, pero es el mismo patrón que vas a repetir en 3.4 al agregar la ruta de `auth/callback`.
+`loadComponent` (en vez de un `import` normal arriba del archivo) carga cada componente de forma perezosa — recién cuando el *router* necesita mostrarlo, no antes.
 
-Confirma en el navegador (`ng serve`, `http://localhost:4200`) que la lista de categorías aparece — **sin ningún token, sin ningún login**. Si ves un error de CORS en la consola del navegador (no en la terminal de Angular), revisa que `CorsConfig.java` quedó creado y que `pagatu-catalogo-ms` se reinició para tomarlo.
+Confirma en el navegador (`ng serve`, `http://localhost:4200`) que se ve el encabezado, el menú con el enlace **Categorías**, y el mensaje de bienvenida de `Inicio` en el área de contenido. Haz clic en **Categorías** y confirma que ahí sí aparece la lista — **sin ningún token, sin ningún login**. Si ves un error de CORS en la consola del navegador (no en la terminal de Angular), revisa que `CorsConfig.java` quedó creado y que `pagatu-catalogo-ms` se reinició para tomarlo.
 
 **Completa el CRUD: crear, editar y eliminar.** Con la lista ya confirmada, agrega a `categoria-service.ts` los cuatro métodos que todavía faltan, junto a `listar()`:
 
@@ -598,13 +714,13 @@ export class CategoriaForm {
     const peticion = id ? this.categoriaService.actualizar(id, valor) : this.categoriaService.crear(valor);
 
     peticion.subscribe({
-      next: () => this.router.navigate(['/']),
+      next: () => this.router.navigate(['/categorias']),
       error: () => this.error.set('No se pudo guardar la categoría.'),
     });
   }
 
   cancelar(): void {
-    this.router.navigate(['/']);
+    this.router.navigate(['/categorias']);
   }
 
   protected mensajeValidacion(campo: 'nombre' | 'descripcion'): string {
@@ -659,7 +775,7 @@ export class CategoriaForm {
 
 `type="button"` en **Cancelar** no es opcional: sin él, heredaría el tipo por defecto de cualquier `<button>` dentro de un `<form>` (`submit`), y un clic en "Cancelar" dispararía igual el `(ngSubmit)="guardar()"` — justo lo que se quiere evitar.
 
-Agrega las dos rutas que faltan a **`src/app/app.routes.ts`**:
+Agrega las dos rutas que faltan, como hijas de `Layout`, junto a `categorias`:
 
 ```typescript
 import { Routes } from '@angular/router';
@@ -667,15 +783,25 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./features/catalogo/categoria-list').then((m) => m.CategoriaList),
-  },
-  {
-    path: 'categorias/nueva',
-    loadComponent: () => import('./features/catalogo/categoria-form').then((m) => m.CategoriaForm),
-  },
-  {
-    path: 'categorias/:id/editar',
-    loadComponent: () => import('./features/catalogo/categoria-form').then((m) => m.CategoriaForm),
+    loadComponent: () => import('./core/layout/layout').then((m) => m.Layout),
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./core/inicio/inicio').then((m) => m.Inicio),
+      },
+      {
+        path: 'categorias',
+        loadComponent: () => import('./features/catalogo/categoria-list').then((m) => m.CategoriaList),
+      },
+      {
+        path: 'categorias/nueva',
+        loadComponent: () => import('./features/catalogo/categoria-form').then((m) => m.CategoriaForm),
+      },
+      {
+        path: 'categorias/:id/editar',
+        loadComponent: () => import('./features/catalogo/categoria-form').then((m) => m.CategoriaForm),
+      },
+    ],
   },
 ];
 ```
@@ -996,7 +1122,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
 `403` **no** se maneja aquí a propósito: el token sí es válido, el rol no alcanza — reintentar o redirigir a login no cambia nada, es responsabilidad de cada pantalla mostrar el error (o, mejor, no ofrecer la acción si `rolGuard`/`tieneRol` ya la descartó de antemano).
 
-**`src/app/app.routes.ts`** — ya existe desde 3.2 con las tres rutas de categorías (`''`, `categorias/nueva`, `categorias/:id/editar`); agrega `auth/callback` y protege las tres con `authGuard`. `auth/callback` queda **fuera** de cualquier *guard*, porque es, precisamente, la ruta que completa el login:
+**`src/app/app.routes.ts`** — ya existe desde 3.2 con `Layout` como ruta padre y las tres rutas de categorías como hijas; agrega `auth/callback` como hermana de `Layout`, y `canActivate: [authGuard]` **una sola vez**, en la propia ruta de `Layout` — protege todo lo que cuelga de ella, sin repetirlo en cada hija. `auth/callback` queda **fuera** de `Layout` y de cualquier *guard*, porque es, precisamente, la ruta que completa el login (no tiene sentido pedirle sesión a la ruta que la crea, y tampoco necesita el encabezado ni el menú):
 
 ```typescript
 import { Routes } from '@angular/router';
@@ -1010,22 +1136,60 @@ export const routes: Routes = [
   {
     path: '',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/catalogo/categoria-list').then((m) => m.CategoriaList),
-  },
-  {
-    path: 'categorias/nueva',
-    canActivate: [authGuard],
-    loadComponent: () => import('./features/catalogo/categoria-form').then((m) => m.CategoriaForm),
-  },
-  {
-    path: 'categorias/:id/editar',
-    canActivate: [authGuard],
-    loadComponent: () => import('./features/catalogo/categoria-form').then((m) => m.CategoriaForm),
+    loadComponent: () => import('./core/layout/layout').then((m) => m.Layout),
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./core/inicio/inicio').then((m) => m.Inicio),
+      },
+      {
+        path: 'categorias',
+        loadComponent: () => import('./features/catalogo/categoria-list').then((m) => m.CategoriaList),
+      },
+      {
+        path: 'categorias/nueva',
+        loadComponent: () => import('./features/catalogo/categoria-form').then((m) => m.CategoriaForm),
+      },
+      {
+        path: 'categorias/:id/editar',
+        loadComponent: () => import('./features/catalogo/categoria-form').then((m) => m.CategoriaForm),
+      },
+    ],
   },
 ];
 ```
 
 `app.ts`/`app.html` no cambian — siguen siendo el `<router-outlet />` que ya quedó listo desde 3.2, sin tocar.
+
+**Mostrar la sesión real y cerrar sesión, en el propio `Layout`.** Hasta ahora el encabezado solo mostraba "pagatu" — con `AuthService` ya construido, agrega el botón de cierre de sesión y, ya que `idCliente` (el claim `sub`) no es un dato legible para una persona, al menos la confirmación de que hay una sesión activa:
+
+```typescript
+import { Component, inject } from '@angular/core';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../auth/auth-service';
+
+@Component({
+  selector: 'app-layout',
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  templateUrl: './layout.html',
+  styleUrl: './layout.css',
+})
+export class Layout {
+  protected readonly auth = inject(AuthService);
+}
+```
+
+En `layout.html`, agrega el botón dentro de `<header>`, junto al enlace existente:
+
+```html
+<header class="header">
+  <a routerLink="/" class="home-link">pagatu</a>
+  <span class="sesion">Sesión activa</span>
+  <button type="button" (click)="auth.cerrarSesion()">Cerrar sesión</button>
+</header>
+```
+
+No hay un nombre real que mostrar porque, desde S07b (7.4), `idCliente` **es** el claim `sub` — un identificador técnico, no un nombre pensado para mostrarse en pantalla. Si tu propio dominio (4.1) necesita mostrar un nombre real, ahí sí hace falta un *user attribute* + *protocol mapper* propios en Keycloak (el patrón que S07 diseñó originalmente para `idCliente`, antes de que S07b decidiera que no hacía falta, 7.4) para que ese dato viaje en el token.
 
 **`src/app/app.config.ts`** — registra el interceptor en el *provider* de `HttpClient` que la CLI ya generó:
 
