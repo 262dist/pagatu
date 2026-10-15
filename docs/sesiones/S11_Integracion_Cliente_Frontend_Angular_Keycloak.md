@@ -1110,6 +1110,8 @@ export class AuthService {
 
 A diferencia de un cliente que solo valida PKCE, este `AuthService` también genera y verifica `state` (Tabla 2) — el segundo "error de diseño común" que S7 (2.4) ya advirtió. `completarLogin` revisa `state` **antes** de confiar en el `code_verifier`: si no coinciden, lanza un error en vez de intentar el intercambio, sin importar si el `code_verifier` guardado era correcto.
 
+**Por qué `fetch` y no `HttpClient`, como en `CategoriaService`.** No es un descuido — es a propósito, y solo en este método. Desde 3.4 (más abajo), `authInterceptor` se registra **globalmente** sobre `HttpClient` y le agrega el header `Authorization` a *toda* petición que salga por ahí, pensado para hablar con `pagatu-gateway` (nuestro propio backend). La petición de `completarLogin` va a un destino completamente distinto — el propio Keycloak, con el contrato de un servidor de tokens OAuth2/OIDC (`application/x-www-form-urlencoded`, `grant_type`), no el de nuestra API — y es, además, la petición que **recién va a producir** el primer token; no hay ningún `accessToken` todavía que adjuntarle. Mezclar esa llamada con el mismo *pipeline* pensado para el Gateway no rompe nada hoy (sin token, el interceptor simplemente no agrega el header), pero si `authInterceptor` cambia mañana — o si Keycloak alguna vez respondiera `401` en vez del `400` habitual de un `code` inválido — terminaría disparando `auth.iniciarLogin(...)` *dentro* de la misma llamada que ya está completando un login, un bucle de redirecciones sin sentido. `fetch`, sin pasar por `HttpClient`, mantiene esta única llamada completamente aislada de ese *pipeline*. La regla general: `HttpClient` para hablar con **nuestro propio backend** (vía el Gateway, con el token ya adjunto); `fetch` para hablar **directo con Keycloak** (antes de que exista un token, o para cualquier endpoint que no sea nuestro).
+
 `idCliente` lee el claim `sub`, no uno propio (S07b, 7.4 — `idCliente` ya **es** `sub`, el mismo patrón que `vendedorId` en LP2): por eso no hace falta ningún campo extra en `JwtPayload`, ni ninguna configuración adicional de Keycloak para que viaje en el token.
 
 **`src/app/core/auth/jwt.ts`** (decodificación, sin validar firma — la SPA nunca valida un token, eso lo hace el Gateway como *resource server*, S07; solo lee los *claims* que ya confió en Keycloak):
@@ -1234,7 +1236,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
 `403` **no** se maneja aquí a propósito: el token sí es válido, el rol no alcanza — reintentar o redirigir a login no cambia nada, es responsabilidad de cada pantalla mostrar el error (o, mejor, no ofrecer la acción si `rolGuard`/`tieneRol` ya la descartó de antemano).
 
-**`src/app/app.routes.ts`** — ya existe desde 3.2 con `Layout` como ruta padre y las tres rutas de categorías como hijas; agrega `auth/callback` como hermana de `Layout`, y `canActivate: [authGuard]` **una sola vez**, en la propia ruta de `Layout` — protege todo lo que cuelga de ella, sin repetirlo en cada hija. `auth/callback` queda **fuera** de `Layout` y de cualquier *guard*, porque es, precisamente, la ruta que completa el login (no tiene sentido pedirle sesión a la ruta que la crea, y tampoco necesita el encabezado ni el menú):
+**`src/app/app.routes.ts`** — ya existe desde 3.2 con `Layout` como ruta padre y las tres rutas de categorías como hijas; agrega `auth/callback` como hermana de `Layout`. A diferencia de lo que esta guía decía antes, `authGuard` **no** va en la propia ruta de `Layout`: `Inicio` (`''`) debe quedar público — cualquiera que abra `http://localhost:4200` tiene que poder navegar la aplicación sin que se le exija sesión de entrada (mismo criterio que cualquier sitio con un botón "Iniciar sesión" visible, en vez de forzar el login en la puerta). El *guard* va, en cambio, en `categorias` y sus dos hijas de escritura — recién ahí, al intentar entrar, se dispara el login:
 
 ```typescript
 import { Routes } from '@angular/router';
@@ -1248,7 +1250,6 @@ export const routes: Routes = [
   },
   {
     path: '',
-    canActivate: [authGuard],
     loadComponent: () => import('./core/layout/layout').then((m) => m.Layout),
     children: [
       {
@@ -1257,16 +1258,17 @@ export const routes: Routes = [
       },
       {
         path: 'categorias',
+        canActivate: [authGuard],
         loadComponent: () => import('./features/catalogo/categoria-list').then((m) => m.CategoriaList),
       },
       {
         path: 'categorias/nueva',
-        canActivate: [rolGuard('ADMIN')],
+        canActivate: [authGuard, rolGuard('ADMIN')],
         loadComponent: () => import('./features/catalogo/categoria-form').then((m) => m.CategoriaForm),
       },
       {
         path: 'categorias/:id/editar',
-        canActivate: [rolGuard('ADMIN')],
+        canActivate: [authGuard, rolGuard('ADMIN')],
         loadComponent: () => import('./features/catalogo/categoria-form').then((m) => m.CategoriaForm),
       },
     ],
@@ -1274,9 +1276,65 @@ export const routes: Routes = [
 ];
 ```
 
-`rolGuard('ADMIN')` en las dos rutas de escritura calza con `SecurityConfig.java` del Gateway (S07b): `POST`/`PUT`/`DELETE` de `/categorias/**` exigen `ROLE_ADMIN` ahí, así que la SPA no inventa una regla nueva, solo refleja en el *router* la que ya existe en el backend — un `CLIENTE` que intente entrar a `categorias/nueva` o `categorias/:id/editar` navegando la URL a mano es redirigido a `/` antes de que el componente llegue a cargar, sin necesidad de que el backend responda `403` para descartarlo.
+`categorias/nueva`/`categorias/:id/editar` llevan **los dos** *guards*, en ese orden: primero `authGuard` (¿hay sesión? si no, dispara el login) y recién después `rolGuard('ADMIN')` (¿el rol alcanza?) — poner solo `rolGuard` ahí no bastaría, porque sin sesión `auth.tieneRol(...)` simplemente da `false` y rebota a `/` en silencio, en vez de ofrecer el login. `rolGuard('ADMIN')` calza con `SecurityConfig.java` del Gateway (S07b): `POST`/`PUT`/`DELETE` de `/categorias/**` exigen `ROLE_ADMIN` ahí, así que la SPA no inventa una regla nueva, solo refleja en el *router* la que ya existe en el backend.
 
 `app.ts`/`app.html` no cambian — siguen siendo el `<router-outlet />` que ya quedó listo desde 3.2, sin tocar.
+
+**`src/app/app.config.ts`** — este paso va junto con `app.routes.ts`, no después: sin él, `authGuard`/`rolGuard` ya protegen las rutas, pero ninguna petición sale con el token todavía. A diferencia de lo que decía antes esta guía, la CLI **no** genera ningún *provider* de `HttpClient`: `ng new` deja `app.config.ts` solo con `provideBrowserGlobalErrorListeners()` y `provideRouter(routes)`. Reemplaza el archivo completo:
+
+```typescript
+import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { routes } from './app.routes';
+import { authInterceptor } from './core/interceptors/auth-interceptor';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideBrowserGlobalErrorListeners(),
+    provideRouter(routes),
+    provideHttpClient(withInterceptors([authInterceptor])),
+  ],
+};
+```
+
+**Error frecuente**: un `PUT`/`DELETE`/`POST` responde `401` **aunque ya hayas iniciado sesión**, y en la pestaña *Network* el header `Authorization` directamente no aparece en la petición (revisa *Request Headers*, no la respuesta). Significa que `provideHttpClient(withInterceptors([authInterceptor]))` nunca quedó en `app.config.ts` — sin ese *provider*, `authInterceptor` existe como archivo pero el *router* de peticiones HTTP de Angular nunca lo ejecuta, así que ninguna petición sale con el token, sin importar que la sesión sí esté activa.
+
+**Mostrar la sesión real en el propio `Layout`: "Iniciar sesión" o "Cerrar sesión", según corresponda.** Hasta ahora el encabezado solo mostraba "pagatu" — con `AuthService` ya construido, y con `Inicio` público (arriba), el encabezado tiene que servir para los dos casos: alguien que todavía no inició sesión (ve un botón para hacerlo, voluntariamente, sin que nadie se lo exija) y alguien que ya la tiene (ve que la tiene, y puede cerrarla):
+
+```typescript
+import { Component, inject } from '@angular/core';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../auth/auth-service';
+
+@Component({
+  selector: 'app-layout',
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  templateUrl: './layout.html',
+  styleUrl: './layout.css',
+})
+export class Layout {
+  protected readonly auth = inject(AuthService);
+}
+```
+
+En `layout.html`, agrega los dos botones dentro de `<header>`, junto al enlace existente — solo uno de los dos se muestra a la vez:
+
+```html
+<header class="header">
+  <a routerLink="/" class="home-link">pagatu</a>
+  @if (auth.autenticado()) {
+    <span class="sesion">Sesión activa</span>
+    <button type="button" (click)="auth.cerrarSesion()">Cerrar sesión</button>
+  } @else {
+    <button type="button" (click)="auth.iniciarLogin()">Iniciar sesión</button>
+  }
+</header>
+```
+
+No hay un nombre real que mostrar porque, desde S07b (7.4), `idCliente` **es** el claim `sub` — un identificador técnico, no un nombre pensado para mostrarse en pantalla. Si tu propio dominio (4.1) necesita mostrar un nombre real, ahí sí hace falta un *user attribute* + *protocol mapper* propios en Keycloak (el patrón que S07 diseñó originalmente para `idCliente`, antes de que S07b decidiera que no hacía falta, 7.4) para que ese dato viaje en el token.
+
+Con el botón **Iniciar sesión** siempre visible cuando no hay sesión, quien abre `/` directo nunca ve un *redirect* forzoso a Keycloak — puede quedarse en `Inicio` leyendo, o ir voluntariamente a loguearse. El único disparador automático sigue siendo `authGuard` (arriba), y solo al intentar entrar a `categorias`.
 
 **Ahora sí, distinguir el `403` en pantalla.** Hasta 3.3, `categoria-form.ts`/`categoria-list.ts` solo podían recibir `401` (no existía ningún token todavía) — por eso sus manejadores de error no distinguían nada más. Con login y roles reales ya en juego, un `403` (sesión válida, rol insuficiente) sí es un caso distinto que vale la pena mostrar con su propio mensaje. Agrega el `import` y el chequeo en **`categoria-form.ts`** (`guardar`):
 
@@ -1314,42 +1372,6 @@ En **`categoria-list.ts`** (`eliminar`), junto al chequeo de `500` que ya existe
 ```
 
 Aquí el `403` sí es más probable que en `CategoriaForm`: el botón **Eliminar** vive en la lista (`categorias`), que cualquier usuario logueado puede abrir — no hay *route guard* de rol sobre esa ruta, solo sobre `categorias/nueva`/`categorias/:id/editar`. Un `CLIENTE` ve el botón igual que un `ADMIN`, y es recién el backend quien lo rechaza.
-
-**Mostrar la sesión real y cerrar sesión, en el propio `Layout`.** Hasta ahora el encabezado solo mostraba "pagatu" — con `AuthService` ya construido, agrega el botón de cierre de sesión y, ya que `idCliente` (el claim `sub`) no es un dato legible para una persona, al menos la confirmación de que hay una sesión activa:
-
-```typescript
-import { Component, inject } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-import { AuthService } from '../auth/auth-service';
-
-@Component({
-  selector: 'app-layout',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
-  templateUrl: './layout.html',
-  styleUrl: './layout.css',
-})
-export class Layout {
-  protected readonly auth = inject(AuthService);
-}
-```
-
-En `layout.html`, agrega el botón dentro de `<header>`, junto al enlace existente:
-
-```html
-<header class="header">
-  <a routerLink="/" class="home-link">pagatu</a>
-  <span class="sesion">Sesión activa</span>
-  <button type="button" (click)="auth.cerrarSesion()">Cerrar sesión</button>
-</header>
-```
-
-No hay un nombre real que mostrar porque, desde S07b (7.4), `idCliente` **es** el claim `sub` — un identificador técnico, no un nombre pensado para mostrarse en pantalla. Si tu propio dominio (4.1) necesita mostrar un nombre real, ahí sí hace falta un *user attribute* + *protocol mapper* propios en Keycloak (el patrón que S07 diseñó originalmente para `idCliente`, antes de que S07b decidiera que no hacía falta, 7.4) para que ese dato viaje en el token.
-
-**`src/app/app.config.ts`** — registra el interceptor en el *provider* de `HttpClient` que la CLI ya generó:
-
-```typescript
-provideHttpClient(withInterceptors([authInterceptor])),
-```
 
 ### 3.5 Crear una orden
 

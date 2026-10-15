@@ -1,6 +1,14 @@
 <header class="header">
   <a routerLink="/" class="home-link">pagatu</a>
+  @if (auth.autenticado()) {
+    <span class="sesion">Sesión activa</span>
+    <button type="button" (click)="auth.cerrarSesion()">Cerrar sesión</button>
+  } @else {
+    <button type="button" (click)="auth.iniciarLogin()">Iniciar sesión</button>
+  }
 </header>
+
+
 
 <div class="body">
   <nav class="sidebar" aria-label="Menú principal">
@@ -11,3 +19,4 @@
     <router-outlet />
   </main>
 </div>
+
