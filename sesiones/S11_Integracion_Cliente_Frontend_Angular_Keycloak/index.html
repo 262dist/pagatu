@@ -2415,8 +2415,10 @@ npm<span class="w"> </span>--version
 <div class="highlight"><pre><span></span><code>ng<span class="w"> </span>version
 </code></pre></div>
 <p>Debe mostrar <code>Angular CLI: 22.x.x</code>. Si aparece una versión distinta (de otro curso, por ejemplo), no hace falta desinstalarla primero: vuelve a correr el mismo comando — <code>npm</code> sobrescribe en el mismo lugar la versión global que ya tengas.</p>
-<p><strong>Crear el proyecto:</strong></p>
-<div class="highlight"><pre><span></span><code>ng<span class="w"> </span>new<span class="w"> </span>pagatu-frontend<span class="w"> </span>--routing<span class="w"> </span>--style<span class="o">=</span>css<span class="w"> </span>--ssr<span class="o">=</span><span class="nb">false</span>
+<p><strong>Crear el proyecto</strong>, dentro de <code>clients/</code> — ese directorio ya existe reservado en la raíz del repositorio (README) precisamente porque <code>pagatu-frontend</code> no tiene por qué ser el único cliente: mañana puede sumarse una app móvil u otro frontend web, cada uno en su propia carpeta junto a este:</p>
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>clients
+<span class="nb">cd</span><span class="w"> </span>clients
+ng<span class="w"> </span>new<span class="w"> </span>pagatu-frontend<span class="w"> </span>--routing<span class="w"> </span>--style<span class="o">=</span>css<span class="w"> </span>--ssr<span class="o">=</span><span class="nb">false</span>
 <span class="nb">cd</span><span class="w"> </span>pagatu-frontend
 </code></pre></div>
 <p>La CLI hace un par de preguntas interactivas antes de generar el proyecto:</p>
