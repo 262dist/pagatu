@@ -262,7 +262,9 @@ Reemplaza `app.html` (todavía trae la página de bienvenida de la CLI, que nunc
 
 Guarda y mira `http://localhost:4200`: la página queda **en blanco**. Es lo esperado, no un error — `app.routes.ts` todavía no tiene ninguna ruta, así que `<router-outlet />` no tiene nada que mostrar todavía.
 
-**Crear el *layout*: encabezado y menú.** Esta pantalla ya no va a ser la única — en este mismo paso vas a tener `categorias`, `categorias/nueva` y `categorias/:id/editar`, y más adelante (3.5, 3.7) se suman las de órdenes — así que, a diferencia de un ejemplo de una sola pantalla, sí hace falta un lugar fijo para el menú que no se repita dentro de cada componente. En Angular, eso se resuelve con una **ruta padre**: un componente de *layout* con su propio `<router-outlet />`, y las pantallas de cada funcionalidad como rutas hijas que se renderizan ahí dentro (mismo patrón de LP2 S07, 2.4/3.5):
+**Crear el *layout*: encabezado y menú.** Esta pantalla ya no va a ser la única — en este mismo paso vas a tener `categorias`, `categorias/nueva` y `categorias/:id/editar`, y más adelante (3.5, 3.7) se suman las de órdenes — así que, a diferencia de un ejemplo de una sola pantalla, sí hace falta un lugar fijo para el menú que no se repita dentro de cada componente. En Angular, eso se resuelve con una **ruta padre**: un componente de *layout* con su propio `<router-outlet />`, y las pantallas de cada funcionalidad como rutas hijas que se renderizan ahí dentro (mismo patrón de LP2 S07, 2.4/3.5).
+
+**El comando de la CLI es opcional** — en esta guía (y en el resto de la sesión) cada paso ya muestra el contenido completo de cada archivo, así que crear `layout.ts`/`layout.html`/`layout.css` a mano, con ese mismo contenido, funciona exactamente igual. Si vienes de React, donde no es costumbre generar archivos por un comando, puedes saltarte esto y solo crear los tres archivos directamente en `src/app/core/layout/`. Si prefieres que la CLI cree el andamiaje (incluye un `layout.spec.ts` de pruebas que esta sesión no usa):
 
 ```bash
 ng generate component core/layout
@@ -435,6 +437,8 @@ export class CategoriaService {
 }
 ```
 
+Igual que con `Layout`: este comando es opcional, `--flat` evita el subdirectorio extra que la CLI crearía por defecto (`categoria-list/categoria-list.ts`) — si prefieres, crea `categoria-list.ts`/`categoria-list.html` a mano, directo en `features/catalogo/`:
+
 ```bash
 ng generate component features/catalogo/categoria-list --flat
 ```
@@ -497,7 +501,7 @@ export class CategoriaList implements OnInit {
 }
 ```
 
-**Crear una página de inicio.** Antes de cablear las rutas, una pantalla de bienvenida mínima en `''` — sin lógica ni estilos propios: un *redirect* automático hacia `categorias` forzaría esa pantalla como si fuera la única posible, en vez de dejar que quien entra a la aplicación elija desde el menú (mismo criterio de LP2 S07, 3.6):
+**Crear una página de inicio.** Antes de cablear las rutas, una pantalla de bienvenida mínima en `''` — sin lógica ni estilos propios: un *redirect* automático hacia `categorias` forzaría esa pantalla como si fuera la única posible, en vez de dejar que quien entra a la aplicación elija desde el menú (mismo criterio de LP2 S07, 3.6). De nuevo, la CLI es opcional — crear `inicio.ts`/`inicio.html` a mano en `src/app/core/inicio/` funciona igual:
 
 ```bash
 ng generate component core/inicio
@@ -651,7 +655,7 @@ En `categoria-list.html`, reemplaza el contenido por el enlace a "nueva categor�
 
 `categoria.id!` (con `!`) le confirma a TypeScript que, para una categoría que ya vino del backend y aparece en esta tabla, `id` nunca es `undefined` — solo es opcional (3.2, `categoria.model.ts`) para el caso de una categoría que todavía no se crea.
 
-**Crear `CategoriaForm`, el formulario separado de crear/editar:**
+**Crear `CategoriaForm`, el formulario separado de crear/editar** (la CLI es opcional, igual que en los pasos anteriores — `--flat` evita el subdirectorio extra):
 
 ```bash
 ng generate component features/catalogo/categoria-form --flat
