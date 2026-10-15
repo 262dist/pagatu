@@ -38,7 +38,7 @@ Al concluir la clase, estarás en condiciones de:
 | Actividades a Realizar en el Periodo | Orientaciones generales (Orientaciones Metodológicas) | Material de estudio recomendado |
 |---|---|---|
 | Revisión previa individual | Completar [S07b](S07b_Seguridad_Distribuida_Keycloak.md) si tu equipo todavía no lo hizo — es prerrequisito, no parte de la clase de hoy. Repasar S7 (2.4 completa, Tabla 6, Figura 6, 3.27) y S9 (el patrón Saga y los estados de `EstadoOrden`). Confirmar que Keycloak, el Gateway, `pagatu-orden-ms`/`pagatu-pago-ms` y Kafka siguen corriendo (`obs/` no hace falta para esta sesión). Trabajo individual, antes de clase. | S07b completa, S7 (2.4, Tabla 6), S9 (2.2-2.4). |
-| Clase presencial | Construcción guiada del cliente Angular, login con PKCE, catálogo, creación de orden y la pantalla de consistencia eventual. Trabajo individual en la propia laptop, siguiendo al docente paso a paso. | Contenedores y servicios corriendo, Pasos 3.1 a 3.9 de esta guía. |
+| Clase presencial | Construcción guiada del cliente Angular, login con PKCE, catálogo, creación de orden y la pantalla de consistencia eventual. Trabajo individual en la propia laptop, siguiendo al docente paso a paso. | Contenedores y servicios corriendo, Pasos 3.1 a 3.8 de esta guía. |
 | Evaluación formativa | Revisión en clase del login real, la creación de una orden y su transición observada de `PENDIENTE_PAGO` a su estado final. La evidencia se completa y sustenta de forma individual, fuera del aula, según los criterios mínimos de la sección 4.4. | Indicaciones de entrega (4.3), rúbrica de evaluación (4.6). |
 
 ### 1.6 Motivación de la sesión
@@ -132,7 +132,7 @@ Lo que **no** dejó resuelto S07b, a propósito —porque es una necesidad del c
 
 Hasta hoy, cada petición a `pagatu` salió de PowerShell, `curl` o Swagger — ninguno de los tres es un navegador ejecutando JavaScript desde un origen (*origin*: protocolo + dominio + puerto) distinto al del servidor. `pagatu-frontend` sí lo es: corre en `http://localhost:4200` (el puerto por defecto de Angular), y llama a `pagatu-gateway` en `http://localhost:18080` — dos orígenes distintos, por definición (CORS, *Cross-Origin Resource Sharing*, compara los tres componentes, y el puerto ya es suficiente para que difieran). Sin configurar CORS en el Gateway, el navegador bloquea la respuesta **antes** de que el código de Angular la vea, con un error que nunca aparece en Postman/`curl` porque esa política la aplica el navegador, no el servidor ni ninguna herramienta de línea de comandos.
 
-El Gateway es el lugar correcto para esta configuración — no cada microservicio por separado: es el único componente por el que pasa cualquier petición del cliente, y configurarlo ahí una sola vez cubre `pagatu-catalogo-ms`, `pagatu-orden-ms` y `pagatu-pago-ms` a la vez, sin tocar ninguno de los tres. 3.4 lo construye.
+El Gateway es el lugar correcto para esta configuración — no cada microservicio por separado: es el único componente por el que pasa cualquier petición del cliente, y configurarlo ahí una sola vez cubre `pagatu-catalogo-ms`, `pagatu-orden-ms` y `pagatu-pago-ms` a la vez, sin tocar ninguno de los tres. 3.3 lo construye.
 
 ### 2.4 Arquitectura mínima de la SPA y login con PKCE
 
@@ -160,29 +160,28 @@ La Figura 2 (2.1) ya mostró el instante en el que una orden existe pero su pago
 | *WebSocket*/*Server-Sent Events* | El servidor empuja la actualización al cliente apenas cambia el estado, sin que el cliente pregunte. | Elimina el tráfico redundante del *polling*, pero exige una conexión persistente y código nuevo en cada microservicio involucrado. |
 | Recarga manual | El usuario mismo refresca la pantalla para ver si ya cambió. | El mínimo esfuerzo de construcción, pero traslada el trabajo de "darse cuenta" al usuario — la peor experiencia de las tres. |
 
-Esta sesión construye **polling** (3.8) — no porque sea la opción ideal en términos absolutos (*WebSocket* evita tráfico redundante, y una arquitectura orientada a eventos con `Server-Sent Events` es el camino natural para un sistema que ya es 100% asíncrono del lado del backend), sino porque es la que se puede construir y verificar de punta a punta en una sesión, sin agregar infraestructura nueva a `pagatu-orden-ms`. Queda documentado, igual que el *Backend-for-Frontend* de 2.4, como un límite honesto de alcance, no como una decisión de que *polling* sea la respuesta correcta para cualquier sistema.
+Esta sesión construye **polling** (3.7) — no porque sea la opción ideal en términos absolutos (*WebSocket* evita tráfico redundante, y una arquitectura orientada a eventos con `Server-Sent Events` es el camino natural para un sistema que ya es 100% asíncrono del lado del backend), sino porque es la que se puede construir y verificar de punta a punta en una sesión, sin agregar infraestructura nueva a `pagatu-orden-ms`. Queda documentado, igual que el *Backend-for-Frontend* de 2.4, como un límite honesto de alcance, no como una decisión de que *polling* sea la respuesta correcta para cualquier sistema.
 
 ## 3. Aplica: actividad práctica guiada
 
 Tiempo: 100 min.
 
-**Actividad:** configuración de CORS en el Gateway y construcción del primer cliente Angular del curso, sobre el Keycloak que [S07b](S07b_Seguridad_Distribuida_Keycloak.md) ya dejó corriendo — login con *Authorization Code* + PKCE, catálogo, creación de una orden y una pantalla de "Mis pedidos" que refleja la consistencia eventual real del sistema (Producto de la sesión en 1.4).
+**Actividad:** construcción del primer cliente Angular del curso, en el mismo orden incremental que LP2 ya usó (S7 de esa guía): primero una pantalla real sin ninguna seguridad, directo contra un microservicio, para confirmar que el proyecto en sí funciona; recién después el Gateway, CORS y Keycloak; y solo al final, con el login ya resuelto, todo lo que depende de saber quién inició sesión (órdenes, pagos, consistencia eventual) (Producto de la sesión en 1.4).
 
-**Propósito de la actividad:** que cada estudiante vea, de punta a punta, que todo lo diseñado en S7 sobre papel (Tabla 6, Figura 6) se ejecuta sin sorpresas cuando llega el momento, y que una interfaz real puede mostrar honestamente un estado que el propio sistema todavía no resolvió.
+**Propósito de la actividad:** que cada estudiante vea, de punta a punta, que todo lo diseñado en S7 sobre papel (Tabla 6, Figura 6) se ejecuta sin sorpresas cuando llega el momento, y que una interfaz real puede mostrar honestamente un estado que el propio sistema todavía no resolvió — sin tener que depurar Angular y PKCE al mismo tiempo, desde el primer minuto.
 
-**Orientaciones metodológicas:** el docente construye la SPA paso a paso frente a la clase, probando cada pieza contra el sistema real (ya migrado a Keycloak en S07b) antes de avanzar; los estudiantes replican cada paso en su propia instancia y provocan ellos mismos el caso de un método de pago rechazado (3.9) para ver la transición a `CANCELADA` en su propia pantalla.
+**Orientaciones metodológicas:** el docente construye la SPA paso a paso frente a la clase, probando cada pieza contra el sistema real (ya migrado a Keycloak en S07b) antes de avanzar; los estudiantes replican cada paso en su propia instancia y provocan ellos mismos el caso de un método de pago rechazado (3.8) para ver la transición a `CANCELADA` en su propia pantalla.
 
 **Actividades para realizar:**
 
 - **3.1** Verificar el punto de partida.
-- **3.2** Habilitar CORS en el Gateway.
-- **3.3** Crear el proyecto Angular 22 y su arquitectura mínima.
+- **3.2** Crear el proyecto Angular 22 y una pantalla de categorías, sin seguridad.
+- **3.3** Cambiar al Gateway y habilitar CORS ahí.
 - **3.4** Login con *Authorization Code* + PKCE.
-- **3.5** Catálogo de productos, a través del Gateway.
-- **3.6** Crear una orden.
-- **3.7** Agregar la consulta de pago por orden en `pagatu-pago-ms`.
-- **3.8** "Mis pedidos": consistencia eventual con *polling*.
-- **3.9** Probar de punta a punta, incluido un pago rechazado.
+- **3.5** Crear una orden.
+- **3.6** Agregar la consulta de pago por orden en `pagatu-pago-ms`.
+- **3.7** "Mis pedidos": consistencia eventual con *polling*.
+- **3.8** Probar de punta a punta, incluido un pago rechazado.
 
 ### 3.1 Verificar el punto de partida
 
@@ -194,9 +193,500 @@ git clone --branch s07b-keycloak https://github.com/262dist/pagatu.git
 
 Si tu equipo no congeló esa rama, clona `s07-seguridad-jwt` y completa [S07b](S07b_Seguridad_Distribuida_Keycloak.md) tú mismo antes de seguir — no continúes con `pagatu-auth-ms` todavía corriendo, ni con `Orden.idCliente` todavía como `Long` (S07b, 7.3-7.4). Levanta `pagatu-config`, `pagatu-eureka`, `pagatu-gateway`, Keycloak (`keycloak/`), los tres microservicios que quedan activos (`pagatu-catalogo-ms`, `pagatu-orden-ms`, `pagatu-pago-ms` — `pagatu-auth-ms` ya está retirado, S07b, sección 8) y `kafka/` — **`obs/` no hace falta para esta sesión** (README raíz): nada de lo que construyes hoy depende de Prometheus/Grafana/Loki, y Docker ya va suficientemente cargado con lo anterior. Confirma en `http://localhost:18761` (Eureka) que los tres microservicios y el Gateway aparecen registrados, que `http://localhost:19000/health/ready` (Keycloak) responde `{"status": "UP"}`, y que una petición con un token de Keycloak (el mismo procedimiento de S07b, 7.4) sigue devolviendo `200` contra `http://localhost:18080/api/v1/ordenes`.
 
-### 3.2 Habilitar CORS en el Gateway
+## Parte A — Angular sin seguridad, directo contra un microservicio
 
-**Producto del paso:** `pagatu-gateway` aceptando peticiones del navegador desde `http://localhost:4200` (2.3).
+Las secciones 3.2 solas construyen `pagatu-frontend` desde cero y confirman que el proyecto en sí funciona, llamando directo a `pagatu-catalogo-ms`, sin Gateway, sin Keycloak. Nada de esto se vuelve a tocar en la Parte B — lo que cambia ahí es dónde apunta la aplicación, no cómo está construida.
+
+### 3.2 Crear el proyecto Angular 22 y una pantalla de categorías, sin seguridad
+
+**Producto del paso:** `pagatu-frontend` corriendo en el navegador, con un CRUD completo de categorías (listar, crear, editar, eliminar) — **sin Gateway, sin CORS centralizado, sin Keycloak** — para confirmar que el proyecto en sí funciona antes de sumarle seguridad: si algo falla más adelante, esta pantalla ya deja descartado que el problema sea Angular o el backend.
+
+**Instalar Node.js y la CLI de Angular.** Si nunca instalaste Angular en esta laptop, hace falta esto primero:
+
+Instala [Node.js LTS](https://nodejs.org/) (incluye `npm`, el instalador de paquetes de Node). Verifica la instalación:
+
+```bash
+node --version
+npm --version
+```
+
+**Solo en Windows.** `npm` y `ng` se instalan como *scripts* de PowerShell (`.ps1`), y PowerShell bloquea por defecto la ejecución de cualquier *script* local — sin este permiso, el siguiente comando (o cualquier `ng` que corras después) falla con `no se puede cargar el archivo ... porque la ejecución de scripts está deshabilitada en este sistema`. Habilítalo una sola vez por usuario:
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+`-Scope CurrentUser` limita el cambio a tu propio usuario, no a toda la máquina — no hace falta ser administrador. En macOS/Linux este paso no aplica: la terminal no restringe ejecutar *scripts* por defecto.
+
+Instala la CLI de Angular de forma global, fijando la versión 22:
+
+```bash
+npm install -g @angular/cli@22
+```
+
+Verifica:
+
+```bash
+ng version
+```
+
+Debe mostrar `Angular CLI: 22.x.x`. Si aparece una versión distinta (de otro curso, por ejemplo), no hace falta desinstalarla primero: vuelve a correr el mismo comando — `npm` sobrescribe en el mismo lugar la versión global que ya tengas.
+
+**Crear el proyecto:**
+
+```bash
+ng new pagatu-frontend --routing --style=css --ssr=false
+cd pagatu-frontend
+```
+
+La CLI hace un par de preguntas interactivas antes de generar el proyecto:
+
+- **"Which AI tools should Angular integrate with?"** — elige **None**. Cada opción agrega archivos de configuración que no son parte de lo que esta sesión enseña.
+- **Motor de pruebas *end-to-end*** — elige **No** (no es tema de esta sesión).
+
+```bash
+ng serve
+```
+
+Abre `http://localhost:4200` — debe mostrarse la página de bienvenida por defecto de Angular.
+
+**Recorrer la estructura generada**, antes de tocar nada: dentro de `src/app/`, `ng new` ya dejó `app.ts` (componente raíz), `app.html`, `app.config.ts` (los *providers* de la aplicación) y `app.routes.ts` — este último empieza **vacío** (`export const routes: Routes = [];`), sin ninguna ruta todavía. Zoneless (sin `Zone.js`) ya es el comportamiento por defecto de Angular 22, sin necesidad de ninguna bandera ni *provider* adicional — por eso el comando de arriba no lleva ninguna opción relacionada.
+
+Reemplaza `app.html` (todavía trae la página de bienvenida de la CLI, que nunca es parte de `pagatu-frontend`) por algo vacío por ahora:
+
+```html
+<router-outlet />
+```
+
+Guarda y mira `http://localhost:4200`: la página queda **en blanco**. Es lo esperado, no un error — `app.routes.ts` todavía no tiene ninguna ruta, así que `<router-outlet />` no tiene nada que mostrar todavía. Con una sola pantalla todavía no hace falta un *layout* propio (menú, encabezado) — eso solo tendría sentido si hubiera más de una pantalla entre las que navegar, y hoy no la hay. Por ahora, todo el código nuevo vive en `features/catalogo/`.
+
+**`src/environments/environment.ts`** — por ahora, apunta directo a `pagatu-catalogo-ms`, no al Gateway:
+
+```typescript
+export const environment = {
+  apiBaseUrl: 'http://localhost:8080',
+};
+```
+
+**`services/pagatu-catalogo-ms/src/main/java/pe/edu/upeu/catalogo/CorsConfig.java`** (archivo nuevo) — el mismo patrón que ya usaste en LP2 (un único `WebMvcConfigurer`, el origen permitido externalizado en `application-dev.yml`), con una diferencia a propósito: `@ConditionalOnProperty` hace que todo este bean **solo exista si `pagatu.cors.enabled=true`** — así, cuando en 3.3 ya no haga falta, apagarlo es cambiar una línea del YAML y reiniciar, sin tocar ni recompilar este `.java` (que puede quedarse en el repositorio, igual que `pagatu-auth-ms` quedó como referencia en S07b):
+
+```java
+package pe.edu.upeu.catalogo;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import java.util.Arrays;
+
+@Configuration
+@ConditionalOnProperty(name = "pagatu.cors.enabled", havingValue = "true")
+public class CorsConfig implements WebMvcConfigurer {
+
+    @Value("${pagatu.cors.allowed-origins}")
+    private String allowedOrigins;
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        String[] origins = Arrays.stream(allowedOrigins.split(","))
+                .map(String::trim)
+                .toArray(String[]::new);
+        registry.addMapping("/api/**")
+                .allowedOrigins(origins)
+                .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE")
+                .allowedHeaders("*");
+    }
+}
+```
+
+**`infra/pagatu-config/config-repo/pagatu-catalogo-ms-dev.yml`** — agrega las dos propiedades que el `CorsConfig` espera:
+
+```yaml
+pagatu:
+  cors:
+    enabled: true
+    allowed-origins: http://localhost:4200
+```
+
+`pagatu-catalogo-ms` no tiene Spring Security (S11 ya lo confirmó: nada le impide responder) — pero el *navegador* sí bloquea la respuesta sin este header, aunque el servidor la haya enviado sin problema (S07, 2.3).
+
+**`src/app/features/catalogo/categoria.model.ts`** (archivo nuevo) — `id` y `descripcion` quedan opcionales porque una categoría nueva, antes de crearse, todavía no tiene ninguno de los dos (el backend asigna `id`; `descripcion` no es obligatoria, `CategoriaRequest` solo exige `nombre`):
+
+```typescript
+export interface Categoria {
+  id?: number;
+  nombre: string;
+  descripcion?: string;
+}
+```
+
+**`src/app/features/catalogo/categoria-service.ts`** (archivo nuevo) — solo **listar**, no hace falta el CRUD completo: el objetivo de este paso es confirmar que Angular, CORS y el backend se hablan, no construir la pantalla final de categorías:
+
+```typescript
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import { Categoria } from './categoria.model';
+
+@Injectable({ providedIn: 'root' })
+export class CategoriaService {
+  private readonly http = inject(HttpClient);
+
+  listar(): Observable<Categoria[]> {
+    return this.http.get<Categoria[]>(`${environment.apiBaseUrl}/api/v1/categorias`);
+  }
+}
+```
+
+```bash
+ng generate component features/catalogo/categoria-list --flat
+```
+
+**`src/app/features/catalogo/categoria-list.ts`**:
+
+```typescript
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { CategoriaService } from './categoria-service';
+import { Categoria } from './categoria.model';
+
+@Component({
+  selector: 'app-categoria-list',
+  templateUrl: './categoria-list.html',
+})
+export class CategoriaList implements OnInit {
+  private readonly categoriaService = inject(CategoriaService);
+  protected readonly categorias = signal<Categoria[]>([]);
+  protected readonly cargando = signal(true);
+  protected readonly error = signal<string | null>(null);
+
+  ngOnInit(): void {
+    this.categoriaService.listar().subscribe({
+      next: (data) => {
+        this.categorias.set(data);
+        this.cargando.set(false);
+      },
+      error: () => {
+        this.error.set('No se pudo cargar la lista de categorias.');
+        this.cargando.set(false);
+      },
+    });
+  }
+}
+```
+
+**`src/app/features/catalogo/categoria-list.html`**:
+
+```html
+@if (cargando()) {
+  <p>Cargando categorias...</p>
+} @else if (error()) {
+  <p>{{ error() }}</p>
+} @else {
+  <table>
+    <thead>
+      <tr><th>Nombre</th><th>Descripcion</th></tr>
+    </thead>
+    <tbody>
+      @for (categoria of categorias(); track categoria.id) {
+        <tr>
+          <td>{{ categoria.nombre }}</td>
+          <td>{{ categoria.descripcion }}</td>
+        </tr>
+      } @empty {
+        <tr><td colspan="2">No hay categorias registradas.</td></tr>
+      }
+    </tbody>
+  </table>
+}
+```
+
+`app.ts`/`app.html` no se tocan — ya quedaron listos con `<router-outlet />` (arriba, al recorrer la estructura generada). Lo único que falta es decirle al *router* qué mostrar en la ruta raíz. Reemplaza **`src/app/app.routes.ts`** (hoy vacío):
+
+```typescript
+import { Routes } from '@angular/router';
+
+export const routes: Routes = [
+  {
+    path: '',
+    loadComponent: () => import('./features/catalogo/categoria-list').then((m) => m.CategoriaList),
+  },
+];
+```
+
+`loadComponent` (en vez de un `import` normal arriba del archivo) carga `CategoriaList` de forma perezosa — recién cuando el *router* necesita mostrar la ruta `''`, no antes. Con un solo componente la diferencia no se nota, pero es el mismo patrón que vas a repetir en 3.4 al agregar la ruta de `auth/callback`.
+
+Confirma en el navegador (`ng serve`, `http://localhost:4200`) que la lista de categorías aparece — **sin ningún token, sin ningún login**. Si ves un error de CORS en la consola del navegador (no en la terminal de Angular), revisa que `CorsConfig.java` quedó creado y que `pagatu-catalogo-ms` se reinició para tomarlo.
+
+**Completa el CRUD: crear, editar y eliminar.** Con la lista ya confirmada, agrega a `categoria-service.ts` los cuatro métodos que todavía faltan, junto a `listar()`:
+
+```typescript
+  obtener(id: number): Observable<Categoria> {
+    return this.http.get<Categoria>(`${environment.apiBaseUrl}/api/v1/categorias/${id}`);
+  }
+
+  crear(categoria: Categoria): Observable<Categoria> {
+    return this.http.post<Categoria>(`${environment.apiBaseUrl}/api/v1/categorias`, categoria);
+  }
+
+  actualizar(id: number, categoria: Categoria): Observable<Categoria> {
+    return this.http.put<Categoria>(`${environment.apiBaseUrl}/api/v1/categorias/${id}`, categoria);
+  }
+
+  eliminar(id: number): Observable<void> {
+    return this.http.delete<void>(`${environment.apiBaseUrl}/api/v1/categorias/${id}`);
+  }
+```
+
+`obtener` hace falta porque crear y editar van a vivir en una **pantalla separada** de la lista (mismo patrón de LP2 S07: `CategoriaList` solo lista y elimina; `CategoriaForm` crea y edita, navegando entre una y otra por *routing*, no con un formulario escondido dentro de la tabla) — al entrar a "editar", esa pantalla nueva necesita poder pedir los datos de una categoría puntual.
+
+En `categoria-list.ts`, saca la carga de la lista de `ngOnInit` a un método propio `cargar()` — vas a necesitar repetirla después de eliminar, no solo al entrar a la pantalla — y agrega `eliminar`, con una confirmación antes de borrar y un mensaje distinto si el backend rechaza el borrado porque la categoría tiene productos asociados:
+
+```typescript
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { RouterLink } from '@angular/router';
+import { CategoriaService } from './categoria-service';
+import { Categoria } from './categoria.model';
+
+@Component({
+  selector: 'app-categoria-list',
+  imports: [RouterLink],
+  templateUrl: './categoria-list.html',
+})
+export class CategoriaList implements OnInit {
+  private readonly categoriaService = inject(CategoriaService);
+  protected readonly categorias = signal<Categoria[]>([]);
+  protected readonly cargando = signal(true);
+  protected readonly error = signal<string | null>(null);
+
+  ngOnInit(): void {
+    this.cargar();
+  }
+
+  private cargar(): void {
+    this.cargando.set(true);
+    this.categoriaService.listar().subscribe({
+      next: (data) => {
+        this.categorias.set(data);
+        this.cargando.set(false);
+      },
+      error: () => {
+        this.error.set('No se pudo cargar la lista de categorias.');
+        this.cargando.set(false);
+      },
+    });
+  }
+
+  eliminar(id: number): void {
+    if (!confirm(`¿Seguro que quieres eliminar la categoría ${id}?`)) {
+      return;
+    }
+    this.categoriaService.eliminar(id).subscribe({
+      next: () => this.cargar(),
+      error: (err: HttpErrorResponse) => {
+        if (err.status === 500) {
+          this.error.set('No se puede eliminar: la categoría tiene productos asociados.');
+        } else {
+          this.error.set('No se pudo eliminar la categoría.');
+        }
+      },
+    });
+  }
+}
+```
+
+`confirm(...)` es un diálogo nativo del navegador (sin librerías) — alcanza para esta confirmación puntual; `err.status === 500` distingue el caso real que vas a poder reproducir en 3.8 (`Producto` depende de `Categoria`, S1/S3): el backend rechaza el `DELETE` con un error de integridad referencial, y ese `catch` evita mostrar un mensaje genérico para un problema que sí tiene una explicación concreta.
+
+En `categoria-list.html`, reemplaza el contenido por el enlace a "nueva categoría" y las acciones de cada fila:
+
+```html
+@if (cargando()) {
+  <p>Cargando categorias...</p>
+} @else if (error()) {
+  <p>{{ error() }}</p>
+} @else {
+  <a routerLink="/categorias/nueva">Nueva categoría</a>
+
+  <table>
+    <thead>
+      <tr><th>Nombre</th><th>Descripcion</th><th></th></tr>
+    </thead>
+    <tbody>
+      @for (categoria of categorias(); track categoria.id) {
+        <tr>
+          <td>{{ categoria.nombre }}</td>
+          <td>{{ categoria.descripcion }}</td>
+          <td>
+            <a [routerLink]="['/categorias', categoria.id, 'editar']">Editar</a>
+            <button (click)="eliminar(categoria.id!)">Eliminar</button>
+          </td>
+        </tr>
+      } @empty {
+        <tr><td colspan="3">No hay categorias registradas.</td></tr>
+      }
+    </tbody>
+  </table>
+}
+```
+
+`categoria.id!` (con `!`) le confirma a TypeScript que, para una categoría que ya vino del backend y aparece en esta tabla, `id` nunca es `undefined` — solo es opcional (3.2, `categoria.model.ts`) para el caso de una categoría que todavía no se crea.
+
+**Crear `CategoriaForm`, el formulario separado de crear/editar:**
+
+```bash
+ng generate component features/catalogo/categoria-form --flat
+```
+
+**`src/app/features/catalogo/categoria-form.ts`** — usa *Reactive Forms* (`FormBuilder`, `Validators`), no `[(ngModel)]`: valida en el propio formulario antes de llamar al backend, con reglas que calzan con las de `CategoriaRequest` (`@NotBlank`, `@Size(max = 100)` en `nombre`; `@Size(max = 255)` en `descripcion`, S3) — la validación real y definitiva sigue siendo la del backend, esto solo evita mandar una petición que ya se sabe que va a fallar. Si la ruta trae un `id` (editar), el constructor pide esa categoría y precarga el formulario; si no (crear), el formulario arranca vacío:
+
+```typescript
+import { Component, inject, signal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { CategoriaService } from './categoria-service';
+
+@Component({
+  selector: 'app-categoria-form',
+  imports: [ReactiveFormsModule],
+  templateUrl: './categoria-form.html',
+})
+export class CategoriaForm {
+  private readonly fb = inject(FormBuilder);
+  private readonly categoriaService = inject(CategoriaService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+
+  protected readonly id = signal<number | null>(null);
+  protected readonly cargando = signal(false);
+  protected readonly error = signal<string | null>(null);
+
+  protected readonly form = this.fb.nonNullable.group({
+    nombre: ['', [Validators.required, Validators.maxLength(100)]],
+    descripcion: ['', [Validators.maxLength(255)]],
+  });
+
+  constructor() {
+    const idParam = this.route.snapshot.paramMap.get('id');
+    if (idParam) {
+      const id = Number(idParam);
+      this.id.set(id);
+      this.cargando.set(true);
+      this.categoriaService.obtener(id).subscribe({
+        next: (categoria) => {
+          this.form.patchValue(categoria);
+          this.cargando.set(false);
+        },
+        error: () => {
+          this.error.set('No se pudo cargar la categoría.');
+          this.cargando.set(false);
+        },
+      });
+    }
+  }
+
+  guardar(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    const valor = this.form.getRawValue();
+    const id = this.id();
+    const peticion = id ? this.categoriaService.actualizar(id, valor) : this.categoriaService.crear(valor);
+
+    peticion.subscribe({
+      next: () => this.router.navigate(['/']),
+      error: () => this.error.set('No se pudo guardar la categoría.'),
+    });
+  }
+
+  cancelar(): void {
+    this.router.navigate(['/']);
+  }
+
+  protected mensajeValidacion(campo: 'nombre' | 'descripcion'): string {
+    const control = this.form.controls[campo];
+
+    if (!control.touched) return '';
+    if (control.hasError('required')) return 'Este campo es obligatorio.';
+    if (control.hasError('maxlength')) {
+      return `Máximo ${control.getError('maxlength').requiredLength} caracteres.`;
+    }
+    return '';
+  }
+}
+```
+
+`this.route.snapshot.paramMap.get('id')` lee el segmento `:id` de la URL (la ruta que falta agregar más abajo, `categorias/:id/editar`) — `snapshot` alcanza porque este componente se vuelve a crear desde cero cada vez que cambias de categoría a editar (nunca navegas de un `editar` a otro sin pasar por la lista), así que no hace falta reaccionar a un cambio de parámetro sin recrear el componente.
+
+`mensajeValidacion` solo devuelve texto una vez que el campo está `touched` — un campo queda `touched` cuando el usuario hace clic dentro y sale de él, no al apretar "Guardar" directamente; por eso `guardar()` llama a `this.form.markAllAsTouched()` antes de salir si el formulario es inválido: sin eso, alguien que nunca tocó ningún campo y aprieta "Guardar" vería que "no pasa nada", sin ningún mensaje que lo explique.
+
+**`src/app/features/catalogo/categoria-form.html`**:
+
+```html
+<form [formGroup]="form" (ngSubmit)="guardar()">
+  @if (cargando()) {
+    <p>Cargando...</p>
+  }
+
+  <label>
+    Nombre
+    <input type="text" formControlName="nombre" />
+  </label>
+  @if (mensajeValidacion('nombre'); as mensaje) {
+    <p class="error">{{ mensaje }}</p>
+  }
+
+  <label>
+    Descripcion
+    <textarea formControlName="descripcion"></textarea>
+  </label>
+  @if (mensajeValidacion('descripcion'); as mensaje) {
+    <p class="error">{{ mensaje }}</p>
+  }
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  <button type="submit" [disabled]="cargando()">Guardar</button>
+  <button type="button" (click)="cancelar()">Cancelar</button>
+</form>
+```
+
+`type="button"` en **Cancelar** no es opcional: sin él, heredaría el tipo por defecto de cualquier `<button>` dentro de un `<form>` (`submit`), y un clic en "Cancelar" dispararía igual el `(ngSubmit)="guardar()"` — justo lo que se quiere evitar.
+
+Agrega las dos rutas que faltan a **`src/app/app.routes.ts`**:
+
+```typescript
+import { Routes } from '@angular/router';
+
+export const routes: Routes = [
+  {
+    path: '',
+    loadComponent: () => import('./features/catalogo/categoria-list').then((m) => m.CategoriaList),
+  },
+  {
+    path: 'categorias/nueva',
+    loadComponent: () => import('./features/catalogo/categoria-form').then((m) => m.CategoriaForm),
+  },
+  {
+    path: 'categorias/:id/editar',
+    loadComponent: () => import('./features/catalogo/categoria-form').then((m) => m.CategoriaForm),
+  },
+];
+```
+
+Las dos rutas nuevas apuntan al mismo componente, `CategoriaForm` — es el propio componente el que decide, leyendo `:id`, si está creando o editando (arriba, en su constructor).
+
+Confirma de nuevo en el navegador: crea una categoría nueva, edítala, y elimínala — las tres acciones deben reflejarse en la lista sin recargar la página a mano.
+
+## Parte B — El mismo proyecto, a través del Gateway y con CORS centralizado
+
+### 3.3 Cambiar al Gateway y habilitar CORS ahí
+
+**Producto del paso:** la misma pantalla de categorías de 3.2, ahora a través de `pagatu-gateway`, con CORS centralizado — y `pagatu-catalogo-ms` ya sin necesidad de su propio `CorsConfig`.
 
 **`infra/pagatu-config/config-repo/pagatu-gateway-dev.yml`** — agrega, junto a las rutas que ya existen:
 
@@ -213,25 +703,15 @@ spring:
             allowCredentials: true
 ```
 
-`globalcors` aplica la misma política a **todas** las rutas del Gateway de una sola vez (2.3) — ninguna de `pagatu-catalogo-ms`, `pagatu-orden-ms` ni `pagatu-pago-ms` necesita su propia configuración de CORS, porque el navegador nunca las llama directamente, siempre a través del Gateway. `allowCredentials: true` es necesario porque la petición incluye el header `Authorization` (no una *cookie*, pero Spring Cloud Gateway trata ambos casos bajo la misma bandera de *credentials* del estándar CORS).
+`globalcors` aplica la misma política a **todas** las rutas del Gateway de una sola vez (2.3) — ninguna de `pagatu-catalogo-ms`, `pagatu-orden-ms` ni `pagatu-pago-ms` necesita su propia configuración de CORS, porque de aquí en adelante el navegador nunca las llama directamente, siempre a través del Gateway. `allowCredentials: true` es necesario porque la petición incluye el header `Authorization` (no una *cookie*, pero Spring Cloud Gateway trata ambos casos bajo la misma bandera de *credentials* del estándar CORS).
 
-### 3.3 Crear el proyecto Angular 22 y su arquitectura mínima
+**Apaga el `CorsConfig` de `pagatu-catalogo-ms`** (3.2) — ya no hace falta, y gracias al `@ConditionalOnProperty` no hay que tocar ni recompilar el `.java`: en `pagatu-catalogo-ms-dev.yml`, cambia `pagatu.cors.enabled` a `false` (o borra esas dos líneas) y reinicia. Esta es exactamente la razón por la que el Gateway es el lugar correcto para configurar CORS y no cada microservicio por separado (2.3) — imagina mantener ese mismo `CorsConfig` encendido en `pagatu-catalogo-ms`, `pagatu-orden-ms` **y** `pagatu-pago-ms` por separado, uno por uno, cada vez que cambie el origen permitido.
 
-**Producto del paso:** `pagatu-frontend`, un proyecto Angular 22 con el mismo patrón `core`/`features` que ya conoces de LP2 (S7 de esa guía) — componentes *standalone*, *routing* por `loadComponent`, *change detection* sin zonas.
-
-```bash
-npm install -g @angular/cli@22
-ng new pagatu-frontend --routing --style=css --zoneless --ssr=false
-cd pagatu-frontend
-```
-
-Estructura mínima (la misma convención que LP2 ya usa, sin repetirla aquí): `core/auth/` (login, PKCE, decodificación de JWT), `core/layout/` (encabezado y navegación), `core/interceptors/` (adjuntar el token), `core/guards/` (autenticación y rol), `features/catalogo/` (listar productos), `features/pedidos/` (crear orden, "Mis pedidos"). Si no construiste la sesión equivalente de LP2 (S7/S11), replica el mismo patrón: componentes *standalone* con `loadComponent`, servicios con `inject(HttpClient)`, sin módulos de Angular clásicos (`NgModule`).
-
-**`src/environments/environment.ts`**:
+**`src/environments/environment.ts`** — agrega la configuración de Keycloak, y cambia **solo el valor** de `apiBaseUrl`, no su nombre (la variable queda igual, para no tener que salir a cambiarla en cada servicio que ya la use):
 
 ```typescript
 export const environment = {
-  gatewayBaseUrl: 'http://localhost:18080',
+  apiBaseUrl: 'http://localhost:18080',
   keycloak: {
     issuer: 'http://localhost:18180/realms/pagatu',
     clientId: 'pagatu-frontend',
@@ -241,7 +721,9 @@ export const environment = {
 };
 ```
 
-Todas las llamadas de negocio apuntan a `gatewayBaseUrl` — ningún componente ni servicio de `pagatu-frontend` conoce la dirección de `pagatu-catalogo-ms`, `pagatu-orden-ms` ni `pagatu-pago-ms` por separado (2.1): el Gateway es el único punto de entrada, exactamente como ya lo es para PowerShell/`curl`/Swagger desde S4.
+`categoria-service.ts` no necesita ningún cambio de código — sigue leyendo `environment.apiBaseUrl`, que ahora vale `18080` en vez de `8080` (misma ruta, `/api/v1/categorias` — el Gateway la enruta igual, S4). Confirma que la pantalla de 3.2 **sigue funcionando** con ese único cambio de valor — todavía sin login, porque `GET /api/v1/categorias` es pública incluso a través del Gateway (S07, `permitAll` en las reglas `hasRole`/`hasAnyRole` del Gateway). Aprovecha y agrega también `ProductoService` (mismo patrón, `/api/v1/productos`, también pública para `GET`) — lo vas a necesitar en 3.5.
+
+Todas las llamadas de negocio apuntan a `apiBaseUrl` de aquí en adelante — ningún componente ni servicio de `pagatu-frontend` conoce la dirección de `pagatu-catalogo-ms`, `pagatu-orden-ms` ni `pagatu-pago-ms` por separado (2.1): el Gateway es el único punto de entrada, exactamente como ya lo es para PowerShell/`curl`/Swagger desde S4.
 
 ### 3.4 Login con *Authorization Code* + PKCE
 
@@ -390,7 +872,7 @@ A diferencia de un cliente que solo valida PKCE, este `AuthService` también gen
 
 `idCliente` lee el claim `sub`, no uno propio (S07b, 7.4 — `idCliente` ya **es** `sub`, el mismo patrón que `vendedorId` en LP2): por eso no hace falta ningún campo extra en `JwtPayload`, ni ninguna configuración adicional de Keycloak para que viaje en el token.
 
-**`src/app/core/auth/jwt.ts`** (decodificación, sin validar firma — igual que LP2 S11 y S7, 3.27):
+**`src/app/core/auth/jwt.ts`** (decodificación, sin validar firma — la SPA nunca valida un token, eso lo hace el Gateway como *resource server*, S07; solo lee los *claims* que ya confió en Keycloak):
 
 ```typescript
 export interface JwtPayload {
@@ -447,27 +929,109 @@ export class AuthCallback {
 }
 ```
 
-Agrega la ruta en `app.routes.ts` (`path: 'auth/callback'`, fuera de cualquier *guard*, igual que en LP2 S11) y construye `authGuard`/`rolGuard`/el interceptor que adjunta `Authorization: Bearer` siguiendo exactamente el mismo patrón funcional de LP2 (S11, *guards* `CanActivateFn`, interceptor `HttpInterceptorFn`) — esta sesión no repite ese código, porque ya lo conoces; la única diferencia es que `rolGuard` compara contra `CLIENTE`/`ADMIN`, no contra `VENDEDOR`/`SUPERVISOR`/`ADMIN`.
-
-### 3.5 Catálogo de productos, a través del Gateway
-
-**Producto del paso:** una pantalla simple que lista los productos de `pagatu-catalogo-ms`, llamando siempre a través de `pagatu-gateway`.
+**`src/app/core/guards/auth-guard.ts`** (archivo nuevo) — protege cualquier ruta que exija sesión activa; si no la hay, inicia el login en vez de solo bloquear:
 
 ```typescript
-// catalogo-service.ts
-@Injectable({ providedIn: 'root' })
-export class CatalogoService {
-  private readonly http = inject(HttpClient);
+import { inject } from '@angular/core';
+import { CanActivateFn } from '@angular/router';
+import { AuthService } from '../auth/auth-service';
 
-  listarProductos(): Observable<ProductoResponse[]> {
-    return this.http.get<ProductoResponse[]>(`${environment.gatewayBaseUrl}/api/v1/productos`);
+export const authGuard: CanActivateFn = async (_route, state) => {
+  const auth = inject(AuthService);
+  if (auth.autenticado()) {
+    return true;
   }
+  await auth.iniciarLogin(state.url);
+  return false;
+};
+```
+
+`authGuard` es `async` porque `iniciarLogin` lo es (3.4, por el `await` a `generarCodeChallenge`) — el `return false` final casi nunca le importa a nadie: para cuando se ejecuta, `location.href` ya empezó a navegar el navegador entero fuera de la SPA, hacia Keycloak.
+
+**`src/app/core/guards/rol-guard.ts`** (archivo nuevo) — compara contra `CLIENTE`/`ADMIN`, los únicos dos roles de este realm (S07b):
+
+```typescript
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
+import { AuthService } from '../auth/auth-service';
+
+export function rolGuard(...rolesPermitidos: string[]): CanActivateFn {
+  return () => {
+    const auth = inject(AuthService);
+    const router = inject(Router);
+    if (auth.tieneRol(...rolesPermitidos)) {
+      return true;
+    }
+    router.navigateByUrl('/');
+    return false;
+  };
 }
 ```
 
-No hace falta ningún rol para consultar el catálogo (S7 no restringe `GET /api/v1/productos`) — cualquier usuario autenticado, `CLIENTE` o `ADMIN`, lo ve igual.
+**`src/app/core/interceptors/auth-interceptor.ts`** (archivo nuevo) — adjunta el token a cada petición saliente; si el servidor responde `401` (token inválido o vencido), reinicia el login — a diferencia de LP2, `AuthService` (3.4) no construyó un método para renovar el `refresh_token` en silencio, así que no hay nada que reintentar: la única salida honesta de un `401` aquí es volver a loguearse:
 
-### 3.6 Crear una orden
+```typescript
+import { inject } from '@angular/core';
+import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import { catchError, throwError } from 'rxjs';
+import { AuthService } from '../auth/auth-service';
+
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const auth = inject(AuthService);
+  const token = auth.accessToken();
+  const conToken = token ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req;
+
+  return next(conToken).pipe(
+    catchError((error: HttpErrorResponse) => {
+      if (error.status === 401) {
+        auth.iniciarLogin(location.pathname);
+      }
+      return throwError(() => error);
+    }),
+  );
+};
+```
+
+`403` **no** se maneja aquí a propósito: el token sí es válido, el rol no alcanza — reintentar o redirigir a login no cambia nada, es responsabilidad de cada pantalla mostrar el error (o, mejor, no ofrecer la acción si `rolGuard`/`tieneRol` ya la descartó de antemano).
+
+**`src/app/app.routes.ts`** — ya existe desde 3.2 con las tres rutas de categorías (`''`, `categorias/nueva`, `categorias/:id/editar`); agrega `auth/callback` y protege las tres con `authGuard`. `auth/callback` queda **fuera** de cualquier *guard*, porque es, precisamente, la ruta que completa el login:
+
+```typescript
+import { Routes } from '@angular/router';
+import { authGuard } from './core/guards/auth-guard';
+
+export const routes: Routes = [
+  {
+    path: 'auth/callback',
+    loadComponent: () => import('./core/auth/auth-callback').then((m) => m.AuthCallback),
+  },
+  {
+    path: '',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/catalogo/categoria-list').then((m) => m.CategoriaList),
+  },
+  {
+    path: 'categorias/nueva',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/catalogo/categoria-form').then((m) => m.CategoriaForm),
+  },
+  {
+    path: 'categorias/:id/editar',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/catalogo/categoria-form').then((m) => m.CategoriaForm),
+  },
+];
+```
+
+`app.ts`/`app.html` no cambian — siguen siendo el `<router-outlet />` que ya quedó listo desde 3.2, sin tocar.
+
+**`src/app/app.config.ts`** — registra el interceptor en el *provider* de `HttpClient` que la CLI ya generó:
+
+```typescript
+provideHttpClient(withInterceptors([authInterceptor])),
+```
+
+### 3.5 Crear una orden
 
 **Producto del paso:** un formulario simple (lista de productos del carrito + método de pago) que llama a `POST /api/v1/ordenes` con el token del usuario, y muestra el estado inicial real — `PENDIENTE_PAGO`, nunca "pagado".
 
@@ -478,20 +1042,20 @@ export class OrdenService {
   private readonly http = inject(HttpClient);
 
   crear(request: OrdenRequest): Observable<OrdenResponse> {
-    return this.http.post<OrdenResponse>(`${environment.gatewayBaseUrl}/api/v1/ordenes`, request);
+    return this.http.post<OrdenResponse>(`${environment.apiBaseUrl}/api/v1/ordenes`, request);
   }
 
   obtener(id: number): Observable<OrdenResponse> {
-    return this.http.get<OrdenResponse>(`${environment.gatewayBaseUrl}/api/v1/ordenes/${id}`);
+    return this.http.get<OrdenResponse>(`${environment.apiBaseUrl}/api/v1/ordenes/${id}`);
   }
 }
 ```
 
 En la plantilla, al recibir la respuesta de `crear`, muestra el `estado` tal cual llega (`PENDIENTE_PAGO`) — **no** un mensaje genérico de "¡Compra exitosa!". Es la misma disciplina que el caso de 1.6 motivó: la respuesta `201` confirma que la orden se registró, no que el pago se resolvió.
 
-**Error frecuente**: usar `OrdenRequest.metodoPago = "TARJETA_RECHAZADA"` sin querer durante las pruebas. Es el valor exacto que `PagoServiceImpl` (S8) usa para simular un rechazo — útil a propósito en 3.11, pero confuso si aparece sin que lo esperes durante 3.8.
+**Error frecuente**: usar `OrdenRequest.metodoPago = "TARJETA_RECHAZADA"` sin querer durante las pruebas. Es el valor exacto que `PagoServiceImpl` (S8) usa para simular un rechazo — útil a propósito en 3.8 (Probar de punta a punta), pero confuso si aparece sin que lo esperes aquí, en 3.5.
 
-### 3.7 Agregar la consulta de pago por orden en `pagatu-pago-ms`
+### 3.6 Agregar la consulta de pago por orden en `pagatu-pago-ms`
 
 **Producto del paso:** `GET /api/v1/pagos/por-orden/{ordenId}`, el endpoint que falta para que la SPA pueda mostrar el pago de una orden específica — hoy `PagoController` solo tiene `listar()` (todos los pagos) y `obtener(id)` (por el `id` del propio pago, no por el de la orden).
 
@@ -534,7 +1098,7 @@ Agrega la ruta en el Gateway, junto a las que ya existen (**`infra/pagatu-config
 
 Es la primera ruta de `pagatu-pago-ms` en el Gateway — hasta hoy, nadie necesitaba llamarlo desde afuera (solo consumía eventos de Kafka).
 
-### 3.8 "Mis pedidos": consistencia eventual con *polling*
+### 3.7 "Mis pedidos": consistencia eventual con *polling*
 
 **Producto del paso:** una pantalla que lista las órdenes del usuario autenticado y refresca automáticamente cada orden que siga `PENDIENTE_PAGO`, hasta que cambie.
 
@@ -580,9 +1144,9 @@ export class MisPedidos implements OnInit, OnDestroy {
 
 `refrescarPendientes` solo vuelve a consultar las órdenes que **siguen** `PENDIENTE_PAGO` — una vez que una orden llega a `PAGADA` o `CANCELADA`, deja de incluirse en el sondeo (2.5, Tabla 3: el costo real del *polling* es tráfico redundante; dejar de preguntar por lo que ya no cambia es la forma más simple de acotarlo). `ngOnDestroy` limpia el intervalo — sin esto, navegar fuera de "Mis pedidos" dejaría el sondeo corriendo en segundo plano indefinidamente.
 
-En la plantilla, muestra el estado con una etiqueta clara por cada valor (`PENDIENTE_PAGO` → "Procesando pago…", `PAGADA` → "Pagado", `CANCELADA` → "Pago rechazado") y, para la orden correspondiente, llama a `GET /api/v1/pagos/por-orden/{id}` (3.7) una vez que el estado ya no es `PENDIENTE_PAGO`, para mostrar el método de pago y la fecha real.
+En la plantilla, muestra el estado con una etiqueta clara por cada valor (`PENDIENTE_PAGO` → "Procesando pago…", `PAGADA` → "Pagado", `CANCELADA` → "Pago rechazado") y, para la orden correspondiente, llama a `GET /api/v1/pagos/por-orden/{id}` (3.6) una vez que el estado ya no es `PENDIENTE_PAGO`, para mostrar el método de pago y la fecha real.
 
-### 3.9 Probar de punta a punta, incluido un pago rechazado
+### 3.8 Probar de punta a punta, incluido un pago rechazado
 
 **Producto del paso:** evidencia real de los dos desenlaces posibles — una orden que termina `PAGADA` y una que termina `CANCELADA` — ambas vistas cambiar en pantalla sin recargar la página a mano.
 
