@@ -2434,7 +2434,8 @@ ng<span class="w"> </span>new<span class="w"> </span>pagatu-frontend<span class=
 <div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">router-outlet</span> <span class="p">/&gt;</span>
 </code></pre></div>
 <p>Guarda y mira <code>http://localhost:4200</code>: la página queda <strong>en blanco</strong>. Es lo esperado, no un error — <code>app.routes.ts</code> todavía no tiene ninguna ruta, así que <code>&lt;router-outlet /&gt;</code> no tiene nada que mostrar todavía.</p>
-<p><strong>Crear el <em>layout</em>: encabezado y menú.</strong> Esta pantalla ya no va a ser la única — en este mismo paso vas a tener <code>categorias</code>, <code>categorias/nueva</code> y <code>categorias/:id/editar</code>, y más adelante (3.5, 3.7) se suman las de órdenes — así que, a diferencia de un ejemplo de una sola pantalla, sí hace falta un lugar fijo para el menú que no se repita dentro de cada componente. En Angular, eso se resuelve con una <strong>ruta padre</strong>: un componente de <em>layout</em> con su propio <code>&lt;router-outlet /&gt;</code>, y las pantallas de cada funcionalidad como rutas hijas que se renderizan ahí dentro (mismo patrón de LP2 S07, 2.4/3.5):</p>
+<p><strong>Crear el <em>layout</em>: encabezado y menú.</strong> Esta pantalla ya no va a ser la única — en este mismo paso vas a tener <code>categorias</code>, <code>categorias/nueva</code> y <code>categorias/:id/editar</code>, y más adelante (3.5, 3.7) se suman las de órdenes — así que, a diferencia de un ejemplo de una sola pantalla, sí hace falta un lugar fijo para el menú que no se repita dentro de cada componente. En Angular, eso se resuelve con una <strong>ruta padre</strong>: un componente de <em>layout</em> con su propio <code>&lt;router-outlet /&gt;</code>, y las pantallas de cada funcionalidad como rutas hijas que se renderizan ahí dentro (mismo patrón de LP2 S07, 2.4/3.5).</p>
+<p><strong>El comando de la CLI es opcional</strong> — en esta guía (y en el resto de la sesión) cada paso ya muestra el contenido completo de cada archivo, así que crear <code>layout.ts</code>/<code>layout.html</code>/<code>layout.css</code> a mano, con ese mismo contenido, funciona exactamente igual. Si vienes de React, donde no es costumbre generar archivos por un comando, puedes saltarte esto y solo crear los tres archivos directamente en <code>src/app/core/layout/</code>. Si prefieres que la CLI cree el andamiaje (incluye un <code>layout.spec.ts</code> de pruebas que esta sesión no usa):</p>
 <div class="highlight"><pre><span></span><code>ng<span class="w"> </span>generate<span class="w"> </span>component<span class="w"> </span>core/layout
 </code></pre></div>
 <p><strong><code>src/app/core/layout/layout.ts</code></strong>:</p>
@@ -2578,6 +2579,7 @@ ng<span class="w"> </span>new<span class="w"> </span>pagatu-frontend<span class=
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
+<p>Igual que con <code>Layout</code>: este comando es opcional, <code>--flat</code> evita el subdirectorio extra que la CLI crearía por defecto (<code>categoria-list/categoria-list.ts</code>) — si prefieres, crea <code>categoria-list.ts</code>/<code>categoria-list.html</code> a mano, directo en <code>features/catalogo/</code>:</p>
 <div class="highlight"><pre><span></span><code>ng<span class="w"> </span>generate<span class="w"> </span>component<span class="w"> </span>features/catalogo/categoria-list<span class="w"> </span>--flat
 </code></pre></div>
 <p><strong><code>src/app/features/catalogo/categoria-list.ts</code></strong>:</p>
@@ -2632,7 +2634,7 @@ ng<span class="w"> </span>new<span class="w"> </span>pagatu-frontend<span class=
   <span class="p">&lt;/</span><span class="nt">table</span><span class="p">&gt;</span>
 }
 </code></pre></div>
-<p><strong>Crear una página de inicio.</strong> Antes de cablear las rutas, una pantalla de bienvenida mínima en <code>''</code> — sin lógica ni estilos propios: un <em>redirect</em> automático hacia <code>categorias</code> forzaría esa pantalla como si fuera la única posible, en vez de dejar que quien entra a la aplicación elija desde el menú (mismo criterio de LP2 S07, 3.6):</p>
+<p><strong>Crear una página de inicio.</strong> Antes de cablear las rutas, una pantalla de bienvenida mínima en <code>''</code> — sin lógica ni estilos propios: un <em>redirect</em> automático hacia <code>categorias</code> forzaría esa pantalla como si fuera la única posible, en vez de dejar que quien entra a la aplicación elija desde el menú (mismo criterio de LP2 S07, 3.6). De nuevo, la CLI es opcional — crear <code>inicio.ts</code>/<code>inicio.html</code> a mano en <code>src/app/core/inicio/</code> funciona igual:</p>
 <div class="highlight"><pre><span></span><code>ng<span class="w"> </span>generate<span class="w"> </span>component<span class="w"> </span>core/inicio
 </code></pre></div>
 <p><code>core/inicio/inicio.ts</code> no necesita ningún cambio: la CLI ya genera una clase vacía (<code>export class Inicio {}</code>), y esta pantalla no tiene ningún estado propio — solo texto. Reemplaza <strong><code>src/app/core/inicio/inicio.html</code></strong>:</p>
@@ -2763,7 +2765,7 @@ ng<span class="w"> </span>new<span class="w"> </span>pagatu-frontend<span class=
 }
 </code></pre></div>
 <p><code>categoria.id!</code> (con <code>!</code>) le confirma a TypeScript que, para una categoría que ya vino del backend y aparece en esta tabla, <code>id</code> nunca es <code>undefined</code> — solo es opcional (3.2, <code>categoria.model.ts</code>) para el caso de una categoría que todavía no se crea.</p>
-<p><strong>Crear <code>CategoriaForm</code>, el formulario separado de crear/editar:</strong></p>
+<p><strong>Crear <code>CategoriaForm</code>, el formulario separado de crear/editar</strong> (la CLI es opcional, igual que en los pasos anteriores — <code>--flat</code> evita el subdirectorio extra):</p>
 <div class="highlight"><pre><span></span><code>ng<span class="w"> </span>generate<span class="w"> </span>component<span class="w"> </span>features/catalogo/categoria-form<span class="w"> </span>--flat
 </code></pre></div>
 <p><strong><code>src/app/features/catalogo/categoria-form.ts</code></strong> — usa <em>Reactive Forms</em> (<code>FormBuilder</code>, <code>Validators</code>), no <code>[(ngModel)]</code>: valida en el propio formulario antes de llamar al backend, con reglas que calzan con las de <code>CategoriaRequest</code> (<code>@NotBlank</code>, <code>@Size(max = 100)</code> en <code>nombre</code>; <code>@Size(max = 255)</code> en <code>descripcion</code>, S3) — la validación real y definitiva sigue siendo la del backend, esto solo evita mandar una petición que ya se sabe que va a fallar. Si la ruta trae un <code>id</code> (editar), el constructor pide esa categoría y precarga el formulario; si no (crear), el formulario arranca vacío:</p>
