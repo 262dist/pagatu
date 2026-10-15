@@ -28,7 +28,7 @@ pagatu/
 ├── obs/                       # Prometheus + Loki + Promtail + Grafana (S3-S4) — observa infra/, services/ y Keycloak desde afuera, no es una dependencia de arranque
 ├── kafka/                     # Kafka y Kafka UI (S8)
 ├── keycloak/                  # (S07b, pendiente) Keycloak + su Postgres — sustituye a pagatu-auth-ms como servidor de autorización
-└── clients/                   # (S11, pendiente) Frontend Angular con login PKCE contra Keycloak
+└── clients/                   # Frontends que consumen la API — uno por carpeta (pagatu-frontend/, Angular con login PKCE contra Keycloak, S11, pendiente; espacio reservado para futuros clientes, p. ej. móvil)
 ```
 
 ## Requisitos

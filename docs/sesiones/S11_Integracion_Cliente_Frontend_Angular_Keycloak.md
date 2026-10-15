@@ -232,9 +232,11 @@ ng version
 
 Debe mostrar `Angular CLI: 22.x.x`. Si aparece una versión distinta (de otro curso, por ejemplo), no hace falta desinstalarla primero: vuelve a correr el mismo comando — `npm` sobrescribe en el mismo lugar la versión global que ya tengas.
 
-**Crear el proyecto:**
+**Crear el proyecto**, dentro de `clients/` — ese directorio ya existe reservado en la raíz del repositorio (README) precisamente porque `pagatu-frontend` no tiene por qué ser el único cliente: mañana puede sumarse una app móvil u otro frontend web, cada uno en su propia carpeta junto a este:
 
 ```bash
+mkdir clients
+cd clients
 ng new pagatu-frontend --routing --style=css --ssr=false
 cd pagatu-frontend
 ```
