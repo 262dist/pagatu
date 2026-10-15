@@ -618,6 +618,7 @@ export class CategoriaList implements OnInit {
   protected readonly categorias = signal<Categoria[]>([]);
   protected readonly cargando = signal(true);
   protected readonly error = signal<string | null>(null);
+  protected readonly errorAccion = signal<string | null>(null);
 
   ngOnInit(): void {
     this.cargar();
@@ -641,13 +642,14 @@ export class CategoriaList implements OnInit {
     if (!confirm(`¿Seguro que quieres eliminar la categoría ${id}?`)) {
       return;
     }
+    this.errorAccion.set(null);
     this.categoriaService.eliminar(id).subscribe({
       next: () => this.cargar(),
       error: (err: HttpErrorResponse) => {
         if (err.status === 500) {
-          this.error.set('No se puede eliminar: la categoría tiene productos asociados.');
+          this.errorAccion.set('No se puede eliminar: la categoría tiene productos asociados.');
         } else {
-          this.error.set('No se pudo eliminar la categoría.');
+          this.errorAccion.set('No se pudo eliminar la categoría.');
         }
       },
     });
@@ -655,9 +657,11 @@ export class CategoriaList implements OnInit {
 }
 ```
 
+`errorAccion` es una señal **distinta** de `error`: `error` significa "no se pudo traer la lista, no hay nada que mostrar" (3.2) — `errorAccion` significa "la lista sí está, pero esta acción puntual falló", y la lista debe seguir visible para que el usuario pueda intentar de nuevo o elegir otra fila. Reusar `error` para los dos casos es el bug que ibas a encontrar al probar: un `eliminar` fallido dejaría la pantalla entera reemplazada por el mensaje de error (ver más abajo, el `@else` que envuelve toda la tabla), sin ninguna forma de volver a verla sin salir de la ruta y volver a entrar.
+
 `confirm(...)` es un diálogo nativo del navegador (sin librerías) — alcanza para esta confirmación puntual; `err.status === 500` distingue el caso real que vas a poder reproducir en 3.8 (`Producto` depende de `Categoria`, S1/S3): el backend rechaza el `DELETE` con un error de integridad referencial, y ese `catch` evita mostrar un mensaje genérico para un problema que sí tiene una explicación concreta.
 
-En `categoria-list.html`, reemplaza el contenido por el enlace a "nueva categoría" y las acciones de cada fila:
+En `categoria-list.html`, reemplaza el contenido por el enlace a "nueva categoría" y las acciones de cada fila — `errorAccion()` se muestra **dentro** del `@else` (junto a la tabla), nunca en lugar de ella:
 
 ```html
 @if (cargando()) {
@@ -666,6 +670,10 @@ En `categoria-list.html`, reemplaza el contenido por el enlace a "nueva categor�
   <p>{{ error() }}</p>
 } @else {
   <a routerLink="/categorias/nueva">Nueva categoría</a>
+
+  @if (errorAccion()) {
+    <p class="error">{{ errorAccion() }}</p>
+  }
 
   <table>
     <thead>
@@ -688,6 +696,8 @@ En `categoria-list.html`, reemplaza el contenido por el enlace a "nueva categor�
   </table>
 }
 ```
+
+**Error frecuente**: después de un `eliminar` fallido, el enlace **Categorías** del menú "no responde" — en realidad sí responde, pero el *router* ya está parado en `/categorias`, así que un clic sobre el mismo enlace no dispara ninguna navegación nueva (no hay ruta que cambiar) y el componente no se vuelve a crear. Si la pantalla quedó reemplazada por un mensaje de error en vez de la tabla, parece que el menú dejó de funcionar. Con `errorAccion` separado de `error` (arriba), esto ya no debería pasar: la tabla queda visible incluso con la acción fallida, así que no hace falta salir de la ruta para recuperar el control.
 
 `categoria.id!` (con `!`) le confirma a TypeScript que, para una categoría que ya vino del backend y aparece en esta tabla, `id` nunca es `undefined` — solo es opcional (3.2, `categoria.model.ts`) para el caso de una categoría que todavía no se crea.
 
@@ -856,24 +866,84 @@ Confirma de nuevo en el navegador: crea una categoría nueva, edítala, y elimí
 
 **Producto del paso:** la misma pantalla de categorías de 3.2, ahora a través de `pagatu-gateway`, con CORS centralizado — y `pagatu-catalogo-ms` ya sin necesidad de su propio `CorsConfig`.
 
-**`infra/pagatu-config/config-repo/pagatu-gateway-dev.yml`** — agrega, junto a las rutas que ya existen:
+**Importante:** `pagatu-gateway` corre sobre `spring.cloud.gateway.server.webmvc` (la variante servlet de Spring Cloud Gateway, no la reactiva/WebFlux) — la propiedad `spring.cloud.gateway.globalcors`, que sí existe para la variante reactiva, **no aplica aquí**. En esta variante, el Gateway es, por debajo, una aplicación Spring MVC normal — CORS se configura exactamente igual que en cualquier otro microservicio Spring MVC (2.3), con un bean, no con YAML.
 
-```yaml
-spring:
-  cloud:
-    gateway:
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowedOrigins: "http://localhost:4200"
-            allowedMethods: [GET, POST, PUT, PATCH, DELETE, OPTIONS]
-            allowedHeaders: "*"
-            allowCredentials: true
+**`infra/pagatu-gateway/src/main/java/pe/edu/upeu/gateway/config/CorsConfig.java`** (archivo nuevo):
+
+```java
+package pe.edu.upeu.gateway.config;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
+
+@Configuration
+public class CorsConfig {
+
+    @Value("${pagatu.cors.allowed-origins}")
+    private String allowedOrigins;
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuracion = new CorsConfiguration();
+        configuracion.setAllowedOrigins(Arrays.stream(allowedOrigins.split(","))
+                .map(String::trim)
+                .toList());
+        configuracion.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
+        configuracion.setAllowedHeaders(List.of("*"));
+        configuracion.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuracion);
+        return source;
+    }
+}
 ```
 
-`globalcors` aplica la misma política a **todas** las rutas del Gateway de una sola vez (2.3) — ninguna de `pagatu-catalogo-ms`, `pagatu-orden-ms` ni `pagatu-pago-ms` necesita su propia configuración de CORS, porque de aquí en adelante el navegador nunca las llama directamente, siempre a través del Gateway. `allowCredentials: true` es necesario porque la petición incluye el header `Authorization` (no una *cookie*, pero Spring Cloud Gateway trata ambos casos bajo la misma bandera de *credentials* del estándar CORS).
+**`infra/pagatu-config/config-repo/pagatu-gateway-dev.yml`** — agrega la propiedad que el bean espera (mismo nombre de propiedad que ya usaste en `pagatu-catalogo-ms-dev.yml`, 3.2, aunque viva en un archivo distinto):
 
-**Apaga el `CorsConfig` de `pagatu-catalogo-ms`** (3.2) — ya no hace falta, y gracias al `@ConditionalOnProperty` no hay que tocar ni recompilar el `.java`: en `pagatu-catalogo-ms-dev.yml`, cambia `pagatu.cors.enabled` a `false` (o borra esas dos líneas) y reinicia. Esta es exactamente la razón por la que el Gateway es el lugar correcto para configurar CORS y no cada microservicio por separado (2.3) — imagina mantener ese mismo `CorsConfig` encendido en `pagatu-catalogo-ms`, `pagatu-orden-ms` **y** `pagatu-pago-ms` por separado, uno por uno, cada vez que cambie el origen permitido.
+```yaml
+pagatu:
+  cors:
+    allowed-origins: http://localhost:4200
+```
+
+Esto por sí solo **no alcanza**. Esta aplicación tiene Spring Security activo (`SecurityConfig.java`, S07b) con sus propias reglas de autorización — y esas reglas corren **antes** de que cualquier bean de CORS tenga oportunidad de responder. El navegador, antes de un `PUT`/`DELETE` (no antes de un `GET` simple), manda primero una petición de verificación (`OPTIONS`, el *preflight* del estándar CORS) — y esa petición nunca lleva el header `Authorization`, porque todavía no es la petición real. Si ninguna regla de `SecurityConfig.java` permite explícitamente ese `OPTIONS`, cae en `anyRequest().authenticated()` y Spring Security la rechaza con `401` **antes** de que el bean de CORS de arriba pueda agregarle el header `Access-Control-Allow-Origin` — exactamente el error que ves en la consola, aunque el problema real no es de CORS, es de autorización.
+
+**`infra/pagatu-gateway/src/main/java/pe/edu/upeu/gateway/config/SecurityConfig.java`** — agrega `.cors(...)` a la cadena, **antes** de `.csrf(...)`, para que Spring Security use el bean que acabas de crear y deje pasar el *preflight* sin exigirle sesión:
+
+```java
+http
+        .cors(cors -> {})
+        .csrf(csrf -> csrf.disable())
+        .authorizeHttpRequests(auth -> auth
+                // ... las reglas que ya existen, sin cambios
+        )
+        .oauth2ResourceServer(oauth2 -> oauth2
+                .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter))
+        );
+```
+
+`.cors(cors -> {})` le dice a Spring Security "toma el `CorsConfigurationSource` que ya está registrado como *bean*" (el de `CorsConfig.java`) — con eso habilitado, Spring Security reconoce un `OPTIONS` de *preflight* y lo deja pasar automáticamente, sin pedirle que calce con ninguna regla de `authorizeHttpRequests`, porque el *preflight* en sí nunca va a transportar un token.
+
+**Apaga el `CorsConfig` de `pagatu-catalogo-ms`** (3.2) — ya no hace falta, y gracias al `@ConditionalOnProperty` no hay que tocar ni recompilar el `.java`. En **`infra/pagatu-config/config-repo/pagatu-catalogo-ms-dev.yml`**:
+
+```yaml
+pagatu:
+  cors:
+    enabled: false
+    allowed-origins: http://localhost:4200
+```
+
+Reinicia **`pagatu-catalogo-ms`** después del cambio — no hace falta reiniciar `pagatu-config`, que solo sirve el archivo tal cual; quien necesita volver a pedirlo es el propio `pagatu-catalogo-ms`. Esta es exactamente la razón por la que el Gateway es el lugar correcto para configurar CORS y no cada microservicio por separado (2.3) — imagina mantener ese mismo `CorsConfig` encendido en `pagatu-catalogo-ms`, `pagatu-orden-ms` **y** `pagatu-pago-ms` por separado, uno por uno, cada vez que cambie el origen permitido.
+
+**Error frecuente**: `Access-Control-Allow-Origin` header contains multiple values 'http://localhost:4200, http://localhost:4200'. Significa que `pagatu.cors.enabled` se quedó en `true` (arriba) mientras `pagatu-catalogo-ms` seguía corriendo — su respuesta ya trae el header, el Gateway reenvía esa respuesta y le agrega el suyo encima, y el navegador recibe el mismo valor **dos veces** (algo que el estándar CORS no permite, aunque ambos valores sean idénticos). Confirma que el YAML quedó en `false` y que reiniciaste `pagatu-catalogo-ms` después del cambio, no solo el Gateway.
 
 **`src/environments/environment.ts`** — agrega la configuración de Keycloak, y cambia **solo el valor** de `apiBaseUrl`, no su nombre (la variable queda igual, para no tener que salir a cambiarla en cada servicio que ya la use):
 
@@ -890,6 +960,8 @@ export const environment = {
 ```
 
 `categoria-service.ts` no necesita ningún cambio de código — sigue leyendo `environment.apiBaseUrl`, que ahora vale `18080` en vez de `8080` (misma ruta, `/api/v1/categorias` — el Gateway la enruta igual, S4). Confirma que la pantalla de 3.2 **sigue funcionando** con ese único cambio de valor — todavía sin login, porque `GET /api/v1/categorias` es pública incluso a través del Gateway (S07, `permitAll` en las reglas `hasRole`/`hasAnyRole` del Gateway). Aprovecha y agrega también `ProductoService` (mismo patrón, `/api/v1/productos`, también pública para `GET`) — lo vas a necesitar en 3.5.
+
+**Crear, editar y eliminar todavía van a fallar — y está bien que fallen.** `POST`/`PUT`/`DELETE` de `/categorias/**` exigen rol `ADMIN` en `SecurityConfig.java` del Gateway, y a esta altura (3.3) todavía no existe ningún login: sin un token que probar, esas tres operaciones responden `401 (Unauthorized)`, no un error de CORS. Es exactamente la confirmación de que la seguridad del Gateway sigue intacta a través de la pantalla nueva — recién en 3.4, con Keycloak, esas tres acciones empiezan a funcionar.
 
 Todas las llamadas de negocio apuntan a `apiBaseUrl` de aquí en adelante — ningún componente ni servicio de `pagatu-frontend` conoce la dirección de `pagatu-catalogo-ms`, `pagatu-orden-ms` ni `pagatu-pago-ms` por separado (2.1): el Gateway es el único punto de entrada, exactamente como ya lo es para PowerShell/`curl`/Swagger desde S4.
 
@@ -1167,6 +1239,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 ```typescript
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth-guard';
+import { rolGuard } from './core/guards/rol-guard';
 
 export const routes: Routes = [
   {
@@ -1188,10 +1261,12 @@ export const routes: Routes = [
       },
       {
         path: 'categorias/nueva',
+        canActivate: [rolGuard('ADMIN')],
         loadComponent: () => import('./features/catalogo/categoria-form').then((m) => m.CategoriaForm),
       },
       {
         path: 'categorias/:id/editar',
+        canActivate: [rolGuard('ADMIN')],
         loadComponent: () => import('./features/catalogo/categoria-form').then((m) => m.CategoriaForm),
       },
     ],
@@ -1199,7 +1274,46 @@ export const routes: Routes = [
 ];
 ```
 
+`rolGuard('ADMIN')` en las dos rutas de escritura calza con `SecurityConfig.java` del Gateway (S07b): `POST`/`PUT`/`DELETE` de `/categorias/**` exigen `ROLE_ADMIN` ahí, así que la SPA no inventa una regla nueva, solo refleja en el *router* la que ya existe en el backend — un `CLIENTE` que intente entrar a `categorias/nueva` o `categorias/:id/editar` navegando la URL a mano es redirigido a `/` antes de que el componente llegue a cargar, sin necesidad de que el backend responda `403` para descartarlo.
+
 `app.ts`/`app.html` no cambian — siguen siendo el `<router-outlet />` que ya quedó listo desde 3.2, sin tocar.
+
+**Ahora sí, distinguir el `403` en pantalla.** Hasta 3.3, `categoria-form.ts`/`categoria-list.ts` solo podían recibir `401` (no existía ningún token todavía) — por eso sus manejadores de error no distinguían nada más. Con login y roles reales ya en juego, un `403` (sesión válida, rol insuficiente) sí es un caso distinto que vale la pena mostrar con su propio mensaje. Agrega el `import` y el chequeo en **`categoria-form.ts`** (`guardar`):
+
+```typescript
+import { HttpErrorResponse } from '@angular/common/http';
+```
+
+```typescript
+    peticion.subscribe({
+      next: () => this.router.navigate(['/categorias']),
+      error: (err: HttpErrorResponse) => {
+        this.error.set(
+          err.status === 403
+            ? 'No tienes permiso para esta acción.'
+            : 'No se pudo guardar la categoría.',
+        );
+      },
+    });
+```
+
+Este `403` casi nunca debería verse en la práctica — `rolGuard('ADMIN')` (arriba) ya le bloquea el acceso a esta pantalla a cualquiera que no sea `ADMIN`. El chequeo queda igual, como segunda capa: por ejemplo, si el rol de alguien cambia en Keycloak mientras ya tenía la sesión abierta en el navegador (el *guard* solo se evalúa al navegar, no en cada petición).
+
+En **`categoria-list.ts`** (`eliminar`), junto al chequeo de `500` que ya existe:
+
+```typescript
+      error: (err: HttpErrorResponse) => {
+        if (err.status === 500) {
+          this.errorAccion.set('No se puede eliminar: la categoría tiene productos asociados.');
+        } else if (err.status === 403) {
+          this.errorAccion.set('No tienes permiso para esta acción.');
+        } else {
+          this.errorAccion.set('No se pudo eliminar la categoría.');
+        }
+      },
+```
+
+Aquí el `403` sí es más probable que en `CategoriaForm`: el botón **Eliminar** vive en la lista (`categorias`), que cualquier usuario logueado puede abrir — no hay *route guard* de rol sobre esa ruta, solo sobre `categorias/nueva`/`categorias/:id/editar`. Un `CLIENTE` ve el botón igual que un `ADMIN`, y es recién el backend quien lo rechaza.
 
 **Mostrar la sesión real y cerrar sesión, en el propio `Layout`.** Hasta ahora el encabezado solo mostraba "pagatu" — con `AuthService` ya construido, agrega el botón de cierre de sesión y, ya que `idCliente` (el claim `sub`) no es un dato legible para una persona, al menos la confirmación de que hay una sesión activa:
 

@@ -1,0 +1,31 @@
+@if (cargando()) {
+  <p>Cargando categorias...</p>
+} @else if (error()) {
+  <p>{{ error() }}</p>
+} @else {
+  <a routerLink="/categorias/nueva">Nueva categoría</a>
+
+  @if (errorAccion()) {
+    <p class="error">{{ errorAccion() }}</p>
+  }
+
+  <table>
+    <thead>
+      <tr><th>Nombre</th><th>Descripcion</th><th></th></tr>
+    </thead>
+    <tbody>
+      @for (categoria of categorias(); track categoria.id) {
+        <tr>
+          <td>{{ categoria.nombre }}</td>
+          <td>{{ categoria.descripcion }}</td>
+          <td>
+            <a [routerLink]="['/categorias', categoria.id, 'editar']">Editar</a>
+            <button (click)="eliminar(categoria.id!)">Eliminar</button>
+          </td>
+        </tr>
+      } @empty {
+        <tr><td colspan="3">No hay categorias registradas.</td></tr>
+      }
+    </tbody>
+  </table>
+}

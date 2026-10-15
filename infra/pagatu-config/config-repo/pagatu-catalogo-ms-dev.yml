@@ -56,3 +56,8 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:18761/eureka
+
+pagatu:
+  cors:
+    enabled: flase
+    allowed-origins: http://localhost:4200
