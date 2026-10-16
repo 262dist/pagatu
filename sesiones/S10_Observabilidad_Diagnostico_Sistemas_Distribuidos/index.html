@@ -2589,7 +2589,10 @@
 <div class="highlight"><pre><span></span><code><span class="c"># Ctrl+C en la terminal donde corre pagatu-pago-ms</span>
 </code></pre></div>
 <p>En el tablero: el panel <strong>Servicios arriba</strong> debe mostrar a <code>pagatu-pago-ms</code> ausente (o su <code>up</code> en <code>0</code>, según el momento del <em>scrape</em>) en menos de <code>scrape_interval</code> (15s). Crea una orden nueva (3.5) — el evento <code>orden.creada</code> queda publicado en Kafka, pero nadie lo consume (S8, 2.2): el panel <strong>Tasa de peticiones</strong> de <code>pagatu-pago-ms</code> se queda plano en <code>0</code>, mientras el de <code>pagatu-orden-ms</code> sigue mostrando actividad.</p>
-<p>Levanta <code>pagatu-pago-ms</code> de nuevo. Usa el panel de <strong>Logs</strong>, filtrando por el <code>traceId</code> de la orden que acabas de crear (3.5), para confirmar en qué momento el evento finalmente se consumió — el mismo patrón de diagnóstico de S8 (2.6), ahora sin salir de Grafana.</p>
+<p>Levanta <code>pagatu-pago-ms</code> de nuevo. Usa el panel de <strong>Logs</strong>, filtrando por el <code>ordenId</code> de la orden que acabas de crear (3.5) — <strong>no</strong> por <code>traceId</code>: 3.4 ya estableció que el <code>traceId</code> no sobrevive el salto por Kafka, así que buscarlo ahí no encontraría nada. <code>PagoServiceImpl.procesar</code> (S8) sí deja el dato que hace falta, en texto plano dentro del propio mensaje (<code>component=processor ordenId={} estado={} status=processed</code>):</p>
+<div class="highlight"><pre><span></span><code>{application="pagatu-pago-ms"} |= "ordenId=11"
+</code></pre></div>
+<p>(cambia <code>11</code> por el <code>id</code> real de la orden que creaste) — el mismo patrón de diagnóstico de S8 (2.6), ahora sin salir de Grafana.</p>
 <p><strong>Tabla 6. Qué mostró cada panel durante la falla simulada</strong></p>
 <table>
 <thead>
@@ -2618,7 +2621,7 @@
 <tr>
 <td>Logs</td>
 <td>Sin líneas nuevas de <code>pagatu-pago-ms</code></td>
-<td>Línea de consumo del evento, con el <code>traceId</code> de la orden</td>
+<td>Línea de consumo del evento, con el <code>ordenId</code> de la orden (no el <code>traceId</code> — 3.4)</td>
 </tr>
 </tbody>
 </table>
