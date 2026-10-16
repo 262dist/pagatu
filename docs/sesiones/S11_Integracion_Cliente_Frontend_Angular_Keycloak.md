@@ -1378,10 +1378,83 @@ Aquí el `403` sí es más probable que en `CategoriaForm`: el botón **Eliminar
 
 ### 3.5 Crear una orden
 
-**Producto del paso:** un formulario simple (lista de productos del carrito + método de pago) que llama a `POST /api/v1/ordenes` con el token del usuario, y muestra el estado inicial real — `PENDIENTE_PAGO`, nunca "pagado".
+**Producto del paso:** una pantalla de catálogo + carrito (lista de productos, cantidad, método de pago) que llama a `POST /api/v1/ordenes` con el token del usuario, y muestra el estado inicial **real** — `PENDIENTE_PAGO` lo normal, pero también el caso honesto en el que algún producto ya no tiene stock (`CARRITO`, sin total ni pago asociado) — nunca un mensaje genérico de "¡Compra exitosa!".
+
+**`src/app/features/catalogo/producto.model.ts`** (archivo nuevo) — mismos campos que `ProductoResponse` (S1/S3); reusa `Categoria` (3.2) para el campo anidado:
 
 ```typescript
-// orden-service.ts
+import { Categoria } from './categoria.model';
+
+export interface Producto {
+  id: number;
+  nombre: string;
+  descripcion: string;
+  precio: number;
+  activo: boolean;
+  stock: number;
+  categoria: Categoria;
+}
+```
+
+**`src/app/features/catalogo/producto-service.ts`** (archivo nuevo) — solo `listar()`: esta sesión no construye un CRUD de productos, solo los necesita para armar el carrito:
+
+```typescript
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import { Producto } from './producto.model';
+
+@Injectable({ providedIn: 'root' })
+export class ProductoService {
+  private readonly http = inject(HttpClient);
+
+  listar(): Observable<Producto[]> {
+    return this.http.get<Producto[]>(`${environment.apiBaseUrl}/api/v1/productos`);
+  }
+}
+```
+
+**`src/app/features/ordenes/orden.model.ts`** (archivo nuevo) — calca `OrdenRequest`/`OrdenResponse`/`DetalleOrdenRequest`/`DetalleOrdenResponse` (S2/S6): `total` queda `null` cuando el backend no pudo reservar el stock completo (abajo, `OrdenServiceImpl.crear`, S6) — por eso es `number | null`, no `number`:
+
+```typescript
+export interface DetalleOrdenRequest {
+  idProducto: number;
+  cantidad: number;
+}
+
+export interface OrdenRequest {
+  metodoPago: string;
+  detalles: DetalleOrdenRequest[];
+}
+
+export interface DetalleOrdenResponse {
+  idProducto: number;
+  nombreProducto: string | null;
+  cantidad: number;
+  precioUnitario: number | null;
+  subtotal: number | null;
+}
+
+export interface OrdenResponse {
+  id: number;
+  idCliente: string;
+  fechaCreacion: string;
+  estado: string;
+  total: number | null;
+  detalles: DetalleOrdenResponse[];
+}
+```
+
+**`src/app/features/ordenes/orden-service.ts`** (archivo nuevo):
+
+```typescript
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import { OrdenRequest, OrdenResponse } from './orden.model';
+
 @Injectable({ providedIn: 'root' })
 export class OrdenService {
   private readonly http = inject(HttpClient);
@@ -1393,12 +1466,211 @@ export class OrdenService {
   obtener(id: number): Observable<OrdenResponse> {
     return this.http.get<OrdenResponse>(`${environment.apiBaseUrl}/api/v1/ordenes/${id}`);
   }
+
+  listar(): Observable<OrdenResponse[]> {
+    return this.http.get<OrdenResponse[]>(`${environment.apiBaseUrl}/api/v1/ordenes`);
+  }
 }
 ```
 
-En la plantilla, al recibir la respuesta de `crear`, muestra el `estado` tal cual llega (`PENDIENTE_PAGO`) — **no** un mensaje genérico de "¡Compra exitosa!". Es la misma disciplina que el caso de 1.6 motivó: la respuesta `201` confirma que la orden se registró, no que el pago se resolvió.
+**`OrdenCrear`** — carga el catálogo, arma un carrito en memoria (sin backend propio para "guardar el carrito": vive en un `signal`, se manda completo recién al confirmar) y llama a `crear` con el método de pago elegido:
 
-**Error frecuente**: usar `OrdenRequest.metodoPago = "TARJETA_RECHAZADA"` sin querer durante las pruebas. Es el valor exacto que `PagoServiceImpl` (S8) usa para simular un rechazo — útil a propósito en 3.8 (Probar de punta a punta), pero confuso si aparece sin que lo esperes aquí, en 3.5.
+```bash
+ng generate component features/ordenes/orden-crear --flat
+```
+
+**`src/app/features/ordenes/orden-crear.ts`**:
+
+```typescript
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { ProductoService } from '../catalogo/producto-service';
+import { Producto } from '../catalogo/producto.model';
+import { OrdenService } from './orden-service';
+import { OrdenResponse } from './orden.model';
+
+interface ItemCarrito {
+  producto: Producto;
+  cantidad: number;
+}
+
+@Component({
+  selector: 'app-orden-crear',
+  imports: [RouterLink, FormsModule],
+  templateUrl: './orden-crear.html',
+})
+export class OrdenCrear implements OnInit {
+  private readonly productoService = inject(ProductoService);
+  private readonly ordenService = inject(OrdenService);
+
+  protected readonly productos = signal<Producto[]>([]);
+  protected readonly carrito = signal<ItemCarrito[]>([]);
+  protected readonly cargando = signal(true);
+  protected readonly enviando = signal(false);
+  protected readonly error = signal<string | null>(null);
+  protected readonly resultado = signal<OrdenResponse | null>(null);
+  protected metodoPago = 'YAPE_PLIN';
+
+  protected readonly total = computed(() =>
+    this.carrito().reduce((suma, item) => suma + item.producto.precio * item.cantidad, 0),
+  );
+
+  ngOnInit(): void {
+    this.productoService.listar().subscribe({
+      next: (data) => {
+        this.productos.set(data.filter((p) => p.activo));
+        this.cargando.set(false);
+      },
+      error: () => {
+        this.error.set('No se pudo cargar el catálogo de productos.');
+        this.cargando.set(false);
+      },
+    });
+  }
+
+  agregar(producto: Producto, cantidad: number): void {
+    if (cantidad < 1) return;
+    const existente = this.carrito().find((item) => item.producto.id === producto.id);
+    if (existente) {
+      this.carrito.update((lista) =>
+        lista.map((item) =>
+          item.producto.id === producto.id ? { ...item, cantidad: item.cantidad + cantidad } : item,
+        ),
+      );
+    } else {
+      this.carrito.update((lista) => [...lista, { producto, cantidad }]);
+    }
+  }
+
+  quitar(idProducto: number): void {
+    this.carrito.update((lista) => lista.filter((item) => item.producto.id !== idProducto));
+  }
+
+  confirmar(): void {
+    if (this.carrito().length === 0) return;
+    this.enviando.set(true);
+    this.error.set(null);
+    this.ordenService
+      .crear({
+        metodoPago: this.metodoPago,
+        detalles: this.carrito().map((item) => ({ idProducto: item.producto.id, cantidad: item.cantidad })),
+      })
+      .subscribe({
+        next: (orden) => {
+          this.resultado.set(orden);
+          this.carrito.set([]);
+          this.enviando.set(false);
+        },
+        error: () => {
+          this.error.set('No se pudo crear la orden.');
+          this.enviando.set(false);
+        },
+      });
+  }
+}
+```
+
+`productos().filter((p) => p.activo)` descarta productos inactivos del catálogo que ofrece el carrito — `ProductoService.listar()` (S3, backend) devuelve todos, activos e inactivos, sin filtrar; filtrar es responsabilidad de quien consume la lista, no del endpoint. El carrito vive solo en memoria (`signal`, sin persistir en ningún lado) — si recargas la página antes de confirmar, se pierde, igual que el carrito de cualquier sitio sin sesión de compra abierta.
+
+**`src/app/features/ordenes/orden-crear.html`**:
+
+```html
+@if (cargando()) {
+  <p>Cargando catálogo...</p>
+} @else if (resultado(); as orden) {
+  <h3>Orden #{{ orden.id }} — estado: {{ orden.estado }}</h3>
+  @if (orden.estado === 'PENDIENTE_PAGO') {
+    <p>Tu orden quedó registrada con total {{ orden.total }}. El pago se procesa de forma asíncrona — revisa "Mis pedidos" en unos segundos.</p>
+  } @else {
+    <p>No se pudo reservar el stock de uno o más productos — la orden quedó en estado <strong>{{ orden.estado }}</strong>, sin total ni pago asociado.</p>
+  }
+  <a routerLink="/mis-pedidos">Ir a Mis pedidos</a>
+} @else {
+  <h3>Catálogo</h3>
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+  <table>
+    <thead>
+      <tr><th>Producto</th><th>Precio</th><th>Stock</th><th>Cantidad</th><th></th></tr>
+    </thead>
+    <tbody>
+      @for (producto of productos(); track producto.id) {
+        <tr>
+          <td>{{ producto.nombre }}</td>
+          <td>{{ producto.precio }}</td>
+          <td>{{ producto.stock }}</td>
+          <td><input type="number" min="1" value="1" #cantidadInput /></td>
+          <td>
+            <button type="button" (click)="agregar(producto, cantidadInput.valueAsNumber || 1)">
+              Agregar
+            </button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <h3>Carrito</h3>
+  @if (carrito().length === 0) {
+    <p>Todavía no agregaste ningún producto.</p>
+  } @else {
+    <table>
+      <thead>
+        <tr><th>Producto</th><th>Cantidad</th><th>Subtotal</th><th></th></tr>
+      </thead>
+      <tbody>
+        @for (item of carrito(); track item.producto.id) {
+          <tr>
+            <td>{{ item.producto.nombre }}</td>
+            <td>{{ item.cantidad }}</td>
+            <td>{{ item.producto.precio * item.cantidad }}</td>
+            <td><button type="button" (click)="quitar(item.producto.id)">Quitar</button></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    <p>Total: {{ total() }}</p>
+
+    <label>
+      Método de pago
+      <select name="metodoPago" [(ngModel)]="metodoPago">
+        <option value="YAPE_PLIN">Yape / Plin</option>
+        <option value="TARJETA">Tarjeta</option>
+        <option value="TRANSFERENCIA">Transferencia</option>
+        <option value="TARJETA_RECHAZADA">Tarjeta (forzar rechazo — solo para pruebas, 3.8)</option>
+      </select>
+    </label>
+
+    <button type="button" [disabled]="enviando()" (click)="confirmar()">Confirmar pedido</button>
+  }
+}
+```
+
+`#cantidadInput` + `.valueAsNumber` (en vez de `[(ngModel)]`) alcanza para un campo que no necesita validación ni enlace bidireccional — se lee una sola vez, al hacer clic en **Agregar** (mismo criterio que templates anteriores: la herramienta más simple que resuelve el caso, no la más sofisticada disponible). El método de pago sí usa `[(ngModel)]` porque su valor se necesita más adelante, en `confirmar()`, no en el momento del clic.
+
+En la plantilla, al recibir la respuesta de `crear`, se muestra el `estado` tal cual llega — **no** un mensaje genérico de "¡Compra exitosa!". Es la misma disciplina que el caso de 1.6 motivó: la respuesta `201` confirma que la orden se registró, no que el pago se resolvió (ni, como acaba de confirmarse arriba, que el stock alcanzó).
+
+Agrega la ruta y el enlace del menú — en **`src/app/app.routes.ts`**, como nueva hija de `Layout`, junto a `categorias`:
+
+```typescript
+      {
+        path: 'ordenes/nueva',
+        canActivate: [authGuard],
+        loadComponent: () => import('./features/ordenes/orden-crear').then((m) => m.OrdenCrear),
+      },
+```
+
+Solo `authGuard` — sin `rolGuard`: `SecurityConfig.java` del Gateway ya exige `hasAnyRole("CLIENTE", "ADMIN")` para `/api/v1/ordenes/**` (S07b), cualquiera de los dos roles alcanza, a diferencia de `categorias/nueva` (solo `ADMIN`).
+
+En **`src/app/core/layout/layout.html`**, agrega el enlace al `<nav class="sidebar">`, junto al de **Categorías**:
+
+```html
+<a routerLink="/ordenes/nueva" routerLinkActive="active">Nueva orden</a>
+```
+
+**Error frecuente**: usar `OrdenRequest.metodoPago = "TARJETA_RECHAZADA"` sin querer durante las pruebas normales. Es el valor exacto que `PagoServiceImpl` (S8) usa para simular un rechazo — útil a propósito en 3.8 (Probar de punta a punta), pero confuso si lo eliges sin querer aquí, en 3.5.
 
 ### 3.6 Agregar la consulta de pago por orden en `pagatu-pago-ms`
 
@@ -1443,19 +1715,84 @@ Agrega la ruta en el Gateway, junto a las que ya existen (**`infra/pagatu-config
 
 Es la primera ruta de `pagatu-pago-ms` en el Gateway — hasta hoy, nadie necesitaba llamarlo desde afuera (solo consumía eventos de Kafka).
 
+**`src/app/features/ordenes/pago.model.ts`** (archivo nuevo) — mismos campos que `PagoResponse`:
+
+```typescript
+export interface Pago {
+  id: number;
+  ordenId: number;
+  monto: number;
+  metodoPago: string;
+  estado: string;
+  fechaPago: string;
+}
+```
+
+**`src/app/features/ordenes/pago-service.ts`** (archivo nuevo):
+
+```typescript
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import { Pago } from './pago.model';
+
+@Injectable({ providedIn: 'root' })
+export class PagoService {
+  private readonly http = inject(HttpClient);
+
+  obtenerPorOrden(ordenId: number): Observable<Pago> {
+    return this.http.get<Pago>(`${environment.apiBaseUrl}/api/v1/pagos/por-orden/${ordenId}`);
+  }
+}
+```
+
+Un `404` de `obtenerPorOrden` no es un error que mostrar en pantalla (arriba, el propio `PagoController` lo devuelve a propósito para "todavía no existe") — 3.7 lo trata como ausencia de pago, no como falla.
+
 ### 3.7 "Mis pedidos": consistencia eventual con *polling*
 
 **Producto del paso:** una pantalla que lista las órdenes del usuario autenticado y refresca automáticamente cada orden que siga `PENDIENTE_PAGO`, hasta que cambie.
 
 **Filtrado por `idCliente` (UX, no seguridad)**: `GET /api/v1/ordenes` (S7, `hasAnyRole("CLIENTE", "ADMIN")`) no filtra por dueño del lado del servidor — cualquier `CLIENTE` autenticado ve todas las órdenes si llama a ese endpoint sin más. "Mis pedidos" filtra del lado del cliente, comparando `orden.idCliente` contra `auth.idCliente()` (3.4) — exactamente la misma distinción que LP2 (S11, 2.7) ya estableció: ocultar no es asegurar, el backend sigue siendo quien decide de verdad qué puede hacer cada rol; esto solo mejora lo que un usuario normal ve, sin pretender ser un límite de seguridad.
 
+**`src/app/features/ordenes/pedido.model.ts`** (archivo nuevo):
+
 ```typescript
-// mis-pedidos.ts (fragmento relevante)
+import { OrdenResponse } from './orden.model';
+import { Pago } from './pago.model';
+
+export interface PedidoConPago {
+  orden: OrdenResponse;
+  pago: Pago | null;
+}
+```
+
+```bash
+ng generate component features/ordenes/mis-pedidos --flat
+```
+
+**`src/app/features/ordenes/mis-pedidos.ts`**:
+
+```typescript
+import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { OrdenService } from './orden-service';
+import { PagoService } from './pago-service';
+import { AuthService } from '../../core/auth/auth-service';
+import { PedidoConPago } from './pedido.model';
+
+@Component({
+  selector: 'app-mis-pedidos',
+  imports: [RouterLink],
+  templateUrl: './mis-pedidos.html',
+})
 export class MisPedidos implements OnInit, OnDestroy {
   private readonly ordenService = inject(OrdenService);
   private readonly pagoService = inject(PagoService);
-  protected readonly auth = inject(AuthService);
+  private readonly auth = inject(AuthService);
+
   protected readonly pedidos = signal<PedidoConPago[]>([]);
+  protected readonly cargando = signal(true);
   private intervalo?: ReturnType<typeof setInterval>;
 
   ngOnInit(): void {
@@ -1471,6 +1808,12 @@ export class MisPedidos implements OnInit, OnDestroy {
     this.ordenService.listar().subscribe((ordenes) => {
       const propias = ordenes.filter((o) => o.idCliente === this.auth.idCliente());
       this.pedidos.set(propias.map((orden) => ({ orden, pago: null })));
+      this.cargando.set(false);
+      for (const pedido of this.pedidos()) {
+        if (pedido.orden.estado !== 'PENDIENTE_PAGO') {
+          this.cargarPago(pedido.orden.id);
+        }
+      }
     });
   }
 
@@ -1481,15 +1824,91 @@ export class MisPedidos implements OnInit, OnDestroy {
         this.pedidos.update((lista) =>
           lista.map((p) => (p.orden.id === actualizada.id ? { ...p, orden: actualizada } : p)),
         );
+        if (actualizada.estado !== 'PENDIENTE_PAGO') {
+          this.cargarPago(actualizada.id);
+        }
       });
+    }
+  }
+
+  private cargarPago(ordenId: number): void {
+    this.pagoService.obtenerPorOrden(ordenId).subscribe({
+      next: (pago) => {
+        this.pedidos.update((lista) => lista.map((p) => (p.orden.id === ordenId ? { ...p, pago } : p)));
+      },
+      error: () => {
+        // 404 esperado (3.6): esta orden (p. ej. CARRITO, sin stock) nunca tuvo un pago que generar.
+      },
+    });
+  }
+
+  protected etiqueta(estado: string): string {
+    switch (estado) {
+      case 'PENDIENTE_PAGO':
+        return 'Procesando pago…';
+      case 'PAGADA':
+        return 'Pagado';
+      case 'CANCELADA':
+        return 'Pago rechazado';
+      case 'CARRITO':
+        return 'Sin stock disponible';
+      default:
+        return estado;
     }
   }
 }
 ```
 
-`refrescarPendientes` solo vuelve a consultar las órdenes que **siguen** `PENDIENTE_PAGO` — una vez que una orden llega a `PAGADA` o `CANCELADA`, deja de incluirse en el sondeo (2.5, Tabla 3: el costo real del *polling* es tráfico redundante; dejar de preguntar por lo que ya no cambia es la forma más simple de acotarlo). `ngOnDestroy` limpia el intervalo — sin esto, navegar fuera de "Mis pedidos" dejaría el sondeo corriendo en segundo plano indefinidamente.
+`refrescarPendientes` solo vuelve a consultar las órdenes que **siguen** `PENDIENTE_PAGO` — una vez que una orden llega a `PAGADA` o `CANCELADA`, deja de incluirse en el sondeo (2.5, Tabla 3: el costo real del *polling* es tráfico redundante; dejar de preguntar por lo que ya no cambia es la forma más simple de acotarlo). `ngOnDestroy` limpia el intervalo — sin esto, navegar fuera de "Mis pedidos" dejaría el sondeo corriendo en segundo plano indefinidamente. `cargarPago` se llama tanto al cargar la lista (para una orden que ya llegó resuelta) como justo después de que `refrescarPendientes` detecta un cambio de estado — en los dos casos, solo si el estado ya **no** es `PENDIENTE_PAGO` (3.6: mientras lo sea, no hay ningún pago que consultar todavía).
 
-En la plantilla, muestra el estado con una etiqueta clara por cada valor (`PENDIENTE_PAGO` → "Procesando pago…", `PAGADA` → "Pagado", `CANCELADA` → "Pago rechazado") y, para la orden correspondiente, llama a `GET /api/v1/pagos/por-orden/{id}` (3.6) una vez que el estado ya no es `PENDIENTE_PAGO`, para mostrar el método de pago y la fecha real.
+**`src/app/features/ordenes/mis-pedidos.html`**:
+
+```html
+@if (cargando()) {
+  <p>Cargando tus pedidos...</p>
+} @else if (pedidos().length === 0) {
+  <p>Todavía no tienes pedidos. <a routerLink="/ordenes/nueva">Crear uno</a>.</p>
+} @else {
+  <table>
+    <thead>
+      <tr><th>Orden</th><th>Fecha</th><th>Total</th><th>Estado</th><th>Pago</th></tr>
+    </thead>
+    <tbody>
+      @for (pedido of pedidos(); track pedido.orden.id) {
+        <tr>
+          <td>#{{ pedido.orden.id }}</td>
+          <td>{{ pedido.orden.fechaCreacion }}</td>
+          <td>{{ pedido.orden.total ?? '—' }}</td>
+          <td>{{ etiqueta(pedido.orden.estado) }}</td>
+          <td>
+            @if (pedido.pago) {
+              {{ pedido.pago.metodoPago }} — {{ pedido.pago.fechaPago }}
+            } @else {
+              —
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
+```
+
+Agrega la ruta y el enlace del menú — en **`src/app/app.routes.ts`**, como nueva hija de `Layout`, junto a `ordenes/nueva`:
+
+```typescript
+      {
+        path: 'mis-pedidos',
+        canActivate: [authGuard],
+        loadComponent: () => import('./features/ordenes/mis-pedidos').then((m) => m.MisPedidos),
+      },
+```
+
+En **`src/app/core/layout/layout.html`**, agrega el enlace al `<nav class="sidebar">`, junto a **Nueva orden**:
+
+```html
+<a routerLink="/mis-pedidos" routerLinkActive="active">Mis pedidos</a>
+```
 
 ### 3.8 Probar de punta a punta, incluido un pago rechazado
 
