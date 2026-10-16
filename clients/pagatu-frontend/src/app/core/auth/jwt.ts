@@ -1,6 +1,7 @@
 export interface JwtPayload {
   sub: string;
   exp: number;
+  preferred_username?: string;
   realm_access?: { roles: string[] };
 }
 

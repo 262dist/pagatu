@@ -26,6 +26,10 @@ spring:
               uri: lb://pagatu-orden-ms
               predicates:
                 - Path=/api/v1/ordenes/**
+            - id: pagatu-pago-consulta
+              uri: lb://pagatu-pago-ms
+              predicates:
+                - Path=/api/v1/pagos/**
 
             - id: pagatu-auth-login
               uri: lb://pagatu-auth-ms

@@ -474,7 +474,13 @@ Detén `pagatu-pago-ms`:
 
 En el tablero: el panel **Servicios arriba** debe mostrar a `pagatu-pago-ms` ausente (o su `up` en `0`, según el momento del *scrape*) en menos de `scrape_interval` (15s). Crea una orden nueva (3.5) — el evento `orden.creada` queda publicado en Kafka, pero nadie lo consume (S8, 2.2): el panel **Tasa de peticiones** de `pagatu-pago-ms` se queda plano en `0`, mientras el de `pagatu-orden-ms` sigue mostrando actividad.
 
-Levanta `pagatu-pago-ms` de nuevo. Usa el panel de **Logs**, filtrando por el `traceId` de la orden que acabas de crear (3.5), para confirmar en qué momento el evento finalmente se consumió — el mismo patrón de diagnóstico de S8 (2.6), ahora sin salir de Grafana.
+Levanta `pagatu-pago-ms` de nuevo. Usa el panel de **Logs**, filtrando por el `ordenId` de la orden que acabas de crear (3.5) — **no** por `traceId`: 3.4 ya estableció que el `traceId` no sobrevive el salto por Kafka, así que buscarlo ahí no encontraría nada. `PagoServiceImpl.procesar` (S8) sí deja el dato que hace falta, en texto plano dentro del propio mensaje (`component=processor ordenId={} estado={} status=processed`):
+
+```
+{application="pagatu-pago-ms"} |= "ordenId=11"
+```
+
+(cambia `11` por el `id` real de la orden que creaste) — el mismo patrón de diagnóstico de S8 (2.6), ahora sin salir de Grafana.
 
 **Tabla 6. Qué mostró cada panel durante la falla simulada**
 
@@ -483,7 +489,7 @@ Levanta `pagatu-pago-ms` de nuevo. Usa el panel de **Logs**, filtrando por el `t
 | Servicios arriba | `pagatu-pago-ms` ausente/`0` | Vuelve a aparecer |
 | Tasa de peticiones | Plana en `pagatu-pago-ms` | Sube cuando procesa el evento pendiente |
 | Tasa de errores | Sin cambio (nadie llamó a `pagatu-pago-ms` por HTTP, el fallo fue async) | — |
-| Logs | Sin líneas nuevas de `pagatu-pago-ms` | Línea de consumo del evento, con el `traceId` de la orden |
+| Logs | Sin líneas nuevas de `pagatu-pago-ms` | Línea de consumo del evento, con el `ordenId` de la orden (no el `traceId` — 3.4) |
 
 ### 3.8 Relacionar con ADS y BD2
 

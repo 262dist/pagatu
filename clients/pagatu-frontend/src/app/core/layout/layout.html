@@ -1,11 +1,13 @@
 <header class="header">
   <a routerLink="/" class="home-link">pagatu</a>
-  @if (auth.autenticado()) {
-    <span class="sesion">Sesión activa</span>
-    <button type="button" (click)="auth.cerrarSesion()">Cerrar sesión</button>
-  } @else {
-    <button type="button" (click)="auth.iniciarLogin()">Iniciar sesión</button>
-  }
+  <div class="sesion-area">
+    @if (auth.autenticado()) {
+      <span class="sesion">{{ auth.nombreUsuario() }}</span>
+      <button type="button" (click)="auth.cerrarSesion()">Cerrar sesión</button>
+    } @else {
+      <button type="button" (click)="auth.iniciarLogin()">Iniciar sesión</button>
+    }
+  </div>
 </header>
 
 
@@ -13,6 +15,11 @@
 <div class="body">
   <nav class="sidebar" aria-label="Menú principal">
     <a routerLink="/categorias" routerLinkActive="active">Categorías</a>
+    <a routerLink="/ordenes/nueva" routerLinkActive="active">Nueva orden</a>
+    <a routerLink="/mis-pedidos" routerLinkActive="active">Mis pedidos</a>
+    @if (auth.tieneRol('ADMIN')) {
+      <a routerLink="/pagos" routerLinkActive="active">Pagos</a>
+    }
   </nav>
 
   <main class="content">

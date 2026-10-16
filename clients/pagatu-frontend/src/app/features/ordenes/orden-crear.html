@@ -1,0 +1,70 @@
+@if (cargando()) {
+  <p>Cargando catálogo...</p>
+} @else if (resultado(); as orden) {
+  <h3>Orden #{{ orden.id }} — estado: {{ orden.estado }}</h3>
+  @if (orden.estado === 'PENDIENTE_PAGO') {
+    <p>Tu orden quedó registrada con total {{ orden.total }}. El pago se procesa de forma asíncrona — revisa "Mis pedidos" en unos segundos.</p>
+  } @else {
+    <p>No se pudo reservar el stock de uno o más productos — la orden quedó en estado <strong>{{ orden.estado }}</strong>, sin total ni pago asociado.</p>
+  }
+  <a routerLink="/mis-pedidos">Ir a Mis pedidos</a>
+} @else {
+  <h3>Catálogo</h3>
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+  <table>
+    <thead>
+      <tr><th>Producto</th><th>Precio</th><th>Stock</th><th>Cantidad</th><th></th></tr>
+    </thead>
+    <tbody>
+      @for (producto of productos(); track producto.id) {
+        <tr>
+          <td>{{ producto.nombre }}</td>
+          <td>{{ producto.precio }}</td>
+          <td>{{ producto.stock }}</td>
+          <td><input type="number" min="1" value="1" #cantidadInput /></td>
+          <td>
+            <button type="button" (click)="agregar(producto, cantidadInput.valueAsNumber || 1)">
+              Agregar
+            </button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <h3>Carrito</h3>
+  @if (carrito().length === 0) {
+    <p>Todavía no agregaste ningún producto.</p>
+  } @else {
+    <table>
+      <thead>
+        <tr><th>Producto</th><th>Cantidad</th><th>Subtotal</th><th></th></tr>
+      </thead>
+      <tbody>
+        @for (item of carrito(); track item.producto.id) {
+          <tr>
+            <td>{{ item.producto.nombre }}</td>
+            <td>{{ item.cantidad }}</td>
+            <td>{{ item.producto.precio * item.cantidad }}</td>
+            <td><button type="button" (click)="quitar(item.producto.id)">Quitar</button></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    <p>Total: {{ total() }}</p>
+
+    <label>
+      Método de pago
+      <select name="metodoPago" [(ngModel)]="metodoPago">
+        <option value="YAPE_PLIN">Yape / Plin</option>
+        <option value="TARJETA">Tarjeta</option>
+        <option value="TRANSFERENCIA">Transferencia</option>
+        <option value="TARJETA_RECHAZADA">Tarjeta (forzar rechazo — solo para pruebas, 3.8)</option>
+      </select>
+    </label>
+
+    <button type="button" [disabled]="enviando()" (click)="confirmar()">Confirmar pedido</button>
+  }
+}

@@ -1,0 +1,25 @@
+@if (cargando()) {
+  <p>Cargando pagos...</p>
+} @else if (error()) {
+  <p class="error">{{ error() }}</p>
+} @else {
+  <table>
+    <thead>
+      <tr><th>Pago</th><th>Orden</th><th>Monto</th><th>Método</th><th>Estado</th><th>Fecha</th></tr>
+    </thead>
+    <tbody>
+      @for (pago of pagos(); track pago.id) {
+        <tr>
+          <td>#{{ pago.id }}</td>
+          <td>#{{ pago.ordenId }}</td>
+          <td>{{ pago.monto }}</td>
+          <td>{{ pago.metodoPago }}</td>
+          <td>{{ pago.estado }}</td>
+          <td>{{ pago.fechaPago }}</td>
+        </tr>
+      } @empty {
+        <tr><td colspan="6">No hay pagos registrados.</td></tr>
+      }
+    </tbody>
+  </table>
+}

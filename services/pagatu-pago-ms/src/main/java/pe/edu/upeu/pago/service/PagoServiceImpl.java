@@ -18,6 +18,7 @@ import pe.edu.upeu.pago.repository.PagoRepository;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.dao.DataIntegrityViolationException;
 
 @Slf4j
@@ -92,5 +93,10 @@ public class PagoServiceImpl implements PagoService {
     private Pago buscarOFallar(Long id) {
         return pagoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pago no encontrado: " + id));
+    }
+
+    @Override
+    public Optional<PagoResponse> buscarPorOrden(Long ordenId) {
+        return pagoRepository.findByOrdenId(ordenId).map(pagoMapper::toResponse);
     }
 }

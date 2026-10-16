@@ -31,6 +31,10 @@ export class AuthService {
     () => decodeJwtPayload(this.sesion()?.accessToken ?? '')?.sub ?? null,
   );
 
+  readonly nombreUsuario = computed<string | null>(
+    () => decodeJwtPayload(this.sesion()?.accessToken ?? '')?.preferred_username ?? null,
+  );
+
   tieneRol(...rolesPermitidos: string[]): boolean {
     return rolesPermitidos.some((rol) => this.roles().includes(rol));
   }

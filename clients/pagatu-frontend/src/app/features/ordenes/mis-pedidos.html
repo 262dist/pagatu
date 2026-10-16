@@ -1,0 +1,28 @@
+@if (cargando()) {
+  <p>Cargando tus pedidos...</p>
+} @else if (pedidos().length === 0) {
+  <p>Todavía no tienes pedidos. <a routerLink="/ordenes/nueva">Crear uno</a>.</p>
+} @else {
+  <table>
+    <thead>
+      <tr><th>Orden</th><th>Fecha</th><th>Total</th><th>Estado</th><th>Pago</th></tr>
+    </thead>
+    <tbody>
+      @for (pedido of pedidos(); track pedido.orden.id) {
+        <tr>
+          <td>#{{ pedido.orden.id }}</td>
+          <td>{{ pedido.orden.fechaCreacion }}</td>
+          <td>{{ pedido.orden.total ?? '—' }}</td>
+          <td>{{ etiqueta(pedido.orden.estado) }}</td>
+          <td>
+            @if (pedido.pago) {
+              {{ pedido.pago.metodoPago }} — {{ pedido.pago.fechaPago }}
+            } @else {
+              —
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

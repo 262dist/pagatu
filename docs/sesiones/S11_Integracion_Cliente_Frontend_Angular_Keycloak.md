@@ -315,6 +315,9 @@ export class Layout {}
 }
 
 .header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   padding: 0.75rem 1rem;
   background-color: #1f2937;
   color: white;
@@ -1030,6 +1033,10 @@ export class AuthService {
     () => decodeJwtPayload(this.sesion()?.accessToken ?? '')?.sub ?? null,
   );
 
+  readonly nombreUsuario = computed<string | null>(
+    () => decodeJwtPayload(this.sesion()?.accessToken ?? '')?.preferred_username ?? null,
+  );
+
   tieneRol(...rolesPermitidos: string[]): boolean {
     return rolesPermitidos.some((rol) => this.roles().includes(rol));
   }
@@ -1112,7 +1119,7 @@ A diferencia de un cliente que solo valida PKCE, este `AuthService` también gen
 
 **Por qué `fetch` y no `HttpClient`, como en `CategoriaService`.** No es un descuido — es a propósito, y solo en este método. Desde 3.4 (más abajo), `authInterceptor` se registra **globalmente** sobre `HttpClient` y le agrega el header `Authorization` a *toda* petición que salga por ahí, pensado para hablar con `pagatu-gateway` (nuestro propio backend). La petición de `completarLogin` va a un destino completamente distinto — el propio Keycloak, con el contrato de un servidor de tokens OAuth2/OIDC (`application/x-www-form-urlencoded`, `grant_type`), no el de nuestra API — y es, además, la petición que **recién va a producir** el primer token; no hay ningún `accessToken` todavía que adjuntarle. Mezclar esa llamada con el mismo *pipeline* pensado para el Gateway no rompe nada hoy (sin token, el interceptor simplemente no agrega el header), pero si `authInterceptor` cambia mañana — o si Keycloak alguna vez respondiera `401` en vez del `400` habitual de un `code` inválido — terminaría disparando `auth.iniciarLogin(...)` *dentro* de la misma llamada que ya está completando un login, un bucle de redirecciones sin sentido. `fetch`, sin pasar por `HttpClient`, mantiene esta única llamada completamente aislada de ese *pipeline*. La regla general: `HttpClient` para hablar con **nuestro propio backend** (vía el Gateway, con el token ya adjunto); `fetch` para hablar **directo con Keycloak** (antes de que exista un token, o para cualquier endpoint que no sea nuestro).
 
-`idCliente` lee el claim `sub`, no uno propio (S07b, 7.4 — `idCliente` ya **es** `sub`, el mismo patrón que `vendedorId` en LP2): por eso no hace falta ningún campo extra en `JwtPayload`, ni ninguna configuración adicional de Keycloak para que viaje en el token.
+`idCliente` lee el claim `sub`, no uno propio (S07b, 7.4 — `idCliente` ya **es** `sub`, el mismo patrón que `vendedorId` en LP2): por eso, para `idCliente` en sí, no hace falta ningún campo extra en `JwtPayload`, ni ninguna configuración adicional de Keycloak para que viaje en el token (`nombreUsuario`, más abajo, sí agrega uno — pero para otro propósito: mostrar algo legible en el encabezado, no identificar al dueño de la orden).
 
 **`src/app/core/auth/jwt.ts`** (decodificación, sin validar firma — la SPA nunca valida un token, eso lo hace el Gateway como *resource server*, S07; solo lee los *claims* que ya confió en Keycloak):
 
@@ -1120,6 +1127,7 @@ A diferencia de un cliente que solo valida PKCE, este `AuthService` también gen
 export interface JwtPayload {
   sub: string;
   exp: number;
+  preferred_username?: string;
   realm_access?: { roles: string[] };
 }
 
@@ -1291,17 +1299,31 @@ import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth-interceptor';
+import { traceInterceptor } from './core/interceptors/trace-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor, traceInterceptor])),
   ],
 };
 ```
 
-**Error frecuente**: un `PUT`/`DELETE`/`POST` responde `401` **aunque ya hayas iniciado sesión**, y en la pestaña *Network* el header `Authorization` directamente no aparece en la petición (revisa *Request Headers*, no la respuesta). Significa que `provideHttpClient(withInterceptors([authInterceptor]))` nunca quedó en `app.config.ts` — sin ese *provider*, `authInterceptor` existe como archivo pero el *router* de peticiones HTTP de Angular nunca lo ejecuta, así que ninguna petición sale con el token, sin importar que la sesión sí esté activa.
+**`src/app/core/interceptors/trace-interceptor.ts`** (archivo nuevo) — `pagatu-catalogo-ms`/`pagatu-orden-ms`/`pagatu-pago-ms` ya tienen, cada uno, un `CorrelationIdFilter` (S1/S6) que lee el header `X-Trace-ID` de la petición entrante y lo **reutiliza** si llega — recién genera uno nuevo si no llega ninguno. Hasta hoy, ninguna petición de `pagatu-frontend` lo mandaba, así que cada backend terminaba inventando el suyo por separado, sin ninguna forma de seguir una sola acción del usuario a través de los logs de más de un servicio:
+
+```typescript
+import { HttpInterceptorFn } from '@angular/common/http';
+
+export const traceInterceptor: HttpInterceptorFn = (req, next) => {
+  const conTraceId = req.clone({ setHeaders: { 'X-Trace-ID': crypto.randomUUID() } });
+  return next(conTraceId);
+};
+```
+
+El Gateway no toca este header en absoluto (es puro *pass-through*) — por eso alcanza con generarlo acá y dejar que cada `CorrelationIdFilter` aguas abajo lo recoja solo, sin tocar ni el Gateway ni ningún microservicio. `crypto.randomUUID()` genera uno **nuevo por cada petición HTTP**, no uno por sesión — el mismo criterio que ya usa cada `CorrelationIdFilter` (un `traceId` identifica una petición, no todo lo que hizo un usuario en su visita). Esto conecta con S10 (3.4): el mismo `traceId` que ves en la consola de Angular (*Network* → *Response Headers* → `X-Trace-ID`, el *filter* lo devuelve también en la respuesta) es el que vas a poder buscar en los logs de `pagatu-orden-ms` y, de ahí, de `pagatu-catalogo-ms` (vía Feign, S10 §3.4) — **no** en `pagatu-pago-ms`, porque el salto por Kafka (S8/S9) todavía no propaga `traceId` a través del evento; eso queda fuera del alcance de esta sesión.
+
+**Error frecuente**: un `PUT`/`DELETE`/`POST` responde `401` **aunque ya hayas iniciado sesión**, y en la pestaña *Network* el header `Authorization` directamente no aparece en la petición (revisa *Request Headers*, no la respuesta). Significa que `provideHttpClient(withInterceptors([authInterceptor, traceInterceptor]))` nunca quedó en `app.config.ts` — sin ese *provider*, ningún interceptor se ejecuta, así que ninguna petición sale con el token (ni con `X-Trace-ID`), sin importar que la sesión sí esté activa.
 
 **Mostrar la sesión real en el propio `Layout`: "Iniciar sesión" o "Cerrar sesión", según corresponda.** Hasta ahora el encabezado solo mostraba "pagatu" — con `AuthService` ya construido, y con `Inicio` público (arriba), el encabezado tiene que servir para los dos casos: alguien que todavía no inició sesión (ve un botón para hacerlo, voluntariamente, sin que nadie se lo exija) y alguien que ya la tiene (ve que la tiene, y puede cerrarla):
 
@@ -1326,16 +1348,31 @@ En `layout.html`, agrega los dos botones dentro de `<header>`, junto al enlace e
 ```html
 <header class="header">
   <a routerLink="/" class="home-link">pagatu</a>
-  @if (auth.autenticado()) {
-    <span class="sesion">Sesión activa</span>
-    <button type="button" (click)="auth.cerrarSesion()">Cerrar sesión</button>
-  } @else {
-    <button type="button" (click)="auth.iniciarLogin()">Iniciar sesión</button>
-  }
+  <div class="sesion-area">
+    @if (auth.autenticado()) {
+      <span class="sesion">{{ auth.nombreUsuario() }}</span>
+      <button type="button" (click)="auth.cerrarSesion()">Cerrar sesión</button>
+    } @else {
+      <button type="button" (click)="auth.iniciarLogin()">Iniciar sesión</button>
+    }
+  </div>
 </header>
 ```
 
-No hay un nombre real que mostrar porque, desde S07b (7.4), `idCliente` **es** el claim `sub` — un identificador técnico, no un nombre pensado para mostrarse en pantalla. Si tu propio dominio (4.1) necesita mostrar un nombre real, ahí sí hace falta un *user attribute* + *protocol mapper* propios en Keycloak (el patrón que S07 diseñó originalmente para `idCliente`, antes de que S07b decidiera que no hacía falta, 7.4) para que ese dato viaje en el token.
+`nombreUsuario` lee `preferred_username` — a diferencia de `idCliente` (el claim `sub`, un identificador técnico sin sentido para mostrarse en pantalla, S07b 7.4), `preferred_username` sí es el nombre de usuario legible (`cliente1`, `admin`, S07b sección 4) y ya viaja en el token sin configuración adicional: es un claim estándar de OIDC, incluido por Keycloak con el *scope* `openid profile` que `iniciarLogin` (arriba) ya pide. Si tu propio dominio (4.1) necesita mostrar, además, un dato de negocio real que no sea ni `sub` ni el nombre de usuario (ej. un nombre completo), ahí sí hace falta un *user attribute* + *protocol mapper* propios en Keycloak (el mismo patrón que S07 diseñó originalmente para `idCliente`, antes de que S07b decidiera que no hacía falta, 7.4).
+
+En **`src/app/core/layout/layout.css`**, empuja la sesión/botón a la derecha del encabezado — sin esto, quedan pegados al logo, a la izquierda (`.header` ya es `flex` desde 3.2):
+
+```css
+.sesion-area {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: auto;
+}
+```
+
+El `margin-left: auto` va en el **contenedor** (`.sesion-area`), no en el `<span>`/`<button>` por separado. Si se lo pones a los dos (algo tentador, ya que nunca aparecen juntos... excepto cuando sí: `<span>` y `<button>` de **Cerrar sesión** conviven en el mismo momento), *flexbox* reparte el espacio libre **entre todos** los elementos con `margin-left: auto`, no se lo da entero al primero — el nombre de usuario termina centrado, no pegado al botón, que es exactamente el efecto roto que corrige este cambio. Con el `margin-left: auto` en un único contenedor que envuelve a ambos, el par completo se mueve junto al borde derecho, sin importar cuál de los dos esté visible adentro.
 
 Con el botón **Iniciar sesión** siempre visible cuando no hay sesión, quien abre `/` directo nunca ve un *redirect* forzoso a Keycloak — puede quedarse en `Inicio` leyendo, o ir voluntariamente a loguearse. El único disparador automático sigue siendo `authGuard` (arriba), y solo al intentar entrar a `categorias`.
 
@@ -1674,7 +1711,7 @@ En **`src/app/core/layout/layout.html`**, agrega el enlace al `<nav class="sideb
 
 ### 3.6 Agregar la consulta de pago por orden en `pagatu-pago-ms`
 
-**Producto del paso:** `GET /api/v1/pagos/por-orden/{ordenId}`, el endpoint que falta para que la SPA pueda mostrar el pago de una orden específica — hoy `PagoController` solo tiene `listar()` (todos los pagos) y `obtener(id)` (por el `id` del propio pago, no por el de la orden).
+**Producto del paso:** `GET /api/v1/pagos/por-orden/{ordenId}`, el endpoint que falta para que la SPA pueda mostrar el pago de una orden específica — hoy `PagoController` solo tiene `listar()` (todos los pagos) y `obtener(id)` (por el `id` del propio pago, no por el de la orden); y, ya que `listar()` queda expuesto por primera vez a un cliente real, una pantalla (solo `ADMIN`) que lo consuma.
 
 **`services/pagatu-pago-ms/src/main/java/pe/edu/upeu/pago/repository/PagoRepository.java`** — ya tiene `findByOrdenId` (lo usa `procesar`, S8); solo falta exponerlo.
 
@@ -1748,6 +1785,106 @@ export class PagoService {
 ```
 
 Un `404` de `obtenerPorOrden` no es un error que mostrar en pantalla (arriba, el propio `PagoController` lo devuelve a propósito para "todavía no existe") — 3.7 lo trata como ausencia de pago, no como falla.
+
+**Listar todos los pagos (`ADMIN`).** `PagoController.listar()` existe desde S8 (todos los pagos, sin filtrar), pero hasta ahora ningún cliente lo llamaba desde afuera — solo se usaba internamente/por Swagger. A diferencia de `por-orden` (lo que un `CLIENTE` necesita para ver **su propio** pedido), ver *todos* los pagos de *todos* los clientes es una función administrativa — no una extensión de "Mis pedidos", sino una pantalla aparte, solo para `ADMIN`.
+
+El backend no lo restringía todavía: `GET /api/v1/pagos` caía en el `anyRequest().authenticated()` genérico de `SecurityConfig.java`, abierto a cualquier rol. Restringir esto en el *router* de Angular sin tocar el backend repetiría el error que ya se evitó con `categorias/nueva` (3.2): la SPA no es el límite real, solo lo refleja. Agrega la regla, **antes** de `anyRequest().authenticated()` — con `GET` y sin `/**`, para no afectar `por-orden/{id}` ni `/{id}` (que sí deben seguir abiertos a cualquier rol autenticado):
+
+```java
+.requestMatchers(HttpMethod.GET, "/api/v1/pagos").hasRole("ADMIN")
+```
+
+**`src/app/features/ordenes/pago-service.ts`** — agrega `listar()`, junto a `obtenerPorOrden`:
+
+```typescript
+  listar(): Observable<Pago[]> {
+    return this.http.get<Pago[]>(`${environment.apiBaseUrl}/api/v1/pagos`);
+  }
+```
+
+```bash
+ng generate component features/ordenes/pago-list --flat
+```
+
+**`src/app/features/ordenes/pago-list.ts`**:
+
+```typescript
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { PagoService } from './pago-service';
+import { Pago } from './pago.model';
+
+@Component({
+  selector: 'app-pago-list',
+  templateUrl: './pago-list.html',
+})
+export class PagoList implements OnInit {
+  private readonly pagoService = inject(PagoService);
+  protected readonly pagos = signal<Pago[]>([]);
+  protected readonly cargando = signal(true);
+  protected readonly error = signal<string | null>(null);
+
+  ngOnInit(): void {
+    this.pagoService.listar().subscribe({
+      next: (data) => {
+        this.pagos.set(data);
+        this.cargando.set(false);
+      },
+      error: () => {
+        this.error.set('No se pudo cargar la lista de pagos.');
+        this.cargando.set(false);
+      },
+    });
+  }
+}
+```
+
+**`src/app/features/ordenes/pago-list.html`**:
+
+```html
+@if (cargando()) {
+  <p>Cargando pagos...</p>
+} @else if (error()) {
+  <p class="error">{{ error() }}</p>
+} @else {
+  <table>
+    <thead>
+      <tr><th>Pago</th><th>Orden</th><th>Monto</th><th>Método</th><th>Estado</th><th>Fecha</th></tr>
+    </thead>
+    <tbody>
+      @for (pago of pagos(); track pago.id) {
+        <tr>
+          <td>#{{ pago.id }}</td>
+          <td>#{{ pago.ordenId }}</td>
+          <td>{{ pago.monto }}</td>
+          <td>{{ pago.metodoPago }}</td>
+          <td>{{ pago.estado }}</td>
+          <td>{{ pago.fechaPago }}</td>
+        </tr>
+      } @empty {
+        <tr><td colspan="6">No hay pagos registrados.</td></tr>
+      }
+    </tbody>
+  </table>
+}
+```
+
+Agrega la ruta, protegida con los dos *guards* — `authGuard` primero (¿hay sesión?), `rolGuard('ADMIN')` después (¿el rol alcanza?), mismo orden que `categorias/nueva` (3.4):
+
+```typescript
+      {
+        path: 'pagos',
+        canActivate: [authGuard, rolGuard('ADMIN')],
+        loadComponent: () => import('./features/ordenes/pago-list').then((m) => m.PagoList),
+      },
+```
+
+En **`src/app/core/layout/layout.html`**, el enlace va condicionado por rol — a diferencia de **Categorías**/**Nueva orden**/**Mis pedidos** (visibles para cualquier sesión), **Pagos** no tiene sentido ofrecerlo a quien el *guard* va a rebotar igual con una alerta:
+
+```html
+@if (auth.tieneRol('ADMIN')) {
+  <a routerLink="/pagos" routerLinkActive="active">Pagos</a>
+}
+```
 
 ### 3.7 "Mis pedidos": consistencia eventual con *polling*
 

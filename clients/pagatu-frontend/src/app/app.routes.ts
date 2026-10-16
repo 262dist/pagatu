@@ -17,7 +17,7 @@ export const routes: Routes = [
       },
       {
         path: 'categorias',
-        //canActivate: [authGuard],
+        canActivate: [authGuard],
         loadComponent: () => import('./features/catalogo/categoria-list').then((m) => m.CategoriaList),
       },
       {
@@ -29,6 +29,21 @@ export const routes: Routes = [
         path: 'categorias/:id/editar',
         canActivate: [authGuard, rolGuard('ADMIN')],
         loadComponent: () => import('./features/catalogo/categoria-form').then((m) => m.CategoriaForm),
+      },
+      {
+        path: 'ordenes/nueva',
+        canActivate: [authGuard],
+        loadComponent: () => import('./features/ordenes/orden-crear').then((m) => m.OrdenCrear),
+      },
+      {
+        path: 'mis-pedidos',
+        canActivate: [authGuard],
+        loadComponent: () => import('./features/ordenes/mis-pedidos').then((m) => m.MisPedidos),
+      },
+      {
+        path: 'pagos',
+        canActivate: [authGuard, rolGuard('ADMIN')],
+        loadComponent: () => import('./features/ordenes/pago-list').then((m) => m.PagoList),
       },
     ],
   },
