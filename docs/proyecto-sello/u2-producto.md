@@ -2,9 +2,6 @@
 
 **Esta es la plantilla-ejemplo del producto de Unidad 2 de Desarrollo de Aplicaciones Distribuidas.** La estructura (comunicación resiliente, seguridad distribuida, mensajería asíncrona, consistencia distribuida, observabilidad, integración frontend) es exigible a todos. El contenido de `pagatu` es el ejemplo de referencia — cada equipo lo reemplaza por el de su propio dominio, declarado en su [Brief técnico](brief.md) de S2, sin cambiar la estructura.
 
-!!! note "Contenido en construcción"
-    Las sesiones S6-S11 (donde se construye cada capacidad de esta unidad) todavía no están publicadas. Esta plantilla ya fija la estructura exigible y la rúbrica, verificadas contra el sílabo; el detalle sesión por sesión del ejemplo `pagatu` (nombres de clase, endpoints, comandos exactos) se completa a medida que S6-S11 se publiquen — igual que hizo `u1-producto.md` con S1-S4.
-
 ## Producto
 
 **Sistema distribuido seguro, resiliente, consistente, observable e integrado con cliente frontend.**
@@ -18,7 +15,7 @@ Implementa comunicación síncrona resiliente, seguridad distribuida, mensajerí
 | Sesión | Capacidad que agrega | Ejemplo `pagatu` |
 |---|---|---|
 | S6 | Comunicación síncrona resiliente entre servicios (respuesta controlada ante fallos). | `pagatu-orden-ms` llama a `pagatu-catalogo-ms` con timeout, reintentos y *fallback* ante caída de instancia. |
-| S7 | Seguridad distribuida y protección de rutas. | Identity Provider (Keycloak recomendado; JWT propio con Spring Security si el equipo justifica la alternativa) validado en cada microservicio, no solo en el Gateway. |
+| S7 / S07b | Seguridad distribuida y protección de rutas. | `pagatu-auth-ms` (JWT propio, S7) reemplazado por Keycloak (S07b, prerrequisito obligatorio de S11) — token validado en cada microservicio, no solo en el Gateway. |
 | S8 | Mensajería asíncrona entre servicios desacoplados. | Evento de negocio (ej. `orden-creada`) publicado y consumido vía Kafka, sin llamada síncrona directa entre los dos servicios. |
 | S9 | Consistencia eventual, compensación e idempotencia en procesos de negocio. | El proceso de orden tolera fallos parciales sin dejar datos inconsistentes; reprocesar el mismo evento no duplica el efecto. |
 | S10 | Observabilidad operacional: logs, health, métricas y paneles de diagnóstico. | Métricas y logs centralizados con trazabilidad entre servicios, panel de diagnóstico consultable. |

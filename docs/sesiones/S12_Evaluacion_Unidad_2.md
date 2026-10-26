@@ -27,12 +27,12 @@ Cubre los seis temas dictados antes de esta sesión. El docente puede tomarla es
 
 | Sesión | Tema | Qué puede evaluar el docente |
 |---|---|---|
-| S6 | Comunicación síncrona resiliente entre servicios | Timeout, reintentos, *fallback* y por qué un fallo en un servicio no debe propagarse en cascada al resto del sistema. |
-| S7 | Seguridad distribuida y control de acceso | Autenticación, autorización, protección de rutas, y por qué cada microservicio debe validar el token, no solo el Gateway. |
+| S6 | Comunicación síncrona resiliente entre servicios | Comunicación declarativa por Feign (nombre lógico en Eureka, no dirección fija), timeout frente a Circuit Breaker, *fallback*, y por qué un fallo en un servicio no debe propagarse en cascada al resto del sistema. |
+| S7 / S07b | Seguridad distribuida: JWT propio y su reemplazo por Keycloak | Autenticación, autorización, protección de rutas, por qué cada microservicio valida el token (no solo el Gateway), por qué `pagatu-auth-ms` se diseñó "listo para reemplazo" desde el inicio (mismos nombres de claim que Keycloak), qué cambia y qué no cambia en el Gateway y los microservicios al migrar a Keycloak (S07b), y por qué `idCliente` pasa de `Long` a `String` (`sub`). |
 | S8 | Mensajería asíncrona entre servicios | Publicación y consumo de eventos, desacople entre productor y consumidor, y diferencia con una llamada síncrona (REST/Feign). |
-| S9 | Consistencia distribuida en procesos de negocio | Consistencia eventual, compensación e idempotencia — por qué un proceso distribuido no puede usar una transacción ACID única entre servicios. |
-| S10 | Observabilidad y diagnóstico de sistemas distribuidos | Logs, health checks, métricas y para qué sirve correlacionar evidencia entre servicios distintos ante un fallo. |
-| S11 | Integración con cliente frontend | Por qué el cliente consume la API solo a través del Gateway, y cómo se protegen las rutas según el rol del usuario. |
+| S9 | Consistencia distribuida en procesos de negocio | Entrega al menos una vez e idempotencia ante duplicados, el patrón Saga coreografiada, compensación de un paso ya confirmado, y por qué un proceso distribuido no puede usar una transacción ACID única entre servicios. |
+| S10 | Observabilidad y diagnóstico de sistemas distribuidos | Logs, health checks (*liveness*/*readiness*), métricas, propagación del `X-Trace-ID` entre llamadas Feign, y para qué sirve correlacionar evidencia entre servicios distintos ante un fallo. |
+| S11 | Integración con cliente frontend (Angular + Keycloak) | *Authorization Code* + PKCE y por qué una SPA no puede usar un flujo con contraseña directa, dónde vive el token en el navegador (memoria, nunca `localStorage`), por qué el cliente consume la API solo a través del Gateway, y cómo se protegen las rutas según el rol real emitido por Keycloak. |
 
 Preguntas de referencia (el docente puede formular equivalentes):
 
@@ -42,19 +42,21 @@ Preguntas de referencia (el docente puede formular equivalentes):
 4. Si tu proceso de negocio falla a la mitad, ¿cómo evitas que quede en un estado inconsistente, y qué significa que sea idempotente?
 5. ¿Qué evidencia concreta de tu panel de observabilidad te permitiría diagnosticar en qué servicio ocurrió una falla, sin revisar los logs uno por uno?
 6. ¿Por qué tu cliente frontend nunca debería conocer la dirección de una instancia de microservicio directamente?
+7. `pagatu-auth-ms` usó, desde el inicio, los mismos nombres de claim que después emitió Keycloak. Al migrar (S07b), ¿qué tuvo que cambiar en el Gateway y en los microservicios de negocio, y por qué esa lista es tan corta?
 
 ## 4. Sustentación del sistema
 
-**Tabla 2. Distribución de tiempo por integrante**
+**Tabla 3. Distribución de tiempo de la sustentación**
 
-| Momento | Tiempo | Propósito |
-|---|---:|---|
-| Video pitch / introducción ejecutiva | 2 min | Presentar en qué evolucionó el sistema desde la Unidad I. |
-| Presentación técnica | 8 min | Explicar el sistema (sección 2), las decisiones tomadas y su evolución desde S5. |
-| Demo técnica | 8 min | Ejecutar un fallo controlado, un evento de mensajería, el panel de observabilidad y el cliente frontend en vivo. |
-| Preguntas individuales | 5 min | Verificar dominio y aporte propio, con base en la Tabla 1. |
+| Momento | Tiempo | Quién | Propósito |
+|---|---:|---|---|
+| Alcance del proyecto (diapositiva) | 2-3 min | Grupal | Qué hace el sistema, para quién, y su relación con el Proyecto Sello. |
+| Arquitectura (diapositiva) | 2-3 min | Grupal | Componentes reales del sistema distribuido (Gateway, microservicios, Keycloak, Kafka) — diagrama simple: Cliente → Gateway → microservicios → Keycloak/Kafka. |
+| Asignación de tareas (diapositiva) | 2-3 min | Grupal | Asignación por capacidad real: cada integrante dueño de al menos una capacidad verificable en vivo (resiliencia, seguridad, mensajería, consistencia, observabilidad o frontend). |
+| Demo y sustentación | 3 min por integrante | Individual | Cada integrante ejecuta en vivo y sustenta la capacidad que construyó: fallo controlado, evento de Kafka, panel de observabilidad, o flujo desde el cliente frontend. |
+| Preguntas | 3 min por integrante | Individual | Verificar dominio y aporte propio, con base en la Tabla 1. |
 
-**Tabla 3. Entregables obligatorios**
+**Tabla 4. Entregables obligatorios**
 
 | Entregable | Evidencia mínima | Criterio de aceptación |
 |---|---|---|
