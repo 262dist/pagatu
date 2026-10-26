@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
     
     
   
@@ -29,7 +29,7 @@
   
 
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
       
 
@@ -1447,12 +1447,12 @@
 <tr>
 <td>S6</td>
 <td>Comunicación síncrona resiliente entre servicios</td>
-<td>Timeout, reintentos, <em>fallback</em> y por qué un fallo en un servicio no debe propagarse en cascada al resto del sistema.</td>
+<td>Comunicación declarativa por Feign (nombre lógico en Eureka, no dirección fija), timeout frente a Circuit Breaker, <em>fallback</em>, y por qué un fallo en un servicio no debe propagarse en cascada al resto del sistema.</td>
 </tr>
 <tr>
-<td>S7</td>
-<td>Seguridad distribuida y control de acceso</td>
-<td>Autenticación, autorización, protección de rutas, y por qué cada microservicio debe validar el token, no solo el Gateway.</td>
+<td>S7 / S07b</td>
+<td>Seguridad distribuida: JWT propio y su reemplazo por Keycloak</td>
+<td>Autenticación, autorización, protección de rutas, por qué cada microservicio valida el token (no solo el Gateway), por qué <code>pagatu-auth-ms</code> se diseñó "listo para reemplazo" desde el inicio (mismos nombres de claim que Keycloak), qué cambia y qué no cambia en el Gateway y los microservicios al migrar a Keycloak (S07b), y por qué <code>idCliente</code> pasa de <code>Long</code> a <code>String</code> (<code>sub</code>).</td>
 </tr>
 <tr>
 <td>S8</td>
@@ -1462,17 +1462,17 @@
 <tr>
 <td>S9</td>
 <td>Consistencia distribuida en procesos de negocio</td>
-<td>Consistencia eventual, compensación e idempotencia — por qué un proceso distribuido no puede usar una transacción ACID única entre servicios.</td>
+<td>Entrega al menos una vez e idempotencia ante duplicados, el patrón Saga coreografiada, compensación de un paso ya confirmado, y por qué un proceso distribuido no puede usar una transacción ACID única entre servicios.</td>
 </tr>
 <tr>
 <td>S10</td>
 <td>Observabilidad y diagnóstico de sistemas distribuidos</td>
-<td>Logs, health checks, métricas y para qué sirve correlacionar evidencia entre servicios distintos ante un fallo.</td>
+<td>Logs, health checks (<em>liveness</em>/<em>readiness</em>), métricas, propagación del <code>X-Trace-ID</code> entre llamadas Feign, y para qué sirve correlacionar evidencia entre servicios distintos ante un fallo.</td>
 </tr>
 <tr>
 <td>S11</td>
-<td>Integración con cliente frontend</td>
-<td>Por qué el cliente consume la API solo a través del Gateway, y cómo se protegen las rutas según el rol del usuario.</td>
+<td>Integración con cliente frontend (Angular + Keycloak)</td>
+<td><em>Authorization Code</em> + PKCE y por qué una SPA no puede usar un flujo con contraseña directa, dónde vive el token en el navegador (memoria, nunca <code>localStorage</code>), por qué el cliente consume la API solo a través del Gateway, y cómo se protegen las rutas según el rol real emitido por Keycloak.</td>
 </tr>
 </tbody>
 </table>
@@ -1484,41 +1484,53 @@
 <li>Si tu proceso de negocio falla a la mitad, ¿cómo evitas que quede en un estado inconsistente, y qué significa que sea idempotente?</li>
 <li>¿Qué evidencia concreta de tu panel de observabilidad te permitiría diagnosticar en qué servicio ocurrió una falla, sin revisar los logs uno por uno?</li>
 <li>¿Por qué tu cliente frontend nunca debería conocer la dirección de una instancia de microservicio directamente?</li>
+<li><code>pagatu-auth-ms</code> usó, desde el inicio, los mismos nombres de claim que después emitió Keycloak. Al migrar (S07b), ¿qué tuvo que cambiar en el Gateway y en los microservicios de negocio, y por qué esa lista es tan corta?</li>
 </ol>
 <h2 id="4-sustentacion-del-sistema">4. Sustentación del sistema<a class="headerlink" href="#4-sustentacion-del-sistema" title="Permanent link">&para;</a></h2>
-<p><strong>Tabla 2. Distribución de tiempo por integrante</strong></p>
+<p><strong>Tabla 3. Distribución de tiempo de la sustentación</strong></p>
 <table>
 <thead>
 <tr>
 <th>Momento</th>
 <th style="text-align: right;">Tiempo</th>
+<th>Quién</th>
 <th>Propósito</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Video pitch / introducción ejecutiva</td>
-<td style="text-align: right;">2 min</td>
-<td>Presentar en qué evolucionó el sistema desde la Unidad I.</td>
+<td>Alcance del proyecto (diapositiva)</td>
+<td style="text-align: right;">2-3 min</td>
+<td>Grupal</td>
+<td>Qué hace el sistema, para quién, y su relación con el Proyecto Sello.</td>
 </tr>
 <tr>
-<td>Presentación técnica</td>
-<td style="text-align: right;">8 min</td>
-<td>Explicar el sistema (sección 2), las decisiones tomadas y su evolución desde S5.</td>
+<td>Arquitectura (diapositiva)</td>
+<td style="text-align: right;">2-3 min</td>
+<td>Grupal</td>
+<td>Componentes reales del sistema distribuido (Gateway, microservicios, Keycloak, Kafka) — diagrama simple: Cliente → Gateway → microservicios → Keycloak/Kafka.</td>
 </tr>
 <tr>
-<td>Demo técnica</td>
-<td style="text-align: right;">8 min</td>
-<td>Ejecutar un fallo controlado, un evento de mensajería, el panel de observabilidad y el cliente frontend en vivo.</td>
+<td>Asignación de tareas (diapositiva)</td>
+<td style="text-align: right;">2-3 min</td>
+<td>Grupal</td>
+<td>Asignación por capacidad real: cada integrante dueño de al menos una capacidad verificable en vivo (resiliencia, seguridad, mensajería, consistencia, observabilidad o frontend).</td>
 </tr>
 <tr>
-<td>Preguntas individuales</td>
-<td style="text-align: right;">5 min</td>
+<td>Demo y sustentación</td>
+<td style="text-align: right;">3 min por integrante</td>
+<td>Individual</td>
+<td>Cada integrante ejecuta en vivo y sustenta la capacidad que construyó: fallo controlado, evento de Kafka, panel de observabilidad, o flujo desde el cliente frontend.</td>
+</tr>
+<tr>
+<td>Preguntas</td>
+<td style="text-align: right;">3 min por integrante</td>
+<td>Individual</td>
 <td>Verificar dominio y aporte propio, con base en la Tabla 1.</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Tabla 3. Entregables obligatorios</strong></p>
+<p><strong>Tabla 4. Entregables obligatorios</strong></p>
 <table>
 <thead>
 <tr>
@@ -1639,10 +1651,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
       
     
   </body>

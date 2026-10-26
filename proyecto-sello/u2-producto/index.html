@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
     
     
   
@@ -29,7 +29,7 @@
   
 
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
       
       
 
@@ -1397,10 +1397,6 @@
 
 <h1 id="distribuidas-producto-de-unidad-2">Distribuidas - Producto de Unidad 2<a class="headerlink" href="#distribuidas-producto-de-unidad-2" title="Permanent link">&para;</a></h1>
 <p><strong>Esta es la plantilla-ejemplo del producto de Unidad 2 de Desarrollo de Aplicaciones Distribuidas.</strong> La estructura (comunicación resiliente, seguridad distribuida, mensajería asíncrona, consistencia distribuida, observabilidad, integración frontend) es exigible a todos. El contenido de <code>pagatu</code> es el ejemplo de referencia — cada equipo lo reemplaza por el de su propio dominio, declarado en su <a href="../brief/">Brief técnico</a> de S2, sin cambiar la estructura.</p>
-<div class="admonition note">
-<p class="admonition-title">Contenido en construcción</p>
-<p>Las sesiones S6-S11 (donde se construye cada capacidad de esta unidad) todavía no están publicadas. Esta plantilla ya fija la estructura exigible y la rúbrica, verificadas contra el sílabo; el detalle sesión por sesión del ejemplo <code>pagatu</code> (nombres de clase, endpoints, comandos exactos) se completa a medida que S6-S11 se publiquen — igual que hizo <code>u1-producto.md</code> con S1-S4.</p>
-</div>
 <h2 id="producto">Producto<a class="headerlink" href="#producto" title="Permanent link">&para;</a></h2>
 <p><strong>Sistema distribuido seguro, resiliente, consistente, observable e integrado con cliente frontend.</strong></p>
 <p>Implementa comunicación síncrona resiliente, seguridad distribuida, mensajería asíncrona, consistencia eventual en procesos de negocio, observabilidad operacional e integración frontend mediante el punto único de acceso — fortaleciendo el sistema base de Unidad 1 con los atributos de calidad que un sistema distribuido real necesita para operar.</p>
@@ -1421,9 +1417,9 @@
 <td><code>pagatu-orden-ms</code> llama a <code>pagatu-catalogo-ms</code> con timeout, reintentos y <em>fallback</em> ante caída de instancia.</td>
 </tr>
 <tr>
-<td>S7</td>
+<td>S7 / S07b</td>
 <td>Seguridad distribuida y protección de rutas.</td>
-<td>Identity Provider (Keycloak recomendado; JWT propio con Spring Security si el equipo justifica la alternativa) validado en cada microservicio, no solo en el Gateway.</td>
+<td><code>pagatu-auth-ms</code> (JWT propio, S7) reemplazado por Keycloak (S07b, prerrequisito obligatorio de S11) — token validado en cada microservicio, no solo en el Gateway.</td>
 </tr>
 <tr>
 <td>S8</td>
@@ -1645,10 +1641,10 @@ Indica 2 fortalezas y 2 recomendaciones para lo que sigue en Unidad III.
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
       
     
   </body>
