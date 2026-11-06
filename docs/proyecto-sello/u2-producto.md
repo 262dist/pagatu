@@ -38,7 +38,7 @@ Lo que sustentas en S12 es **tu propio sistema**: las capacidades que tú constr
 | 6. Cliente frontend integrado mediante Gateway | 8% | CE023-N3 | Cliente funcional que consume la API completa solo a través del Gateway, con sesión y rutas protegidas según rol. | Cliente funcional, con alguna llamada fuera del Gateway o protección parcial. | Cliente parcialmente integrado. | No presenta cliente frontend integrado. | |
 | 7. Sustentación | 20% | CG | Sustenta con claridad y profesionalismo su aporte individual, respondiendo con precisión las preguntas del jurado. | Sustenta con solvencia, con detalles menores en claridad, orden o precisión. | Sustenta con dificultad; claridad, orden o precisión insuficientes. | No sustenta adecuadamente ni demuestra su aporte individual. | |
 
-Nota final = suma de (`Peso` × `Puntos de la calificación obtenida`) / 100 × 20.
+Nota final = suma de (`Peso` / 100 × `Puntos de la calificación obtenida`) = ____ / 20.
 
 `CE023-N3` = Nivel 3 de la competencia CE023 (Programación). `CG` = Competencia General "Carácter y Aprendizaje Autónomo" del sílabo — no es CE023: los criterios 1-6 ya son la evidencia técnica, incluida su verificación en vivo; el criterio 7 verifica aporte individual y comunicación.
 
@@ -62,7 +62,7 @@ Evalúa la sustentación y el producto (u2-producto.md, adaptado al dominio prop
 Para cada criterio selecciona la calificación obtenida: A=20, B=15, C=10, D=5.
 Justifica brevemente cada nivel con evidencia concreta (fallo provocado, evento publicado/consumido, panel de diagnóstico, cliente en vivo).
 Para el criterio 7, verifica explícitamente los 6 subaspectos de la Tabla 3 antes de asignar el nivel.
-Calcula la nota final con la fórmula: suma de (Peso × Puntos de la calificación obtenida) / 100 × 20.
+Calcula la nota final con la fórmula: suma de (Peso / 100 × Puntos de la calificación obtenida), directamente sobre 20.
 Indica 2 fortalezas y 2 recomendaciones para lo que sigue en Unidad III.
 ```
 

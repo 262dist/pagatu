@@ -23,7 +23,9 @@ Al cierre de Unidad 3, el sistema debe integrar — sin excepción — todo lo c
 - Consistencia distribuida, compensación o idempotencia según el flujo (Unidad 2).
 - Logs, health checks, métricas y paneles de observabilidad (Unidad 2).
 - Frontend integrado mediante Gateway (Unidad 2).
-- Docker o entorno reproducible.
+- Docker o entorno reproducible, con servicios que declaran cuándo están listos y manual de ejecución probado sobre una copia limpia del repositorio.
+- Pruebas integrales del flujo principal con al menos un caso de error y verificación con más de un usuario (autorización a nivel de objeto, no solo de ruta).
+- Bitácora de validación y estabilización: hallazgos encontrados, su corrección y la prueba de que quedó corregido.
 - Documentación técnica y evidencias de ejecución.
 
 ## 2. Rúbrica de Evaluación
@@ -37,7 +39,7 @@ Al cierre de Unidad 3, el sistema debe integrar — sin excepción — todo lo c
 | 3. Evidencias de despliegue, seguridad, mensajería, consistencia y observabilidad | 25% | CE023-N3 | Evidencia verificable en vivo de las cinco capacidades, correlacionada entre sí. | Evidencia de la mayoría de las capacidades, con alguna solo documentada. | Evidencia parcial, limitada a una o dos capacidades. | No presenta evidencia verificable de estas capacidades. | |
 | 4. Defensa grupal coherente, aporte individual verificable y demostración de las competencias desarrolladas | 30% | CE023-N3 (cierre) + CG | Explica y defiende el producto con solvencia; demuestra aporte individual, dominio técnico, comunicación clara, repositorio, documentación y actitud profesional. | Sustentación clara y funcional, con detalles menores en defensa técnica, evidencias, comunicación o documentación. | Sustentación parcial; dominio, evidencias, comunicación o aporte individual insuficientemente demostrados. | No sustenta adecuadamente, no demuestra autoría o no presenta evidencias mínimas del producto. | |
 
-Nota final = suma de (`Peso` × `Puntos de la calificación obtenida`) / 100 × 20.
+Nota final = suma de (`Peso` / 100 × `Puntos de la calificación obtenida`) = ____ / 20.
 
 `CE023-N3` = Nivel 3 de la competencia CE023 (Programación). `CG` = Competencia General "Carácter y Aprendizaje Autónomo" del sílabo. El criterio 4 se etiqueta con ambas porque, a diferencia de Unidad 1 y 2 (donde la sustentación es un criterio agregado aparte), aquí el propio sílabo funde en un solo criterio la demostración técnica de las competencias desarrolladas (CE023, cierre) con la defensa grupal y el aporte individual (CG).
 
@@ -62,7 +64,7 @@ Evalúa la sustentación y el producto (u3-producto.md, adaptado al dominio prop
 Para cada criterio selecciona la calificación obtenida: A=20, B=15, C=10, D=5.
 Justifica brevemente cada nivel con evidencia concreta del sistema completo (Unidades 1 y 2 integradas).
 Para el criterio 4, verifica explícitamente los 7 subaspectos de la Tabla 2 antes de asignar el nivel.
-Calcula la nota final con la fórmula: suma de (Peso × Puntos de la calificación obtenida) / 100 × 20.
+Calcula la nota final con la fórmula: suma de (Peso / 100 × Puntos de la calificación obtenida), directamente sobre 20.
 Indica 2 fortalezas y 2 recomendaciones finales del producto.
 ```
 
@@ -91,7 +93,7 @@ La presentación puede organizarse con una secuencia breve de apoyo visual. El v
 | 9 | Demo end-to-end | Ejecutar el flujo principal del sistema distribuido. | CE023 + CE024 |
 | 10 | Aporte individual | Indicar qué hizo cada integrante. | CE024 |
 | 11 | Repositorio y estándares | Mostrar repositorio, topics, estructura, documentación publicada en MkDocs o equivalente, y forma de ejecución. | CE024 |
-| 12 | Limitaciones y mejoras | Reconocer límites del producto y mejoras posibles. | CE024 |
+| 12 | Limitaciones y mejoras | Reconocer límites del producto, los riesgos aceptados con su justificación y las mejoras posibles. | CE024 |
 
 ## 5. Documentación y reporte del producto final
 
@@ -129,7 +131,7 @@ El informe debe documentar el producto de manera breve, verificable y alineada a
 | Arquitectura distribuida | Microservicios, Gateway, configuración, descubrimiento y comunicación. | Diagrama de arquitectura y componentes. |
 | Datos y consistencia | Persistencia, eventos, compensaciones o idempotencia. | Evidencias de datos, mensajes y resultados. |
 | Observabilidad | Logs, métricas, health checks o paneles. | Capturas, comandos o paneles. |
-| Validación y pruebas | Pruebas de flujo, seguridad, fallos y resultados. | Tabla de pruebas y evidencias. |
+| Validación y pruebas | Pruebas de flujo, seguridad (con más de un usuario), fallos y resultados; bitácora de hallazgos corregidos. | Tabla de pruebas, bitácora y evidencias. |
 | Repositorio y documentación | Repositorio, topics, estructura, comandos y documentación publicada. | URL del repositorio y MkDocs o equivalente. |
 | Aporte individual | Responsabilidad de cada integrante. | Tabla de tareas, commits o evidencias por integrante. |
-| Limitaciones y mejoras | Límites actuales y mejoras posibles. | Lista priorizada y realista. |
+| Limitaciones y mejoras | Límites actuales, riesgos aceptados con su justificación y mejoras posibles. | Lista priorizada y realista. |

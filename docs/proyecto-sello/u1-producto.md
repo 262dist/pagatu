@@ -91,7 +91,7 @@ A diferencia del roadmap de S4 (donde `pagatu-gateway` era lo único nuevo del d
 | 6. Evidencias de ejecución reproducible y documentación técnica básica | 8% | CE023-N3 | Evidencias completas, reproducibles por otra persona, con documentación clara. | Evidencias suficientes, con vacíos menores de documentación. | Evidencias parciales o poco reproducibles. | No presenta evidencias ni documentación. | |
 | 7. Sustentación | 20% | CG | Sustenta con claridad y profesionalismo su aporte individual, respondiendo con precisión las preguntas del jurado. | Sustenta con solvencia, con detalles menores en claridad, orden o precisión. | Sustenta con dificultad; claridad, orden o precisión insuficientes. | No sustenta adecuadamente ni demuestra su aporte individual. | |
 
-Nota final = suma de (`Peso` × `Puntos de la calificación obtenida`) / 100 × 20.
+Nota final = suma de (`Peso` / 100 × `Puntos de la calificación obtenida`) = ____ / 20.
 
 `CE023-N3` = Nivel 3 de la competencia CE023 (Programación). `CG` = Competencia General "Carácter y Aprendizaje Autónomo" del sílabo — no es CE023: los criterios 1-6 ya son la evidencia técnica, incluida su verificación en vivo; el criterio 7 verifica aporte individual y comunicación.
 
@@ -115,7 +115,7 @@ Evalúa la sustentación y el producto (u1-producto.md, adaptado al dominio prop
 Para cada criterio selecciona la calificación obtenida: A=20, B=15, C=10, D=5.
 Justifica brevemente cada nivel con evidencia concreta (endpoints, dashboard de registro, logs de balanceo).
 Para el criterio 7, verifica explícitamente los 6 subaspectos de la Tabla 5 (aporte individual, comunicación, presentación personal, repositorio, MkDocs, pitch/demo) antes de asignar el nivel.
-Calcula la nota final con la fórmula: suma de (Peso × Puntos de la calificación obtenida) / 100 × 20.
+Calcula la nota final con la fórmula: suma de (Peso / 100 × Puntos de la calificación obtenida), directamente sobre 20.
 Indica 2 fortalezas y 2 recomendaciones para lo que sigue en Unidad II.
 ```
 
