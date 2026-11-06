@@ -11,7 +11,7 @@ public interface PagoService {
 
     List<PagoResponse> listar();
 
-    PagoResponse obtener(Long id);
+    PagoResponse obtener(Long id, String idCliente);
 
-    Optional<PagoResponse> buscarPorOrden(Long ordenId);
+    Optional<PagoResponse> buscarPorOrden(Long ordenId, String idCliente);
 }

@@ -28,12 +28,12 @@ public OrdenResponse crear(@Valid @RequestBody OrdenRequest request,
 
 
     @GetMapping
-    public List<OrdenResponse> listar() {
-        return ordenService.listar();
+    public List<OrdenResponse> listar(@AuthenticationPrincipal Jwt jwt) {
+        return ordenService.listar(jwt.getSubject());
     }
 
     @GetMapping("/{id}")
-    public OrdenResponse findById(@PathVariable Long id) {
-        return ordenService.findById(id);
+    public OrdenResponse findById(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
+        return ordenService.findById(id, jwt.getSubject());
     }
 }

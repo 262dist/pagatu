@@ -14,9 +14,9 @@ es así desde hace varias sesiones.
 - `docs/index.md` — página de bienvenida curada (propósito del curso,
   producto del curso).
 - `docs/sesiones/S0X_*.md` — guías de sesión, publicadas en `mkdocs.yml`.
-  **Estado real (2026-10-10):** S01-S10 completamente desarrolladas, con
-  código real enlazado y verificado contra los servicios reales de
-  `services/`; S12 y S15 son evaluaciones de unidad. S11 todavía no existe.
+  **Estado real (2026-11-05):** S01-S11 y S13 desarrolladas, con código
+  real enlazado y verificado contra los servicios reales de `services/`;
+  S12 y S15 son evaluaciones de unidad.
 - `docs/propuesta-proyecto/` — **obsoleta**, el usuario la va a borrar; la
   convención real de arquitectura ya está en los `.md` de `services/*/`
   (ver `services/README.md`) y en las propias guías de sesión.

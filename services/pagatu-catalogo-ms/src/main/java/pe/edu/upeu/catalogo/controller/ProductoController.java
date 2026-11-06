@@ -5,11 +5,13 @@ import pe.edu.upeu.catalogo.dto.ProductoResponse;
 import pe.edu.upeu.catalogo.service.ProductoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/productos")
 @RequiredArgsConstructor
@@ -47,11 +49,13 @@ public class ProductoController {
     @PatchMapping("/{id}/descontar-stock")
     public void descontarStock(@PathVariable Long id, @RequestParam Integer cantidad) {
         productoService.descontarStock(id, cantidad);
+        log.info("component=controller idProducto={} cantidad={} operacion=descontar-stock status=ok", id, cantidad);
     }
 
     @PatchMapping("/{id}/restaurar-stock")
     public void restaurarStock(@PathVariable Long id, @RequestParam Integer cantidad) {
         productoService.restaurarStock(id, cantidad);
+        log.info("component=controller idProducto={} cantidad={} operacion=restaurar-stock status=ok", id, cantidad);
     }
 
 }

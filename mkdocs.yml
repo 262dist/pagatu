@@ -35,7 +35,10 @@ nav:
       - S11 - Integración del cliente (frontend Angular con Keycloak): sesiones/S11_Integracion_Cliente_Frontend_Angular_Keycloak.md
       - S12 - Evaluación de la Unidad II: sesiones/S12_Evaluacion_Unidad_2.md
   - III. Validación y consolidación del producto del curso:
+      - S13 - Validación end-to-end del producto del curso: sesiones/S13_Validacion_End_to_End_Producto.md
+      - S14 - Revisión técnica y estabilización del producto: sesiones/S14_Revision_Tecnica_Estabilizacion.md
       - S15 - Evaluación de la Unidad III: sesiones/S15_Evaluacion_Unidad_3.md
+      - S16 - Continuación de la evaluación de la Unidad III: sesiones/S16_Continuacion_Evaluacion.md
 
 theme:
   name: material

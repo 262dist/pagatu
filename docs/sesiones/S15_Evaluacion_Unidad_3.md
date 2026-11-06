@@ -9,7 +9,7 @@ Esta sesión no enseña contenido nuevo: cierra la Unidad III de **Desarrollo de
 
 **Esta sesión no repite lo evaluado en S5 ni en S12**: la Unidad I (base) y la Unidad II (robustez) ya quedaron certificadas por separado; S15 evalúa la integración, validación y estabilización final de ambas juntas — el sistema completo, no una capacidad nueva.
 
-**S16 (Continuación de la evaluación de la Unidad III)** no es una evaluación distinta: es la misma evaluación de esta guía, para los equipos o integrantes cuya presentación, sustentación o evidencia quedó pendiente en S15.
+**S16 (Continuación de la evaluación de la Unidad III)** no es una evaluación distinta: es la misma evaluación de esta guía, para los equipos o integrantes cuya presentación, sustentación o evidencia quedó pendiente en S15 — y, para quienes ya sustentaron, el momento de entregar la versión final del producto con las observaciones del jurado incorporadas ([S16](S16_Continuacion_Evaluacion.md)).
 
 ## 2. Producto evaluado
 
@@ -29,35 +29,17 @@ Cubre la validación end-to-end y la estabilización dictadas antes de esta sesi
 
 | Sesión | Tema | Qué puede evaluar el docente |
 |---|---|---|
-| S13 | Validación end-to-end del producto del curso | Cobertura del flujo principal, casos de error incluidos, y qué diferencia una prueba end-to-end de probar cada servicio por separado. |
-| S14 | Revisión técnica y estabilización del producto | Qué se estabilizó (configuración, documentación, evidencias) y por qué un producto "que funciona en la demo" no es lo mismo que un producto reproducible. |
+| S13 | Validación end-to-end del producto del curso | Por qué validar con dos usuarios encuentra lo que probar con uno no encuentra; autorización de ruta (Gateway) frente a autorización de objeto (el servicio dueño del dato) y por qué un objeto ajeno responde `404` y no `403`; endpoints de servicio a servicio alcanzables desde el punto de entrada público; y cómo un mismo `traceId` permite seguir una petición por varios servicios, con su límite en Kafka. |
+| S14 | Revisión técnica y estabilización del producto | Por qué la prueba de reproducibilidad se hace sobre una copia limpia; qué tipos de afirmación de una documentación envejecen primero (estados, rutas, puertos, comandos); qué contiene un manual de ejecución además del README; para qué sirve el plan alternativo de un guion de demostración; y qué costo tiene cada decisión de arquitectura. |
 
 Preguntas de referencia (el docente puede formular equivalentes):
 
-1. ¿Qué caso de error de tu flujo principal probaste de extremo a extremo, y qué componente lo hubiera dejado pasar si solo probabas cada servicio por separado?
-2. ¿Qué tuviste que estabilizar entre la Unidad II y esta evaluación para que el sistema fuera reproducible por otra persona?
-3. Si otra persona clona tu repositorio hoy, ¿qué pasos exactos necesita seguir para levantar el sistema completo, y dónde están documentados?
-4. ¿Qué limitación real del producto reconoces, y por qué no la resolviste dentro del alcance del curso?
-
-## 4. Sustentación del producto final
-
-**Tabla 2. Distribución de tiempo por integrante**
-
-| Momento | Tiempo | Propósito |
-|---|---:|---|
-| Video pitch / introducción ejecutiva | 3 min | Presentar problema, solución, valor del producto y participación del equipo. |
-| Exposición técnica | 10 min | Presentar arquitectura, servicios, flujo distribuido, seguridad, eventos y observabilidad ([Tabla 3 de `u3-producto.md`](../proyecto-sello/u3-producto.md#4-secuencia-sugerida-de-presentacion)). |
-| Demostración en vivo | 5 min | Ejecutar el flujo end-to-end, evidenciando Gateway, servicios, eventos, seguridad y monitoreo. |
-| Preguntas individuales | 5 min | Verificar dominio y aporte propio, con base en la Tabla 1 y el producto completo. |
-
-**Tabla 3. Entregables obligatorios**
-
-| Entregable | Evidencia mínima | Criterio de aceptación |
-|---|---|---|
-| Producto final | [`u3-producto.md`](../proyecto-sello/u3-producto.md), adaptado al dominio propio del equipo | Integra y estabiliza lo construido en Unidad 1 y Unidad 2 |
-| Evidencia de validación end-to-end | Flujo principal probado completo, con al menos un caso de error | Verificable en vivo, no solo documentada |
-| Repositorio y documentación | Topics académicos vigentes, documentación completa publicada en MkDocs o equivalente, informe del proyecto | Reproducible por otra persona desde el repositorio, sin ayuda del equipo |
-| Sustentación grupal con aporte individual | Video pitch + exposición + demo + defensa por integrante, con los 7 subaspectos de [`u3-producto.md`, Tabla 2](../proyecto-sello/u3-producto.md#2-rubrica-de-evaluacion) | Aporte individual verificable dentro de la defensa grupal |
+1. Un cliente autenticado pide por su identificador una orden que pertenece a otro cliente: ¿qué componente debe impedirlo, por qué no alcanza con el Gateway, y qué respuesta debe recibir y por qué?
+2. ¿Qué endpoint de servicio a servicio de tu sistema es alcanzable desde el punto de entrada público, y cómo lo negaste sin romper el flujo legítimo?
+3. Una petición atraviesa tres servicios: ¿cómo demuestras con tus logs que es la misma, y en qué punto de tu sistema se rompe esa correlación?
+4. Si otra persona clona tu repositorio hoy, ¿qué pasos exactos necesita para levantar el sistema completo, dónde están documentados, y cuándo fue la última vez que alguien los siguió al pie de la letra?
+5. ¿Qué afirmación de tu documentación dejó de ser cierta, cómo lo detectaste, y cómo evitas que vuelva a pasar?
+6. ¿Qué limitación real del producto reconoces, y por qué no la resolviste dentro del alcance del curso?
 
 Criterios mínimos de aceptación:
 

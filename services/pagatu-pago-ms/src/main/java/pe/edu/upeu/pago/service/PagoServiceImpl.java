@@ -54,6 +54,7 @@ public class PagoServiceImpl implements PagoService {
         try {
             pago = pagoRepository.save(Pago.builder()
                     .ordenId(orden.getOrdenId())
+                    .idCliente(orden.getIdCliente())
                     .monto(orden.getTotal())
                     .metodoPago(orden.getMetodoPago())
                     .estado(estadoResultante)
@@ -86,17 +87,17 @@ public class PagoServiceImpl implements PagoService {
     }
 
     @Override
-    public PagoResponse obtener(Long id) {
-        return pagoMapper.toResponse(buscarOFallar(id));
-    }
-
-    private Pago buscarOFallar(Long id) {
+    public PagoResponse obtener(Long id, String idCliente) {
         return pagoRepository.findById(id)
+                .filter(p -> idCliente.equals(p.getIdCliente()))
+                .map(pagoMapper::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("Pago no encontrado: " + id));
     }
 
     @Override
-    public Optional<PagoResponse> buscarPorOrden(Long ordenId) {
-        return pagoRepository.findByOrdenId(ordenId).map(pagoMapper::toResponse);
+    public Optional<PagoResponse> buscarPorOrden(Long ordenId, String idCliente) {
+        return pagoRepository.findByOrdenId(ordenId)
+                .filter(p -> idCliente.equals(p.getIdCliente()))
+                .map(pagoMapper::toResponse);
     }
 }

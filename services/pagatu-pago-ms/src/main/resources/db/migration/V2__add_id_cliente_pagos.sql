@@ -1,0 +1,1 @@
+ALTER TABLE pagos ADD COLUMN id_cliente VARCHAR(36);

@@ -27,8 +27,8 @@ pagatu/
 │   └── pagatu-pago-ms/         # Pagos; consume orden.creada y publica pago.validado (S8)
 ├── obs/                       # Prometheus + Loki + Promtail + Grafana (S3-S4) — observa infra/, services/ y Keycloak desde afuera, no es una dependencia de arranque
 ├── kafka/                     # Kafka y Kafka UI (S8)
-├── keycloak/                  # (S07b, pendiente) Keycloak + su Postgres — sustituye a pagatu-auth-ms como servidor de autorización
-└── clients/                   # Frontends que consumen la API — uno por carpeta (pagatu-frontend/, Angular con login PKCE contra Keycloak, S11, pendiente; espacio reservado para futuros clientes, p. ej. móvil)
+├── keycloak/                  # Keycloak + su Postgres (S07b) — sustituye a pagatu-auth-ms como servidor de autorización
+└── clients/                   # Frontends que consumen la API — uno por carpeta (pagatu-frontend/, Angular con login PKCE contra Keycloak, S11; espacio reservado para futuros clientes, p. ej. móvil)
 ```
 
 ## Requisitos
@@ -92,18 +92,12 @@ docker compose -f compose-dev.yml up -d
 ```
 
 ```powershell
-cd services/pagatu-cliente-ms
-docker compose -f compose-dev.yml up -d
-.\mvnw.cmd spring-boot:run
-```
-
-```powershell
 cd services/pagatu-pago-ms
 docker compose -f compose-dev.yml up -d
 .\mvnw.cmd spring-boot:run
 ```
 
-`pagatu-cliente-ms` es autónomo (S2) y no depende de ningún otro microservicio ni de Kafka — súbelo solo si lo vas a usar. `pagatu-pago-ms` sí necesita Kafka arriba (paso 2). `pagatu-auth-ms` ya no se levanta en el día a día (retirado en S07b, paso 3 de este arranque) — sigue en el repositorio solo como referencia. Detalle de cada uno, con Swagger/health/endpoints, en [`services/README.md`](services/README.md).
+`pagatu-cliente-ms` es el ejercicio autónomo de cada equipo (S2): no existe en este repositorio de referencia, así que no hay nada que levantar; si tu equipo lo construyó, súbelo igual que los demás. `pagatu-pago-ms` sí necesita Kafka arriba (paso 2). `pagatu-auth-ms` ya no se levanta en el día a día (retirado en S07b, paso 3 de este arranque) — sigue en el repositorio solo como referencia. Detalle de cada uno, con Swagger/health/endpoints, en [`services/README.md`](services/README.md).
 
 **5. Verificar**
 

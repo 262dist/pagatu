@@ -22,6 +22,9 @@ public class Pago {
     @Column(name = "orden_id", nullable = false, unique = true)
     private Long ordenId;
 
+    @Column(name = "id_cliente", length = 36)
+    private String idCliente;
+
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal monto;
 

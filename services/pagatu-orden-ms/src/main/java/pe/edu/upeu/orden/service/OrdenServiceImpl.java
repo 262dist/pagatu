@@ -2,6 +2,7 @@ package pe.edu.upeu.orden.service;
 
 import pe.edu.upeu.orden.dto.*;
 import pe.edu.upeu.orden.event.OrdenCreadaEvento;
+import pe.edu.upeu.orden.exception.ResourceNotFoundException;
 import pe.edu.upeu.orden.messaging.OrdenEventosProducer;
 import pe.edu.upeu.orden.entity.EstadoOrden;
 import pe.edu.upeu.orden.entity.Orden;
@@ -73,6 +74,8 @@ public class OrdenServiceImpl implements OrdenService {
         orden.setEstado(validacionCompleta ? EstadoOrden.PENDIENTE_PAGO : EstadoOrden.CARRITO);
 
         Orden guardada = ordenRepository.save(orden);
+        log.info("component=service ordenId={} estado={} total={} status=created",
+                guardada.getId(), guardada.getEstado(), guardada.getTotal());
 
         if (guardada.getEstado() == EstadoOrden.PENDIENTE_PAGO) {
             producer.publicarTrasCommit(OrdenCreadaEvento.builder()
@@ -102,16 +105,17 @@ public class OrdenServiceImpl implements OrdenService {
 
     @Override
     @Transactional(readOnly = true)
-    public OrdenResponse findById(Long id) {
+    public OrdenResponse findById(Long id, String idCliente) {
         Orden orden = ordenRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Orden no encontrada: " + id));
+                .filter(o -> o.getIdCliente().equals(idCliente))
+                .orElseThrow(() -> new ResourceNotFoundException("Orden no encontrada: " + id));
         return toResponse(orden);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<OrdenResponse> listar() {
-        return ordenRepository.findAll().stream()
+    public List<OrdenResponse> listar(String idCliente) {
+        return ordenRepository.findByIdCliente(idCliente).stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
