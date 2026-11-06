@@ -1598,7 +1598,9 @@
 <li>Consistencia distribuida, compensación o idempotencia según el flujo (Unidad 2).</li>
 <li>Logs, health checks, métricas y paneles de observabilidad (Unidad 2).</li>
 <li>Frontend integrado mediante Gateway (Unidad 2).</li>
-<li>Docker o entorno reproducible.</li>
+<li>Docker o entorno reproducible, con servicios que declaran cuándo están listos y manual de ejecución probado sobre una copia limpia del repositorio.</li>
+<li>Pruebas integrales del flujo principal con al menos un caso de error y verificación con más de un usuario (autorización a nivel de objeto, no solo de ruta).</li>
+<li>Bitácora de validación y estabilización: hallazgos encontrados, su corrección y la prueba de que quedó corregido.</li>
 <li>Documentación técnica y evidencias de ejecución.</li>
 </ul>
 <h2 id="2-rubrica-de-evaluacion">2. Rúbrica de Evaluación<a class="headerlink" href="#2-rubrica-de-evaluacion" title="Permanent link">&para;</a></h2>
@@ -1659,7 +1661,7 @@
 </tr>
 </tbody>
 </table>
-<p>Nota final = suma de (<code>Peso</code> × <code>Puntos de la calificación obtenida</code>) / 100 × 20.</p>
+<p>Nota final = suma de (<code>Peso</code> / 100 × <code>Puntos de la calificación obtenida</code>) = ____ / 20.</p>
 <p><code>CE023-N3</code> = Nivel 3 de la competencia CE023 (Programación). <code>CG</code> = Competencia General "Carácter y Aprendizaje Autónomo" del sílabo. El criterio 4 se etiqueta con ambas porque, a diferencia de Unidad 1 y 2 (donde la sustentación es un criterio agregado aparte), aquí el propio sílabo funde en un solo criterio la demostración técnica de las competencias desarrolladas (CE023, cierre) con la defensa grupal y el aporte individual (CG).</p>
 <p><strong>Tabla 2. Subaspectos de la sustentación integral</strong></p>
 <p>El criterio 4 se evalúa con los siguientes subaspectos. La sustentación integral representa como mínimo el 30% de la evaluación del producto final — coherente con el peso del criterio 4 en esta rúbrica.</p>
@@ -1706,7 +1708,7 @@
 Para cada criterio selecciona la calificación obtenida: A=20, B=15, C=10, D=5.
 Justifica brevemente cada nivel con evidencia concreta del sistema completo (Unidades 1 y 2 integradas).
 Para el criterio 4, verifica explícitamente los 7 subaspectos de la Tabla 2 antes de asignar el nivel.
-Calcula la nota final con la fórmula: suma de (Peso × Puntos de la calificación obtenida) / 100 × 20.
+Calcula la nota final con la fórmula: suma de (Peso / 100 × Puntos de la calificación obtenida), directamente sobre 20.
 Indica 2 fortalezas y 2 recomendaciones finales del producto.
 </code></pre></div>
 <h2 id="3-trazabilidad-y-procedencia-de-la-rubrica">3. Trazabilidad y procedencia de la rúbrica<a class="headerlink" href="#3-trazabilidad-y-procedencia-de-la-rubrica" title="Permanent link">&para;</a></h2>
@@ -1794,7 +1796,7 @@ Indica 2 fortalezas y 2 recomendaciones finales del producto.
 <tr>
 <td style="text-align: right;">12</td>
 <td>Limitaciones y mejoras</td>
-<td>Reconocer límites del producto y mejoras posibles.</td>
+<td>Reconocer límites del producto, los riesgos aceptados con su justificación y las mejoras posibles.</td>
 <td>CE024</td>
 </tr>
 </tbody>
@@ -1913,8 +1915,8 @@ Indica 2 fortalezas y 2 recomendaciones finales del producto.
 </tr>
 <tr>
 <td>Validación y pruebas</td>
-<td>Pruebas de flujo, seguridad, fallos y resultados.</td>
-<td>Tabla de pruebas y evidencias.</td>
+<td>Pruebas de flujo, seguridad (con más de un usuario), fallos y resultados; bitácora de hallazgos corregidos.</td>
+<td>Tabla de pruebas, bitácora y evidencias.</td>
 </tr>
 <tr>
 <td>Repositorio y documentación</td>
@@ -1928,7 +1930,7 @@ Indica 2 fortalezas y 2 recomendaciones finales del producto.
 </tr>
 <tr>
 <td>Limitaciones y mejoras</td>
-<td>Límites actuales y mejoras posibles.</td>
+<td>Límites actuales, riesgos aceptados con su justificación y mejoras posibles.</td>
 <td>Lista priorizada y realista.</td>
 </tr>
 </tbody>
