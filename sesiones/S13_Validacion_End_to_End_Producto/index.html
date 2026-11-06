@@ -1,0 +1,3001 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://262dist.github.io/pagatu/sesiones/S13_Validacion_End_to_End_Producto/">
+      
+      
+        <link rel="prev" href="../S12_Evaluacion_Unidad_2/">
+      
+      
+        <link rel="next" href="../S14_Revision_Tecnica_Estabilizacion/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+    
+    
+  
+    <title>Pagatu - S13 - Validación end-to-end del producto del curso</title>
+  
+
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#s13-validacion-end-to-end-del-producto-del-curso" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Pagatu" class="md-header__button md-logo" aria-label="Pagatu" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Pagatu
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              S13 - Validación end-to-end del producto del curso
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/262dist/pagatu" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    262dist/pagatu
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Pagatu" class="md-nav__button md-logo" aria-label="Pagatu" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Pagatu
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/262dist/pagatu" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    262dist/pagatu
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía de Proyecto Sello
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guía de Proyecto Sello
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía del proyecto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brief técnico (plantilla)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/u1-producto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Producto U1 (plantilla-ejemplo)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/u2-producto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Producto U2 (plantilla-ejemplo)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/u3-producto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Producto U3 / Producto Final (plantilla-ejemplo)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/matriz-competencias/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Matriz de competencias (ICACIT)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/alcance-microservicios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Alcance por microservicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/acad/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sistema académico (referencia)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../proyecto-sello/produccion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sistema de producción y comercialización (referencia)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabos
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Silabos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabo 2026-1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../silabo_dist_2026_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Silabo 2026-2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I. Sistema distribuido base orientado a producción
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    I. Sistema distribuido base orientado a producción
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S01_Construccion_Servicio_Base/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S1 - Construcción de un servicio base para un sistema distribuido
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S02_Configuracion_Centralizada_Ambientes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S2 - Gestión centralizada de configuración y ambientes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S03_Registro_Descubrimiento_Ejecucion_Concurrente/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S3 - Registro, descubrimiento y ejecución concurrente de servicios
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S04_Punto_Unico_Acceso_Distribucion_Trafico/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S4 - Punto único de acceso y distribución de tráfico
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S05_Evaluacion_Unidad_1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S5 - Evaluación de la Unidad I
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    II. Sistema distribuido robusto
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    II. Sistema distribuido robusto
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S06_Comunicacion_Sincrona_Resiliente/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S6 - Comunicación síncrona resiliente entre servicios
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S07_Seguridad_Distribuida_Control_Acceso/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S7 - Seguridad distribuida y control de acceso
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S07b_Seguridad_Distribuida_Keycloak/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S7b - Seguridad distribuida con Keycloak
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S08_Mensajeria_Asincrona_Entre_Servicios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S8 - Mensajería asíncrona entre servicios
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S09_Consistencia_Distribuida_Procesos_Negocio/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S9 - Consistencia distribuida en procesos de negocio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S10_Observabilidad_Diagnostico_Sistemas_Distribuidos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S10 - Observabilidad y diagnóstico de sistemas distribuidos
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S11_Integracion_Cliente_Frontend_Angular_Keycloak/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S11 - Integración del cliente (frontend Angular con Keycloak)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S12_Evaluacion_Unidad_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S12 - Evaluación de la Unidad II
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    III. Validación y consolidación del producto del curso
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    III. Validación y consolidación del producto del curso
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S13 - Validación end-to-end del producto del curso
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S13 - Validación end-to-end del producto del curso
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introducción
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introducción">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-presentacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Presentación de la sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-indice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Índice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-proposito-de-aprendizaje" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Propósito de aprendizaje
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-producto-de-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Producto de sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-metodologia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Metodología
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-motivacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6 Motivación de la sesión
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.6 Motivación de la sesión">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#161-caso-la-api-de-usps-que-dejaba-a-cualquier-usuario-leer-las-cuentas-de-otros-60-millones-2018" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6.1 Caso: la API de USPS que dejaba a cualquier usuario leer las cuentas de otros 60 millones (2018)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-ubicacion-en-el-curso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.7 Ubicación en el curso
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-explica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Explica
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Explica">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-arquitectura-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Arquitectura de la sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-validar-de-punta-a-punta-frente-a-probar-cada-pieza" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Validar de punta a punta frente a probar cada pieza
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-autorizacion-de-ruta-frente-a-autorizacion-de-objeto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Autorización de ruta frente a autorización de objeto
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-endpoints-internos-expuestos-por-un-punto-de-entrada-publico" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Endpoints internos expuestos por un punto de entrada público
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-trazabilidad-donde-nace-el-traceid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Trazabilidad: dónde nace el traceId
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-bitacora-de-hallazgos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6 Bitácora de hallazgos
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-aplica-actividad-practica-guiada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Aplica: actividad práctica guiada
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Aplica: actividad práctica guiada">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-levantar-el-sistema-completo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Levantar el sistema completo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-verificar-el-registro-y-una-llamada-publica-por-el-gateway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Verificar el registro y una llamada pública por el Gateway
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-recorrer-el-flujo-feliz-login-orden-evento-pago-pagada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Recorrer el flujo feliz: login, orden, evento, pago, PAGADA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-diagnosticar-un-cliente-lee-las-ordenes-de-otro" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Diagnosticar: un cliente lee las órdenes de otro
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-corregir-la-autorizacion-de-objeto-en-pagatu-orden-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Corregir la autorización de objeto en pagatu-orden-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-el-mismo-defecto-en-pagatu-pago-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 El mismo defecto en pagatu-pago-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-endpoints-internos-expuestos-por-el-gateway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7 Endpoints internos expuestos por el Gateway
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#38-trazabilidad-de-punta-a-punta-en-loki" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.8 Trazabilidad de punta a punta en Loki
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#39-verificar-el-cliente-angular" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.9 Verificar el cliente Angular
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#310-registrar-los-hallazgos-en-la-bitacora" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.10 Registrar los hallazgos en la bitácora
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-crea-actividad-autonoma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Crea: actividad autónoma
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Crea: actividad autónoma">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-actividad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Actividad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Propósito
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-indicaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Indicaciones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3 Indicaciones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#431-estructura-del-informe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.1 Estructura del informe
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-criterios-minimos-de-aceptacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Criterios mínimos de aceptación
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-preguntas-de-defensa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 Preguntas de defensa
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-rubrica-de-evaluacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 Rúbrica de evaluación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-cierre" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Cierre
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bibliografia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bibliografía
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S14_Revision_Tecnica_Estabilizacion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S14 - Revisión técnica y estabilización del producto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S15_Evaluacion_Unidad_3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S15 - Evaluación de la Unidad III
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S16_Continuacion_Evaluacion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S16 - Continuación de la evaluación de la Unidad III
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Introducción
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Introducción">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-presentacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Presentación de la sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-indice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Índice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-proposito-de-aprendizaje" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Propósito de aprendizaje
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-producto-de-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Producto de sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-metodologia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Metodología
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-motivacion-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6 Motivación de la sesión
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.6 Motivación de la sesión">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#161-caso-la-api-de-usps-que-dejaba-a-cualquier-usuario-leer-las-cuentas-de-otros-60-millones-2018" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6.1 Caso: la API de USPS que dejaba a cualquier usuario leer las cuentas de otros 60 millones (2018)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-ubicacion-en-el-curso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.7 Ubicación en el curso
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-explica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Explica
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Explica">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-arquitectura-de-la-sesion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Arquitectura de la sesión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-validar-de-punta-a-punta-frente-a-probar-cada-pieza" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Validar de punta a punta frente a probar cada pieza
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-autorizacion-de-ruta-frente-a-autorizacion-de-objeto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Autorización de ruta frente a autorización de objeto
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-endpoints-internos-expuestos-por-un-punto-de-entrada-publico" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Endpoints internos expuestos por un punto de entrada público
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-trazabilidad-donde-nace-el-traceid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Trazabilidad: dónde nace el traceId
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-bitacora-de-hallazgos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6 Bitácora de hallazgos
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-aplica-actividad-practica-guiada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Aplica: actividad práctica guiada
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Aplica: actividad práctica guiada">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-levantar-el-sistema-completo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Levantar el sistema completo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-verificar-el-registro-y-una-llamada-publica-por-el-gateway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Verificar el registro y una llamada pública por el Gateway
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-recorrer-el-flujo-feliz-login-orden-evento-pago-pagada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Recorrer el flujo feliz: login, orden, evento, pago, PAGADA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-diagnosticar-un-cliente-lee-las-ordenes-de-otro" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Diagnosticar: un cliente lee las órdenes de otro
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-corregir-la-autorizacion-de-objeto-en-pagatu-orden-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Corregir la autorización de objeto en pagatu-orden-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-el-mismo-defecto-en-pagatu-pago-ms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 El mismo defecto en pagatu-pago-ms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-endpoints-internos-expuestos-por-el-gateway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7 Endpoints internos expuestos por el Gateway
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#38-trazabilidad-de-punta-a-punta-en-loki" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.8 Trazabilidad de punta a punta en Loki
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#39-verificar-el-cliente-angular" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.9 Verificar el cliente Angular
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#310-registrar-los-hallazgos-en-la-bitacora" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.10 Registrar los hallazgos en la bitácora
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-crea-actividad-autonoma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Crea: actividad autónoma
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Crea: actividad autónoma">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-actividad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Actividad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Propósito
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-indicaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Indicaciones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3 Indicaciones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#431-estructura-del-informe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.1 Estructura del informe
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-criterios-minimos-de-aceptacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Criterios mínimos de aceptación
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-preguntas-de-defensa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 Preguntas de defensa
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-rubrica-de-evaluacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 Rúbrica de evaluación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-cierre" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Cierre
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bibliografia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bibliografía
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="s13-validacion-end-to-end-del-producto-del-curso">S13 - Validación End-to-End del Producto del Curso<a class="headerlink" href="#s13-validacion-end-to-end-del-producto-del-curso" title="Permanent link">&para;</a></h1>
+<p><em>Por: Angel Sullon Macalupu @asullom - 2026</em></p>
+<h2 id="1-introduccion">1. Introducción<a class="headerlink" href="#1-introduccion" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 20 min.</p>
+<h3 id="11-presentacion-de-la-sesion">1.1 Presentación de la sesión<a class="headerlink" href="#11-presentacion-de-la-sesion" title="Permanent link">&para;</a></h3>
+<p>Once sesiones construyeron <code>pagatu</code> pieza por pieza, y cada una cerró con su propia prueba: el Gateway enruta, <code>pagatu-orden-ms</code> crea órdenes, Keycloak emite tokens, Kafka entrega eventos, Loki guarda logs. Ninguna prueba recorrió todo junto con <strong>dos usuarios distintos a la vez</strong>, que es la pregunta que un sistema en producción responde todos los días: ¿puede una persona autenticada ver o tocar lo que le pertenece a otra? Esta sesión levanta el sistema completo, ejecuta los flujos principales de punta a punta y registra cada fallo que aparece. Los fallos de esta guía no son hipotéticos: se encontraron, se corrigieron y se volvieron a probar al preparar la sesión (3.4 a 3.8).</p>
+<h3 id="12-indice">1.2 Índice<a class="headerlink" href="#12-indice" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Qué significa validar de punta a punta, y en qué se distingue de probar cada pieza.</li>
+<li>Autorización de ruta frente a autorización de objeto.</li>
+<li>Endpoints internos expuestos por un punto de entrada público.</li>
+<li>Trazabilidad: seguir una petición por todos los servicios que toca.</li>
+<li>Bitácora de hallazgos: diagnóstico, corrección y prueba de no regresión.</li>
+</ol>
+<h3 id="13-proposito-de-aprendizaje">1.3 Propósito de aprendizaje<a class="headerlink" href="#13-proposito-de-aprendizaje" title="Permanent link">&para;</a></h3>
+<p>Al concluir la clase, estarás en condiciones de: <strong>ejecutar</strong> los flujos principales de un sistema distribuido con usuarios distintos, <strong>diagnosticar</strong> una falla de autorización entre usuarios con evidencia real, <strong>corregirla</strong> en el servicio dueño del dato, <strong>verificar</strong> que la corrección no rompió el flujo legítimo, y <strong>documentar</strong> cada hallazgo en una bitácora reproducible.</p>
+<h3 id="14-producto-de-sesion">1.4 Producto de sesión<a class="headerlink" href="#14-producto-de-sesion" title="Permanent link">&para;</a></h3>
+<p>Sistema <code>pagatu</code> completo levantado y recorrido de punta a punta (login PKCE → orden → evento Kafka → pago → orden <code>PAGADA</code>), con los hallazgos reales de esta validación corregidos en <code>pagatu-orden-ms</code>, <code>pagatu-pago-ms</code>, <code>pagatu-gateway</code>, <code>pagatu-catalogo-ms</code> y <code>obs/</code>; trazabilidad de una misma petición visible en Loki a través del Gateway y dos microservicios; y la bitácora de hallazgos con la evidencia de cada corrección.</p>
+<h3 id="15-metodologia">1.5 Metodología<a class="headerlink" href="#15-metodologia" title="Permanent link">&para;</a></h3>
+<p><strong>Tabla 1. Metodología de la sesión</strong></p>
+<table>
+<thead>
+<tr>
+<th>Actividades a Realizar en el Periodo</th>
+<th>Orientaciones generales (Orientaciones Metodológicas)</th>
+<th>Material de estudio recomendado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Revisión previa individual</td>
+<td>Repasar S7b (tokens de <code>cliente1</code> y <code>admin</code>), S9 (flujo orden→pago→<code>PAGADA</code>) y S10 (<code>X-Trace-ID</code>, Loki). Confirmar que el sistema completo arranca en tu laptop. Trabajo individual, antes de clase.</td>
+<td>S07b (sección 6), S09, S10, <code>README.md</code> raíz.</td>
+</tr>
+<tr>
+<td>Clase presencial</td>
+<td>Ejecución guiada de los flujos principales con dos usuarios, diagnóstico de los hallazgos, corrección en cada servicio, y verificación de la trazabilidad en Loki. Trabajo individual en la propia laptop, siguiendo al docente paso a paso.</td>
+<td>Todo <code>pagatu</code> corriendo (incluido <code>obs/</code>), pasos 3.1 a 3.10 de esta guía.</td>
+</tr>
+<tr>
+<td>Evaluación formativa</td>
+<td>Revisión en clase del hallazgo de autorización diagnosticado y corregido, y de la traza correlacionada en Loki. La evidencia se completa y sustenta de forma individual, fuera del aula, según los criterios mínimos de la sección 4.4.</td>
+<td>Indicaciones de entrega (4.3), rúbrica de evaluación (4.6).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="16-motivacion-de-la-sesion">1.6 Motivación de la sesión<a class="headerlink" href="#16-motivacion-de-la-sesion" title="Permanent link">&para;</a></h3>
+<h4 id="161-caso-la-api-de-usps-que-dejaba-a-cualquier-usuario-leer-las-cuentas-de-otros-60-millones-2018">1.6.1 Caso: la API de USPS que dejaba a cualquier usuario leer las cuentas de otros 60 millones (2018)<a class="headerlink" href="#161-caso-la-api-de-usps-que-dejaba-a-cualquier-usuario-leer-las-cuentas-de-otros-60-millones-2018" title="Permanent link">&para;</a></h4>
+<p>El 21 de noviembre de 2018, el periodista Brian Krebs publicó que un componente web del Servicio Postal de Estados Unidos (USPS), una API (<em>Application Programming Interface</em>) ligada a su iniciativa <em>Informed Visibility</em>, tenía una falla que, según el propio reportaje, "let any logged-in usps.com user query the system for account details belonging to any other users" — permitía que cualquier usuario con sesión iniciada consultara los detalles de la cuenta de cualquier otro. Los datos expuestos incluían correo, nombre de usuario, número de cuenta, dirección postal, teléfono y datos de campañas de correo: los de unos 60 millones de usuarios.</p>
+<p>Fuente: Krebs, B. (2018, 21 de noviembre). <em>USPS Site Exposed Data on 60 Million Users</em>. Krebs on Security. <a href="https://krebsonsecurity.com/2018/11/usps-site-exposed-data-on-60-million-users/">https://krebsonsecurity.com/2018/11/usps-site-exposed-data-on-60-million-users/</a></p>
+<p>El detalle que importa para esta sesión: la API <strong>sí</strong> exigía iniciar sesión. Lo que no hacía era la segunda pregunta — si el dato pedido le pertenecía a quien lo pedía. El investigador Nicholas Weaver lo resumió así: la API "should have validated that the account making the request had permission to read the data requested". Un investigador anónimo declaró haber avisado a USPS más de un año antes sin recibir respuesta; la API se modificó el 20 de noviembre, un día antes de la publicación. <code>pagatu</code> tuvo, hasta esta sesión, la misma falla en miniatura: el Gateway exigía un token válido (primera pregunta), pero dos de sus microservicios entregaban cualquier orden o pago a cualquier usuario autenticado (segunda pregunta, sin hacer).</p>
+<p><strong>Preguntas de análisis</strong></p>
+<p><strong>Activación de conocimientos previos</strong></p>
+<ol>
+<li>Cuando un sistema "exige iniciar sesión", ¿qué garantiza exactamente esa exigencia, y qué deja sin garantizar?</li>
+</ol>
+<p><strong>Comprensión del caso</strong></p>
+<ol>
+<li>Según el caso, ¿qué verificación faltaba en la API de USPS, si la autenticación ya existía?</li>
+<li>¿Por qué una prueba que usa un solo usuario nunca habría encontrado esta falla?</li>
+<li>En tu propio proyecto, ¿qué endpoint devuelve datos "de alguien" y nunca has probado con la cuenta de otra persona?</li>
+</ol>
+<h3 id="17-ubicacion-en-el-curso">1.7 Ubicación en el curso<a class="headerlink" href="#17-ubicacion-en-el-curso" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Unidad: U3 - Validación y consolidación del producto del curso.</li>
+<li>Producto del curso: sistema distribuido de microservicios end-to-end, configurable, escalable, seguro, resiliente, consistente, observable, integrado con frontend y defendido técnicamente.</li>
+<li>Producto de unidad: sistema distribuido de microservicios end-to-end, validado, documentado, estabilizado y defendido técnicamente.</li>
+<li>Avance del producto en esta sesión: el sistema completo probado de punta a punta con dos usuarios, con los hallazgos de autorización, exposición interna, trazabilidad y observabilidad corregidos y documentados en una bitácora.</li>
+</ul>
+<p><strong>Figura 1. Roadmap del producto de la unidad</strong></p>
+<pre class="mermaid"><code>flowchart TB
+    S13["`**S13:** Validación end-to-end`"]
+    S14["`**S14:** Revisión técnica y estabilización`"]
+    S15["`**S15:** Evaluación de la Unidad III`"]
+    S16["`**S16:** Continuación de la evaluación`"]
+
+    S13 --&gt; S14 --&gt; S15 --&gt; S16
+
+    classDef today fill:#ffe08a,stroke:#9a6b00,stroke-width:2px,color:#111;
+    class S13 today;</code></pre>
+<h2 id="2-explica">2. Explica<a class="headerlink" href="#2-explica" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 40 min.</p>
+<h3 id="21-arquitectura-de-la-sesion">2.1 Arquitectura de la sesión<a class="headerlink" href="#21-arquitectura-de-la-sesion" title="Permanent link">&para;</a></h3>
+<p><strong>Figura 2. Recorrido de punta a punta y los puntos donde se valida cada cosa</strong></p>
+<pre class="mermaid"><code>flowchart TB
+    U["Usuario (cliente1 / admin)"]
+    KC["Keycloak&lt;br/&gt;login PKCE → JWT"]
+    GW["pagatu-gateway&lt;br/&gt;ruta + rol · traceId (3.8)"]
+    ORD["pagatu-orden-ms&lt;br/&gt;dueño de la orden (3.4-3.5)"]
+    CAT["pagatu-catalogo-ms&lt;br/&gt;stock (3.7)"]
+    K[("Kafka&lt;br/&gt;orden-eventos / pago-eventos")]
+    PAG["pagatu-pago-ms&lt;br/&gt;dueño del pago (3.6)"]
+    LOKI[("Loki&lt;br/&gt;logs por traceId (3.8)")]
+
+    U --&gt; KC
+    U --&gt;|"Bearer JWT"| GW
+    GW --&gt; ORD
+    ORD --&gt;|"Feign (Eureka)"| CAT
+    ORD --&gt;|"orden.creada"| K
+    K --&gt; PAG
+    PAG --&gt;|"pago.validado"| K
+    K --&gt; ORD
+    GW -.-&gt; LOKI
+    ORD -.-&gt; LOKI
+    CAT -.-&gt; LOKI
+
+    classDef today fill:#ffe08a,stroke:#9a6b00,stroke-width:2px,color:#111;
+    class GW,ORD,CAT,PAG,LOKI today;</code></pre>
+<p>Lectura del diagrama: los cinco componentes marcados son los que esta sesión corrige. Ninguno falla al probarse solo con un usuario: fallan cuando dos usuarios distintos recorren el mismo flujo, o cuando hay que reconstruir una sola petición a través de varios servicios.</p>
+<h3 id="22-validar-de-punta-a-punta-frente-a-probar-cada-pieza">2.2 Validar de punta a punta frente a probar cada pieza<a class="headerlink" href="#22-validar-de-punta-a-punta-frente-a-probar-cada-pieza" title="Permanent link">&para;</a></h3>
+<p>Una prueba <strong>por pieza</strong> confirma que un componente cumple su contrato aislado (<code>pagatu-orden-ms</code> crea una orden si recibe un JWT válido). Una validación <strong>de punta a punta</strong> (<em>end-to-end</em>, E2E) recorre el sistema completo con sus piezas reales conectadas, desde el cliente hasta la persistencia y de vuelta, y se hace con la combinación de datos y usuarios que de verdad aparecerá en uso real — no con el camino feliz de un solo usuario.</p>
+<p><strong>Tabla 2. Qué detecta cada tipo de prueba</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Prueba por pieza</th>
+<th>Validación E2E con dos usuarios</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Qué recorre</td>
+<td>Un servicio, con sus dependencias reemplazadas.</td>
+<td>Cliente → Gateway → servicios → Kafka → servicios, todo real.</td>
+</tr>
+<tr>
+<td>Qué detecta</td>
+<td>Errores de lógica y de contrato dentro de un componente.</td>
+<td>Errores de combinación: autorización entre usuarios, configuración de observabilidad, rutas internas expuestas.</td>
+</tr>
+<tr>
+<td>Qué no detecta</td>
+<td>Que el dato de un usuario sea visible para otro.</td>
+<td>— (es el nivel donde aparece).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="23-autorizacion-de-ruta-frente-a-autorizacion-de-objeto">2.3 Autorización de ruta frente a autorización de objeto<a class="headerlink" href="#23-autorizacion-de-ruta-frente-a-autorizacion-de-objeto" title="Permanent link">&para;</a></h3>
+<p>El Gateway de <code>pagatu</code> decide <strong>por ruta y por rol</strong> (<code>/api/v1/ordenes/**</code> exige <code>CLIENTE</code> o <code>ADMIN</code>). Eso responde "¿puede esta clase de usuario usar este endpoint?". No responde "¿esta orden concreta le pertenece a quien la pide?" — esa pregunta solo la puede contestar el servicio que guarda el dato, porque solo él sabe quién es el dueño. A la omisión de esa segunda verificación, OWASP (<em>Open Worldwide Application Security Project</em>) la clasifica como el riesgo número uno de su lista de seguridad de APIs: <em>API1:2023 Broken Object Level Authorization</em> (BOLA, autorización rota a nivel de objeto), también conocida como IDOR (<em>Insecure Direct Object Reference</em>, referencia directa e insegura a un objeto). El atacante no necesita romper nada: solo cambia el identificador que viaja en la petición, y la prevención es una sola regla — según OWASP, "the checks should validate that the logged-in user has permissions to perform the requested action on the requested object".</p>
+<p><strong>Tabla 3. Dos preguntas de autorización, dos dueños</strong></p>
+<table>
+<thead>
+<tr>
+<th>Pregunta</th>
+<th>Quién la responde</th>
+<th>Dónde vive en <code>pagatu</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>¿Esta clase de usuario puede usar este endpoint?</td>
+<td>El Gateway, por ruta y rol.</td>
+<td><code>SecurityConfig</code> del Gateway (S7).</td>
+</tr>
+<tr>
+<td>¿Este objeto concreto le pertenece a quien lo pide?</td>
+<td>El microservicio dueño del dato, comparando el <code>sub</code> del JWT con el dueño registrado.</td>
+<td><code>pagatu-orden-ms</code> y <code>pagatu-pago-ms</code> (3.5, 3.6).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Por qué <code>404</code> y no <code>403</code>.</strong> Si un cliente pide la orden de otro y recibe <code>403</code>, el sistema le confirma que esa orden <strong>existe</strong>. Responder <code>404</code> ("no encontrada") le entrega la misma respuesta que recibiría con un identificador inventado: no filtra nada.</p>
+<h3 id="24-endpoints-internos-expuestos-por-un-punto-de-entrada-publico">2.4 Endpoints internos expuestos por un punto de entrada público<a class="headerlink" href="#24-endpoints-internos-expuestos-por-un-punto-de-entrada-publico" title="Permanent link">&para;</a></h3>
+<p>Algunos endpoints existen solo para que un servicio llame a otro (<code>descontar-stock</code> y <code>restaurar-stock</code> de <code>pagatu-catalogo-ms</code>, que usa <code>pagatu-orden-ms</code> por Feign). El Gateway enruta <code>/api/v1/productos/**</code> completo hacia el catálogo, así que esos endpoints internos quedan alcanzables desde internet con cualquier token válido, aunque ningún cliente legítimo deba llamarlos. La corrección no es esconderlos: es <strong>negar la ruta en el borde</strong> y dejar que el tráfico servicio-a-servicio siga pasando por dentro, que no atraviesa el Gateway (3.7).</p>
+<h3 id="25-trazabilidad-donde-nace-el-traceid">2.5 Trazabilidad: dónde nace el <code>traceId</code><a class="headerlink" href="#25-trazabilidad-donde-nace-el-traceid" title="Permanent link">&para;</a></h3>
+<p>Un <code>traceId</code> solo sirve si <strong>todos</strong> los saltos de una petición lo comparten y lo registran. En <code>pagatu</code>, cada microservicio ya lo registra (<code>CorrelationIdFilter</code>, S7) y <code>pagatu-orden-ms</code> ya lo propaga por Feign (S10, 3.4). Faltaba el primer salto: el Gateway ni lo generaba ni lo registraba, así que una petición rechazada <strong>en el Gateway</strong> (por ejemplo, un <code>401</code>) no dejaba ninguna línea correlacionable en ningún log. El origen de la traza debe ser el primer componente que recibe la petición.</p>
+<p>Límite conocido (S10, 3.4): el <code>traceId</code> no cruza Kafka, porque el hilo que consume el evento no es el hilo que atendió la petición HTTP. Las líneas de <code>pagatu-pago-ms</code> se correlacionan por <code>ordenId</code>, no por <code>traceId</code>.</p>
+<h3 id="26-bitacora-de-hallazgos">2.6 Bitácora de hallazgos<a class="headerlink" href="#26-bitacora-de-hallazgos" title="Permanent link">&para;</a></h3>
+<p>Un hallazgo sin evidencia no es un hallazgo. Cada fila de la bitácora lleva cuatro cosas: <strong>qué se observó</strong>, <strong>por qué ocurría</strong> (la causa, no el síntoma), <strong>qué se cambió</strong>, y <strong>qué prueba demuestra que quedó corregido</strong>. La prueba de corrección debe repetir exactamente la acción que reveló el fallo y mostrar el resultado distinto.</p>
+<h2 id="3-aplica-actividad-practica-guiada">3. Aplica: actividad práctica guiada<a class="headerlink" href="#3-aplica-actividad-practica-guiada" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 100 min.</p>
+<p><strong>Actividad:</strong> levantar <code>pagatu</code> completo, recorrer sus flujos principales con dos usuarios, diagnosticar y corregir los hallazgos de autorización, exposición interna y trazabilidad, y cerrar con la bitácora.</p>
+<p><strong>Propósito de la actividad:</strong> salir de la sesión con el hábito de probar un sistema con la combinación que usa la vida real —más de un usuario, más de un servicio—, y con una bitácora que prueba, con evidencia, qué se encontró y qué se corrigió.</p>
+<p><strong>Orientaciones metodológicas:</strong> el docente ejecuta cada diagnóstico en vivo frente a la clase; los estudiantes repiten los pasos sobre su propia instancia y, en la sección 4, sobre su propio proyecto, donde los hallazgos concretos pueden ser distintos pero el método es el mismo.</p>
+<p><strong>Punto de partida común:</strong> todo el equipo debe comenzar exactamente desde donde quedó S11 (S12 es una evaluación y no tiene rama). Clona la rama <code>s11-cliente-angular-seguro</code> (el snapshot de cierre de S11):</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>--branch<span class="w"> </span>s11-cliente-angular-seguro<span class="w"> </span>https://github.com/262dist/pagatu.git
+</code></pre></div>
+<p><strong>Actividades para realizar:</strong></p>
+<ul>
+<li><strong>3.1</strong> Levantar el sistema completo.</li>
+<li><strong>3.2</strong> Verificar el registro y una llamada pública por el Gateway.</li>
+<li><strong>3.3</strong> Recorrer el flujo feliz: login, orden, evento, pago, <code>PAGADA</code>.</li>
+<li><strong>3.4</strong> Diagnosticar: un cliente lee las órdenes de otro.</li>
+<li><strong>3.5</strong> Corregir la autorización de objeto en <code>pagatu-orden-ms</code>.</li>
+<li><strong>3.6</strong> El mismo defecto en <code>pagatu-pago-ms</code>.</li>
+<li><strong>3.7</strong> Endpoints internos expuestos por el Gateway.</li>
+<li><strong>3.8</strong> Trazabilidad de punta a punta en Loki.</li>
+<li><strong>3.9</strong> Verificar el cliente Angular.</li>
+<li><strong>3.10</strong> Registrar los hallazgos en la bitácora.</li>
+</ul>
+<h3 id="31-levantar-el-sistema-completo">3.1 Levantar el sistema completo<a class="headerlink" href="#31-levantar-el-sistema-completo" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> todos los componentes de <code>pagatu</code> corriendo, incluida la observabilidad — a diferencia de S11, esta sesión <strong>sí</strong> necesita <code>obs/</code> porque 3.8 busca la traza en Loki.</p>
+<p>Sigue el orden del <code>README.md</code> raíz: <code>pagatu-config</code>, <code>pagatu-eureka</code>, <code>pagatu-gateway</code> (cada uno con <code>.\mvnw.cmd spring-boot:run</code> en su carpeta de <code>infra/</code>), luego <code>kafka/</code> y <code>keycloak/</code> (<code>docker compose -f compose-dev.yml up -d</code>), luego la base de datos y la aplicación de <code>pagatu-catalogo-ms</code>, <code>pagatu-orden-ms</code> y <code>pagatu-pago-ms</code>, y por último <code>obs/</code>. <code>pagatu-auth-ms</code> está retirado (S07b) y <code>pagatu-cliente-ms</code> es un ejercicio autónomo de cada equipo (S2): ninguno se levanta.</p>
+<p><strong>Error frecuente</strong>: levantar <code>pagatu-orden-ms</code> o <code>pagatu-pago-ms</code> antes de que Kafka responda. En DEV el proceso arranca igual (el <code>README.md</code> raíz lo tolera), pero sus <em>listeners</em> no reciben particiones hasta que Kafka está arriba. Si más adelante una orden se queda en <code>PENDIENTE_PAGO</code>, confirma primero que Kafka y Kafka UI (<code>http://localhost:18085</code>) responden, y revisa el log de los dos servicios en busca de <code>partitions assigned</code>.</p>
+<h3 id="32-verificar-el-registro-y-una-llamada-publica-por-el-gateway">3.2 Verificar el registro y una llamada pública por el Gateway<a class="headerlink" href="#32-verificar-el-registro-y-una-llamada-publica-por-el-gateway" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> los servicios registrados en Eureka y una petición real atravesando el Gateway.</p>
+<p>Abre <code>http://localhost:18761</code> (Eureka): deben aparecer exactamente <code>PAGATU-GATEWAY</code>, <code>PAGATU-CATALOGO-MS</code>, <code>PAGATU-ORDEN-MS</code> y <code>PAGATU-PAGO-MS</code>. Después, una ruta pública:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-WebRequest</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18080/api/v1/categorias"</span> <span class="p">|</span> <span class="nb">Select-Object</span> <span class="n">StatusCode</span><span class="p">,</span> <span class="p">@{</span><span class="n">n</span><span class="p">=</span><span class="s1">'TraceId'</span><span class="p">;</span><span class="n">e</span><span class="p">={</span><span class="nv">$_</span><span class="p">.</span><span class="n">Headers</span><span class="p">[</span><span class="s1">'X-Trace-ID'</span><span class="p">]}}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-s<span class="w"> </span>-i<span class="w"> </span>http://localhost:18080/api/v1/categorias<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-n<span class="w"> </span><span class="m">12</span>
+</code></pre></div>
+<p>Resultado real de esta sesión: <code>200</code>, con la cabecera <code>X-Trace-ID</code> presente.</p>
+<h3 id="33-recorrer-el-flujo-feliz-login-orden-evento-pago-pagada">3.3 Recorrer el flujo feliz: login, orden, evento, pago, <code>PAGADA</code><a class="headerlink" href="#33-recorrer-el-flujo-feliz-login-orden-evento-pago-pagada" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> una orden creada con el token real de <code>cliente1</code> que termina <code>PAGADA</code> sin que intervengas después.</p>
+<p>Obtén <code>$tokenCliente</code> y <code>$tokenAdmin</code> con el procedimiento de S07b, sección 6 (<em>Authorization Code</em> + PKCE, sin <em>Direct access grants</em>). Los tokens duran poco: si una llamada responde <code>401</code> más adelante, repite el procedimiento. Crea una orden como <code>cliente1</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Post</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18080/api/v1/ordenes"</span> <span class="p">`</span>
+  <span class="n">-Headers</span> <span class="p">@{</span> <span class="n">Authorization</span> <span class="p">=</span> <span class="s2">"Bearer $tokenCliente"</span> <span class="p">}</span> <span class="p">`</span>
+  <span class="n">-ContentType</span> <span class="s2">"application/json"</span> <span class="p">`</span>
+  <span class="n">-Body</span> <span class="s1">'{"metodoPago": "TARJETA", "detalles": [{"idProducto": 1, "cantidad": 1}]}'</span>
+</code></pre></div>
+<p>La respuesta trae <code>estado: PENDIENTE_PAGO</code> y el <code>idCliente</code> es el <code>sub</code> del token (un UUID). Unos segundos después, el evento <code>orden.creada</code> ya fue consumido por <code>pagatu-pago-ms</code>, que publicó <code>pago.validado</code>, que <code>pagatu-orden-ms</code> consumió:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18080/api/v1/ordenes"</span> <span class="n">-Headers</span> <span class="p">@{</span> <span class="n">Authorization</span> <span class="p">=</span> <span class="s2">"Bearer $tokenCliente"</span> <span class="p">}</span>
+</code></pre></div>
+<p>Resultado real de esta sesión: la orden aparece con <code>estado: PAGADA</code>, sin ninguna acción manual entre las dos llamadas. Esa es la consistencia eventual de S9 funcionando de punta a punta.</p>
+<h3 id="34-diagnosticar-un-cliente-lee-las-ordenes-de-otro">3.4 Diagnosticar: un cliente lee las órdenes de otro<a class="headerlink" href="#34-diagnosticar-un-cliente-lee-las-ordenes-de-otro" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> evidencia real de que un usuario autenticado puede leer datos de otro.</p>
+<p>Antes de la corrección, <code>GET /api/v1/ordenes</code> devolvía <strong>todas</strong> las órdenes del sistema, no solo las del usuario del token. La prueba mínima: pídele a <code>cliente1</code> la orden de otro usuario por su identificador (aquí, la <code>2</code>, que pertenece a un <code>idCliente</code> distinto al <code>sub</code> de <code>cliente1</code>):</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18080/api/v1/ordenes/2"</span> <span class="n">-Headers</span> <span class="p">@{</span> <span class="n">Authorization</span> <span class="p">=</span> <span class="s2">"Bearer $tokenCliente"</span> <span class="p">}</span>
+</code></pre></div>
+<p>Resultado real de esta sesión, <strong>antes</strong> de la corrección: <code>200</code>, con el contenido completo de una orden cuyo <code>idCliente</code> no era el de <code>cliente1</code>. Y <code>GET /api/v1/ordenes</code> devolvía además todas las órdenes de los demás usuarios.</p>
+<p>La causa está en <code>OrdenController</code> y <code>OrdenServiceImpl</code>: <code>crear()</code> sí usaba <code>jwt.getSubject()</code> para registrar al dueño, pero <code>listar()</code> y <code>findById()</code> nunca lo recibían — llamaban a <code>findAll()</code> y <code>findById(id)</code> sin ninguna condición. El Gateway no puede arreglarlo: solo ve el rol, no el dueño de cada orden.</p>
+<p><strong>Error frecuente</strong>: concluir que "ya está protegido" porque el Gateway rechaza peticiones sin token. Eso confirma la primera pregunta de la Tabla 3; esta prueba confirma (o desmiente) la segunda.</p>
+<h3 id="35-corregir-la-autorizacion-de-objeto-en-pagatu-orden-ms">3.5 Corregir la autorización de objeto en <code>pagatu-orden-ms</code><a class="headerlink" href="#35-corregir-la-autorizacion-de-objeto-en-pagatu-orden-ms" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> <code>listar()</code> y <code>findById()</code> filtrando por el <code>sub</code> del JWT, y la misma prueba de 3.4 devolviendo un resultado distinto.</p>
+<p><code>OrdenRepository</code>: una consulta derivada por dueño.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">OrdenRepository</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">JpaRepository</span><span class="o">&lt;</span><span class="n">Orden</span><span class="p">,</span><span class="w"> </span><span class="n">Long</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Orden</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">findByIdCliente</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">idCliente</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><code>OrdenService</code> y <code>OrdenServiceImpl</code>: los dos métodos reciben el dueño. <code>findById</code> responde con la misma excepción de "no encontrada" tanto si la orden no existe como si existe y es de otro (2.3):</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// OrdenService.java</span>
+<span class="n">OrdenResponse</span><span class="w"> </span><span class="nf">findById</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">idCliente</span><span class="p">);</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">OrdenResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">listar</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">idCliente</span><span class="p">);</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1">// OrdenServiceImpl.java</span>
+<span class="nd">@Override</span>
+<span class="nd">@Transactional</span><span class="p">(</span><span class="n">readOnly</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">OrdenResponse</span><span class="w"> </span><span class="nf">findById</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">idCliente</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Orden</span><span class="w"> </span><span class="n">orden</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ordenRepository</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">o</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="na">getIdCliente</span><span class="p">().</span><span class="na">equals</span><span class="p">(</span><span class="n">idCliente</span><span class="p">))</span>
+<span class="w">            </span><span class="p">.</span><span class="na">orElseThrow</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ResourceNotFoundException</span><span class="p">(</span><span class="s">"Orden no encontrada: "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">id</span><span class="p">));</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">toResponse</span><span class="p">(</span><span class="n">orden</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nd">@Override</span>
+<span class="nd">@Transactional</span><span class="p">(</span><span class="n">readOnly</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">OrdenResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">listar</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">idCliente</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ordenRepository</span><span class="p">.</span><span class="na">findByIdCliente</span><span class="p">(</span><span class="n">idCliente</span><span class="p">).</span><span class="na">stream</span><span class="p">()</span>
+<span class="w">            </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="k">this</span><span class="p">::</span><span class="n">toResponse</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="na">collect</span><span class="p">(</span><span class="n">Collectors</span><span class="p">.</span><span class="na">toList</span><span class="p">());</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><code>OrdenController</code>: pasa el <code>sub</code> del token, igual que ya hace <code>crear()</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@GetMapping</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">OrdenResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">listar</span><span class="p">(</span><span class="nd">@AuthenticationPrincipal</span><span class="w"> </span><span class="n">Jwt</span><span class="w"> </span><span class="n">jwt</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ordenService</span><span class="p">.</span><span class="na">listar</span><span class="p">(</span><span class="n">jwt</span><span class="p">.</span><span class="na">getSubject</span><span class="p">());</span>
+<span class="p">}</span>
+
+<span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/{id}"</span><span class="p">)</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">OrdenResponse</span><span class="w"> </span><span class="nf">findById</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="nd">@AuthenticationPrincipal</span><span class="w"> </span><span class="n">Jwt</span><span class="w"> </span><span class="n">jwt</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ordenService</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">jwt</span><span class="p">.</span><span class="na">getSubject</span><span class="p">());</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Antes de esta corrección, <code>findById</code> lanzaba una <code>RuntimeException</code> genérica en vez de <code>ResourceNotFoundException</code> — la única que <code>GlobalExceptionHandler</code> convierte en <code>404</code> — así que una orden inexistente terminaba en un <code>500</code>. Usar <code>ResourceNotFoundException</code> corrige ese defecto de paso.</p>
+<p>Reinicia <code>pagatu-orden-ms</code> (ver el error frecuente de abajo) y repite <strong>exactamente</strong> la prueba de 3.4. Resultado real de esta sesión, <strong>después</strong>:</p>
+<div class="highlight"><pre><span></span><code>GET /api/v1/ordenes     [cliente1]  -&gt;  200   []                      (cliente1 no tenía órdenes propias)
+GET /api/v1/ordenes/2   [cliente1]  -&gt;  404   "Orden no encontrada: 2"
+</code></pre></div>
+<p>Y la prueba de no regresión — que el flujo legítimo sigue funcionando: <code>cliente1</code> crea una orden, la lista, y aparece <strong>solo esa</strong>, ya <code>PAGADA</code>:</p>
+<div class="highlight"><pre><span></span><code>POST /api/v1/ordenes    [cliente1]  -&gt;  201   idCliente = &lt;sub de cliente1&gt;
+GET  /api/v1/ordenes    [cliente1]  -&gt;  200   [ { "id": 12, "estado": "PAGADA", ... } ]
+</code></pre></div>
+<p>Decisión de diseño que esta corrección fija: <strong>todos</strong> los roles ven solo sus propias órdenes por estos endpoints, incluido <code>ADMIN</code>. Si una pantalla de administración necesita ver todas, es un endpoint aparte, con su propia regla de rol — no se reutiliza este.</p>
+<p><strong>Error frecuente</strong>: editar un <code>.java</code> y que <code>pagatu-orden-ms</code> nunca vuelva a estar disponible. DevTools reinicia la aplicación al detectar el cambio, pero el reinicio con el <em>listener</em> de Kafka activo puede quedar colgado sin ningún error (sin la línea <code>Started ...</code> en el log). Si pasa, detén el proceso con <code>Ctrl+C</code> y vuelve a ejecutar <code>.\mvnw.cmd spring-boot:run</code>.</p>
+<h3 id="36-el-mismo-defecto-en-pagatu-pago-ms">3.6 El mismo defecto en <code>pagatu-pago-ms</code><a class="headerlink" href="#36-el-mismo-defecto-en-pagatu-pago-ms" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> el mismo patrón de 3.4-3.5 aplicado a los pagos, con una migración de base de datos.</p>
+<p>Un hallazgo corregido en un servicio obliga a preguntar si el mismo patrón existe en los demás. Con una orden creada por <code>admin</code>, <code>cliente1</code> pudo leer su pago por las dos rutas (<code>/api/v1/pagos/por-orden/{ordenId}</code> y <code>/api/v1/pagos/{id}</code>) y obtuvo <code>200</code>. La causa tiene una capa más que en <code>orden-ms</code>: la tabla <code>pagos</code> <strong>ni siquiera guardaba quién era el dueño</strong> — el evento <code>orden.creada</code> ya traía <code>idCliente</code>, pero <code>PagoServiceImpl</code> lo descartaba.</p>
+<p>Como <code>ddl-auto: validate</code> no crea columnas, el cambio empieza por una migración de Flyway nueva, <code>V2__add_id_cliente_pagos.sql</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">pagos</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="k">COLUMN</span><span class="w"> </span><span class="n">id_cliente</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">36</span><span class="p">);</span>
+</code></pre></div>
+<p>La misma longitud que <code>ordenes.id_cliente</code> (S07b): el <code>sub</code> de Keycloak es un UUID. Después, la entidad y el servicio:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Pago.java</span>
+<span class="nd">@Column</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"id_cliente"</span><span class="p">,</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">36</span><span class="p">)</span>
+<span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">idCliente</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1">// PagoServiceImpl.java -- procesar(): guarda el dueño que ya viene en el evento</span>
+<span class="n">pago</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pagoRepository</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">Pago</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">ordenId</span><span class="p">(</span><span class="n">orden</span><span class="p">.</span><span class="na">getOrdenId</span><span class="p">())</span>
+<span class="w">        </span><span class="p">.</span><span class="na">idCliente</span><span class="p">(</span><span class="n">orden</span><span class="p">.</span><span class="na">getIdCliente</span><span class="p">())</span>
+<span class="w">        </span><span class="p">.</span><span class="na">monto</span><span class="p">(</span><span class="n">orden</span><span class="p">.</span><span class="na">getTotal</span><span class="p">())</span>
+<span class="w">        </span><span class="c1">// ... resto sin cambios</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">());</span>
+
+<span class="c1">// las dos consultas filtran por dueño; "no es tuyo" y "no existe" dan lo mismo</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">PagoResponse</span><span class="w"> </span><span class="nf">obtener</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">idCliente</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">pagoRepository</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">p</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">idCliente</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="na">getIdCliente</span><span class="p">()))</span>
+<span class="w">            </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">pagoMapper</span><span class="p">::</span><span class="n">toResponse</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="na">orElseThrow</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ResourceNotFoundException</span><span class="p">(</span><span class="s">"Pago no encontrado: "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">id</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="kd">public</span><span class="w"> </span><span class="n">Optional</span><span class="o">&lt;</span><span class="n">PagoResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">buscarPorOrden</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">ordenId</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">idCliente</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">pagoRepository</span><span class="p">.</span><span class="na">findByOrdenId</span><span class="p">(</span><span class="n">ordenId</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">p</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">idCliente</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="na">getIdCliente</span><span class="p">()))</span>
+<span class="w">            </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">pagoMapper</span><span class="p">::</span><span class="n">toResponse</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><code>PagoService</code> cambia sus dos firmas igual, y <code>PagoController</code> recibe <code>@AuthenticationPrincipal Jwt jwt</code> y pasa <code>jwt.getSubject()</code>, como en 3.5. <code>GET /api/v1/pagos</code> (todos los pagos) se mantiene sin filtrar: el Gateway ya lo restringe a <code>ADMIN</code> (S11, 3.6).</p>
+<p>Al reiniciar <code>pagatu-pago-ms</code>, el log muestra a Flyway aplicando la migración: <code>Migrating schema "public" to version "2 - add id cliente pagos"</code>. Resultado real de esta sesión, con una orden nueva de <code>admin</code> y otra de <code>cliente1</code>:</p>
+<div class="highlight"><pre><span></span><code>GET /api/v1/pagos/por-orden/&lt;orden de admin&gt;  [admin]    -&gt;  200   pago propio
+GET /api/v1/pagos/por-orden/&lt;orden de admin&gt;  [cliente1]  -&gt;  404
+GET /api/v1/pagos/&lt;id del pago de admin&gt;      [cliente1]  -&gt;  404   "Pago no encontrado"
+GET /api/v1/pagos/por-orden/&lt;orden de cliente1&gt; [cliente1] -&gt;  200   pago propio
+</code></pre></div>
+<p>Límite de esta corrección: los pagos creados <strong>antes</strong> de la migración quedan con <code>id_cliente</code> vacío, así que ningún usuario los ve por estas dos rutas (el frontend ya tolera ese <code>404</code>, S11, 3.6). No se pueden completar desde <code>pagatu-pago-ms</code>: el dueño vive en la base de otro servicio. Con datos de prueba es aceptable; en un sistema con pagos reales exigiría una migración de datos coordinada.</p>
+<h3 id="37-endpoints-internos-expuestos-por-el-gateway">3.7 Endpoints internos expuestos por el Gateway<a class="headerlink" href="#37-endpoints-internos-expuestos-por-el-gateway" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> la ruta externa de los endpoints internos negada, y el flujo legítimo —que usa esos mismos endpoints por dentro— sin romperse.</p>
+<p><code>PATCH /api/v1/productos/{id}/descontar-stock</code> y <code>/restaurar-stock</code> existen para <code>pagatu-orden-ms</code>, pero el Gateway los enruta como cualquier otra ruta de productos. Diagnóstico con el token de <code>cliente1</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18080/api/v1/productos/1"</span> <span class="p">|</span> <span class="nb">Select-Object</span> <span class="n">nombre</span><span class="p">,</span> <span class="n">stock</span>
+
+<span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Patch</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18080/api/v1/productos/1/descontar-stock?cantidad=1"</span> <span class="p">`</span>
+  <span class="n">-Headers</span> <span class="p">@{</span> <span class="n">Authorization</span> <span class="p">=</span> <span class="s2">"Bearer $tokenCliente"</span> <span class="p">}</span>
+
+<span class="nb">Invoke-RestMethod</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18080/api/v1/productos/1"</span> <span class="p">|</span> <span class="nb">Select-Object</span> <span class="n">nombre</span><span class="p">,</span> <span class="n">stock</span>
+</code></pre></div>
+<p>Resultado real de esta sesión, <strong>antes</strong> de la corrección: el <code>PATCH</code> respondió <code>200</code> y el <code>stock</code> bajó de 22 a 21 — un cliente con rol <code>CLIENTE</code> modificó inventario sin crear ninguna orden. El Gateway solo restringía <code>POST</code>/<code>PUT</code>/<code>DELETE</code> de productos a <code>ADMIN</code>; el <code>PATCH</code> caía en <code>anyRequest().authenticated()</code>.</p>
+<p>La corrección es una regla de <strong>denegación</strong> en <code>SecurityConfig</code> del Gateway, antes de las demás:</p>
+<div class="highlight"><pre><span></span><code><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="s">"/api/v1/productos/*/descontar-stock"</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/v1/productos/*/restaurar-stock"</span><span class="p">).</span><span class="na">denyAll</span><span class="p">()</span>
+<span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="s">"/api/v1/auth/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
+</code></pre></div>
+<p>Reinicia <code>pagatu-gateway</code>. Resultado real, <strong>después</strong>: los dos <code>PATCH</code> externos responden <code>403</code>; y crear una orden normal (que descuenta el stock por dentro, de <code>pagatu-orden-ms</code> a <code>pagatu-catalogo-ms</code> vía Eureka, sin pasar por el Gateway) sigue respondiendo <code>201</code> y el <code>stock</code> baja en 1 como antes.</p>
+<p>Límite que debes conocer: esta regla protege la <strong>ruta externa</strong>. En DEV, <code>pagatu-catalogo-ms</code> publica su puerto en la laptop (<code>8080</code>) y quien llegue a ese puerto no pasa por el Gateway; en PROD local, su <code>compose.yml</code> no publica ese puerto, y la red de Docker es la que lo protege. La autorización de objeto de 3.5-3.6 no depende de esto: se aplica en cada servicio, llegue la petición por donde llegue.</p>
+<p><strong>Error frecuente</strong>: probar la corrección con un <code>PATCH</code> directo al puerto <code>8080</code> del catálogo y concluir que "no funcionó" porque responde <code>200</code>. Esa ruta no atraviesa el Gateway; la prueba válida es contra <code>18080</code>.</p>
+<h3 id="38-trazabilidad-de-punta-a-punta-en-loki">3.8 Trazabilidad de punta a punta en Loki<a class="headerlink" href="#38-trazabilidad-de-punta-a-punta-en-loki" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> una misma petición visible en Loki con el mismo <code>traceId</code> en el Gateway, <code>pagatu-orden-ms</code> y <code>pagatu-catalogo-ms</code>.</p>
+<p>Este paso arregló tres cosas, en este orden de descubrimiento.</p>
+<p><strong>El Gateway no tenía <code>traceId</code>.</strong> Búscalo en el código del Gateway: no hay ningún filtro de correlación, y su <code>logback-spring.xml</code> no imprime <code>%X{traceId}</code> como los otros servicios. Crea <code>pe.edu.upeu.gateway.filter.CorrelationIdFilter</code> y cambia el patrón del log:</p>
+<div class="highlight"><pre><span></span><code><span class="cm">&lt;!-- infra/pagatu-gateway/src/main/resources/logback-spring.xml --&gt;</span>
+<span class="nt">&lt;property</span><span class="w"> </span><span class="na">name=</span><span class="s">"LOG_PATTERN"</span><span class="w"> </span><span class="na">value=</span><span class="s">"%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId}] %-5level %logger{36} - %msg%n"</span><span class="nt">/&gt;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1">// pe/edu/upeu/gateway/filter/CorrelationIdFilter.java</span>
+<span class="nd">@Component</span>
+<span class="nd">@Order</span><span class="p">(</span><span class="n">Ordered</span><span class="p">.</span><span class="na">HIGHEST_PRECEDENCE</span><span class="p">)</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CorrelationIdFilter</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">OncePerRequestFilter</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Logger</span><span class="w"> </span><span class="n">log</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LoggerFactory</span><span class="p">.</span><span class="na">getLogger</span><span class="p">(</span><span class="n">CorrelationIdFilter</span><span class="p">.</span><span class="na">class</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">TRACE_ID_HEADER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"X-Trace-ID"</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">MDC_KEY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"traceId"</span><span class="p">;</span>
+
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">doFilterInternal</span><span class="p">(</span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletResponse</span><span class="w"> </span><span class="n">response</span><span class="p">,</span>
+<span class="w">                                    </span><span class="n">FilterChain</span><span class="w"> </span><span class="n">filterChain</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">ServletException</span><span class="p">,</span><span class="w"> </span><span class="n">IOException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">header</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">getHeader</span><span class="p">(</span><span class="n">TRACE_ID_HEADER</span><span class="p">);</span>
+<span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">traceId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">header</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">header</span><span class="p">.</span><span class="na">isBlank</span><span class="p">())</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">UUID</span><span class="p">.</span><span class="na">randomUUID</span><span class="p">().</span><span class="na">toString</span><span class="p">()</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">header</span><span class="p">;</span>
+<span class="w">        </span><span class="kt">long</span><span class="w"> </span><span class="n">inicio</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">currentTimeMillis</span><span class="p">();</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">MDC</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">MDC_KEY</span><span class="p">,</span><span class="w"> </span><span class="n">traceId</span><span class="p">);</span>
+<span class="w">            </span><span class="n">response</span><span class="p">.</span><span class="na">setHeader</span><span class="p">(</span><span class="n">TRACE_ID_HEADER</span><span class="p">,</span><span class="w"> </span><span class="n">traceId</span><span class="p">);</span>
+<span class="w">            </span><span class="n">filterChain</span><span class="p">.</span><span class="na">doFilter</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">TraceIdRequest</span><span class="p">(</span><span class="n">request</span><span class="p">,</span><span class="w"> </span><span class="n">traceId</span><span class="p">),</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">TraceIdResponse</span><span class="p">(</span><span class="n">response</span><span class="p">));</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">request</span><span class="p">.</span><span class="na">getRequestURI</span><span class="p">().</span><span class="na">startsWith</span><span class="p">(</span><span class="s">"/actuator"</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">   </span><span class="c1">// Prometheus raspa cada pocos segundos</span>
+<span class="w">                </span><span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">"method={} path={} status={} durationMs={}"</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">request</span><span class="p">.</span><span class="na">getMethod</span><span class="p">(),</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">getRequestURI</span><span class="p">(),</span><span class="w"> </span><span class="n">response</span><span class="p">.</span><span class="na">getStatus</span><span class="p">(),</span>
+<span class="w">                        </span><span class="n">System</span><span class="p">.</span><span class="na">currentTimeMillis</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">inicio</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="n">MDC</span><span class="p">.</span><span class="na">remove</span><span class="p">(</span><span class="n">MDC_KEY</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="c1">// TraceIdRequest y TraceIdResponse: ver las dos clases internas abajo</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Las dos clases internas resuelven dos problemas reales de un <em>proxy</em> basado en Servlet (<code>spring-cloud-starter-gateway-server-webmvc</code>, a diferencia de un Gateway reactivo no usa <code>GlobalFilter</code> ni <code>Mono</code>):</p>
+<ul>
+<li><code>TraceIdRequest</code> (un <code>HttpServletRequestWrapper</code>) hace que <code>getHeader</code>/<code>getHeaders</code>/<code>getHeaderNames</code> incluyan el <code>X-Trace-ID</code>, porque el <em>proxy</em> reenvía las cabeceras <strong>de la petición entrante</strong>: sin este envoltorio, el microservicio de destino no recibe el <code>traceId</code> del Gateway y genera uno distinto.</li>
+<li><code>TraceIdResponse</code> (un <code>HttpServletResponseWrapper</code>) descarta la cabecera <code>X-Trace-ID</code> que devuelve el microservicio: sin esto, el cliente recibía el encabezado <strong>dos veces</strong> (el del Gateway y el que el destino repite).</li>
+</ul>
+<p>Los dos envoltorios completos están en el repositorio, en <code>infra/pagatu-gateway/src/main/java/pe/edu/upeu/gateway/filter/CorrelationIdFilter.java</code>. Prueba con un <code>traceId</code> conocido:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-WebRequest</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18080/api/v1/categorias"</span> <span class="n">-Headers</span> <span class="p">@{</span> <span class="s1">'X-Trace-ID'</span> <span class="p">=</span> <span class="s1">'s13-prueba-0001'</span> <span class="p">}</span> <span class="p">|</span> <span class="nb">Select-Object</span> <span class="n">StatusCode</span><span class="p">,</span> <span class="p">@{</span><span class="n">n</span><span class="p">=</span><span class="s1">'TraceId'</span><span class="p">;</span><span class="n">e</span><span class="p">={</span><span class="nv">$_</span><span class="p">.</span><span class="n">Headers</span><span class="p">[</span><span class="s1">'X-Trace-ID'</span><span class="p">]}}</span>
+</code></pre></div>
+<p>Resultado real de esta sesión: una sola cabecera <code>X-Trace-ID: s13-prueba-0001</code> en la respuesta, y la misma línea con ese valor tanto en <code>infra/pagatu-gateway/logs/gateway.log</code> como en <code>services/pagatu-catalogo-ms/logs/catalogo.log</code>. También un <code>401</code> (petición sin token) queda ahora registrado en el Gateway con su <code>traceId</code> — antes no dejaba ninguna línea.</p>
+<p><strong>Promtail nunca estuvo leyendo ningún log.</strong> Con el filtro funcionando, Loki no devolvía <strong>nada</strong> para ese <code>traceId</code>. La causa no estaba en el filtro: <code>docker logs pagatu-promtail-dev</code> repetía un único mensaje, <code>found multiple scrape configs with job name "pagatu-pago-ms"</code> — el contenedor reiniciaba en bucle porque <code>obs/promtail/promtail-config-dev.yml</code> definía ese <code>job_name</code> dos veces, y <code>obs/compose-dev.yml</code> montaba el mismo volumen dos veces. Elimina el duplicado en los dos archivos y recrea el contenedor:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd </span><span class="n">obs</span>
+<span class="n">docker</span> <span class="n">compose</span> <span class="o">-f</span> <span class="n">compose-dev</span><span class="p">.</span><span class="n">yml</span> <span class="n">up</span> <span class="n">-d</span> <span class="p">-</span><span class="n">-force-recreate</span> <span class="n">pagatu-promtail</span>
+<span class="n">docker</span> <span class="n">logs</span> <span class="p">-</span><span class="n">-tail</span> <span class="n">5</span> <span class="n">pagatu-promtail-dev</span>
+</code></pre></div>
+<p>El log de Promtail ya muestra <code>tail routine: started</code> por cada archivo. Este es el tipo de hallazgo que solo aparece al validar de punta a punta: cada servicio <em>escribía</em> sus logs correctamente, y por eso ninguna prueba por pieza lo habría revelado.</p>
+<p><strong>Las rutas críticas no registraban nada dentro de la petición.</strong> Aun con Promtail funcionando, una orden mostraba solo la línea del Gateway: ni <code>descontar-stock</code> en el catálogo ni <code>crear()</code> en <code>pagatu-orden-ms</code> escribían ninguna línea de log durante la petición (solo los eventos de Kafka, que no llevan <code>traceId</code>). Agrega una línea en cada uno:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ProductoController.java (agrega @Slf4j a la clase)</span>
+<span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">"component=controller idProducto={} cantidad={} operacion=descontar-stock status=ok"</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">cantidad</span><span class="p">);</span>
+
+<span class="c1">// OrdenServiceImpl.crear(), justo después de ordenRepository.save(orden)</span>
+<span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">"component=service ordenId={} estado={} total={} status=created"</span><span class="p">,</span>
+<span class="w">        </span><span class="n">guardada</span><span class="p">.</span><span class="na">getId</span><span class="p">(),</span><span class="w"> </span><span class="n">guardada</span><span class="p">.</span><span class="na">getEstado</span><span class="p">(),</span><span class="w"> </span><span class="n">guardada</span><span class="p">.</span><span class="na">getTotal</span><span class="p">());</span>
+</code></pre></div>
+<p>Ahora crea una orden con un <code>traceId</code> que tú elijas y búscalo en Loki (Grafana → <em>Explore</em> → datasource Loki, el mismo panel de logs de S10):</p>
+<div class="highlight"><pre><span></span><code><span class="nb">Invoke-RestMethod</span> <span class="n">-Method</span> <span class="n">Post</span> <span class="n">-Uri</span> <span class="s2">"http://localhost:18080/api/v1/ordenes"</span> <span class="p">`</span>
+  <span class="n">-Headers</span> <span class="p">@{</span> <span class="n">Authorization</span> <span class="p">=</span> <span class="s2">"Bearer $tokenCliente"</span><span class="p">;</span> <span class="s1">'X-Trace-ID'</span> <span class="p">=</span> <span class="s1">'s13-traza-orden-0002'</span> <span class="p">}</span> <span class="p">`</span>
+  <span class="n">-ContentType</span> <span class="s2">"application/json"</span> <span class="p">`</span>
+  <span class="n">-Body</span> <span class="s1">'{"metodoPago": "TARJETA", "detalles": [{"idProducto": 1, "cantidad": 1}]}'</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>{application=~".+"} |= "s13-traza-orden-0002"
+</code></pre></div>
+<p>Resultado real de esta sesión (las tres líneas de la petición; si es la primera orden desde que arrancó <code>pagatu-orden-ms</code>, Loki devuelve además varias líneas <code>ProducerConfig</code>/<code>KafkaProducer</code>, porque el cliente de Kafka se crea dentro de esa misma petición):</p>
+<div class="highlight"><pre><span></span><code>pagatu-orden-ms     | [s13-traza-orden-0002] INFO  OrdenServiceImpl    - component=service ordenId=14 estado=PENDIENTE_PAGO total=89.90 status=created
+pagatu-catalogo-ms  | [s13-traza-orden-0002] INFO  ProductoController  - component=controller idProducto=1 cantidad=1 operacion=descontar-stock status=ok
+pagatu-gateway      | [s13-traza-orden-0002] INFO  CorrelationIdFilter - method=POST path=/api/v1/ordenes status=201 durationMs=809
+</code></pre></div>
+<p>Tres servicios, una sola petición, un solo <code>traceId</code>. Como se explicó en 2.5, la línea de <code>pagatu-pago-ms</code> no aparece aquí: se busca por <code>ordenId</code> (<code>ordenId=14</code>).</p>
+<p><strong>Error frecuente</strong>: buscar el <code>traceId</code> en Loki unos segundos después de crear la orden y concluir que "no llegó". Promtail lee los archivos con un pequeño retraso; espera unos 15 segundos antes de repetir la consulta.</p>
+<h3 id="39-verificar-el-cliente-angular">3.9 Verificar el cliente Angular<a class="headerlink" href="#39-verificar-el-cliente-angular" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> confirmar, desde el navegador, que lo corregido en el backend no cambió lo que ve un usuario normal.</p>
+<p>Levanta el cliente (<code>cd clients/pagatu-frontend</code> → <code>ng serve</code>, <code>http://localhost:4200</code>), inicia sesión como <code>cliente1</code>, crea una orden desde <strong>Nueva orden</strong> y abre <strong>Mis pedidos</strong>. Resultado esperado: solo aparecen las órdenes de <code>cliente1</code>, y la orden recién creada pasa de "Procesando pago…" a su estado final sin recargar (S11, 3.7).</p>
+<p><code>MisPedidos</code> conserva el filtro por <code>idCliente</code> que S11 construyó. Con la corrección de 3.5 ese filtro ya no es la única barrera: pasa a ser <strong>defensa en profundidad</strong> — redundante para el usuario normal, y la razón por la que S11 lo documentó como "UX, no seguridad".</p>
+<p>Esta sesión verificó el frontend compilándolo (<code>ng build</code>, sin errores) y comprobando por API cada llamada que hace; la prueba visual en el navegador, con las capturas de la sección 4.3, es parte de tu evidencia.</p>
+<h3 id="310-registrar-los-hallazgos-en-la-bitacora">3.10 Registrar los hallazgos en la bitácora<a class="headerlink" href="#310-registrar-los-hallazgos-en-la-bitacora" title="Permanent link">&para;</a></h3>
+<p><strong>Producto del paso:</strong> la bitácora de esta validación, una fila por hallazgo, con la prueba que demuestra cada corrección.</p>
+<p><strong>Tabla 4. Bitácora de hallazgos de la validación end-to-end</strong></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Hallazgo</th>
+<th>Causa</th>
+<th>Corrección</th>
+<th>Prueba de corrección</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>cliente1</code> leía órdenes ajenas (<code>GET /ordenes</code>, <code>GET /ordenes/{id}</code>).</td>
+<td><code>listar()</code>/<code>findById()</code> no recibían ni comparaban al dueño (<code>findAll()</code>).</td>
+<td>Filtro por <code>sub</code> del JWT; "ajena" responde <code>404</code> (3.5).</td>
+<td><code>GET /ordenes/2</code> como <code>cliente1</code>: <code>200</code> → <code>404</code>.</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>cliente1</code> leía el pago de una orden de <code>admin</code>.</td>
+<td><code>pagos</code> no guardaba el dueño; el consumidor descartaba <code>idCliente</code> del evento.</td>
+<td>Migración <code>V2</code>, columna <code>id_cliente</code>, filtro en las dos consultas (3.6).</td>
+<td><code>GET /pagos/por-orden/{orden de admin}</code> como <code>cliente1</code>: <code>200</code> → <code>404</code>.</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>cliente1</code> descontaba stock sin crear una orden.</td>
+<td>El Gateway enrutaba <code>PATCH</code> de productos con solo <code>authenticated()</code>.</td>
+<td><code>denyAll()</code> para las rutas internas (3.7).</td>
+<td><code>PATCH …/descontar-stock</code> externo: <code>200</code> → <code>403</code>; orden normal sigue <code>201</code>.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>El Gateway no dejaba rastro por petición.</td>
+<td>Sin filtro de correlación ni <code>%X{traceId}</code> en su log.</td>
+<td><code>CorrelationIdFilter</code> + patrón de log (3.8).</td>
+<td>Un <code>401</code> y un <code>200</code> del Gateway aparecen con su <code>traceId</code>.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Loki no recibía ningún log de los servicios.</td>
+<td><code>job_name</code> y volumen de <code>pagatu-pago-ms</code> duplicados en <code>obs/</code>: Promtail reiniciaba en bucle.</td>
+<td>Duplicados eliminados; contenedor recreado (3.8).</td>
+<td><code>docker logs</code> de Promtail muestra <code>tail routine: started</code>; Loki devuelve líneas.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Una orden no dejaba logs dentro de la petición.</td>
+<td><code>descontar-stock</code> y <code>crear()</code> no registraban nada.</td>
+<td>Una línea de log en cada uno (3.8).</td>
+<td>La consulta de 3.8 devuelve las tres líneas con el mismo <code>traceId</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Evidencia de aprendizaje:</strong></p>
+<ul>
+<li>Sistema completo levantado y registrado en Eureka (3.1-3.2).</li>
+<li>Flujo feliz recorrido: orden creada con token real que termina <code>PAGADA</code> (3.3).</li>
+<li>El hallazgo de autorización diagnosticado con dos usuarios, con el resultado <strong>antes</strong> y <strong>después</strong> de la corrección (3.4-3.6).</li>
+<li>La exposición interna diagnosticada y negada en el Gateway, con la prueba de no regresión (3.7).</li>
+<li>Una misma petición visible en Loki a través del Gateway y dos microservicios (3.8).</li>
+<li>Bitácora de hallazgos (Tabla 4) con la prueba de corrección de cada fila.</li>
+</ul>
+<h2 id="4-crea-actividad-autonoma">4. Crea: actividad autónoma<a class="headerlink" href="#4-crea-actividad-autonoma" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 2h fuera del aula.</p>
+<h3 id="41-actividad">4.1 Actividad<a class="headerlink" href="#41-actividad" title="Permanent link">&para;</a></h3>
+<p>Validación end-to-end del Proyecto Sello propio del equipo, documentada en evidencia individual.</p>
+<p>Completa y evidencia estas tareas:</p>
+<ol>
+<li>Levanta tu sistema completo y ejecuta su flujo principal de punta a punta con <strong>al menos dos usuarios de roles o dueños distintos</strong>, documentando el resultado de cada paso.</li>
+<li>Para <strong>cada endpoint de tu propio proyecto que devuelva o modifique datos de un usuario concreto</strong>, prueba si otro usuario autenticado puede alcanzarlo cambiando el identificador. Documenta el resultado de cada uno, aunque sea correcto.</li>
+<li>Revisa qué endpoints de <strong>servicio a servicio</strong> de tu proyecto quedan alcanzables desde tu punto de entrada público, y documenta cuáles negaste y cómo comprobaste que el flujo legítimo siguió funcionando.</li>
+<li>Demuestra, con una consulta de tu propio sistema de logs, que <strong>una sola petición</strong> deja el mismo identificador de correlación en al menos dos servicios; si no lo logras, documenta dónde se rompe la cadena.</li>
+<li>Corrige <strong>al menos un hallazgo real</strong> de los que encontraste, con su prueba de corrección (antes y después), y regístralo en tu propia bitácora.</li>
+</ol>
+<h3 id="42-proposito">4.2 Propósito<a class="headerlink" href="#42-proposito" title="Permanent link">&para;</a></h3>
+<p>Que cada estudiante demuestre, de forma individual y fuera del aula, que puede validar un sistema distribuido propio con más de un usuario, encontrar fallos de autorización y de trazabilidad con evidencia, corregirlos en el servicio correcto y probar que la corrección no rompió el flujo legítimo.</p>
+<h3 id="43-indicaciones">4.3 Indicaciones<a class="headerlink" href="#43-indicaciones" title="Permanent link">&para;</a></h3>
+<p>Entrega un PDF con el siguiente nombre:</p>
+<div class="highlight"><pre><span></span><code>S13_Equipo##_ApellidoNombre.pdf
+</code></pre></div>
+<p>Cada captura de pantalla del informe debe mostrar, sin recortar, el reloj del sistema (fecha y hora) y tu usuario o foto de perfil (Windows, VS Code o navegador) visibles en pantalla — es lo que permite verificar que la evidencia es tuya y que corresponde al momento real de tu trabajo.</p>
+<h4 id="431-estructura-del-informe">4.3.1 Estructura del informe<a class="headerlink" href="#431-estructura-del-informe" title="Permanent link">&para;</a></h4>
+<p><strong>Datos del estudiante</strong></p>
+<ul>
+<li>Nombre:</li>
+<li>Equipo:</li>
+<li>Sesión: S13 - Validación end-to-end del producto del curso</li>
+<li>Rol o aporte realizado:</li>
+<li>Link de GitHub:</li>
+</ul>
+<p><strong>Evidencia técnica</strong></p>
+<p>Incluye capturas con una breve explicación debajo de cada una, organizadas en los mismos 4 bloques de la rúbrica (4.6):</p>
+<ol>
+<li><em>Flujo principal validado de punta a punta</em><ul>
+<li>El recorrido completo de tu sistema con al menos dos usuarios, con el resultado de cada paso.</li>
+</ul>
+</li>
+<li><em>Autorización entre usuarios</em><ul>
+<li>La prueba de cada endpoint de datos de un usuario con la cuenta de otro, con el resultado antes y después de cualquier corrección.</li>
+</ul>
+</li>
+<li><em>Hallazgo corregido</em><ul>
+<li>Un hallazgo real de tu propio sistema: qué observaste, la causa, el cambio y la prueba de que quedó corregido.</li>
+</ul>
+</li>
+<li><em>Trazabilidad correlacionada</em><ul>
+<li>La consulta de tus logs mostrando el mismo identificador en al menos dos servicios (o dónde se rompe la cadena).</li>
+</ul>
+</li>
+</ol>
+<p><strong>Error o hallazgo</strong></p>
+<p>Describe un error real distinto del hallazgo del bloque 3: una prueba que parecía correcta y no lo era, un servicio que no volvió a arrancar tras tu cambio, un log que nunca llegó a tu herramienta de observabilidad, o cualquier otro obstáculo real de esta sesión.</p>
+<p><strong>Reflexión técnica breve</strong></p>
+<p>Responde en 5 a 8 líneas:</p>
+<div class="highlight"><pre><span></span><code>Relaciona el caso de USPS (1.6) con tu propio sistema: ¿qué endpoint
+tuyo habría sido el equivalente de la API de USPS si nadie lo hubiera
+probado con la cuenta de otra persona, y por qué una prueba con un
+solo usuario no lo habría detectado?
+</code></pre></div>
+<p><strong>Anexo: Feedback de la sesión</strong></p>
+<p>Pega esta página como la última hoja del PDF, con tus respuestas.</p>
+<ol>
+<li>¿Cuál es el aprendizaje más importante que te llevas de la clase de hoy?</li>
+<li>¿Qué punto de la clase te resultó más confuso o te dejó con dudas?</li>
+<li>¿Tienes alguna pregunta que te gustaría que sea respondida la siguiente clase?</li>
+<li>Sobre tu nivel de comprensión de la clase de hoy, marca una opción:<ul>
+<li>¡Entendido! - Lo domino y podría explicarlo.</li>
+<li>Más o menos. - Entendí la idea general, pero tengo dudas.</li>
+<li>Necesito ayuda. - Me siento perdido/a con este tema.</li>
+</ul>
+</li>
+<li>¿Cómo puedo ayudarte a comprender mejor el tema?</li>
+<li>Pensando en tu participación y esfuerzo en la clase de hoy, ¿cómo te autoevaluarías? Marca una opción:<ul>
+<li>Muy Comprometido/a: Me esforcé al máximo.</li>
+<li>Comprometido/a: Sé que podría haberme esforzado un poco más.</li>
+<li>Poco Comprometido/a: Hoy no di mi mejor esfuerzo.</li>
+</ul>
+</li>
+<li>Mi satisfacción con la clase fue... (califica del 1 al 10, donde 1 es insatisfecho y 10 es muy satisfecho).</li>
+</ol>
+<h3 id="44-criterios-minimos-de-aceptacion">4.4 Criterios mínimos de aceptación<a class="headerlink" href="#44-criterios-minimos-de-aceptacion" title="Permanent link">&para;</a></h3>
+<ul>
+<li>El archivo respeta el nombre solicitado.</li>
+<li>El flujo principal de tu sistema se ejecuta de punta a punta con al menos dos usuarios distintos, con el resultado de cada paso.</li>
+<li>Cada endpoint que devuelve o modifica datos de un usuario concreto está probado con la cuenta de otro usuario, con el resultado documentado (también los que resultaron correctos).</li>
+<li>Los endpoints de servicio a servicio alcanzables desde el punto de entrada público están revisados y documentados.</li>
+<li>Hay al menos un hallazgo real corregido, con la prueba de corrección que repite la misma acción que lo reveló.</li>
+<li>La corrección está acompañada de una prueba de que el flujo legítimo sigue funcionando.</li>
+<li>Una consulta de logs muestra el mismo identificador de correlación en al menos dos servicios, o documenta dónde se rompe la cadena.</li>
+<li>Cada captura de la evidencia técnica muestra el reloj del sistema y el usuario/perfil visible, sin recortar.</li>
+<li>Las fechas y horas de las capturas son coherentes con el historial de commits de su repositorio en GitHub.</li>
+<li>Incluye un error o hallazgo técnico diagnosticado.</li>
+<li>Incluye la reflexión técnica breve solicitada.</li>
+<li>Incluye el Anexo de feedback de la sesión respondido, como última página del PDF.</li>
+</ul>
+<h3 id="45-preguntas-de-defensa">4.5 Preguntas de defensa<a class="headerlink" href="#45-preguntas-de-defensa" title="Permanent link">&para;</a></h3>
+<ol>
+<li>¿Qué pregunta de autorización responde el Gateway y cuál solo puede responder el microservicio dueño del dato? ¿Por qué no puede delegarse la segunda al Gateway?</li>
+<li>¿Por qué se responde <code>404</code> y no <code>403</code> cuando un usuario pide un objeto ajeno?</li>
+<li>¿Qué detectó la validación con dos usuarios que una prueba con un solo usuario nunca habría detectado?</li>
+<li>En tu propio hallazgo, ¿cuál fue la causa (no el síntoma), y qué prueba demuestra que quedó corregido y no solo "parece que funciona"?</li>
+<li>¿Por qué negar <code>descontar-stock</code> en el Gateway no rompe la creación de órdenes, y qué dejaría sin proteger esa regla?</li>
+<li>Si un servicio escribía sus logs correctamente pero Loki no recibía nada, ¿en qué parte de la cadena buscarías la causa, y por qué una prueba por pieza nunca la habría revelado?</li>
+<li>¿Por qué el <code>traceId</code> no cruza Kafka, y cómo correlacionarías igualmente la línea de <code>pagatu-pago-ms</code> con la petición original?</li>
+</ol>
+<h3 id="46-rubrica-de-evaluacion">4.6 Rúbrica de evaluación<a class="headerlink" href="#46-rubrica-de-evaluacion" title="Permanent link">&para;</a></h3>
+<p><strong>Tabla 5. Rúbrica de evaluación</strong></p>
+<table>
+<thead>
+<tr>
+<th>Criterio</th>
+<th style="text-align: right;">Peso (%)</th>
+<th>A (20 pts)</th>
+<th>B (15 pts)</th>
+<th>C (10 pts)</th>
+<th>D (5 pts)</th>
+<th style="text-align: right;">Nivel obtenido</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Flujo principal validado de punta a punta*</td>
+<td style="text-align: right;">25</td>
+<td>Flujo completo recorrido con al menos dos usuarios, con el resultado real de cada paso.</td>
+<td>Flujo completo con un solo usuario, o con algún paso sin evidencia.</td>
+<td>Flujo parcial, o solo descrito sin ejecutarse.</td>
+<td>No presenta validación de punta a punta.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>2. Autorización entre usuarios*</td>
+<td style="text-align: right;">25</td>
+<td>Cada endpoint de datos de un usuario probado con la cuenta de otro, con resultado documentado y corrección verificada si hizo falta.</td>
+<td>Probados, con alguno sin documentar o sin verificar la corrección.</td>
+<td>Probado solo un endpoint, o solo con un usuario.</td>
+<td>No presenta pruebas entre usuarios.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>3. Hallazgo corregido*</td>
+<td style="text-align: right;">25</td>
+<td>Hallazgo real con causa, cambio y prueba antes/después, más prueba de que el flujo legítimo sigue funcionando.</td>
+<td>Hallazgo corregido, sin la prueba de no regresión.</td>
+<td>Hallazgo descrito sin la prueba de corrección.</td>
+<td>No presenta ningún hallazgo.</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>4. Trazabilidad correlacionada*</td>
+<td style="text-align: right;">25</td>
+<td>Mismo identificador visible en al menos dos servicios con una consulta real, o dónde se rompe la cadena, documentado.</td>
+<td>Visible en un servicio, con la propagación sin evidencia clara.</td>
+<td>Logs sin identificador de correlación.</td>
+<td>No presenta evidencia de trazabilidad.</td>
+<td style="text-align: right;"></td>
+</tr>
+</tbody>
+</table>
+<p>* Agregado manual.</p>
+<p>Nota final = suma de (<code>Peso</code> / 100 × <code>Puntos del nivel obtenido</code>) = ____ / 20.</p>
+<p>Para usar la rúbrica con IA (inteligencia artificial), solicita:</p>
+<div class="highlight"><pre><span></span><code>Evalúa el PDF usando la rúbrica de la sesión.
+Para cada criterio selecciona el nivel obtenido usando la escala A=20, B=15, C=10, D=5 puntos.
+Justifica brevemente cada nivel asignado.
+Verifica que cada captura muestre reloj del sistema y usuario/perfil visible, y que las fechas sean coherentes con el historial de commits de GitHub. Si falta esta evidencia o hay inconsistencias, indícalo explícitamente antes de calificar.
+Calcula la nota final con la fórmula: suma de (Peso/100 × Puntos del nivel obtenido), directamente sobre 20.
+Indica 2 fortalezas y 2 recomendaciones.
+</code></pre></div>
+<h2 id="5-cierre">5. Cierre<a class="headerlink" href="#5-cierre" title="Permanent link">&para;</a></h2>
+<p>Tiempo: 5 min.</p>
+<p><strong>Resumen breve:</strong> hoy <code>pagatu</code> pasó de "cada pieza funciona" a "el sistema completo funciona con más de una persona usándolo". Una validación con dos usuarios encontró lo que once sesiones de pruebas con uno solo no habían encontrado: dos servicios que entregaban órdenes y pagos de cualquier dueño a cualquier usuario autenticado —la misma falla de la API de USPS, a menor escala—, dos endpoints internos de inventario alcanzables desde el punto de entrada público, un Gateway que no dejaba rastro de lo que rechazaba, y un Promtail que no estaba leyendo ningún log, sin que ningún servicio lo notara. Cada hallazgo se corrigió en el servicio dueño del problema, se probó repitiendo exactamente la acción que lo reveló, y se registró en una bitácora con su evidencia.</p>
+<p><strong>Dinámica participativa:</strong> en una ronda rápida, cada estudiante comparte en una frase qué endpoint de su propio proyecto le dio más desconfianza al probarlo con la cuenta de otra persona.</p>
+<p><strong>Metacognición:</strong> ¿qué te costó más entender hoy: por qué el Gateway no puede resolver la autorización de objeto aunque ya valide el token, o por qué un servicio que escribe sus logs bien puede no aparecer nunca en Loki?</p>
+<p><strong>Proyección:</strong> S14 estabiliza lo validado hoy: documentación, evidencias, configuración y despliegue local reproducibles, para que otra persona pueda levantar y verificar <code>pagatu</code> desde el repositorio sin acompañamiento.</p>
+<h2 id="bibliografia">Bibliografía<a class="headerlink" href="#bibliografia" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Krebs, B. (2018, 21 de noviembre). <em>USPS Site Exposed Data on 60 Million Users</em>. Krebs on Security. <a href="https://krebsonsecurity.com/2018/11/usps-site-exposed-data-on-60-million-users/">https://krebsonsecurity.com/2018/11/usps-site-exposed-data-on-60-million-users/</a></li>
+<li>OWASP. (2023). <em>API1:2023 Broken Object Level Authorization</em>. OWASP API Security Top 10 2023. <a href="https://owasp.org/API-Security/editions/2023/en/0xa1-broken-object-level-authorization/">https://owasp.org/API-Security/editions/2023/en/0xa1-broken-object-level-authorization/</a></li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "content.code.copy"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
+      
+    
+  </body>
+</html>

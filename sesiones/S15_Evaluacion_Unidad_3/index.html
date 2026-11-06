@@ -11,8 +11,10 @@
         <link rel="canonical" href="https://262dist.github.io/pagatu/sesiones/S15_Evaluacion_Unidad_3/">
       
       
-        <link rel="prev" href="../S12_Evaluacion_Unidad_2/">
+        <link rel="prev" href="../S14_Revision_Tecnica_Estabilizacion/">
       
+      
+        <link rel="next" href="../S16_Continuacion_Evaluacion/">
       
       
         
@@ -1181,6 +1183,62 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../S13_Validacion_End_to_End_Producto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S13 - Validación end-to-end del producto del curso
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S14_Revision_Tecnica_Estabilizacion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S14 - Revisión técnica y estabilización del producto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -1277,17 +1335,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-sustentacion-del-producto-final" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Sustentación del producto final
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#5-rubrica-de-evaluacion" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1302,6 +1349,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S16_Continuacion_Evaluacion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    S16 - Continuación de la evaluación de la Unidad III
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -1374,17 +1449,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-sustentacion-del-producto-final" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Sustentación del producto final
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#5-rubrica-de-evaluacion" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1423,7 +1487,7 @@
 <li>Presentar y sustentar el Sistema distribuido de microservicios end-to-end, validado, documentado y estabilizado.</li>
 </ol>
 <p><strong>Esta sesión no repite lo evaluado en S5 ni en S12</strong>: la Unidad I (base) y la Unidad II (robustez) ya quedaron certificadas por separado; S15 evalúa la integración, validación y estabilización final de ambas juntas — el sistema completo, no una capacidad nueva.</p>
-<p><strong>S16 (Continuación de la evaluación de la Unidad III)</strong> no es una evaluación distinta: es la misma evaluación de esta guía, para los equipos o integrantes cuya presentación, sustentación o evidencia quedó pendiente en S15.</p>
+<p><strong>S16 (Continuación de la evaluación de la Unidad III)</strong> no es una evaluación distinta: es la misma evaluación de esta guía, para los equipos o integrantes cuya presentación, sustentación o evidencia quedó pendiente en S15 — y, para quienes ya sustentaron, el momento de entregar la versión final del producto con las observaciones del jurado incorporadas (<a href="../S16_Continuacion_Evaluacion/">S16</a>).</p>
 <h2 id="2-producto-evaluado">2. Producto evaluado<a class="headerlink" href="#2-producto-evaluado" title="Permanent link">&para;</a></h2>
 <p>Del sílabo, el producto de la Unidad III es:</p>
 <blockquote>
@@ -1446,87 +1510,24 @@
 <tr>
 <td>S13</td>
 <td>Validación end-to-end del producto del curso</td>
-<td>Cobertura del flujo principal, casos de error incluidos, y qué diferencia una prueba end-to-end de probar cada servicio por separado.</td>
+<td>Por qué validar con dos usuarios encuentra lo que probar con uno no encuentra; autorización de ruta (Gateway) frente a autorización de objeto (el servicio dueño del dato) y por qué un objeto ajeno responde <code>404</code> y no <code>403</code>; endpoints de servicio a servicio alcanzables desde el punto de entrada público; y cómo un mismo <code>traceId</code> permite seguir una petición por varios servicios, con su límite en Kafka.</td>
 </tr>
 <tr>
 <td>S14</td>
 <td>Revisión técnica y estabilización del producto</td>
-<td>Qué se estabilizó (configuración, documentación, evidencias) y por qué un producto "que funciona en la demo" no es lo mismo que un producto reproducible.</td>
+<td>Por qué la prueba de reproducibilidad se hace sobre una copia limpia; qué tipos de afirmación de una documentación envejecen primero (estados, rutas, puertos, comandos); qué contiene un manual de ejecución además del README; para qué sirve el plan alternativo de un guion de demostración; y qué costo tiene cada decisión de arquitectura.</td>
 </tr>
 </tbody>
 </table>
 <p>Preguntas de referencia (el docente puede formular equivalentes):</p>
 <ol>
-<li>¿Qué caso de error de tu flujo principal probaste de extremo a extremo, y qué componente lo hubiera dejado pasar si solo probabas cada servicio por separado?</li>
-<li>¿Qué tuviste que estabilizar entre la Unidad II y esta evaluación para que el sistema fuera reproducible por otra persona?</li>
-<li>Si otra persona clona tu repositorio hoy, ¿qué pasos exactos necesita seguir para levantar el sistema completo, y dónde están documentados?</li>
+<li>Un cliente autenticado pide por su identificador una orden que pertenece a otro cliente: ¿qué componente debe impedirlo, por qué no alcanza con el Gateway, y qué respuesta debe recibir y por qué?</li>
+<li>¿Qué endpoint de servicio a servicio de tu sistema es alcanzable desde el punto de entrada público, y cómo lo negaste sin romper el flujo legítimo?</li>
+<li>Una petición atraviesa tres servicios: ¿cómo demuestras con tus logs que es la misma, y en qué punto de tu sistema se rompe esa correlación?</li>
+<li>Si otra persona clona tu repositorio hoy, ¿qué pasos exactos necesita para levantar el sistema completo, dónde están documentados, y cuándo fue la última vez que alguien los siguió al pie de la letra?</li>
+<li>¿Qué afirmación de tu documentación dejó de ser cierta, cómo lo detectaste, y cómo evitas que vuelva a pasar?</li>
 <li>¿Qué limitación real del producto reconoces, y por qué no la resolviste dentro del alcance del curso?</li>
 </ol>
-<h2 id="4-sustentacion-del-producto-final">4. Sustentación del producto final<a class="headerlink" href="#4-sustentacion-del-producto-final" title="Permanent link">&para;</a></h2>
-<p><strong>Tabla 2. Distribución de tiempo por integrante</strong></p>
-<table>
-<thead>
-<tr>
-<th>Momento</th>
-<th style="text-align: right;">Tiempo</th>
-<th>Propósito</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Video pitch / introducción ejecutiva</td>
-<td style="text-align: right;">3 min</td>
-<td>Presentar problema, solución, valor del producto y participación del equipo.</td>
-</tr>
-<tr>
-<td>Exposición técnica</td>
-<td style="text-align: right;">10 min</td>
-<td>Presentar arquitectura, servicios, flujo distribuido, seguridad, eventos y observabilidad (<a href="../../proyecto-sello/u3-producto/#4-secuencia-sugerida-de-presentacion">Tabla 3 de <code>u3-producto.md</code></a>).</td>
-</tr>
-<tr>
-<td>Demostración en vivo</td>
-<td style="text-align: right;">5 min</td>
-<td>Ejecutar el flujo end-to-end, evidenciando Gateway, servicios, eventos, seguridad y monitoreo.</td>
-</tr>
-<tr>
-<td>Preguntas individuales</td>
-<td style="text-align: right;">5 min</td>
-<td>Verificar dominio y aporte propio, con base en la Tabla 1 y el producto completo.</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Tabla 3. Entregables obligatorios</strong></p>
-<table>
-<thead>
-<tr>
-<th>Entregable</th>
-<th>Evidencia mínima</th>
-<th>Criterio de aceptación</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Producto final</td>
-<td><a href="../../proyecto-sello/u3-producto/"><code>u3-producto.md</code></a>, adaptado al dominio propio del equipo</td>
-<td>Integra y estabiliza lo construido en Unidad 1 y Unidad 2</td>
-</tr>
-<tr>
-<td>Evidencia de validación end-to-end</td>
-<td>Flujo principal probado completo, con al menos un caso de error</td>
-<td>Verificable en vivo, no solo documentada</td>
-</tr>
-<tr>
-<td>Repositorio y documentación</td>
-<td>Topics académicos vigentes, documentación completa publicada en MkDocs o equivalente, informe del proyecto</td>
-<td>Reproducible por otra persona desde el repositorio, sin ayuda del equipo</td>
-</tr>
-<tr>
-<td>Sustentación grupal con aporte individual</td>
-<td>Video pitch + exposición + demo + defensa por integrante, con los 7 subaspectos de <a href="../../proyecto-sello/u3-producto/#2-rubrica-de-evaluacion"><code>u3-producto.md</code>, Tabla 2</a></td>
-<td>Aporte individual verificable dentro de la defensa grupal</td>
-</tr>
-</tbody>
-</table>
 <p>Criterios mínimos de aceptación:</p>
 <ul>
 <li>El sistema completo (Unidad 1 + Unidad 2) arranca de extremo a extremo desde el repositorio, sin pasos no documentados.</li>
