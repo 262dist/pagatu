@@ -161,6 +161,17 @@ git clone --branch s13-validacion-end-to-end https://github.com/262dist/pagatu.g
 - **3.8** Redactar la explicación técnica de la arquitectura.
 - **3.9** Registrar los hallazgos en la bitácora.
 
+**Presentación de referencia:** el producto final de `pagatu` está presentado en [pagatu_U3_producto_final_integrado.pptx](../presentaciones/pagatu_U3_producto_final_integrado.pptx), un ejemplo del docente. Estas son las láminas que corresponden a esta sesión:
+
+- **3.2 y 3.3:** lámina 13, de «funciona» a «se puede reproducir».
+- **3.4:** láminas 14 y 15, manual de ejecución y problemas conocidos.
+- **3.6:** lámina 16, demo end-to-end.
+- **3.7:** lámina 18, repositorio y documentación.
+- **3.8:** láminas 5 y 19, arquitectura y limitaciones; la lámina 11 muestra una decisión propia con su costo.
+- **3.9:** lámina 8, hallazgos de la validación end-to-end.
+
+La validación, la estabilización, el manual y la demo son comunes a todo el grupo: se presentan una sola vez, y cada integrante debe saber explicarlos. Las presentaciones de las unidades anteriores son [la de la Unidad I](../presentaciones/pagatu_U1_servicio_base.pptx) y [la de la Unidad II](../presentaciones/pagatu_U2_sistema_distribuido.pptx).
+
 ### 3.1 Preparar un entorno limpio
 
 **Producto del paso:** una copia del repositorio en la que nada se ha ejecutado antes, y la lista de lo que ya tienes instalado.
