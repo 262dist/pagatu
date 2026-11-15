@@ -87,17 +87,18 @@ La presentación puede organizarse con una secuencia breve de apoyo visual. El v
 | 1 | Título del proyecto y equipo | Identificar el proyecto, integrantes y dominio elegido. | CE024 |
 | 2 | Video pitch o introducción ejecutiva | Presentar problema, solución, valor y participación del equipo. | CE024 |
 | 3 | Problema y alcance | Explicar el proceso distribuido y los límites del sistema. | CE023 |
-| 4 | Matriz de trazabilidad | Relacionar la variable (el sistema) con sus dimensiones (los módulos de cada integrante), sus indicadores, el componente y la técnica que los cubren, y la evidencia. | CE023 + CE024 |
-| 5 | Microservicios por integrante | Mostrar los dos microservicios de cada integrante, uno de ellos transaccional. | CE023 |
-| 6 | Arquitectura distribuida | Mostrar servicios, Gateway, configuración y comunicación. | CE023 |
-| 7 | Seguridad | Evidenciar rutas protegidas, autenticación o autorización. | CE024 |
-| 8 | Resiliencia y consistencia | Explicar fallos controlados, eventos, compensaciones o idempotencia. | CE022 + CE024 |
-| 9 | Observabilidad | Mostrar logs, métricas, health checks o paneles. | CE024 |
-| 10 | Integración frontend | Explicar cómo el cliente consume los servicios reales. | CE023 |
-| 11 | Demo end-to-end | Ejecutar el flujo principal del sistema distribuido. | CE023 + CE024 |
-| 12 | Aporte individual | Indicar qué hizo cada integrante: sus microservicios y una decisión propia, con lo que gana y lo que cuesta. | CE024 |
-| 13 | Repositorio y estándares | Mostrar repositorio, topics, estructura, documentación publicada en MkDocs o equivalente, y forma de ejecución. | CE024 |
-| 14 | Limitaciones y mejoras | Reconocer límites del producto, los riesgos aceptados con su justificación y las mejoras posibles. | CE024 |
+| 4 | Qué gana el negocio | Explicar qué gana el negocio con el sistema, cada valor anclado a una dimensión de la variable y con su grado de comprobación. | CE024 |
+| 5 | Matriz de trazabilidad | Relacionar la variable (el sistema) con sus dimensiones (los módulos de cada integrante), sus indicadores, el componente y la técnica que los cubren, y la evidencia. | CE023 + CE024 |
+| 6 | Microservicios por integrante | Mostrar los dos microservicios de cada integrante, uno de ellos transaccional. | CE023 |
+| 7 | Arquitectura distribuida | Mostrar servicios, Gateway, configuración y comunicación. | CE023 |
+| 8 | Seguridad | Evidenciar rutas protegidas, autenticación o autorización. | CE024 |
+| 9 | Resiliencia y consistencia | Explicar fallos controlados, eventos, compensaciones o idempotencia. | CE022 + CE024 |
+| 10 | Observabilidad | Mostrar logs, métricas, health checks o paneles. | CE024 |
+| 11 | Integración frontend | Explicar cómo el cliente consume los servicios reales. | CE023 |
+| 12 | Demo end-to-end | Ejecutar el flujo principal del sistema distribuido. | CE023 + CE024 |
+| 13 | Aporte individual | Indicar qué hizo cada integrante: sus microservicios y una decisión propia, con lo que gana y lo que cuesta. | CE024 |
+| 14 | Repositorio y estándares | Mostrar repositorio, topics, estructura, documentación publicada en MkDocs o equivalente, y forma de ejecución. | CE024 |
+| 15 | Limitaciones y mejoras | Reconocer límites del producto, los riesgos aceptados con su justificación y las mejoras posibles. | CE024 |
 
 Lo común al grupo (arquitectura, validación, estabilización, manual de ejecución y demo) se presenta una sola vez; cada integrante responde individualmente sobre ello.
 
