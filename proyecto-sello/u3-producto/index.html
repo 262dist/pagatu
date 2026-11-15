@@ -1601,6 +1601,7 @@
 <li>Docker o entorno reproducible, con servicios que declaran cuándo están listos y manual de ejecución probado sobre una copia limpia del repositorio.</li>
 <li>Pruebas integrales del flujo principal con al menos un caso de error y verificación con más de un usuario (autorización a nivel de objeto, no solo de ruta).</li>
 <li>Bitácora de validación y estabilización: hallazgos encontrados, su corrección y la prueba de que quedó corregido.</li>
+<li>Matriz de trazabilidad que relaciona cada necesidad del negocio con su requisito, el componente que lo cubre y la evidencia.</li>
 <li>Documentación técnica y evidencias de ejecución.</li>
 </ul>
 <h2 id="2-rubrica-de-evaluacion">2. Rúbrica de Evaluación<a class="headerlink" href="#2-rubrica-de-evaluacion" title="Permanent link">&para;</a></h2>
@@ -1708,6 +1709,7 @@
 Para cada criterio selecciona la calificación obtenida: A=20, B=15, C=10, D=5.
 Justifica brevemente cada nivel con evidencia concreta del sistema completo (Unidades 1 y 2 integradas).
 Para el criterio 4, verifica explícitamente los 7 subaspectos de la Tabla 2 antes de asignar el nivel.
+Verifica que la matriz de trazabilidad relacione cada necesidad del negocio con su requisito, su componente y su evidencia.
 Calcula la nota final con la fórmula: suma de (Peso / 100 × Puntos de la calificación obtenida), directamente sobre 20.
 Indica 2 fortalezas y 2 recomendaciones finales del producto.
 </code></pre></div>
@@ -1747,60 +1749,73 @@ Indica 2 fortalezas y 2 recomendaciones finales del producto.
 </tr>
 <tr>
 <td style="text-align: right;">4</td>
+<td>Matriz de trazabilidad</td>
+<td>Relacionar cada necesidad del negocio con su requisito, el componente que la cubre y la evidencia.</td>
+<td>CE023 + CE024</td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
+<td>Microservicios por integrante</td>
+<td>Mostrar los dos microservicios de cada integrante, uno de ellos transaccional.</td>
+<td>CE023</td>
+</tr>
+<tr>
+<td style="text-align: right;">6</td>
 <td>Arquitectura distribuida</td>
 <td>Mostrar servicios, Gateway, configuración y comunicación.</td>
 <td>CE023</td>
 </tr>
 <tr>
-<td style="text-align: right;">5</td>
+<td style="text-align: right;">7</td>
 <td>Seguridad</td>
 <td>Evidenciar rutas protegidas, autenticación o autorización.</td>
 <td>CE024</td>
 </tr>
 <tr>
-<td style="text-align: right;">6</td>
+<td style="text-align: right;">8</td>
 <td>Resiliencia y consistencia</td>
 <td>Explicar fallos controlados, eventos, compensaciones o idempotencia.</td>
 <td>CE022 + CE024</td>
 </tr>
 <tr>
-<td style="text-align: right;">7</td>
+<td style="text-align: right;">9</td>
 <td>Observabilidad</td>
 <td>Mostrar logs, métricas, health checks o paneles.</td>
 <td>CE024</td>
 </tr>
 <tr>
-<td style="text-align: right;">8</td>
+<td style="text-align: right;">10</td>
 <td>Integración frontend</td>
 <td>Explicar cómo el cliente consume los servicios reales.</td>
 <td>CE023</td>
 </tr>
 <tr>
-<td style="text-align: right;">9</td>
+<td style="text-align: right;">11</td>
 <td>Demo end-to-end</td>
 <td>Ejecutar el flujo principal del sistema distribuido.</td>
 <td>CE023 + CE024</td>
 </tr>
 <tr>
-<td style="text-align: right;">10</td>
+<td style="text-align: right;">12</td>
 <td>Aporte individual</td>
-<td>Indicar qué hizo cada integrante.</td>
+<td>Indicar qué hizo cada integrante: sus microservicios y una decisión propia, con lo que gana y lo que cuesta.</td>
 <td>CE024</td>
 </tr>
 <tr>
-<td style="text-align: right;">11</td>
+<td style="text-align: right;">13</td>
 <td>Repositorio y estándares</td>
 <td>Mostrar repositorio, topics, estructura, documentación publicada en MkDocs o equivalente, y forma de ejecución.</td>
 <td>CE024</td>
 </tr>
 <tr>
-<td style="text-align: right;">12</td>
+<td style="text-align: right;">14</td>
 <td>Limitaciones y mejoras</td>
 <td>Reconocer límites del producto, los riesgos aceptados con su justificación y las mejoras posibles.</td>
 <td>CE024</td>
 </tr>
 </tbody>
 </table>
+<p>Lo común al grupo (arquitectura, validación, estabilización, manual de ejecución y demo) se presenta una sola vez; cada integrante responde individualmente sobre ello.</p>
 <h2 id="5-documentacion-y-reporte-del-producto-final">5. Documentación y reporte del producto final<a class="headerlink" href="#5-documentacion-y-reporte-del-producto-final" title="Permanent link">&para;</a></h2>
 <h3 id="51-plantilla-minima-de-documentacion-mkdocs-o-equivalente">5.1 Plantilla mínima de documentación MkDocs o equivalente<a class="headerlink" href="#51-plantilla-minima-de-documentacion-mkdocs-o-equivalente" title="Permanent link">&para;</a></h3>
 <p>La documentación publicada no reemplaza al informe. Su función es permitir que otra persona comprenda, ejecute, revise y verifique el producto desde el repositorio.</p>
@@ -1892,6 +1907,11 @@ Indica 2 fortalezas y 2 recomendaciones finales del producto.
 <td>Competencia y alcance</td>
 <td>Competencia/capacidad del proyecto y competencias relacionadas.</td>
 <td>CE023, CE022 y CE024 vinculadas al producto.</td>
+</tr>
+<tr>
+<td>Matriz de trazabilidad</td>
+<td>Necesidad de negocio, requisito del sistema, componente y evidencia.</td>
+<td>Tabla completa con la evidencia de cada fila.</td>
 </tr>
 <tr>
 <td>Flujo de negocio</td>
