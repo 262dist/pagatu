@@ -26,6 +26,7 @@ Al cierre de Unidad 3, el sistema debe integrar — sin excepción — todo lo c
 - Docker o entorno reproducible, con servicios que declaran cuándo están listos y manual de ejecución probado sobre una copia limpia del repositorio.
 - Pruebas integrales del flujo principal con al menos un caso de error y verificación con más de un usuario (autorización a nivel de objeto, no solo de ruta).
 - Bitácora de validación y estabilización: hallazgos encontrados, su corrección y la prueba de que quedó corregido.
+- Matriz de trazabilidad que relaciona cada necesidad del negocio con su requisito, el componente que lo cubre y la evidencia.
 - Documentación técnica y evidencias de ejecución.
 
 ## 2. Rúbrica de Evaluación
@@ -64,6 +65,7 @@ Evalúa la sustentación y el producto (u3-producto.md, adaptado al dominio prop
 Para cada criterio selecciona la calificación obtenida: A=20, B=15, C=10, D=5.
 Justifica brevemente cada nivel con evidencia concreta del sistema completo (Unidades 1 y 2 integradas).
 Para el criterio 4, verifica explícitamente los 7 subaspectos de la Tabla 2 antes de asignar el nivel.
+Verifica que la matriz de trazabilidad relacione cada necesidad del negocio con su requisito, su componente y su evidencia.
 Calcula la nota final con la fórmula: suma de (Peso / 100 × Puntos de la calificación obtenida), directamente sobre 20.
 Indica 2 fortalezas y 2 recomendaciones finales del producto.
 ```
@@ -85,15 +87,19 @@ La presentación puede organizarse con una secuencia breve de apoyo visual. El v
 | 1 | Título del proyecto y equipo | Identificar el proyecto, integrantes y dominio elegido. | CE024 |
 | 2 | Video pitch o introducción ejecutiva | Presentar problema, solución, valor y participación del equipo. | CE024 |
 | 3 | Problema y alcance | Explicar el proceso distribuido y los límites del sistema. | CE023 |
-| 4 | Arquitectura distribuida | Mostrar servicios, Gateway, configuración y comunicación. | CE023 |
-| 5 | Seguridad | Evidenciar rutas protegidas, autenticación o autorización. | CE024 |
-| 6 | Resiliencia y consistencia | Explicar fallos controlados, eventos, compensaciones o idempotencia. | CE022 + CE024 |
-| 7 | Observabilidad | Mostrar logs, métricas, health checks o paneles. | CE024 |
-| 8 | Integración frontend | Explicar cómo el cliente consume los servicios reales. | CE023 |
-| 9 | Demo end-to-end | Ejecutar el flujo principal del sistema distribuido. | CE023 + CE024 |
-| 10 | Aporte individual | Indicar qué hizo cada integrante. | CE024 |
-| 11 | Repositorio y estándares | Mostrar repositorio, topics, estructura, documentación publicada en MkDocs o equivalente, y forma de ejecución. | CE024 |
-| 12 | Limitaciones y mejoras | Reconocer límites del producto, los riesgos aceptados con su justificación y las mejoras posibles. | CE024 |
+| 4 | Matriz de trazabilidad | Relacionar cada necesidad del negocio con su requisito, el componente que la cubre y la evidencia. | CE023 + CE024 |
+| 5 | Microservicios por integrante | Mostrar los dos microservicios de cada integrante, uno de ellos transaccional. | CE023 |
+| 6 | Arquitectura distribuida | Mostrar servicios, Gateway, configuración y comunicación. | CE023 |
+| 7 | Seguridad | Evidenciar rutas protegidas, autenticación o autorización. | CE024 |
+| 8 | Resiliencia y consistencia | Explicar fallos controlados, eventos, compensaciones o idempotencia. | CE022 + CE024 |
+| 9 | Observabilidad | Mostrar logs, métricas, health checks o paneles. | CE024 |
+| 10 | Integración frontend | Explicar cómo el cliente consume los servicios reales. | CE023 |
+| 11 | Demo end-to-end | Ejecutar el flujo principal del sistema distribuido. | CE023 + CE024 |
+| 12 | Aporte individual | Indicar qué hizo cada integrante: sus microservicios y una decisión propia, con lo que gana y lo que cuesta. | CE024 |
+| 13 | Repositorio y estándares | Mostrar repositorio, topics, estructura, documentación publicada en MkDocs o equivalente, y forma de ejecución. | CE024 |
+| 14 | Limitaciones y mejoras | Reconocer límites del producto, los riesgos aceptados con su justificación y las mejoras posibles. | CE024 |
+
+Lo común al grupo (arquitectura, validación, estabilización, manual de ejecución y demo) se presenta una sola vez; cada integrante responde individualmente sobre ello.
 
 ## 5. Documentación y reporte del producto final
 
@@ -127,6 +133,7 @@ El informe debe documentar el producto de manera breve, verificable y alineada a
 | Portada | Nombre del proyecto, curso, sección, integrantes, docente y semestre. | Datos completos del equipo. |
 | Resumen del proyecto | Problema, solución distribuida y valor del producto. | Síntesis de 8 a 12 líneas. |
 | Competencia y alcance | Competencia/capacidad del proyecto y competencias relacionadas. | CE023, CE022 y CE024 vinculadas al producto. |
+| Matriz de trazabilidad | Necesidad de negocio, requisito del sistema, componente y evidencia. | Tabla completa con la evidencia de cada fila. |
 | Flujo de negocio | Proceso distribuido, actores, servicios y límites. | Descripción del flujo end-to-end. |
 | Arquitectura distribuida | Microservicios, Gateway, configuración, descubrimiento y comunicación. | Diagrama de arquitectura y componentes. |
 | Datos y consistencia | Persistencia, eventos, compensaciones o idempotencia. | Evidencias de datos, mensajes y resultados. |

@@ -24,6 +24,7 @@ El sílabo pide actualizar la entrega final con lo que el jurado observó. La en
 | Entregable | Qué revisar antes de la entrega final |
 |---|---|
 | `u3-producto.md` | Observaciones del jurado de S15 incorporadas, con evidencia actualizada si algún comando o prueba se volvió a ejecutar. |
+| Matriz de trazabilidad | Cada necesidad del negocio con su requisito, su componente y su evidencia actualizada tras las observaciones del jurado. |
 | Manual de ejecución | El de S14 (3.4), probado otra vez sobre una copia limpia tras los cambios posteriores a S15; problemas conocidos al día. |
 | Bitácoras de validación y estabilización | Las de S13 (3.10) y S14 (3.9), con una fila nueva por cada hallazgo corregido después de S15 y su prueba de corrección. |
 | Guion de demostración | El de S14 (3.6), ajustado a lo que pasó realmente en la sustentación: qué paso falló, qué plan alternativo se usó. |
