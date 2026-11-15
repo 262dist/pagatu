@@ -26,7 +26,7 @@ Al cierre de Unidad 3, el sistema debe integrar — sin excepción — todo lo c
 - Docker o entorno reproducible, con servicios que declaran cuándo están listos y manual de ejecución probado sobre una copia limpia del repositorio.
 - Pruebas integrales del flujo principal con al menos un caso de error y verificación con más de un usuario (autorización a nivel de objeto, no solo de ruta).
 - Bitácora de validación y estabilización: hallazgos encontrados, su corrección y la prueba de que quedó corregido.
-- Matriz de trazabilidad que relaciona cada necesidad del negocio con su requisito, el componente que lo cubre y la evidencia.
+- Matriz de trazabilidad que relaciona la variable (el sistema) con sus dimensiones (los módulos de cada integrante), sus indicadores, el componente y la técnica, y la evidencia.
 - Documentación técnica y evidencias de ejecución.
 
 ## 2. Rúbrica de Evaluación
@@ -65,7 +65,7 @@ Evalúa la sustentación y el producto (u3-producto.md, adaptado al dominio prop
 Para cada criterio selecciona la calificación obtenida: A=20, B=15, C=10, D=5.
 Justifica brevemente cada nivel con evidencia concreta del sistema completo (Unidades 1 y 2 integradas).
 Para el criterio 4, verifica explícitamente los 7 subaspectos de la Tabla 2 antes de asignar el nivel.
-Verifica que la matriz de trazabilidad relacione cada necesidad del negocio con su requisito, su componente y su evidencia.
+Verifica que la matriz de trazabilidad relacione la variable (el sistema) con las dimensiones (los módulos) de cada integrante, sus indicadores y su evidencia.
 Calcula la nota final con la fórmula: suma de (Peso / 100 × Puntos de la calificación obtenida), directamente sobre 20.
 Indica 2 fortalezas y 2 recomendaciones finales del producto.
 ```
@@ -87,7 +87,7 @@ La presentación puede organizarse con una secuencia breve de apoyo visual. El v
 | 1 | Título del proyecto y equipo | Identificar el proyecto, integrantes y dominio elegido. | CE024 |
 | 2 | Video pitch o introducción ejecutiva | Presentar problema, solución, valor y participación del equipo. | CE024 |
 | 3 | Problema y alcance | Explicar el proceso distribuido y los límites del sistema. | CE023 |
-| 4 | Matriz de trazabilidad | Relacionar cada necesidad del negocio con su requisito, el componente que la cubre y la evidencia. | CE023 + CE024 |
+| 4 | Matriz de trazabilidad | Relacionar la variable (el sistema) con sus dimensiones (los módulos de cada integrante), sus indicadores, el componente y la técnica que los cubren, y la evidencia. | CE023 + CE024 |
 | 5 | Microservicios por integrante | Mostrar los dos microservicios de cada integrante, uno de ellos transaccional. | CE023 |
 | 6 | Arquitectura distribuida | Mostrar servicios, Gateway, configuración y comunicación. | CE023 |
 | 7 | Seguridad | Evidenciar rutas protegidas, autenticación o autorización. | CE024 |
@@ -133,7 +133,7 @@ El informe debe documentar el producto de manera breve, verificable y alineada a
 | Portada | Nombre del proyecto, curso, sección, integrantes, docente y semestre. | Datos completos del equipo. |
 | Resumen del proyecto | Problema, solución distribuida y valor del producto. | Síntesis de 8 a 12 líneas. |
 | Competencia y alcance | Competencia/capacidad del proyecto y competencias relacionadas. | CE023, CE022 y CE024 vinculadas al producto. |
-| Matriz de trazabilidad | Necesidad de negocio, requisito del sistema, componente y evidencia. | Tabla completa con la evidencia de cada fila. |
+| Matriz de trazabilidad | Variable (el sistema), dimensiones (los módulos de cada integrante), indicador, componente y técnica, y evidencia. | Tabla completa: una fila por módulo, cada una con su evidencia. |
 | Flujo de negocio | Proceso distribuido, actores, servicios y límites. | Descripción del flujo end-to-end. |
 | Arquitectura distribuida | Microservicios, Gateway, configuración, descubrimiento y comunicación. | Diagrama de arquitectura y componentes. |
 | Datos y consistencia | Persistencia, eventos, compensaciones o idempotencia. | Evidencias de datos, mensajes y resultados. |

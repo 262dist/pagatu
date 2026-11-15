@@ -156,6 +156,8 @@ Cada microservicio ya escribe a `logs/<nombre>.log` (`logback-spring.xml`, con e
 
 **El hueco real**: `CorrelationIdFilter` **recibe** el header, pero ningún cliente HTTP de `pagatu` lo **envía** hacia adelante. Cuando `pagatu-orden-ms` llama a `pagatu-catalogo-ms` por Feign (S6, 3.13), esa llamada sale sin el header `X-Trace-ID` — `pagatu-catalogo-ms` nunca lo recibe, así que `CorrelationIdFilter` de ese lado genera un `traceId` **completamente nuevo**, sin relación con el de `pagatu-orden-ms`. El resultado: una sola venta, en los logs, aparece con dos `traceId` distintos según en qué servicio la busques — seguirla de punta a punta por Loki es imposible hoy. 3.4 cierra esto con un `RequestInterceptor` de Feign (OpenFeign, 2026), el mismo mecanismo con el que Spring propaga cualquier *header* saliente.
 
+> **Nota:** esta sesión cierra el salto entre `pagatu-orden-ms` y `pagatu-catalogo-ms`. Lo que todavía falta es el primer salto, el del Gateway: en S13 (3.8) se agrega ahí el filtro que crea el `traceId` al entrar la petición.
+
 ### 2.5 Paneles de diagnóstico en Grafana
 
 Un panel de diagnóstico útil combina más de una fuente — ninguna métrica sola cuenta la historia completa (el mismo principio que lambda26 S09, 2.2, aplicado aquí a microservicios en vez de a un pipeline de streaming):

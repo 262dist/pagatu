@@ -40,7 +40,7 @@ Preguntas de referencia (el docente puede formular equivalentes):
 4. Si otra persona clona tu repositorio hoy, ¿qué pasos exactos necesita para levantar el sistema completo, dónde están documentados, y cuándo fue la última vez que alguien los siguió al pie de la letra?
 5. ¿Qué afirmación de tu documentación dejó de ser cierta, cómo lo detectaste, y cómo evitas que vuelva a pasar?
 6. ¿Qué limitación real del producto reconoces, y por qué no la resolviste dentro del alcance del curso?
-7. En tu matriz de trazabilidad, ¿qué necesidad del negocio tiene la evidencia más débil, y qué harías para fortalecerla?
+7. En tu matriz de trazabilidad, ¿qué módulo tiene la evidencia más débil, y qué harías para fortalecerla?
 8. Defiende una decisión técnica propia: ¿qué ganas con ella y qué te cuesta?
 
 Criterios mínimos de aceptación:
@@ -49,7 +49,7 @@ Criterios mínimos de aceptación:
 - El flujo principal de negocio se prueba en vivo con al menos un caso de éxito y uno de error.
 - La documentación (MkDocs o equivalente) permite a otra persona reproducir el sistema sin ayuda del equipo.
 - El repositorio mantiene los topics académicos y evidencia de commits a lo largo del curso.
-- La matriz de trazabilidad relaciona cada necesidad del negocio con su requisito, su componente y su evidencia.
+- La matriz de trazabilidad relaciona la variable (el sistema) con las dimensiones (los módulos) de cada integrante, sus indicadores y su evidencia.
 - Lo común al grupo (arquitectura, validación, estabilización, manual de ejecución y demo) se presenta una sola vez; cada integrante responde individualmente sobre ello.
 - La sustentación cubre los 7 subaspectos de la sustentación integral (`u3-producto.md`, Tabla 2), con aporte individual verificable de cada integrante.
 - Cada integrante responde individualmente al menos una pregunta de la Tabla 1.
